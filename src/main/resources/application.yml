@@ -1,0 +1,53 @@
+spring:
+  profiles:
+    active: local
+  h2:
+    console:
+      enabled: true
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+        format_sql: true
+    show-sql: true
+  jwt:
+    scret: hjjJWT
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+logging:
+  level:
+    com: debug
+    org:
+      hibernate:
+        type:
+          descriptor:
+            sql: debug
+
+--- #local
+spring:
+  config:
+    activate:
+      on-profile: local
+  datasource:
+    hikari:
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      jdbc-url: jdbc:mysql://localhost:3306/api_server?serverTimezone=Asia/Seoul&useUnicode=true&characterEncoding=utf-8
+      username: hjj1991
+      password: wowjddl1
+
+
+--- #prod
+spring:
+  config:
+    activate:
+      on-profile: prod
+  datasource:
+    hikari:
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      jdbc-url: jdbc:mysql://dognas.ipdisk.co.kr:3306/api_server?serverTimezone=Asia/Seoul&useUnicode=true&characterEncoding=utf-8
+      username: hjj1991
+      password: wowjddl1
+
