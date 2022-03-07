@@ -14,7 +14,8 @@ public class ApiError{
         ERR_CODE0002("해당 사용자가 존재합니다."),
         ERR_CODE0003("해당 닉네임이 존재합니다."),
         ERR_CODE0004("회원가입이 실패되었습니다."),
-        ERR_CODE0005("카드 등록이 실패되었습니다.");
+        ERR_CODE0005("카드 등록이 실패되었습니다."),
+        ERR_CODE9999("잘못된 요청입니다.");
 
 
         private final String msg;

@@ -61,6 +61,9 @@ public class UserEntity extends BaseEntity implements UserDetails {
     @Column
     private LocalDateTime loginDateTime;
 
+    @Column(nullable = true)
+    private String refreshToken;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, columnDefinition = "varchar(20) default 'USER'")
     private Role role;
@@ -101,5 +104,16 @@ public class UserEntity extends BaseEntity implements UserDetails {
     @Override   //계정이 사용가능한지
     public boolean isEnabled() {
         return true;
+    }
+
+    public UserEntity updateUserLogin(String refreshToken){
+        this.loginDateTime = LocalDateTime.now();
+        this.refreshToken = refreshToken;
+        return this;
+    }
+
+    public UserEntity updateUserRefreshToken(String refreshToken){
+        this.refreshToken = refreshToken;
+        return this;
     }
 }
