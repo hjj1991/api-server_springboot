@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "tb_purchase")
@@ -59,6 +60,7 @@ public class PurchaseEntity extends BaseEntity {
 
     public void delete(){
         setDeleteYn('Y');
+        setDeleteDate(LocalDateTime.now());
     }
 
 

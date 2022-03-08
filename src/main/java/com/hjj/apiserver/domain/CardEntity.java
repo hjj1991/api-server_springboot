@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -51,6 +52,7 @@ public class CardEntity extends BaseEntity {
 
     public void delete(){
         setDeleteYn('Y');
+        setDeleteDate(LocalDateTime.now());
     }
 
 

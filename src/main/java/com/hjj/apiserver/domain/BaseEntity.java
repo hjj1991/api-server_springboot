@@ -18,4 +18,7 @@ public abstract class BaseEntity {
     @Column(columnDefinition = "datetime default now()", nullable = false, insertable = false)
     private LocalDateTime createDate;
 
+    @Column
+    private LocalDateTime deleteDate;
+
 }
