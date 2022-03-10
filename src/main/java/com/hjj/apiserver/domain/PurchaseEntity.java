@@ -1,9 +1,6 @@
 package com.hjj.apiserver.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -13,7 +10,7 @@ import java.time.LocalDateTime;
 @Table(name = "tb_purchase")
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class PurchaseEntity extends BaseEntity {
 
@@ -46,21 +43,28 @@ public class PurchaseEntity extends BaseEntity {
     private LocalDate purchaseDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="cardEntity_cardNo", nullable = true)
+    @JoinColumn(name="cardEntity_cardNo", foreignKey = @ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
     private CardEntity cardInfo;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="storeEntity_storeNo", nullable = true)
+    @JoinColumn(name="storeEntity_storeNo", foreignKey = @ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
     private StoreEntity storeInfo;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="userEntity_userNo", nullable = false)
+    @JoinColumn(name="userEntity_userNo", nullable = false, foreignKey = @ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
     private UserEntity userInfo;
 
 
+    public void changeStoreInfo(StoreEntity storeInfo){
+        if(this.storeInfo != null){
+            this.storeInfo.getPurchaseEntityList().remove(storeInfo);
+        }
+        this.storeInfo = storeInfo;
+        storeInfo.getPurchaseEntityList().add(this);
+    }
+
     public void delete(){
         setDeleteYn('Y');
-        setDeleteDate(LocalDateTime.now());
     }
 
 

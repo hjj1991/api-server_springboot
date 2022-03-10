@@ -1,6 +1,10 @@
 package com.hjj.apiserver.domain;
 
 import lombok.*;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,7 +21,7 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserEntity extends BaseEntity implements UserDetails {
+public class UserEntity implements UserDetails {
 
     @RequiredArgsConstructor
     @Getter
@@ -56,10 +60,17 @@ public class UserEntity extends BaseEntity implements UserDetails {
     private String provider;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "userInfo")
-    private List<PurchaseEntity> purchaseEntityList;
+    @Builder.Default
+    private List<PurchaseEntity> purchaseEntityList = new ArrayList<>();
 
     @Column
     private LocalDateTime loginDateTime;
+
+    @Column(columnDefinition = "datetime default now()", nullable = false, insertable = false)
+    private LocalDateTime createdDate;
+
+    @Column
+    private LocalDateTime lastModifiedDate;
 
     @Column(nullable = true)
     private String refreshToken;

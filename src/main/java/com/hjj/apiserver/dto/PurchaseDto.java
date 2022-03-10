@@ -74,10 +74,12 @@ public class PurchaseDto {
                 .refundYn('N')
                 .purchaseDate(purchaseDate)
                 .cardInfo(cardInfo)
-                .storeInfo(storeInfo)
                 .userInfo(userInfo)
                 .build();
-
+        /* 연관관계 편의 메소드 */
+        if(storeInfo != null){
+            purchaseEntity.changeStoreInfo(storeInfo);
+        }
         return purchaseEntity;
     }
 }

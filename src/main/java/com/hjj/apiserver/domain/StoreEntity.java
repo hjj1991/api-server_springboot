@@ -1,13 +1,17 @@
 package com.hjj.apiserver.domain;
 
-import lombok.Getter;
+import lombok.*;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Table(name = "tb_store")
 @Getter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class StoreEntity  extends BaseEntity{
 
     @Id
@@ -21,5 +25,6 @@ public class StoreEntity  extends BaseEntity{
     private String storeDesc;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "storeInfo")
-    private List<PurchaseEntity> purchaseEntityList;
+    @Builder.Default
+    private List<PurchaseEntity> purchaseEntityList = new ArrayList<>();
 }
