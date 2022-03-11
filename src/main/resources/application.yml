@@ -51,4 +51,4 @@ spring:
       username: root
       password: kHxLwtCsXafkwjWtaJae
 server:
-  port: 80
+  port: 8080
