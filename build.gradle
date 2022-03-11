@@ -5,6 +5,10 @@ plugins {
 //    id 'war'
 }
 
+bootJar {
+    destinationDirectory = file("./target")
+}
+
 group = 'com.hjj'
 version = '0.0.1-SNAPSHOT'
 
