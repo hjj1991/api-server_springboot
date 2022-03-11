@@ -34,9 +34,9 @@ spring:
   datasource:
     hikari:
       driver-class-name: com.mysql.cj.jdbc.Driver
-      jdbc-url: jdbc:mysql://localhost:3306/api_server?serverTimezone=Asia/Seoul&useUnicode=true&characterEncoding=utf-8
-      username: hjj1991
-      password: wowjddl1
+      jdbc-url: jdbc:mysql://containers-us-west-26.railway.app:6001/railway?serverTimezone=Asia/Seoul&useUnicode=true&characterEncoding=utf-8
+      username: root
+      password: kHxLwtCsXafkwjWtaJae
 
 
 --- #prod
@@ -50,4 +50,5 @@ spring:
       jdbc-url: jdbc:mysql://containers-us-west-26.railway.app:6001/railway?serverTimezone=Asia/Seoul&useUnicode=true&characterEncoding=utf-8
       username: root
       password: kHxLwtCsXafkwjWtaJae
-
+server:
+  port: 80
