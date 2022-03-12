@@ -3,7 +3,6 @@ package com.hjj.apiserver;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.hjj.apiserver.domain.UserEntity;
 import com.hjj.apiserver.dto.TokenDto;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;

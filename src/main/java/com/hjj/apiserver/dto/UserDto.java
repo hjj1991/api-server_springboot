@@ -75,7 +75,7 @@ public class UserDto {
         private String userEmail;
         private String picture;
         private String provider;
-        private LocalDateTime createDate;
+        private LocalDateTime createdDate;
         private LocalDateTime loginDateTime;
         private String accessToken;
         private String refreshToken;
