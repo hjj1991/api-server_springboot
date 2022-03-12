@@ -3,22 +3,23 @@ package com.hjj.apiserver.controller;
 import com.hjj.apiserver.common.ApiError;
 import com.hjj.apiserver.common.ApiResponse;
 import com.hjj.apiserver.common.ApiUtils;
-import com.hjj.apiserver.common.provider.JwtTokenProvider;
 import com.hjj.apiserver.domain.UserEntity;
 import com.hjj.apiserver.dto.UserDto;
 import com.hjj.apiserver.repositroy.UserRepository;
+import com.hjj.apiserver.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
 
 @Api(tags = {"1. User"})
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 public class UserController {
@@ -27,7 +28,7 @@ public class UserController {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final ModelMapper modelMapper;
-    private final JwtTokenProvider jwtTokenProvider;
+    private final UserService userService;
 
     @ApiOperation(value = "유저Id 중복 조회", notes = "유저id의 중복여부를 확인한다.")
     @GetMapping("/user/{userId}/exists")
@@ -65,15 +66,17 @@ public class UserController {
         if(!passwordEncoder.matches(form.getUserPw(), userEntity.getUserPw()))
             throw new UsernameNotFoundException("");
 
-        UserDto.ResponseSignIn responseSignIn = modelMapper.map(userEntity, UserDto.ResponseSignIn.class);
+        return ApiUtils.success(userService.signInService(userEntity));
+    }
 
-        List<String> jwtToken = jwtTokenProvider.createToken(userEntity);
-
-        responseSignIn.setAccessToken(jwtToken.get(0));
-        responseSignIn.setExpireTime(jwtToken.get(1));
-
-        return ApiUtils.success(responseSignIn);
-
-
+    @ApiOperation(value = "AcessToken 재발급", notes ="AcessToken을 재발급한다.")
+    @PostMapping("/user/oauth/token")
+    public ApiResponse reIssueeToken(@RequestBody UserDto.RequestReIssueToken form) {
+        try{
+            return ApiUtils.success(userService.reIssueeToken(form));
+        }catch (Exception e){
+            log.error("[UserController] reIssueeToken Error form: {}, {}", form, e);
+            return ApiUtils.error("token 재발급에 실패했습니다.", ApiError.ErrCode.ERR_CODE9999);
+        }
     }
 }

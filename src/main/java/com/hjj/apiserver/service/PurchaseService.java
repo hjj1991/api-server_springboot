@@ -51,13 +51,11 @@ public class PurchaseService {
             if(storeEntity == null)
                 throw new Exception("해당 하는 업종이 존재하지 않습니다.");
             purchaseDto.setStoreInfo(storeEntity);
+
         }
 
-
-
-
-
         PurchaseEntity purchaseEntity = purchaseDto.toEntity();
+
         purchaseRepository.save(purchaseEntity);
 
     }

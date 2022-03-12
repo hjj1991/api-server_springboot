@@ -1,6 +1,10 @@
 package com.hjj.apiserver.domain;
 
 import lombok.*;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,7 +21,7 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserEntity extends BaseEntity implements UserDetails {
+public class UserEntity implements UserDetails {
 
     @RequiredArgsConstructor
     @Getter
@@ -56,10 +60,20 @@ public class UserEntity extends BaseEntity implements UserDetails {
     private String provider;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "userInfo")
-    private List<PurchaseEntity> purchaseEntityList;
+    @Builder.Default
+    private List<PurchaseEntity> purchaseEntityList = new ArrayList<>();
 
     @Column
     private LocalDateTime loginDateTime;
+
+    @Column(columnDefinition = "datetime default now()", nullable = false, insertable = false)
+    private LocalDateTime createdDate;
+
+    @Column
+    private LocalDateTime lastModifiedDate;
+
+    @Column(nullable = true)
+    private String refreshToken;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, columnDefinition = "varchar(20) default 'USER'")
@@ -101,5 +115,16 @@ public class UserEntity extends BaseEntity implements UserDetails {
     @Override   //계정이 사용가능한지
     public boolean isEnabled() {
         return true;
+    }
+
+    public UserEntity updateUserLogin(String refreshToken){
+        this.loginDateTime = LocalDateTime.now();
+        this.refreshToken = refreshToken;
+        return this;
+    }
+
+    public UserEntity updateUserRefreshToken(String refreshToken){
+        this.refreshToken = refreshToken;
+        return this;
     }
 }

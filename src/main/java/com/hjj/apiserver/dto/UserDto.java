@@ -75,15 +75,29 @@ public class UserDto {
         private String userEmail;
         private String picture;
         private String provider;
-        private LocalDateTime createDate;
+        private LocalDateTime createdDate;
         private LocalDateTime loginDateTime;
         private String accessToken;
-        private String expireTime;
+        private String refreshToken;
+        private long expireTime;
     }
 
     @Getter
     public static class RequestSignInForm {
         private String userId;
         private String userPw;
+    }
+
+    @Data
+    public static class RequestReIssueToken {
+        private String type;
+        private String refreshToken;
+    }
+
+    @Data
+    public static class ResponseReIssueToken {
+        private String accessToken;
+        private String refreshToken;
+        private long expireTime;
     }
 }

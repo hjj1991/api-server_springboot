@@ -18,24 +18,25 @@ import org.springframework.util.StringUtils;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Component
 public class JwtTokenProvider  {
 
-    @Autowired
-    private UserService userService;
     private static final String AUTHORIZATION_HEADER = "access_token";
+    private static final String AUTHORIZATION_REFRESH_HEADER = "refresh_token";
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Value("spring.jwt.secret")
     private String secretKey;
 
-    private long tokenValidMilisecond = 1000L * 60 * 2000; // 20분만 토큰 유효
+    private long tokenValidMilisecond = 1000L * 60 * 20; // 20분만 토큰 유효
+    private long refreshTokenValidMilisecond = 1000L * 3600 * 24 * 14; // 2주 동안만 토큰 유효
 
+
+    public enum TokenKey{
+        EXPIRETIME, TOKEN;
+    }
 
 
     @PostConstruct
@@ -43,8 +44,8 @@ public class JwtTokenProvider  {
         secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
     }
 
-    // Jwt 토큰 생성
-    public List<String> createToken(UserEntity userEntity) {
+    // Jwt AcessToken 생성
+    public HashMap<TokenKey, Object> createToken(UserEntity userEntity) {
         Claims claims = Jwts.claims().setSubject(AUTHORIZATION_HEADER);
         claims.put("userNo", userEntity.getUserNo());
         claims.put("userRole", userEntity.getRole());
@@ -58,12 +59,28 @@ public class JwtTokenProvider  {
                 .signWith(SignatureAlgorithm.HS256, secretKey) // 암호화 알고리즘, secret값 세팅
                 .compact();
 
-        List<String> result = new ArrayList<>();
-
-        result.add(token);
-        result.add(String.valueOf(expireTime));
+        HashMap<TokenKey, Object> result = new HashMap<>();
+        result.put(TokenKey.EXPIRETIME, expireTime);
+        result.put(TokenKey.TOKEN, token);
 
         return result;
+
+    }
+
+    // Jwt RefreshToken 생성
+    public String createRefreshToken(UserEntity userEntity) {
+        Claims claims = Jwts.claims().setSubject(AUTHORIZATION_REFRESH_HEADER);
+        claims.put("userNo", userEntity.getUserNo());
+
+        long expireTime = new Date().getTime() + refreshTokenValidMilisecond;
+        String token = Jwts.builder().setClaims(claims) // 데이터
+                .setIssuedAt(new Date()) // 토큰 발행일자
+                .setExpiration(new Date(expireTime)) // set Expire Time
+                .signWith(SignatureAlgorithm.HS256, secretKey) // 암호화 알고리즘, secret값 세팅
+                .compact();
+
+
+        return token;
 
     }
 
@@ -85,6 +102,7 @@ public class JwtTokenProvider  {
         }
         return null;
     }
+
 
     // Jwt 액세스토큰의 유효성 + 만료일자 확인
     public boolean validateToken(String jwtToken) {
