@@ -11,7 +11,7 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
     Optional<UserEntity> findByUserId(String userId);
     Optional<UserEntity> findByUserNo(Long userNo);
     Boolean existsUserEntityByUserId(String UserId);
-    Boolean existsUserEntityByName(String name);
+    Boolean existsUserEntityByNickName(String nickName);
     Optional<UserEntity> findByRefreshToken(String refreshToken);
 
 }

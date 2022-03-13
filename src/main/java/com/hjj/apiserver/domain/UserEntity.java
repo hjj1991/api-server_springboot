@@ -1,10 +1,6 @@
 package com.hjj.apiserver.domain;
 
 import lombok.*;
-import org.springframework.data.annotation.CreatedBy;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedBy;
-import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -34,15 +30,16 @@ public class UserEntity implements UserDetails {
         private final String title;
     }
 
+    public enum Provider {
+        NAVER, KAKAO
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userNo;
 
     @Column(length = 100, nullable = false, unique = true)
     private String userId;
-
-    @Column(nullable = false)
-    private String name;
 
     @Column(nullable = false)
     private String nickName;
@@ -57,7 +54,7 @@ public class UserEntity implements UserDetails {
     private String picture;
 
     @Column(nullable = true)
-    private String provider;
+    private Provider provider;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "userInfo")
     @Builder.Default

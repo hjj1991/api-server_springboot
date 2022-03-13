@@ -7,6 +7,7 @@ import com.hjj.apiserver.domain.UserEntity;
 import com.hjj.apiserver.dto.CardDto;
 import com.hjj.apiserver.dto.PurchaseDto;
 import com.hjj.apiserver.dto.StoreDto;
+import com.hjj.apiserver.dto.TokenDto;
 import com.hjj.apiserver.repositroy.CardRepository;
 import com.hjj.apiserver.repositroy.PurchaseRepository;
 import com.hjj.apiserver.repositroy.StoreRepository;
@@ -60,9 +61,9 @@ public class PurchaseService {
 
     }
 
-    public List<PurchaseDto.ResponseGetPurchase> getPurchaseList(PurchaseDto.RequestGetPurchaseListForm form){
+    public List<PurchaseDto.ResponseGetPurchase> getPurchaseList(TokenDto user, PurchaseDto.RequestGetPurchaseListForm form){
 
-        List<PurchaseEntity> purchaseEntityList = purchaseRepository.findAllFetchJoinByStartDateAndEndDate(form.getStartDate(), form.getEndDate());
+        List<PurchaseEntity> purchaseEntityList = purchaseRepository.findAllEntityGraphByPurchaseDateBetweenAndUserInfo_UserNoAndDeleteYnOrderByPurchaseDateDesc(form.getStartDate(), form.getEndDate(), user.getUserNo(), 'N');
         List<PurchaseDto.ResponseGetPurchase> purchaseList = new ArrayList<>();
         purchaseEntityList.stream().forEach(purchaseEntity -> {
             PurchaseDto.ResponseGetPurchase responseGetPurchase = modelMapper.map(purchaseEntity, PurchaseDto.ResponseGetPurchase.class);
@@ -85,7 +86,7 @@ public class PurchaseService {
 
     @Transactional(readOnly = false, rollbackFor = Exception.class)
     public void deletePurchase(Long userNo, Long purchaseNo) throws Exception{
-        PurchaseEntity purchaseEntity = purchaseRepository.findByFechJoinUserNoAndPurchaseNoAndDeleteYn(userNo, purchaseNo);
+        PurchaseEntity purchaseEntity = purchaseRepository.findEntityGraphByUserInfo_UserNoAndPurchaseNoAndDeleteYn(userNo, purchaseNo, 'N');
         if(purchaseEntity == null){
             throw new Exception("해당값이 존재하지 않습니다.");
         }

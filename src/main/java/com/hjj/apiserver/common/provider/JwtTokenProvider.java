@@ -2,14 +2,12 @@ package com.hjj.apiserver.common.provider;
 
 import com.hjj.apiserver.domain.UserEntity;
 import com.hjj.apiserver.dto.TokenDto;
-import com.hjj.apiserver.service.UserService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -18,7 +16,9 @@ import org.springframework.util.StringUtils;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
-import java.util.*;
+import java.util.Base64;
+import java.util.Date;
+import java.util.HashMap;
 
 @Component
 public class JwtTokenProvider  {

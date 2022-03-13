@@ -46,7 +46,7 @@ public class UserController {
         if(userRepository.existsUserEntityByUserId(form.getUserId())){
             return ApiUtils.error(ApiError.ErrCode.ERR_CODE0002.getMsg(), ApiError.ErrCode.ERR_CODE0002);
         }
-        if(userRepository.existsUserEntityByName(form.getNickName())){
+        if(userRepository.existsUserEntityByNickName(form.getNickName())){
             return ApiUtils.error(ApiError.ErrCode.ERR_CODE0003.getMsg(), ApiError.ErrCode.ERR_CODE0003);
         }
 
@@ -62,6 +62,16 @@ public class UserController {
     @ApiOperation(value = "유저 로그인", notes ="유저 로그인을 한다.")
     @PostMapping("/user/signin")
     public ApiResponse<UserDto.ResponseSignIn> signIn(@RequestBody UserDto.RequestSignInForm form) {
+        UserEntity userEntity = userRepository.findByUserId(form.getUserId()).orElseThrow(() -> new UsernameNotFoundException(""));
+        if(!passwordEncoder.matches(form.getUserPw(), userEntity.getUserPw()))
+            throw new UsernameNotFoundException("");
+
+        return ApiUtils.success(userService.signInService(userEntity));
+    }
+
+    @ApiOperation(value = "소셜유저 로그인", notes ="소셜유저 로그인을 한다.")
+    @PostMapping("/user/social/signin")
+    public ApiResponse<UserDto.ResponseSignIn> socialSignIn(@RequestBody UserDto.RequestSignInForm form) {
         UserEntity userEntity = userRepository.findByUserId(form.getUserId()).orElseThrow(() -> new UsernameNotFoundException(""));
         if(!passwordEncoder.matches(form.getUserPw(), userEntity.getUserPw()))
             throw new UsernameNotFoundException("");
