@@ -19,13 +19,12 @@ public class UserDto {
     private String userEmail;
     private String userPw;
     private String picture;
-    private String provider;
+    private UserEntity.Provider provider;
     private LocalDateTime loginDateTime;
 
     public UserEntity toEntity() {
         return UserEntity.builder()
                 .userId(userId)
-                .name(name)
                 .nickName(nickName)
                 .userEmail(userEmail)
                 .role(UserEntity.Role.USER)
@@ -39,7 +38,6 @@ public class UserDto {
     public UserEntity toEntityWithPasswordEncode(PasswordEncoder bCryptPasswordEncoder){
         return UserEntity.builder()
                 .userId(userId)
-                .name(name)
                 .nickName(nickName)
                 .userEmail(userEmail)
                 .role(UserEntity.Role.USER)
@@ -55,8 +53,6 @@ public class UserDto {
 
         private String userId;
         @Pattern(regexp = "^[가-힣a-zA-Z0-9]{2,10}$", message ="공백제외 한글, 영문, 숫자 2 ~ 10자로 입력해주세요.")
-        private String name;
-        @Pattern(regexp = "^[가-힣a-zA-Z0-9]{2,10}$", message ="공백제외 한글, 영문, 숫자 2 ~ 10자로 입력해주세요.")
         private String nickName;
         @Email(message = "잘못된 이메일 주소입니다.")
         private String userEmail;
@@ -70,7 +66,6 @@ public class UserDto {
     @Data
     public static class ResponseSignIn {
         private String userId;
-        private String name;
         private String nickName;
         private String userEmail;
         private String picture;

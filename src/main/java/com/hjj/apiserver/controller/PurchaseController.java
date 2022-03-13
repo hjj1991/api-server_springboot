@@ -58,7 +58,7 @@ public class PurchaseController {
         try {
 
             HashMap<String, Object> resultMap = new HashMap<>();
-            resultMap.put("purchaseList", purchaseService.getPurchaseList(requestGetPurchaseListForm));
+            resultMap.put("purchaseList", purchaseService.getPurchaseList(user, requestGetPurchaseListForm));
             resultMap.put("cardList", cardService.selectCardList(user.getUserNo()));
             resultMap.put("storeList", storeService.selectStoreList());
 
