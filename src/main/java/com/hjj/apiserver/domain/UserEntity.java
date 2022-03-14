@@ -53,6 +53,7 @@ public class UserEntity implements UserDetails {
     @Column(nullable = true)
     private String picture;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = true)
     private Provider provider;
 
