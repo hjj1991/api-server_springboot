@@ -1,0 +1,22 @@
+social:
+  naver:
+    client-id: sUyp7Y2KoOfRvdsAEdCc
+    client-secret: QjKMK_CkHV
+    url:
+      profile:
+        host: openapi.naver.com
+        path: v1/nid/me
+      token:
+        host: nid.naver.com
+        path: oauth2.0/token
+  kakao:
+    client-id: 656c5afa5455de8f5ad9eb51e09e3720
+    client-secret: JagIjIiwSdEvn7HWMKZTg9ZWj5HAtwHM
+    url:
+      profile:
+        host: kapi.kakao.com
+        path: v2/user/me
+      token:
+        host: kauth.kakao.com
+        path: oauth/token
+

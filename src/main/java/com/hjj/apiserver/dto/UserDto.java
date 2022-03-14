@@ -1,6 +1,7 @@
 package com.hjj.apiserver.dto;
 
 import com.hjj.apiserver.domain.UserEntity;
+import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -10,11 +11,11 @@ import javax.validation.constraints.Pattern;
 import java.time.LocalDateTime;
 
 @Data
+@Builder
 public class UserDto {
 
     private Long userNo;
     private String userId;
-    private String name;
     private String nickName;
     private String userEmail;
     private String userPw;
@@ -32,6 +33,7 @@ public class UserDto {
                 .picture(picture)
                 .provider(provider)
                 .loginDateTime(loginDateTime)
+                .createdDate(LocalDateTime.now())
                 .build();
     }
 
@@ -45,6 +47,7 @@ public class UserDto {
                 .picture(picture)
                 .provider(provider)
                 .loginDateTime(loginDateTime)
+                .createdDate(LocalDateTime.now())
                 .build();
     }
 

@@ -41,7 +41,7 @@ public class UserEntity implements UserDetails {
     @Column(length = 100, nullable = false, unique = true)
     private String userId;
 
-    @Column(nullable = false)
+    @Column(length = 20, nullable = false, unique = true)
     private String nickName;
 
     @Column(length = 200, nullable = true)
@@ -63,7 +63,7 @@ public class UserEntity implements UserDetails {
     @Column
     private LocalDateTime loginDateTime;
 
-    @Column(columnDefinition = "datetime default now()", nullable = false, insertable = false)
+    @Column(columnDefinition = "datetime default now()", nullable = false)
     private LocalDateTime createdDate;
 
     @Column
