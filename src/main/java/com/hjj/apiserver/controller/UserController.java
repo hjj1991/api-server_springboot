@@ -17,6 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.HashMap;
 
 @Api(tags = {"1. User"})
 @Slf4j
@@ -71,12 +72,30 @@ public class UserController {
 
     @ApiOperation(value = "소셜유저 로그인", notes ="소셜유저 로그인을 한다.")
     @PostMapping("/user/social/signin")
-    public ApiResponse<UserDto.ResponseSignIn> socialSignIn(@RequestBody UserDto.RequestSignInForm form) {
-        UserEntity userEntity = userRepository.findByUserId(form.getUserId()).orElseThrow(() -> new UsernameNotFoundException(""));
-        if(!passwordEncoder.matches(form.getUserPw(), userEntity.getUserPw()))
-            throw new UsernameNotFoundException("");
+    public ApiResponse socialSignIn(@RequestBody HashMap<String, String> requestBody) {
+        try{
+            String socialType = requestBody.get("provider");
+            if(socialType == null){
+                throw new IllegalArgumentException("잘못된 sns타입입니다.");
+            }
 
-        return ApiUtils.success(userService.signInService(userEntity));
+            UserDto.ResponseSignIn responseSignIn = new UserDto.ResponseSignIn();
+
+            switch (socialType){
+                case "naver":
+                    responseSignIn = userService.getNaverTokenInfo(requestBody);
+                    break;
+                case "kakao":
+                    responseSignIn = userService.getKakaoTokenInfo(requestBody);
+                    break;
+            }
+
+            return ApiUtils.success(responseSignIn);
+        }catch (Exception e){
+            log.error("[UserController] socialSignIn Error requestBody: {}, {}", requestBody, e);
+            return ApiUtils.error(e.getMessage(), ApiError.ErrCode.ERR_CODE9999);
+        }
+
     }
 
     @ApiOperation(value = "AcessToken 재발급", notes ="AcessToken을 재발급한다.")

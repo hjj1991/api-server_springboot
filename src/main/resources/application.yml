@@ -1,6 +1,7 @@
 spring:
   profiles:
     active: local
+    include: oauth
   h2:
     console:
       enabled: true
@@ -27,7 +28,6 @@ logging:
             sql: debug
 server:
   port: 8080
-
 --- #local
 spring:
   config:
