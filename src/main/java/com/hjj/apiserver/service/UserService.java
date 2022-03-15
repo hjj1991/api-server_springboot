@@ -72,8 +72,14 @@ public class UserService  {
         HashMap<JwtTokenProvider.TokenKey, Object> token = jwtTokenProvider.createToken(userEntity);
         String refreshToken = jwtTokenProvider.createRefreshToken(userEntity);
 
-        /* 로그인 시간, 리프레쉬 토큰 업데이트 */
+        /* 리프레쉬 토큰 업데이트 */
         userEntity.updateUserLogin(refreshToken);
+        UserLogDto userLogDto = new UserLogDto();
+        userLogDto.setSignInType(UserLogEntity.SignInType.GENERAL);
+        userLogDto.setUserInfo(userEntity);
+        userLogDto.setLogType(UserLogEntity.LogType.SIGNIN);
+        userLogDto.setLoginDateTime(LocalDateTime.now());
+        userLogService.insertUserLog(userLogDto);
 
         UserDto.ResponseSignIn responseSignIn = modelMapper.map(userEntity, UserDto.ResponseSignIn.class);
         responseSignIn.setAccessToken((String) token.get(JwtTokenProvider.TokenKey.TOKEN));

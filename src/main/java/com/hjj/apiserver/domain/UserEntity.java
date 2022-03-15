@@ -68,7 +68,7 @@ public class UserEntity implements UserDetails {
     @Enumerated(EnumType.STRING)
     private UserEntity.Provider provider;
 
-    @Column(columnDefinition = "datetime default now()")
+    @Column(columnDefinition = "datetime default null")
     private LocalDateTime providerConnectDate;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "userInfo")
@@ -131,13 +131,6 @@ public class UserEntity implements UserDetails {
     }
 
     public UserEntity updateUserLogin(String refreshToken){
-        UserLogEntity userLogEntity = UserLogEntity.builder()
-                .createdDate(LocalDateTime.now())
-                .loginDateTime(LocalDateTime.now())
-                .logType(UserLogEntity.LogType.SIGNIN)
-                .userInfo(this)
-                .build();
-        this.userLogEntityList.add(userLogEntity);
         this.refreshToken = refreshToken;
         return this;
     }

@@ -22,7 +22,7 @@ public class UserLogDto {
                 .userInfo(userInfo)
                 .logType(logType)
                 .loginDateTime(loginDateTime)
-                .createdDate(createdDate)
+                .createdDate(LocalDateTime.now())
                 .signInType(signInType)
                 .build();
     }
