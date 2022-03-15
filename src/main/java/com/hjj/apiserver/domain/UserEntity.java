@@ -6,18 +6,26 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import java.io.Serial;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 @Entity
-@Table(name = "tb_user")
 @Builder
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(
+        name = "tb_user",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"providerId", "provider"})
+        })
 public class UserEntity implements UserDetails {
+
+    @Serial
+    private static final long serialVersionUID = -43358332789376827L;
 
     @RequiredArgsConstructor
     @Getter
@@ -38,31 +46,38 @@ public class UserEntity implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userNo;
 
-    @Column(length = 100, nullable = false, unique = true)
+    @Column(length = 100,  unique = true)
     private String userId;
 
-    @Column(length = 20, nullable = false, unique = true)
+    @Column(length = 20, unique = true)
     private String nickName;
 
-    @Column(length = 200, nullable = true)
+    @Column(length = 200)
     private String userEmail;
 
-    @Column(length = 300, nullable = true)
+    @Column(length = 300)
     private String userPw;
 
-    @Column(nullable = true)
+    @Column
     private String picture;
 
+    @Column(length = 40)
+    private String providerId;
+
+    @Column(length = 20)
     @Enumerated(EnumType.STRING)
-    @Column(nullable = true)
-    private Provider provider;
+    private UserEntity.Provider provider;
+
+    @Column(columnDefinition = "datetime default now()")
+    private LocalDateTime providerConnectDate;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "userInfo")
     @Builder.Default
     private List<PurchaseEntity> purchaseEntityList = new ArrayList<>();
 
-    @Column
-    private LocalDateTime loginDateTime;
+    @OneToMany(mappedBy = "userInfo")
+    @Builder.Default
+    private List<UserLogEntity> userLogEntityList = new ArrayList<>();
 
     @Column(columnDefinition = "datetime default now()", nullable = false)
     private LocalDateTime createdDate;
@@ -70,7 +85,7 @@ public class UserEntity implements UserDetails {
     @Column
     private LocalDateTime lastModifiedDate;
 
-    @Column(nullable = true)
+    @Column
     private String refreshToken;
 
     @Enumerated(EnumType.STRING)
@@ -116,7 +131,13 @@ public class UserEntity implements UserDetails {
     }
 
     public UserEntity updateUserLogin(String refreshToken){
-        this.loginDateTime = LocalDateTime.now();
+        UserLogEntity userLogEntity = UserLogEntity.builder()
+                .createdDate(LocalDateTime.now())
+                .loginDateTime(LocalDateTime.now())
+                .logType(UserLogEntity.LogType.SIGNIN)
+                .userInfo(this)
+                .build();
+        this.userLogEntityList.add(userLogEntity);
         this.refreshToken = refreshToken;
         return this;
     }

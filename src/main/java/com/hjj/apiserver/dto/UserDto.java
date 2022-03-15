@@ -1,7 +1,6 @@
 package com.hjj.apiserver.dto;
 
 import com.hjj.apiserver.domain.UserEntity;
-import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -11,7 +10,6 @@ import javax.validation.constraints.Pattern;
 import java.time.LocalDateTime;
 
 @Data
-@Builder
 public class UserDto {
 
     private Long userNo;
@@ -21,6 +19,7 @@ public class UserDto {
     private String userPw;
     private String picture;
     private UserEntity.Provider provider;
+    private String providerId;
     private LocalDateTime loginDateTime;
 
     public UserEntity toEntity() {
@@ -32,7 +31,7 @@ public class UserDto {
                 .userPw(userPw)
                 .picture(picture)
                 .provider(provider)
-                .loginDateTime(loginDateTime)
+                .providerId(providerId)
                 .createdDate(LocalDateTime.now())
                 .build();
     }
@@ -45,8 +44,6 @@ public class UserDto {
                 .role(UserEntity.Role.USER)
                 .userPw(bCryptPasswordEncoder.encode(userPw))
                 .picture(picture)
-                .provider(provider)
-                .loginDateTime(loginDateTime)
                 .createdDate(LocalDateTime.now())
                 .build();
     }
@@ -63,7 +60,6 @@ public class UserDto {
         private String userPw;
         private String picture;
         private String provider;
-        private LocalDateTime loginDateTime;
     }
 
     @Data
@@ -73,8 +69,6 @@ public class UserDto {
         private String userEmail;
         private String picture;
         private String provider;
-        private LocalDateTime createdDate;
-        private LocalDateTime loginDateTime;
         private String accessToken;
         private String refreshToken;
         private long expireTime;
