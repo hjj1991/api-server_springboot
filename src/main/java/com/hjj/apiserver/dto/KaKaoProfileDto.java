@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 public class KaKaoProfileDto {
-    private Long id;
+    private String id;
     private Properties properties;
     @JsonProperty("kakao_account")
     private KakaoAccount kakaoAccount;

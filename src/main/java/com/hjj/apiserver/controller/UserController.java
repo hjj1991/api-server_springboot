@@ -44,20 +44,25 @@ public class UserController {
     @ApiOperation(value = "유저 회원가입", notes = "유저 회원가입을 한다.")
     @PostMapping("/user/signup")
     public ApiResponse signUp(@Valid @RequestBody UserDto.RequestSignUpForm form) {
-        if(userRepository.existsUserEntityByUserId(form.getUserId())){
-            return ApiUtils.error(ApiError.ErrCode.ERR_CODE0002.getMsg(), ApiError.ErrCode.ERR_CODE0002);
-        }
-        if(userRepository.existsUserEntityByNickName(form.getNickName())){
-            return ApiUtils.error(ApiError.ErrCode.ERR_CODE0003.getMsg(), ApiError.ErrCode.ERR_CODE0003);
-        }
+        try{
+            if(userRepository.existsUserEntityByUserId(form.getUserId())){
+                return ApiUtils.error(ApiError.ErrCode.ERR_CODE0002.getMsg(), ApiError.ErrCode.ERR_CODE0002);
+            }
+            if(userRepository.existsUserEntityByNickName(form.getNickName())){
+                return ApiUtils.error(ApiError.ErrCode.ERR_CODE0003.getMsg(), ApiError.ErrCode.ERR_CODE0003);
+            }
 
-        UserDto userDto = modelMapper.map(form, UserDto.class);
-        UserEntity userEntity = userRepository.save(userDto.toEntityWithPasswordEncode(passwordEncoder));
-        if(userEntity != null){
+            if( userService.signUpService(form) == null){
+                return ApiUtils.error(ApiError.ErrCode.ERR_CODE0003.getMsg(), ApiError.ErrCode.ERR_CODE0003);
+            }
+
             return ApiUtils.success(null);
+        }catch (Exception e){
+            return ApiUtils.error(ApiError.ErrCode.ERR_CODE0004.getMsg(), ApiError.ErrCode.ERR_CODE0004);
         }
 
-        return ApiUtils.error(ApiError.ErrCode.ERR_CODE0004.getMsg(), ApiError.ErrCode.ERR_CODE0004);
+
+
     }
 
     @ApiOperation(value = "유저 로그인", notes ="유저 로그인을 한다.")
@@ -79,17 +84,11 @@ public class UserController {
                 throw new IllegalArgumentException("잘못된 sns타입입니다.");
             }
 
-            UserDto.ResponseSignIn responseSignIn = new UserDto.ResponseSignIn();
+            UserDto.ResponseSignIn responseSignIn = userService.socialSinUpService(requestBody);
 
-            switch (socialType){
-                case "naver":
-                    responseSignIn = userService.getNaverTokenInfo(requestBody);
-                    break;
-                case "kakao":
-                    responseSignIn = userService.getKakaoTokenInfo(requestBody);
-                    break;
+            if(responseSignIn == null){
+                return ApiUtils.error(null, ApiError.ErrCode.ERR_CODE9999);
             }
-
             return ApiUtils.success(responseSignIn);
         }catch (Exception e){
             log.error("[UserController] socialSignIn Error requestBody: {}, {}", requestBody, e);
