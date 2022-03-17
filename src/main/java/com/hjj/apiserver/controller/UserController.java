@@ -6,6 +6,7 @@ import com.hjj.apiserver.common.ApiUtils;
 import com.hjj.apiserver.domain.UserEntity;
 import com.hjj.apiserver.dto.UserDto;
 import com.hjj.apiserver.repositroy.UserRepository;
+import com.hjj.apiserver.service.FireBaseService;
 import com.hjj.apiserver.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -30,6 +31,7 @@ public class UserController {
     private final PasswordEncoder passwordEncoder;
     private final ModelMapper modelMapper;
     private final UserService userService;
+    private final FireBaseService fireBaseService;
 
     @ApiOperation(value = "유저Id 중복 조회", notes = "유저id의 중복여부를 확인한다.")
     @GetMapping("/user/{userId}/exists")
@@ -104,6 +106,20 @@ public class UserController {
             return ApiUtils.success(userService.reIssueeToken(form));
         }catch (Exception e){
             log.error("[UserController] reIssueeToken Error form: {}, {}", form, e);
+            return ApiUtils.error("token 재발급에 실패했습니다.", ApiError.ErrCode.ERR_CODE9999);
+        }
+    }
+
+    @ApiOperation(value = "유저정보 업데이트", notes ="유저 정보를 업데이트한다.")
+    @PatchMapping("/user/{userNo}")
+    public ApiResponse updateUser(@PathVariable Long userNo, UserDto.RequestUserUpdateForm form) {
+        try{
+            fireBaseService.uploadFiles(form.getPictureFile(), "test");
+
+
+            return ApiUtils.success(null);
+        }catch (Exception e){
+            log.error("[UserController] updateUser Error form: {}, {}", form, e);
             return ApiUtils.error("token 재발급에 실패했습니다.", ApiError.ErrCode.ERR_CODE9999);
         }
     }

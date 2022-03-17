@@ -19,4 +19,6 @@ social:
       token:
         host: kauth.kakao.com
         path: oauth/token
-
+app:
+  firebase-configuration-file: ./firebase-adminsdk.json
+  firebase-bucket: spring-api-server.appspot.com

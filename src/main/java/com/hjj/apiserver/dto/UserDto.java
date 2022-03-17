@@ -4,6 +4,7 @@ import com.hjj.apiserver.domain.UserEntity;
 import lombok.Data;
 import lombok.Getter;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.Pattern;
@@ -60,6 +61,13 @@ public class UserDto {
         private String userPw;
         private String picture;
         private String provider;
+    }
+
+    @Data
+    public static class RequestUserUpdateForm {
+        private String nickName;
+        private String userEmail;
+        private MultipartFile pictureFile;
     }
 
     @Data
