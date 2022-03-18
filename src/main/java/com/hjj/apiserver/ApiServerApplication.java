@@ -9,7 +9,9 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 public class ApiServerApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(ApiServerApplication.class, args);
+        SpringApplication app = new SpringApplication(ApiServerApplication.class);
+        app.setRegisterShutdownHook(false);
+        app.run(args);
     }
 
 }

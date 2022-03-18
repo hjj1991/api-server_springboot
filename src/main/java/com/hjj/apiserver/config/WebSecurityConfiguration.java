@@ -47,6 +47,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                         "/user/signin",
                         "/user/social/signin",
                         "/user/oauth/token",
+                        "/user/*",
                         "/h2-console/**"
                 ).permitAll() // 가입 및 인증 주소는 누구나 접근가능
 //				.antMatchers("/v1/*").hasRole("MASTER")

@@ -13,6 +13,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -122,5 +123,17 @@ public class UserController {
             log.error("[UserController] updateUser Error form: {}, {}", form, e);
             return ApiUtils.error("token 재발급에 실패했습니다.", ApiError.ErrCode.ERR_CODE9999);
         }
+    }
+
+
+    @GetMapping(value = "/user/download", produces = MediaType.IMAGE_PNG_VALUE)
+    public @ResponseBody byte[] downImg() {
+        try{
+            return fireBaseService.downImg();
+        }catch (Exception e){
+            log.error("[UserController] updateUser Error form: {}", e);
+            return null;
+        }
+
     }
 }

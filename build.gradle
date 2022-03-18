@@ -38,6 +38,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.imgscalr:imgscalr-lib:4.2'
     implementation 'com.google.firebase:firebase-admin:8.1.0'
+    implementation 'commons-io:commons-io:2.11.0'
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     runtimeOnly 'com.h2database:h2'
@@ -48,6 +49,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-tomcat'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
+
 }
 
 test {

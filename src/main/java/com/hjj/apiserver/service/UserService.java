@@ -131,7 +131,7 @@ public class UserService  {
                 .retrieve()
                 .onStatus(HttpStatus::isError, clientResponse -> Mono.error(new Exception()))
                 .bodyToMono(Map.class)
-                .flux().toStream().findFirst().orElseThrow();
+                .flux().toStream().findFirst().orElseThrow(Exception::new);
 
         return resultMap;
 
@@ -155,14 +155,14 @@ public class UserService  {
                 .retrieve()
                 .onStatus(HttpStatus::isError, clientResponse -> Mono.error(new Exception()))
                 .bodyToMono(Map.class)
-                .flux().toStream().findFirst().orElseThrow();
+                .flux().toStream().findFirst().orElseThrow(Exception::new);
 
         return resultMap;
 
     }
 
 
-    public NaverProfileDto getNaverProfile(String accessToken) {
+    public NaverProfileDto getNaverProfile(String accessToken) throws Exception {
 
         NaverProfileDto naverProfileDto = webClient.get()
                 .uri(uriBuilder -> uriBuilder
@@ -174,12 +174,12 @@ public class UserService  {
                 .retrieve()
                 .onStatus(HttpStatus::isError, clientResponse -> Mono.error(new Exception()))
                 .bodyToMono(NaverProfileDto.class)
-                .flux().toStream().findFirst().orElseThrow();
+                .flux().toStream().findFirst().orElseThrow(Exception::new);
 
         return naverProfileDto;
     }
 
-    public KaKaoProfileDto getKakaoProfile(String accessToken) {
+    public KaKaoProfileDto getKakaoProfile(String accessToken) throws Exception {
 
         KaKaoProfileDto kakaoProfileDto = webClient.get()
                 .uri(uriBuilder -> uriBuilder
@@ -191,7 +191,7 @@ public class UserService  {
                 .retrieve()
                 .onStatus(HttpStatus::isError, clientResponse -> Mono.error(new Exception()))
                 .bodyToMono(KaKaoProfileDto.class)
-                .flux().toStream().findFirst().orElseThrow();
+                .flux().toStream().findFirst().orElseThrow(Exception::new);
 
         return kakaoProfileDto;
     }

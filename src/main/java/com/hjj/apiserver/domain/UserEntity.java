@@ -6,7 +6,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
-import java.io.Serial;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -24,7 +23,7 @@ import java.util.List;
         })
 public class UserEntity implements UserDetails {
 
-    @Serial
+
     private static final long serialVersionUID = -43358332789376827L;
 
     @RequiredArgsConstructor
