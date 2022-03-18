@@ -36,6 +36,8 @@ public class UserService  {
     private final WebClient webClient;
     private final PasswordEncoder passwordEncoder;
     private final UserLogService userLogService;
+    private final FireBaseService fireBaseService;
+    private final static String PROFILE_IMG_PATH = "profile/";
 
     @Value(value = "${social.naver.url.token.host}")
     private String naverTokenHost;
@@ -207,6 +209,21 @@ public class UserService  {
         userLogDto.setCreatedDate(LocalDateTime.now());
         userLogService.insertUserLog(userLogDto);
         return userEntity;
+
+    }
+
+    @Transactional(readOnly = false, rollbackFor = Exception.class)
+    public void updateUser(UserDto.RequestUserUpdateForm form) throws Exception {
+        UserDto userDto = modelMapper.map(form, UserDto.class);
+        UserEntity userEntity = userRepository.findByUserNo(form.getUserNo()).orElseThrow(Exception::new);
+        if(userDto.getPictureFile() != null){
+            String fileName = PROFILE_IMG_PATH + userDto.getUserNo() + userDto.getPictureFile().getOriginalFilename().substring(form.getPictureFile().getOriginalFilename().lastIndexOf("."));
+            fireBaseService.uploadFiles(form.getPictureFile(), fileName);
+            userDto.setPicture(fileName);
+        }
+
+        userEntity.updateUser(userDto);
+
 
     }
 

@@ -1,6 +1,8 @@
 package com.hjj.apiserver.domain;
 
+import com.hjj.apiserver.dto.UserDto;
 import lombok.*;
+import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,6 +18,7 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@DynamicUpdate
 @Table(
         name = "tb_user",
         uniqueConstraints = {
@@ -136,6 +139,17 @@ public class UserEntity implements UserDetails {
 
     public UserEntity updateUserRefreshToken(String refreshToken){
         this.refreshToken = refreshToken;
+        return this;
+    }
+
+    public UserEntity updateUser(UserDto userDto) {
+        if(userDto.getNickName() != null)
+            this.nickName = userDto.getNickName();
+        if(userDto.getUserEmail() != null)
+            this.userEmail = userDto.getUserEmail();
+        if(userDto.getPicture() != null)
+            this.picture = userDto.getPicture();
+
         return this;
     }
 }

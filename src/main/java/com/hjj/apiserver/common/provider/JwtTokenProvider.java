@@ -92,6 +92,11 @@ public class JwtTokenProvider  {
         return new UsernamePasswordAuthenticationToken(tokenDto, "", tokenDto.getAuthorities());
     }
 
+    // Jwt 토큰으로 TokenDto 객체 반환
+    public TokenDto getTokenDto(String token) {
+        return new TokenDto(Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody());
+    }
+
     /*
         Request의 Header에서 token 파싱
      */

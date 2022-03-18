@@ -1,5 +1,6 @@
 package com.hjj.apiserver.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hjj.apiserver.domain.UserEntity;
 import lombok.Data;
 import lombok.Getter;
@@ -22,6 +23,7 @@ public class UserDto {
     private UserEntity.Provider provider;
     private String providerId;
     private LocalDateTime loginDateTime;
+    private MultipartFile pictureFile;
 
     public UserEntity toEntity() {
         return UserEntity.builder()
@@ -65,6 +67,8 @@ public class UserDto {
 
     @Data
     public static class RequestUserUpdateForm {
+        @JsonIgnore
+        private Long userNo;
         private String nickName;
         private String userEmail;
         private MultipartFile pictureFile;

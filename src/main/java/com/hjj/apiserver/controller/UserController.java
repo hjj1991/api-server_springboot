@@ -3,7 +3,9 @@ package com.hjj.apiserver.controller;
 import com.hjj.apiserver.common.ApiError;
 import com.hjj.apiserver.common.ApiResponse;
 import com.hjj.apiserver.common.ApiUtils;
+import com.hjj.apiserver.common.provider.JwtTokenProvider;
 import com.hjj.apiserver.domain.UserEntity;
+import com.hjj.apiserver.dto.TokenDto;
 import com.hjj.apiserver.dto.UserDto;
 import com.hjj.apiserver.repositroy.UserRepository;
 import com.hjj.apiserver.service.FireBaseService;
@@ -13,9 +15,15 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -33,6 +41,7 @@ public class UserController {
     private final ModelMapper modelMapper;
     private final UserService userService;
     private final FireBaseService fireBaseService;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @ApiOperation(value = "유저Id 중복 조회", notes = "유저id의 중복여부를 확인한다.")
     @GetMapping("/user/{userId}/exists")
@@ -113,10 +122,14 @@ public class UserController {
 
     @ApiOperation(value = "유저정보 업데이트", notes ="유저 정보를 업데이트한다.")
     @PatchMapping("/user/{userNo}")
-    public ApiResponse updateUser(@PathVariable Long userNo, UserDto.RequestUserUpdateForm form) {
+    public ApiResponse updateUser(@AuthenticationPrincipal TokenDto user, @PathVariable Long userNo, UserDto.RequestUserUpdateForm form) {
         try{
-            fireBaseService.uploadFiles(form.getPictureFile(), "test");
+            if(user.getUserNo() != userNo){
+                return ApiUtils.error("잘못된 접근입니다.", ApiError.ErrCode.ERR_CODE9999);
+            }
 
+            form.setUserNo(userNo);
+            userService.updateUser(form);
 
             return ApiUtils.success(null);
         }catch (Exception e){
@@ -126,14 +139,17 @@ public class UserController {
     }
 
 
-    @GetMapping(value = "/user/download", produces = MediaType.IMAGE_PNG_VALUE)
-    public @ResponseBody byte[] downImg() {
+    @GetMapping(value = "/user/profile", produces = MediaType.IMAGE_PNG_VALUE)
+    public ResponseEntity getProfileImg(String access_token, String picture) {
         try{
-            return fireBaseService.downImg();
+            if (StringUtils.hasText(access_token) && jwtTokenProvider.validateToken(access_token)) {
+                return new ResponseEntity(fireBaseService.getProfileImg(picture), HttpStatus.OK);
+            }
         }catch (Exception e){
-            log.error("[UserController] updateUser Error form: {}", e);
-            return null;
+            log.error("[UserController] getProfileImg Error form: {}", e);
+
         }
+        return new ResponseEntity(HttpStatus.NOT_FOUND);
 
     }
 }

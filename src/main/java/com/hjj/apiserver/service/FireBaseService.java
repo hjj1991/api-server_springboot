@@ -27,22 +27,18 @@ public class FireBaseService {
     @Value("${app.firebase-bucket}")
     private String firebaseBucket;
 
-    public String uploadFiles(MultipartFile file, String nameFile) throws Exception {
+    public void uploadFiles(MultipartFile file, String fileName) throws Exception {
         Bucket bucket = StorageClient.getInstance().bucket(firebaseBucket);
-        InputStream inputStream = new ByteArrayInputStream(file.getBytes());
-        Blob blob = bucket.create("2/423" + nameFile, inputStream, file.getContentType());
-        System.out.println("https://firebasestorage.googleapis.com/v0/b/" + firebaseBucket + "/o/" + URLEncoder.encode("2/423" + nameFile, "UTF-8") + "?alt=media");
-        return blob.getMediaLink();
+//        InputStream inputStream = new ByteArrayInputStream(file.getBytes());
+        bucket.create(fileName, file.getInputStream(), file.getContentType());
     }
 
-    public byte[] downImg() throws IOException {
+    public byte[] getProfileImg(String filePath) throws IOException {
         Bucket bucket = StorageClient.getInstance().bucket(firebaseBucket);
 
-        Blob blob = bucket.get("2/test");
-        ReadChannel reader = blob.reader();
-        InputStream inputStream = Channels.newInputStream(reader);
+        Blob blob = bucket.get(filePath);
 
 
-        return IOUtils.toByteArray(inputStream);
+        return blob.getContent();
     }
 }
