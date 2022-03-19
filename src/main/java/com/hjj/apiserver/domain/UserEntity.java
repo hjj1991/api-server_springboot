@@ -73,12 +73,13 @@ public class UserEntity implements UserDetails {
     @Column(columnDefinition = "datetime default null")
     private LocalDateTime providerConnectDate;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "userInfo")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "userInfo", fetch = FetchType.LAZY)
     @Builder.Default
     private List<PurchaseEntity> purchaseEntityList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "userInfo")
+    @OneToMany(mappedBy = "userInfo", fetch = FetchType.LAZY)
     @Builder.Default
+    @OrderBy("loginDateTime desc")
     private List<UserLogEntity> userLogEntityList = new ArrayList<>();
 
     @Column(columnDefinition = "datetime default now()", nullable = false)

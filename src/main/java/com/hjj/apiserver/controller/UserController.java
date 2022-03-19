@@ -121,14 +121,12 @@ public class UserController {
     }
 
     @ApiOperation(value = "유저정보 업데이트", notes ="유저 정보를 업데이트한다.")
-    @PatchMapping("/user/{userNo}")
-    public ApiResponse updateUser(@AuthenticationPrincipal TokenDto user, @PathVariable Long userNo, UserDto.RequestUserUpdateForm form) {
+    @PatchMapping("/user")
+    public ApiResponse updateUser(@AuthenticationPrincipal TokenDto user, UserDto.RequestUserUpdateForm form) {
         try{
-            if(user.getUserNo() != userNo){
-                return ApiUtils.error("잘못된 접근입니다.", ApiError.ErrCode.ERR_CODE9999);
-            }
 
-            form.setUserNo(userNo);
+
+            form.setUserNo(user.getUserNo());
             userService.updateUser(form);
 
             return ApiUtils.success(null);
@@ -139,7 +137,7 @@ public class UserController {
     }
 
 
-    @GetMapping(value = "/user/profile", produces = MediaType.IMAGE_PNG_VALUE)
+    @GetMapping(value = "/user/profile", produces = MediaType.IMAGE_JPEG_VALUE)
     public ResponseEntity getProfileImg(String access_token, String picture) {
         try{
             if (StringUtils.hasText(access_token) && jwtTokenProvider.validateToken(access_token)) {

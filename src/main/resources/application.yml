@@ -40,7 +40,7 @@ decorator:
       enable-logging: true
 logging:
   level:
-    com: debug
+    c: off
 
 --- #prod
 spring:

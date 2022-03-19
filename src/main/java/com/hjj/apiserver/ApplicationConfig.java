@@ -6,7 +6,9 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
+import com.hjj.apiserver.config.P6spySqlFormatConfiguration;
 import com.hjj.apiserver.dto.TokenDto;
+import com.p6spy.engine.spy.P6SpyOptions;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
@@ -92,6 +94,11 @@ public class ApplicationConfig implements AuditorAware<String> {
         } catch (IOException e) {
             log.error(e.getMessage());
         }
+    }
+
+    @PostConstruct
+    public void setLogMessageFormat() {
+        P6SpyOptions.getActiveInstance().setLogMessageFormat(P6spySqlFormatConfiguration.class.getName());
     }
 
 }

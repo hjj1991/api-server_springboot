@@ -10,6 +10,7 @@ import com.hjj.apiserver.dto.UserLogDto;
 import com.hjj.apiserver.repositroy.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.imgscalr.Scalr;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -19,7 +20,12 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -73,6 +79,7 @@ public class UserService  {
 
         HashMap<JwtTokenProvider.TokenKey, Object> token = jwtTokenProvider.createToken(userEntity);
         String refreshToken = jwtTokenProvider.createRefreshToken(userEntity);
+        LocalDateTime lastLoginDateTime = LocalDateTime.now();
 
         /* 리프레쉬 토큰 업데이트 */
         userEntity.updateUserLogin(refreshToken);
@@ -80,13 +87,20 @@ public class UserService  {
         userLogDto.setSignInType(UserLogEntity.SignInType.GENERAL);
         userLogDto.setUserInfo(userEntity);
         userLogDto.setLogType(UserLogEntity.LogType.SIGNIN);
-        userLogDto.setLoginDateTime(LocalDateTime.now());
+        userLogDto.setLoginDateTime(lastLoginDateTime);
         userLogService.insertUserLog(userLogDto);
 
-        UserDto.ResponseSignIn responseSignIn = modelMapper.map(userEntity, UserDto.ResponseSignIn.class);
+        UserDto.ResponseSignIn responseSignIn = new UserDto.ResponseSignIn();
         responseSignIn.setAccessToken((String) token.get(JwtTokenProvider.TokenKey.TOKEN));
         responseSignIn.setExpireTime((Long) token.get(JwtTokenProvider.TokenKey.EXPIRETIME));
         responseSignIn.setRefreshToken(refreshToken);
+        responseSignIn.setCreatedDate(userEntity.getCreatedDate().format(DateTimeFormatter.ofPattern("YYYY-MM-dd HH:mm:ss")));
+        responseSignIn.setPicture(userEntity.getPicture());
+        responseSignIn.setUserEmail(userEntity.getUserEmail());
+        responseSignIn.setNickName(userEntity.getNickName());
+        responseSignIn.setProvider(userEntity.getProvider());
+        responseSignIn.setUserId(userEntity.getUserId());
+        responseSignIn.setLastLoginDateTime(lastLoginDateTime.format(DateTimeFormatter.ofPattern("YYYY-MM-dd HH:mm:ss")));
 
         return responseSignIn;
 
@@ -217,8 +231,25 @@ public class UserService  {
         UserDto userDto = modelMapper.map(form, UserDto.class);
         UserEntity userEntity = userRepository.findByUserNo(form.getUserNo()).orElseThrow(Exception::new);
         if(userDto.getPictureFile() != null){
-            String fileName = PROFILE_IMG_PATH + userDto.getUserNo() + userDto.getPictureFile().getOriginalFilename().substring(form.getPictureFile().getOriginalFilename().lastIndexOf("."));
-            fireBaseService.uploadFiles(form.getPictureFile(), fileName);
+            /* 이미지 썸네일 제작 */
+            BufferedImage bufferedImage = ImageIO.read(form.getPictureFile().getInputStream());
+
+            int imgwidth = Math.min(bufferedImage.getHeight(),  bufferedImage.getWidth());
+            int imgheight = imgwidth;
+
+            BufferedImage scaledImage = Scalr.crop(bufferedImage, (bufferedImage.getWidth() - imgwidth)/2, (bufferedImage.getHeight() - imgheight)/2, imgwidth, imgheight, null);
+            BufferedImage resizedImage = Scalr.resize(scaledImage, 100, 100, null);
+
+            // outputstream에 image객체를 저장
+            ByteArrayOutputStream os = new ByteArrayOutputStream();
+            ImageIO.write(resizedImage, "jpeg", os);
+            byte[] bytes = os.toByteArray();
+
+
+
+
+            String fileName = PROFILE_IMG_PATH + userDto.getUserNo() + ".jpeg";
+            fireBaseService.putProfileImg(bytes, fileName);
             userDto.setPicture(fileName);
         }
 

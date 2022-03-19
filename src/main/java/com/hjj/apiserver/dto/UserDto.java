@@ -23,6 +23,7 @@ public class UserDto {
     private UserEntity.Provider provider;
     private String providerId;
     private LocalDateTime loginDateTime;
+    private LocalDateTime createdDate;
     private MultipartFile pictureFile;
 
     public UserEntity toEntity() {
@@ -80,9 +81,11 @@ public class UserDto {
         private String nickName;
         private String userEmail;
         private String picture;
-        private String provider;
+        private UserEntity.Provider provider;
         private String accessToken;
         private String refreshToken;
+        private String createdDate;
+        private String lastLoginDateTime;
         private long expireTime;
     }
 
