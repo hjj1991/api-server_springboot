@@ -3,7 +3,6 @@ package com.hjj.apiserver.config;
 import com.hjj.apiserver.common.filter.JwtAuthenticationFilter;
 import com.hjj.apiserver.common.provider.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
@@ -13,14 +12,6 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.access.AccessDeniedHandlerImpl;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsUtils;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import springfox.documentation.builders.ApiInfoBuilder;
-import springfox.documentation.builders.PathSelectors;
-import springfox.documentation.builders.RequestHandlerSelectors;
-import springfox.documentation.service.ApiInfo;
-import springfox.documentation.spi.DocumentationType;
-import springfox.documentation.spring.web.plugins.Docket;
 
 @Configuration
 @RequiredArgsConstructor
@@ -42,12 +33,12 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests() // 다음 리퀘스트에 대한 사용권한 체크
                 .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
-                .antMatchers("/user/*/exists",
+                .antMatchers("/user/*/exists*",
                         "/user/signup",
                         "/user/signin",
                         "/user/social/signin",
                         "/user/oauth/token",
-                        "/user/*",
+                        "/user/profile*",
                         "/h2-console/**"
                 ).permitAll() // 가입 및 인증 주소는 누구나 접근가능
 //				.antMatchers("/v1/*").hasRole("MASTER")

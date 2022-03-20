@@ -88,6 +88,9 @@ public class UserEntity implements UserDetails {
     @Column
     private LocalDateTime lastModifiedDate;
 
+    @Column(columnDefinition = "char(1) default 'N'", nullable = false, insertable = false)
+    private char deleteYn;
+
     @Column
     private String refreshToken;
 
@@ -150,7 +153,12 @@ public class UserEntity implements UserDetails {
             this.userEmail = userDto.getUserEmail();
         if(userDto.getPicture() != null)
             this.picture = userDto.getPicture();
-
+        if(userDto.getProvider() != null)
+            this.provider = userDto.getProvider();
+        if(userDto.getProviderId() != null)
+            this.providerId = userDto.getProviderId();
+        if(userDto.getProviderConnectDate() != null)
+            this.providerConnectDate = userDto.getProviderConnectDate();
         return this;
     }
 }
