@@ -1,9 +1,12 @@
 package com.hjj.apiserver.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.hjj.apiserver.domain.UserEntity;
 import lombok.Data;
 import lombok.Getter;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.Pattern;
@@ -21,6 +24,9 @@ public class UserDto {
     private UserEntity.Provider provider;
     private String providerId;
     private LocalDateTime loginDateTime;
+    private LocalDateTime createdDate;
+    private MultipartFile pictureFile;
+    private LocalDateTime providerConnectDate;
 
     public UserEntity toEntity() {
         return UserEntity.builder()
@@ -63,14 +69,27 @@ public class UserDto {
     }
 
     @Data
+    public static class RequestUserUpdateForm {
+
+        private String nickName;
+        private String userEmail;
+        @Pattern(regexp = "^[a-zA-Z0-9~!@#$%^&*()_+|<>?:{}]{7,14}$", message ="비밀번호는 영문 숫자 조합 7 ~ 14자리 이상입니다.")
+        private String userPw;
+    }
+
+
+    @Data
     public static class ResponseSignIn {
         private String userId;
         private String nickName;
         private String userEmail;
         private String picture;
-        private String provider;
+        private UserEntity.Provider provider;
         private String accessToken;
         private String refreshToken;
+        private String createdDate;
+        @JsonInclude(JsonInclude.Include.NON_NULL)
+        private String lastLoginDateTime;
         private long expireTime;
     }
 

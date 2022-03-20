@@ -1,12 +1,13 @@
 package com.hjj.apiserver.domain;
 
+import com.hjj.apiserver.dto.UserDto;
 import lombok.*;
+import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
-import java.io.Serial;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -17,6 +18,7 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@DynamicUpdate
 @Table(
         name = "tb_user",
         uniqueConstraints = {
@@ -24,7 +26,7 @@ import java.util.List;
         })
 public class UserEntity implements UserDetails {
 
-    @Serial
+
     private static final long serialVersionUID = -43358332789376827L;
 
     @RequiredArgsConstructor
@@ -71,12 +73,13 @@ public class UserEntity implements UserDetails {
     @Column(columnDefinition = "datetime default null")
     private LocalDateTime providerConnectDate;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "userInfo")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "userInfo", fetch = FetchType.LAZY)
     @Builder.Default
     private List<PurchaseEntity> purchaseEntityList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "userInfo")
+    @OneToMany(mappedBy = "userInfo", fetch = FetchType.LAZY)
     @Builder.Default
+    @OrderBy("loginDateTime desc")
     private List<UserLogEntity> userLogEntityList = new ArrayList<>();
 
     @Column(columnDefinition = "datetime default now()", nullable = false)
@@ -84,6 +87,9 @@ public class UserEntity implements UserDetails {
 
     @Column
     private LocalDateTime lastModifiedDate;
+
+    @Column(columnDefinition = "char(1) default 'N'", nullable = false, insertable = false)
+    private char deleteYn;
 
     @Column
     private String refreshToken;
@@ -137,6 +143,22 @@ public class UserEntity implements UserDetails {
 
     public UserEntity updateUserRefreshToken(String refreshToken){
         this.refreshToken = refreshToken;
+        return this;
+    }
+
+    public UserEntity updateUser(UserDto userDto) {
+        if(userDto.getNickName() != null)
+            this.nickName = userDto.getNickName();
+        if(userDto.getUserEmail() != null)
+            this.userEmail = userDto.getUserEmail();
+        if(userDto.getPicture() != null)
+            this.picture = userDto.getPicture();
+        if(userDto.getProvider() != null)
+            this.provider = userDto.getProvider();
+        if(userDto.getProviderId() != null)
+            this.providerId = userDto.getProviderId();
+        if(userDto.getProviderConnectDate() != null)
+            this.providerConnectDate = userDto.getProviderConnectDate();
         return this;
     }
 }

@@ -1,25 +1,30 @@
 package com.hjj.apiserver.service;
 
+import com.hjj.apiserver.common.exception.AlreadyExistedUserException;
+import com.hjj.apiserver.common.exception.UserNotFoundException;
 import com.hjj.apiserver.common.provider.JwtTokenProvider;
 import com.hjj.apiserver.domain.UserEntity;
 import com.hjj.apiserver.domain.UserLogEntity;
-import com.hjj.apiserver.dto.KaKaoProfileDto;
-import com.hjj.apiserver.dto.NaverProfileDto;
-import com.hjj.apiserver.dto.UserDto;
-import com.hjj.apiserver.dto.UserLogDto;
+import com.hjj.apiserver.dto.*;
 import com.hjj.apiserver.repositroy.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.imgscalr.Scalr;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -36,6 +41,8 @@ public class UserService  {
     private final WebClient webClient;
     private final PasswordEncoder passwordEncoder;
     private final UserLogService userLogService;
+    private final FireBaseService fireBaseService;
+    private final static String PROFILE_IMG_PATH = "profile/";
 
     @Value(value = "${social.naver.url.token.host}")
     private String naverTokenHost;
@@ -67,24 +74,32 @@ public class UserService  {
 
     /* 로그인 로직 */
     @Transactional(readOnly = false, rollbackFor = Exception.class)
-    public UserDto.ResponseSignIn signInService(UserEntity userEntity){
+    public UserDto.ResponseSignIn signIn(UserEntity userEntity){
 
         HashMap<JwtTokenProvider.TokenKey, Object> token = jwtTokenProvider.createToken(userEntity);
         String refreshToken = jwtTokenProvider.createRefreshToken(userEntity);
+        LocalDateTime lastLoginDateTime = LocalDateTime.now();
 
         /* 리프레쉬 토큰 업데이트 */
         userEntity.updateUserLogin(refreshToken);
         UserLogDto userLogDto = new UserLogDto();
-        userLogDto.setSignInType(UserLogEntity.SignInType.GENERAL);
+        userLogDto.setSignInType(userEntity.getProvider() == null? UserLogEntity.SignInType.GENERAL: UserLogEntity.SignInType.SOCIAL);
         userLogDto.setUserInfo(userEntity);
         userLogDto.setLogType(UserLogEntity.LogType.SIGNIN);
-        userLogDto.setLoginDateTime(LocalDateTime.now());
+        userLogDto.setLoginDateTime(lastLoginDateTime);
         userLogService.insertUserLog(userLogDto);
 
-        UserDto.ResponseSignIn responseSignIn = modelMapper.map(userEntity, UserDto.ResponseSignIn.class);
+        UserDto.ResponseSignIn responseSignIn = new UserDto.ResponseSignIn();
         responseSignIn.setAccessToken((String) token.get(JwtTokenProvider.TokenKey.TOKEN));
         responseSignIn.setExpireTime((Long) token.get(JwtTokenProvider.TokenKey.EXPIRETIME));
         responseSignIn.setRefreshToken(refreshToken);
+        responseSignIn.setCreatedDate(userEntity.getCreatedDate().format(DateTimeFormatter.ofPattern("YYYY-MM-dd HH:mm:ss")));
+        responseSignIn.setPicture(userEntity.getPicture());
+        responseSignIn.setUserEmail(userEntity.getUserEmail());
+        responseSignIn.setNickName(userEntity.getNickName());
+        responseSignIn.setProvider(userEntity.getProvider());
+        responseSignIn.setUserId(userEntity.getUserId());
+        responseSignIn.setLastLoginDateTime(lastLoginDateTime.format(DateTimeFormatter.ofPattern("YYYY-MM-dd HH:mm:ss")));
 
         return responseSignIn;
 
@@ -131,7 +146,7 @@ public class UserService  {
                 .retrieve()
                 .onStatus(HttpStatus::isError, clientResponse -> Mono.error(new Exception()))
                 .bodyToMono(Map.class)
-                .flux().toStream().findFirst().orElseThrow();
+                .flux().toStream().findFirst().orElseThrow(Exception::new);
 
         return resultMap;
 
@@ -155,14 +170,14 @@ public class UserService  {
                 .retrieve()
                 .onStatus(HttpStatus::isError, clientResponse -> Mono.error(new Exception()))
                 .bodyToMono(Map.class)
-                .flux().toStream().findFirst().orElseThrow();
+                .flux().toStream().findFirst().orElseThrow(Exception::new);
 
         return resultMap;
 
     }
 
 
-    public NaverProfileDto getNaverProfile(String accessToken) {
+    public NaverProfileDto getNaverProfile(String accessToken) throws Exception {
 
         NaverProfileDto naverProfileDto = webClient.get()
                 .uri(uriBuilder -> uriBuilder
@@ -174,12 +189,12 @@ public class UserService  {
                 .retrieve()
                 .onStatus(HttpStatus::isError, clientResponse -> Mono.error(new Exception()))
                 .bodyToMono(NaverProfileDto.class)
-                .flux().toStream().findFirst().orElseThrow();
+                .flux().toStream().findFirst().orElseThrow(Exception::new);
 
         return naverProfileDto;
     }
 
-    public KaKaoProfileDto getKakaoProfile(String accessToken) {
+    public KaKaoProfileDto getKakaoProfile(String accessToken) throws Exception {
 
         KaKaoProfileDto kakaoProfileDto = webClient.get()
                 .uri(uriBuilder -> uriBuilder
@@ -191,13 +206,13 @@ public class UserService  {
                 .retrieve()
                 .onStatus(HttpStatus::isError, clientResponse -> Mono.error(new Exception()))
                 .bodyToMono(KaKaoProfileDto.class)
-                .flux().toStream().findFirst().orElseThrow();
+                .flux().toStream().findFirst().orElseThrow(Exception::new);
 
         return kakaoProfileDto;
     }
 
     @Transactional(readOnly = false, rollbackFor = Exception.class)
-    public UserEntity signUpService(UserDto.RequestSignUpForm form) throws Exception {
+    public UserEntity signUp(UserDto.RequestSignUpForm form) throws Exception {
 
         UserDto userDto = modelMapper.map(form, UserDto.class);
         UserEntity userEntity = userRepository.save(userDto.toEntityWithPasswordEncode(passwordEncoder));
@@ -211,7 +226,68 @@ public class UserService  {
     }
 
     @Transactional(readOnly = false, rollbackFor = Exception.class)
-    public UserDto.ResponseSignIn socialSinUpService(HashMap<String, String> requestBody) throws Exception {
+    public UserDto.ResponseSignIn updateUser(TokenDto user, UserDto.RequestUserUpdateForm form) throws Exception {
+        UserDto userDto = modelMapper.map(form, UserDto.class);
+        UserEntity userEntity = userRepository.findByUserNo(user.getUserNo()).orElseThrow(Exception::new);
+        if(userEntity.getProvider() == null && !passwordEncoder.matches(form.getUserPw(), userEntity.getUserPw()))
+            throw new UserNotFoundException();
+
+        userEntity.updateUser(userDto);
+        UserLogDto userLogDto = new UserLogDto();
+        userLogDto.setUserInfo(userEntity);
+        userLogDto.setLogType(UserLogEntity.LogType.MODIFY);
+        userRepository.flush();
+        userLogService.insertUserLog(userLogDto);
+
+        HashMap<JwtTokenProvider.TokenKey, Object> token = jwtTokenProvider.createToken(userEntity);
+
+        UserDto.ResponseSignIn responseSignIn = new UserDto.ResponseSignIn();
+        responseSignIn.setAccessToken((String) token.get(JwtTokenProvider.TokenKey.TOKEN));
+        responseSignIn.setExpireTime((Long) token.get(JwtTokenProvider.TokenKey.EXPIRETIME));
+        responseSignIn.setRefreshToken(userEntity.getRefreshToken());
+        responseSignIn.setCreatedDate(userEntity.getCreatedDate().format(DateTimeFormatter.ofPattern("YYYY-MM-dd HH:mm:ss")));
+        responseSignIn.setPicture(userEntity.getPicture());
+        responseSignIn.setUserEmail(userEntity.getUserEmail());
+        responseSignIn.setNickName(userEntity.getNickName());
+        responseSignIn.setProvider(userEntity.getProvider());
+        responseSignIn.setUserId(userEntity.getUserId());
+
+        return responseSignIn;
+
+    }
+
+    @Transactional(readOnly = false, rollbackFor = Exception.class)
+    public void updateUserPicture(Long userNo, MultipartFile pictureFile) throws Exception {
+        UserEntity userEntity = userRepository.findByUserNo(userNo).orElseThrow(Exception::new);
+        if(pictureFile != null){
+            /* 이미지 썸네일 제작 */
+            BufferedImage bufferedImage = ImageIO.read(pictureFile.getInputStream());
+
+            int imgwidth = Math.min(bufferedImage.getHeight(),  bufferedImage.getWidth());
+            int imgheight = imgwidth;
+
+            BufferedImage scaledImage = Scalr.crop(bufferedImage, (bufferedImage.getWidth() - imgwidth)/2, (bufferedImage.getHeight() - imgheight)/2, imgwidth, imgheight, null);
+            BufferedImage resizedImage = Scalr.resize(scaledImage, 100, 100, null);
+
+            // outputstream에 image객체를 저장
+            ByteArrayOutputStream os = new ByteArrayOutputStream();
+            ImageIO.write(resizedImage, "jpeg", os);
+            byte[] bytes = os.toByteArray();
+
+
+
+
+            String fileName = PROFILE_IMG_PATH + userNo + ".jpeg";
+            fireBaseService.putProfileImg(bytes, fileName);
+            UserDto userDto = new UserDto();
+            userDto.setPicture(fileName);
+            userEntity.updateUser(userDto);
+        }
+
+    }
+
+    @Transactional(readOnly = false, rollbackFor = Exception.class)
+    public void socialSinUp(HashMap<String, String> requestBody) throws Exception {
         String provider = requestBody.get("provider");
 
         /* 네이버 가입 로직 */
@@ -223,10 +299,10 @@ public class UserService  {
 
                 /* 해당 사용자가 이미 가입한 계정인 경우 */
                 if(user.isPresent()){
-                    return this.signInService(user.get());
+                    throw new AlreadyExistedUserException();
                 }else{
                     /* 중복된 닉네임이 있을 경우 10자리 랜덤문자열을 생성하여 넣는다. */
-                    if(userRepository.existsUserEntityByNickName(naverProfileDto.getResponse().getNickname()) == true){
+                    if(userRepository.existsUserEntityByNickNameAndUserNoNot(naverProfileDto.getResponse().getNickname(), 0L) == true){
                         Random random = new Random();
                         naverProfileDto.getResponse().setNickname(random.ints(97, 123)
                                 .limit(10)
@@ -248,7 +324,6 @@ public class UserService  {
                     userLogDto.setCreatedDate(LocalDateTime.now());
                     userLogService.insertUserLog(userLogDto);
 
-                    return this.signInService(userEntity);
                 }
             }
         /* 카카오 가입 로직 */
@@ -261,10 +336,10 @@ public class UserService  {
 
                 /* 해당 사용자가 이미 가입한 계정인 경우 */
                 if(user.isPresent()){
-                    return this.signInService(user.get());
+                    throw new AlreadyExistedUserException();
                 }else{
                     /* 중복된 닉네임이 있을 경우 10자리 랜덤문자열을 생성하여 넣는다. */
-                    if(userRepository.existsUserEntityByNickName(kakaoProfileDto.getKakaoAccount().getProfile().getNickname()) == true){
+                    if(userRepository.existsUserEntityByNickNameAndUserNoNot(kakaoProfileDto.getKakaoAccount().getProfile().getNickname(), 0L) == true){
                         Random random = new Random();
                         kakaoProfileDto.getKakaoAccount().getProfile().setNickname(random.ints(97, 123)
                                 .limit(10)
@@ -286,12 +361,85 @@ public class UserService  {
                     userLogDto.setLogType(UserLogEntity.LogType.INSERT);
                     userLogDto.setCreatedDate(LocalDateTime.now());
                     userLogService.insertUserLog(userLogDto);
-                    return this.signInService(userEntity);
                 }
 
             }
         }
 
-        return null;
+    }
+
+    @Transactional(readOnly = false, rollbackFor = Exception.class)
+    public UserDto.ResponseSignIn socialSinIn(HashMap<String, String> requestBody) throws Exception {
+        String provider = requestBody.get("provider");
+        UserDto.ResponseSignIn responseSignIn = new UserDto.ResponseSignIn();
+
+        /* 네이버 로그인 로직 */
+        if(provider.equals("NAVER")){
+            Map resultMap = this.getNaverTokenInfo(requestBody.get("code"), requestBody.get("state"));
+            NaverProfileDto naverProfileDto = getNaverProfile((String) resultMap.get("access_token"));
+            if(naverProfileDto != null && naverProfileDto.getMessage().equals("success")){
+                UserEntity user = userRepository.findByProviderAndProviderId(UserEntity.Provider.valueOf(provider), naverProfileDto.getResponse().getId()).orElseThrow(UserNotFoundException::new);
+                responseSignIn = signIn(user);
+            }
+            /* 카카오 로그인 로직 */
+        }else if(provider.equals("KAKAO")){
+            Map resultMap = this.getKakaoTokenInfo(requestBody.get("code"), requestBody.get("state"));
+            KaKaoProfileDto kakaoProfileDto = getKakaoProfile((String) resultMap.get("access_token"));
+            if(kakaoProfileDto != null){
+                UserEntity user = userRepository.findByProviderAndProviderId(UserEntity.Provider.valueOf(provider), kakaoProfileDto.getId()).orElseThrow(UserNotFoundException::new);
+                responseSignIn =  signIn(user);
+            }
+        }
+
+        return responseSignIn;
+    }
+
+    @Transactional(readOnly = false, rollbackFor = Exception.class)
+    public void socialMapping(Long userNo, HashMap<String, String> requestBody) throws Exception {
+        String provider = requestBody.get("provider");
+
+        /* 네이버 연동로직 */
+        if(provider.equals("NAVER")) {
+            Map resultMap = this.getNaverTokenInfo(requestBody.get("code"), requestBody.get("state"));
+            NaverProfileDto naverProfileDto = getNaverProfile((String) resultMap.get("access_token"));
+            if(naverProfileDto != null && naverProfileDto.getMessage().equals("success")
+                    && !userRepository.existsUserEntityByProviderIdAndProviderAndDeleteYn(naverProfileDto.getResponse().getId(), UserEntity.Provider.NAVER, 'N')){
+                UserEntity currentUser = userRepository.findByUserNo(userNo).orElseThrow(UserNotFoundException::new);
+                if(currentUser.getProvider() != null){
+                    throw new AlreadyExistedUserException();
+                }
+                UserDto userDto = new UserDto();
+                userDto.setProvider(UserEntity.Provider.NAVER);
+                userDto.setProviderId(naverProfileDto.getResponse().getId());
+                userDto.setProviderConnectDate(LocalDateTime.now());
+                currentUser.updateUser(userDto);
+                userRepository.flush();
+
+                UserLogDto userLogDto = new UserLogDto();
+                userLogDto.setLogType(UserLogEntity.LogType.MODIFY);
+                userLogDto.setUserInfo(currentUser);
+                userLogService.insertUserLog(userLogDto);
+            }
+        }else if(provider.equals("KAKAO")){
+            Map resultMap = this.getKakaoTokenInfo(requestBody.get("code"), requestBody.get("state"));
+
+            KaKaoProfileDto kakaoProfileDto = getKakaoProfile((String) resultMap.get("access_token"));
+            if(kakaoProfileDto != null && !userRepository.existsUserEntityByProviderIdAndProviderAndDeleteYn(kakaoProfileDto.getId(), UserEntity.Provider.KAKAO, 'N')){
+                UserEntity currentUser = userRepository.findByUserNo(userNo).orElseThrow(UserNotFoundException::new);
+                if (currentUser.getProvider() != null) {
+                    throw new AlreadyExistedUserException();
+                }
+                UserDto userDto = new UserDto();
+                userDto.setProvider(UserEntity.Provider.KAKAO);
+                userDto.setProviderId(kakaoProfileDto.getId());
+                userDto.setProviderConnectDate(LocalDateTime.now());
+                currentUser.updateUser(userDto);
+
+                UserLogDto userLogDto = new UserLogDto();
+                userLogDto.setLogType(UserLogEntity.LogType.MODIFY);
+                userLogDto.setUserInfo(currentUser);
+                userLogService.insertUserLog(userLogDto);
+            }
+        }
     }
 }

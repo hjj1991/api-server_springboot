@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 public class UserLogEntity {
 
     public enum SignInType{
-        KAKAO, NAVER, GENERAL
+        GENERAL, SOCIAL
     }
 
     public enum LogType {

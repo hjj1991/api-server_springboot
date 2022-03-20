@@ -3,12 +3,19 @@ package com.hjj.apiserver;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.google.auth.oauth2.GoogleCredentials;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.FirebaseOptions;
+import com.hjj.apiserver.config.P6spySqlFormatConfiguration;
 import com.hjj.apiserver.dto.TokenDto;
+import com.p6spy.engine.spy.P6SpyOptions;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -18,11 +25,16 @@ import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+import javax.annotation.PostConstruct;
+import java.io.IOException;
 import java.util.Optional;
 
 @Configuration
 @Slf4j
 public class ApplicationConfig implements AuditorAware<String> {
+
+    @Value("${app.firebase-configuration-file}")
+    private String firebaseConfigPath;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -68,4 +80,25 @@ public class ApplicationConfig implements AuditorAware<String> {
         TokenDto user = (TokenDto) authentication.getPrincipal();
         return Optional.of(user.getUserId());
     }
+
+    @PostConstruct
+    public void initialize() {
+        try {
+            FirebaseOptions options = FirebaseOptions.builder()
+                    .setCredentials(GoogleCredentials.fromStream(new ClassPathResource(firebaseConfigPath).getInputStream()))
+                    .build();
+            if(FirebaseApp.getApps().isEmpty()){
+                FirebaseApp.initializeApp(options);
+                log.info("Firebase application has been initializaed");
+            }
+        } catch (IOException e) {
+            log.error(e.getMessage());
+        }
+    }
+
+    @PostConstruct
+    public void setLogMessageFormat() {
+        P6SpyOptions.getActiveInstance().setLogMessageFormat(P6spySqlFormatConfiguration.class.getName());
+    }
+
 }

@@ -2,9 +2,6 @@ spring:
   profiles:
     active: local
     include: oauth
-  h2:
-    console:
-      enabled: true
   jpa:
     hibernate:
       ddl-auto: update
@@ -33,7 +30,7 @@ spring:
       on-profile: local
   datasource:
     hikari:
-      driver-class-name: com.mysql.cj.jdbc.Driver
+      driver-class-name: org.mariadb.jdbc.Driver
       jdbc-url: jdbc:mysql://localhost:3306/api_server?serverTimezone=Asia/Seoul&useUnicode=true&characterEncoding=utf-8
       username: hjj1991
       password: wowjddl1
@@ -43,7 +40,7 @@ decorator:
       enable-logging: true
 logging:
   level:
-    com: debug
+    c: off
 
 --- #prod
 spring:
