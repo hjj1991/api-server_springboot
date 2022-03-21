@@ -37,6 +37,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                         "/user/signup",
                         "/user/signin",
                         "/user/social/signin",
+                        "/user/social/signup",
                         "/user/oauth/token",
                         "/user/profile*",
                         "/h2-console/**"
