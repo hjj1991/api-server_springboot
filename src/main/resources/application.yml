@@ -40,7 +40,9 @@ decorator:
       enable-logging: true
 logging:
   level:
-    c: off
+    root: info
+    c: error
+    com.hjj.apiserver: debug
 
 --- #prod
 spring:
@@ -59,4 +61,6 @@ decorator:
       enable-logging: false
 logging:
   level:
-    com: info
+    root: info
+    c: error
+    com.hjj.apiserver: info

@@ -21,6 +21,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.StringUtils;
@@ -98,7 +99,7 @@ public class UserController {
         if(userEntity.getProvider() != null)
             throw new ExistedSocialUserException();
         if(!passwordEncoder.matches(form.getUserPw(), userEntity.getUserPw()))
-            throw new UserNotFoundException();
+            throw new BadCredentialsException("패스워드가 일치하지 않습니다.");
 
         return ApiUtils.success(userService.signIn(userEntity));
     }
