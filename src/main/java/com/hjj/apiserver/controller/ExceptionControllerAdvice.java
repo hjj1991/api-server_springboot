@@ -9,6 +9,7 @@ import com.hjj.apiserver.common.exception.ExistedSocialUserException;
 import com.hjj.apiserver.common.exception.UserNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -36,5 +37,12 @@ public class ExceptionControllerAdvice {
     @ResponseStatus(HttpStatus.OK)
     protected ApiResponse existedSocialUserException(HttpServletRequest request, ExistedSocialUserException e){
         return ApiUtils.error(ApiError.ErrCode.ERR_CODE0007.getMsg(), ApiError.ErrCode.ERR_CODE0007);
+    }
+
+    /* 패스워드가 일치하지 않은 경우 */
+    @ExceptionHandler(BadCredentialsException.class)
+    @ResponseStatus(HttpStatus.OK)
+    protected ApiResponse badCredentialsException(HttpServletRequest request, BadCredentialsException e){
+        return ApiUtils.error(e.getMessage(), ApiError.ErrCode.ERR_CODE9999);
     }
 }
