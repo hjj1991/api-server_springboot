@@ -31,7 +31,7 @@ import java.util.Optional;
 
 @Configuration
 @Slf4j
-public class ApplicationConfig implements AuditorAware<String> {
+public class ApplicationConfig implements AuditorAware<Long> {
 
     @Value("${app.firebase-configuration-file}")
     private String firebaseConfigPath;
@@ -72,13 +72,13 @@ public class ApplicationConfig implements AuditorAware<String> {
 
 
     @Override
-    public Optional<String> getCurrentAuditor() {
+    public Optional<Long> getCurrentAuditor() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (null == authentication || !authentication.isAuthenticated()) {
             return null;
         }
         TokenDto user = (TokenDto) authentication.getPrincipal();
-        return Optional.of(user.getUserId());
+        return Optional.of(user.getUserNo());
     }
 
     @PostConstruct
