@@ -22,6 +22,10 @@ spring:
 #        SQL: debug
 server:
   port: 8080
+  servlet:
+    multipart:
+      maxFileSize: 10MB
+      maxRequestSize: 30MB
 
 --- #local
 spring:
