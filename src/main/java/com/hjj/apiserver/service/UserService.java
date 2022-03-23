@@ -23,6 +23,7 @@ import reactor.core.publisher.Mono;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
+import java.net.URLEncoder;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -69,6 +70,12 @@ public class UserService  {
     private String kakaoClientId;
     @Value(value = "${social.kakao.client-secret}")
     private String kakaoClientSecret;
+
+    @Value(value = "${app.firebase-storage-uri}")
+    private String firebaseStorageUri;
+    @Value(value = "${app.firebase-bucket}")
+    private String firebaseBucket;
+
 
 
 
@@ -260,27 +267,28 @@ public class UserService  {
     public void updateUserPicture(Long userNo, MultipartFile pictureFile) throws Exception {
         UserEntity userEntity = userRepository.findByUserNo(userNo).orElseThrow(Exception::new);
         if(pictureFile != null){
-            /* 이미지 썸네일 제작 */
-            BufferedImage bufferedImage = ImageIO.read(pictureFile.getInputStream());
-
-            int imgwidth = Math.min(bufferedImage.getHeight(),  bufferedImage.getWidth());
-            int imgheight = imgwidth;
-
-            BufferedImage scaledImage = Scalr.crop(bufferedImage, (bufferedImage.getWidth() - imgwidth)/2, (bufferedImage.getHeight() - imgheight)/2, imgwidth, imgheight, null);
-            BufferedImage resizedImage = Scalr.resize(scaledImage, 100, 100, null);
-
-            // outputstream에 image객체를 저장
-            ByteArrayOutputStream os = new ByteArrayOutputStream();
-            ImageIO.write(resizedImage, "jpeg", os);
-            byte[] bytes = os.toByteArray();
-
-
+            /* 이미지 썸네일 제작 프론트에서 처리하도록 수정 */
+//            BufferedImage bufferedImage = ImageIO.read(pictureFile.getInputStream());
+//
+//            int imgwidth = Math.min(bufferedImage.getHeight(),  bufferedImage.getWidth());
+//            int imgheight = imgwidth;
+//
+//            BufferedImage scaledImage = Scalr.crop(bufferedImage, (bufferedImage.getWidth() - imgwidth)/2, (bufferedImage.getHeight() - imgheight)/2, imgwidth, imgheight, null);
+//            BufferedImage resizedImage = Scalr.resize(scaledImage, 100, 100, null);
+//
+//            // outputstream에 image객체를 저장
+//            ByteArrayOutputStream os = new ByteArrayOutputStream();
+//            ImageIO.write(resizedImage, "jpg", os);
+//            byte[] bytes = os.toByteArray();
 
 
-            String fileName = PROFILE_IMG_PATH + userNo + ".jpeg";
-            fireBaseService.putProfileImg(bytes, fileName);
+
+
+            String fileName = PROFILE_IMG_PATH + userNo + ".png";
+            fireBaseService.putProfileImg(pictureFile.getBytes(), fileName);
             UserDto userDto = new UserDto();
-            userDto.setPicture(fileName);
+//            userDto.setPicture(fileName);
+            userDto.setPicture(firebaseStorageUri + firebaseBucket + "/o/" + URLEncoder.encode(fileName, "UTF-8") + "?alt=media");
             userEntity.updateUser(userDto);
         }
 
