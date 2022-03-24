@@ -2,11 +2,10 @@ package com.hjj.apiserver.dto;
 
 import com.hjj.apiserver.domain.CardEntity;
 import com.hjj.apiserver.domain.PurchaseEntity;
-import com.hjj.apiserver.domain.StoreEntity;
+import com.hjj.apiserver.domain.CategoryEntity;
 import com.hjj.apiserver.domain.UserEntity;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDate;
 
@@ -24,7 +23,7 @@ public class PurchaseDto {
     private char refundYn;
     private LocalDate purchaseDate;
     private CardEntity cardInfo;
-    private StoreEntity storeInfo;
+    private CategoryEntity categoryInfo;
     private UserEntity userInfo;
 
     @Data
@@ -40,15 +39,14 @@ public class PurchaseDto {
         private Long purchaseNo;
         private Long userNo;
         private Long cardNo;
-        private Long storeNo;
-        private String storeName;
+        private Long categoryNo;
         private PurchaseEntity.PurchaseType purchaseType;
         private int price;
         private String reason;
         private char refundYn;
         private LocalDate purchaseDate;
         private CardDto cardInfo;
-        private StoreDto storeInfo;
+        private CategoryDto category;
 
     }
 
@@ -77,8 +75,8 @@ public class PurchaseDto {
                 .userInfo(userInfo)
                 .build();
         /* 연관관계 편의 메소드 */
-        if(storeInfo != null){
-            purchaseEntity.changeStoreInfo(storeInfo);
+        if(categoryInfo != null){
+            purchaseEntity.changeCategoryInfo(categoryInfo);
         }
         return purchaseEntity;
     }

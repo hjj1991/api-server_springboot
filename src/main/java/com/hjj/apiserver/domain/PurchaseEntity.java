@@ -1,16 +1,18 @@
 package com.hjj.apiserver.domain;
 
+import com.hjj.apiserver.dto.PurchaseDto;
 import lombok.*;
+import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "tb_purchase")
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@DynamicUpdate
 @Getter
 public class PurchaseEntity extends BaseEntity {
 
@@ -47,20 +49,20 @@ public class PurchaseEntity extends BaseEntity {
     private CardEntity cardInfo;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="storeEntity_storeNo", foreignKey = @ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
-    private StoreEntity storeInfo;
+    @JoinColumn(name="categoryEntity_categoryNo")
+    private CategoryEntity categoryInfo;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="userEntity_userNo", nullable = false, foreignKey = @ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
+    @JoinColumn(name="userEntity_userNo", nullable = false)
     private UserEntity userInfo;
 
 
-    public void changeStoreInfo(StoreEntity storeInfo){
-        if(this.storeInfo != null){
-            this.storeInfo.getPurchaseEntityList().remove(storeInfo);
+    public void changeCategoryInfo(CategoryEntity categoryInfo){
+        if(this.categoryInfo != null){
+            this.categoryInfo.getPurchaseEntityList().remove(categoryInfo);
         }
-        this.storeInfo = storeInfo;
-        storeInfo.getPurchaseEntityList().add(this);
+        this.categoryInfo = categoryInfo;
+        categoryInfo.getPurchaseEntityList().add(this);
     }
 
     public void delete(){

@@ -7,7 +7,7 @@ import com.hjj.apiserver.dto.PurchaseDto;
 import com.hjj.apiserver.dto.TokenDto;
 import com.hjj.apiserver.service.CardService;
 import com.hjj.apiserver.service.PurchaseService;
-import com.hjj.apiserver.service.StoreService;
+import com.hjj.apiserver.service.CategoryService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -29,7 +29,7 @@ public class PurchaseController {
     private final ModelMapper modelMapper;
     private final PurchaseService purchaseService;
     private final CardService cardService;
-    private final StoreService storeService;
+    private final CategoryService categoryService;
 
     @ApiImplicitParams({
             @ApiImplicitParam(name = "access_token", value = "로그인 성공 후 access_token", required = true, dataType = "String", paramType = "header")})
@@ -47,7 +47,6 @@ public class PurchaseController {
             log.error("addPurchase: {}", e);
             return ApiUtils.error(ApiError.ErrCode.ERR_CODE0005.getMsg(), ApiError.ErrCode.ERR_CODE0005);
         }
-
     }
 
     @ApiImplicitParams({
@@ -58,9 +57,9 @@ public class PurchaseController {
         try {
 
             HashMap<String, Object> resultMap = new HashMap<>();
-            resultMap.put("purchaseList", purchaseService.getPurchaseList(user, requestGetPurchaseListForm));
+            resultMap.put("purchaseList", purchaseService.findPurchaseList(user, requestGetPurchaseListForm));
             resultMap.put("cardList", cardService.selectCardList(user.getUserNo()));
-            resultMap.put("storeList", storeService.selectStoreList());
+//            resultMap.put("storeList", categoryService.selectStoreList());
 
             return ApiUtils.success(resultMap);
         } catch (Exception e) {

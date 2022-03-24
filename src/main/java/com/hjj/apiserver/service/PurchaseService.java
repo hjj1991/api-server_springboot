@@ -2,15 +2,12 @@ package com.hjj.apiserver.service;
 
 import com.hjj.apiserver.domain.CardEntity;
 import com.hjj.apiserver.domain.PurchaseEntity;
-import com.hjj.apiserver.domain.StoreEntity;
 import com.hjj.apiserver.domain.UserEntity;
 import com.hjj.apiserver.dto.CardDto;
 import com.hjj.apiserver.dto.PurchaseDto;
-import com.hjj.apiserver.dto.StoreDto;
 import com.hjj.apiserver.dto.TokenDto;
 import com.hjj.apiserver.repositroy.CardRepository;
 import com.hjj.apiserver.repositroy.PurchaseRepository;
-import com.hjj.apiserver.repositroy.StoreRepository;
 import com.hjj.apiserver.repositroy.UserRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,7 +27,6 @@ public class PurchaseService {
     private final PurchaseRepository purchaseRepository;
     private final UserRepository userRepository;
     private final CardRepository cardRepository;
-    private final StoreRepository storeRepository;
     private final ModelMapper modelMapper;
 
 
@@ -47,13 +43,12 @@ public class PurchaseService {
                 throw new Exception("해당 되는 카드가 존재하지 않습니다.");
             purchaseDto.setCardInfo(cardEntity);
         }
-        if(purchaseDto.getStoreNo() != null){
-            StoreEntity storeEntity = storeRepository.getById(purchaseDto.getStoreNo());
-            if(storeEntity == null)
-                throw new Exception("해당 하는 업종이 존재하지 않습니다.");
-            purchaseDto.setStoreInfo(storeEntity);
-
-        }
+//        if(purchaseDto.getStoreNo() != null){
+//            CategoryEntity categoryEntity = storeRepository.getById(purchaseDto.getStoreNo());
+//            if(categoryEntity == null)
+//                throw new Exception("해당 하는 업종이 존재하지 않습니다.");
+//            purchaseDto.setStoreInfo(categoryEntity);
+//        }
 
         PurchaseEntity purchaseEntity = purchaseDto.toEntity();
 
@@ -61,7 +56,7 @@ public class PurchaseService {
 
     }
 
-    public List<PurchaseDto.ResponseGetPurchase> getPurchaseList(TokenDto user, PurchaseDto.RequestGetPurchaseListForm form){
+    public List<PurchaseDto.ResponseGetPurchase> findPurchaseList(TokenDto user, PurchaseDto.RequestGetPurchaseListForm form){
 
         List<PurchaseEntity> purchaseEntityList = purchaseRepository.findAllEntityGraphByPurchaseDateBetweenAndUserInfo_UserNoAndDeleteYnOrderByPurchaseDateDesc(form.getStartDate(), form.getEndDate(), user.getUserNo(), 'N');
         List<PurchaseDto.ResponseGetPurchase> purchaseList = new ArrayList<>();
@@ -71,14 +66,6 @@ public class PurchaseService {
                 CardDto cardDto = modelMapper.map(purchaseEntity.getCardInfo(), CardDto.class);
                 responseGetPurchase.setCardInfo(cardDto);
             }
-
-            if(purchaseEntity.getStoreInfo() != null){
-                StoreDto storeDto = modelMapper.map(purchaseEntity.getStoreInfo(), StoreDto.class);
-                responseGetPurchase.setStoreInfo(storeDto);
-            }
-
-
-
             purchaseList.add(responseGetPurchase);
         });
         return purchaseList;
