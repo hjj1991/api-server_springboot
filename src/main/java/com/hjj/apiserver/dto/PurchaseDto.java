@@ -20,7 +20,6 @@ public class PurchaseDto {
     private PurchaseEntity.PurchaseType purchaseType;
     private int price;
     private String reason;
-    private char refundYn;
     private LocalDate purchaseDate;
     private CardEntity cardInfo;
     private CategoryEntity categoryInfo;
@@ -43,7 +42,6 @@ public class PurchaseDto {
         private PurchaseEntity.PurchaseType purchaseType;
         private int price;
         private String reason;
-        private char refundYn;
         private LocalDate purchaseDate;
         private CardDto cardInfo;
         private CategoryDto category;
@@ -69,7 +67,6 @@ public class PurchaseDto {
                 .purchaseType(purchaseType)
                 .price(price)
                 .reason(reason)
-                .refundYn('N')
                 .purchaseDate(purchaseDate)
                 .cardInfo(cardInfo)
                 .userInfo(userInfo)

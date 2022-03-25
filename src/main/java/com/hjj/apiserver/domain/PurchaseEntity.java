@@ -38,31 +38,48 @@ public class PurchaseEntity extends BaseEntity {
     @Column(columnDefinition = "varchar(5000) default ''", nullable = true)
     private String reason;
 
-    @Column(columnDefinition = "char(1) default 'N'", nullable = false)
-    private char refundYn;
-
     @Column
     private LocalDate purchaseDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="cardEntity_cardNo", foreignKey = @ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
+    @JoinColumn(name="cardNo", nullable = true)
     private CardEntity cardInfo;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="categoryEntity_categoryNo")
+    @JoinColumn(name="categoryNo")
     private CategoryEntity categoryInfo;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="userEntity_userNo", nullable = false)
+    @JoinColumn(name="userNo", nullable = false)
     private UserEntity userInfo;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="accountBookNo", nullable = false)
+    private AccountBookEntity accountBookInfo;
 
 
     public void changeCategoryInfo(CategoryEntity categoryInfo){
         if(this.categoryInfo != null){
-            this.categoryInfo.getPurchaseEntityList().remove(categoryInfo);
+            this.categoryInfo.getPurchaseEntityList().remove(this);
         }
         this.categoryInfo = categoryInfo;
         categoryInfo.getPurchaseEntityList().add(this);
+    }
+
+    public void changeUserInfo(UserEntity userInfo){
+        if(this.userInfo != null){
+            this.userInfo.getPurchaseEntityList().remove(this);
+        }
+        this.userInfo = userInfo;
+        userInfo.getPurchaseEntityList().add(this);
+    }
+
+    public void changeAccountBookInfo(AccountBookEntity accountBookInfo){
+        if(this.accountBookInfo != null){
+            this.accountBookInfo.getPurchaseEntityList().remove(accountBookInfo);
+        }
+        this.accountBookInfo = accountBookInfo;
+        accountBookInfo.getPurchaseEntityList().add(this);
     }
 
     public void delete(){

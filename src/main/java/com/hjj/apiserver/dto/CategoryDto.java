@@ -59,7 +59,7 @@ public class CategoryDto {
         CategoryEntity categoryEntity = CategoryEntity.builder()
                 .categoryName(categoryName)
                 .categoryDesc(categoryDesc)
-                .userEntity(userEntity)
+                .userInfo(userEntity)
                 .parentCategory(parentCategory)
                 .build();
         return categoryEntity;

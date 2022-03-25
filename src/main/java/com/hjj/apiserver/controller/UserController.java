@@ -15,6 +15,7 @@ import com.hjj.apiserver.service.FireBaseService;
 import com.hjj.apiserver.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -70,7 +71,7 @@ public class UserController {
 
     @ApiOperation(value = "유저 회원가입", notes = "유저 회원가입을 한다.")
     @PostMapping("/user/signup")
-    public ApiResponse signUp(@Valid @RequestBody UserDto.RequestSignUpForm form) {
+    public ApiResponse signUp(@Valid @RequestBody @ApiParam(value = "회원 한 명의 정보를 갖는 객체", required = true) UserDto.RequestSignUpForm form) {
         try{
             if(userRepository.existsUserEntityByUserId(form.getUserId())){
                 return ApiUtils.error(ApiError.ErrCode.ERR_CODE0002.getMsg(), ApiError.ErrCode.ERR_CODE0002);
@@ -87,9 +88,6 @@ public class UserController {
         }catch (Exception e){
             return ApiUtils.error(ApiError.ErrCode.ERR_CODE0004.getMsg(), ApiError.ErrCode.ERR_CODE0004);
         }
-
-
-
     }
 
     @ApiOperation(value = "유저 로그인", notes ="유저 로그인을 한다.")

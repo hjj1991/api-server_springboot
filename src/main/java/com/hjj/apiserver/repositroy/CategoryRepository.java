@@ -12,7 +12,7 @@ import java.util.Optional;
 public interface CategoryRepository  extends JpaRepository<CategoryEntity, Long> {
 
     @EntityGraph(attributePaths = {"parentCategory"})
-    List<CategoryEntity> findEntityGraphByUserEntity_UserNoAndParentCategory_CategoryNo(Long userNo, Long parentCategoryNo);
-    Optional<CategoryEntity> findByCategoryNoAndUserEntity_UserNo(Long categoryNo, Long userNo);
-    Boolean existsByCategoryNoAndUserEntity_UserNo(Long categoryNo, Long userNo);
+    List<CategoryEntity> findEntityGraphByUserInfo_UserNoAndParentCategory_CategoryNo(Long userNo, Long parentCategoryNo);
+    Optional<CategoryEntity> findByCategoryNoAndUserInfo_UserNo(Long categoryNo, Long userNo);
+    Boolean existsByCategoryNoAndUserInfo_UserNo(Long categoryNo, Long userNo);
 }

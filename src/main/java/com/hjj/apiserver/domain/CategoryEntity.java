@@ -36,7 +36,7 @@ public class CategoryEntity extends BaseEntity{
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "userNo")
-    private UserEntity userEntity;
+    private UserEntity userInfo;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parentCategoryNo")
@@ -64,9 +64,9 @@ public class CategoryEntity extends BaseEntity{
     /* 연관관계 편의 메소드 */
     public void changeParentCategory(CategoryEntity parentCategory){
         if(this.parentCategory != null){
-            this.parentCategory.getChildCategoryList().remove(parentCategory);
+            this.parentCategory.getChildCategoryList().remove(this);
         }
         this.parentCategory = parentCategory;
-        this.parentCategory.getChildCategoryList().add(parentCategory);
+        this.parentCategory.getChildCategoryList().add(this);
     }
 }

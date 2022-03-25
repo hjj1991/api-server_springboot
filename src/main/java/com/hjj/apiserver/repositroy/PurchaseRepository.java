@@ -14,7 +14,7 @@ import java.util.List;
 @Repository
 public interface PurchaseRepository extends JpaRepository<PurchaseEntity, Long> {
 
-    @EntityGraph(attributePaths = {"cardInfo", "storeInfo"})
+    @EntityGraph(attributePaths = {"cardInfo", "categoryInfo"})
     List<PurchaseEntity> findAllEntityGraphByPurchaseDateBetweenAndUserInfo_UserNoAndDeleteYnOrderByPurchaseDateDesc(LocalDate startDate, LocalDate endDate, Long userNo, char deleteYn);
 
     @EntityGraph(attributePaths = {"userInfo"})

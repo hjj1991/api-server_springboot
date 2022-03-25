@@ -11,7 +11,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
@@ -89,7 +88,7 @@ class CategoryServiceTest {
         categoryRepository.save(categoryEntity);
         categoryRepository.flush();
 
-        CategoryEntity updateCategory =  categoryRepository.findByCategoryNoAndUserEntity_UserNo(categoryEntity.getCategoryNo(), userEntity.getUserNo()).get();
+        CategoryEntity updateCategory =  categoryRepository.findByCategoryNoAndUserInfo_UserNo(categoryEntity.getCategoryNo(), userEntity.getUserNo()).get();
         CategoryDto updateCategoryDto = new CategoryDto();
         updateCategoryDto.setCategoryName("파워붐붐");
         updateCategory.updateCategory(updateCategoryDto);
@@ -130,7 +129,7 @@ class CategoryServiceTest {
             purchaseRepository.flush();
         }
 
-        System.out.println(categoryRepository.existsByCategoryNoAndUserEntity_UserNo(categoryEntity.getCategoryNo(), userEntity.getUserNo()));
+        System.out.println(categoryRepository.existsByCategoryNoAndUserInfo_UserNo(categoryEntity.getCategoryNo(), userEntity.getUserNo()));
 
         purchaseRepository.deleteCategoryAllPurchaseEntityByCategoryNo(categoryEntity.getCategoryNo());
         categoryRepository.delete(categoryEntity);
