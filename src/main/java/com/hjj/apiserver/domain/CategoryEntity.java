@@ -16,7 +16,7 @@ import java.util.List;
 @DynamicUpdate
 @Table(name = "tb_category",
         uniqueConstraints = {
-                @UniqueConstraint(columnNames = {"categoryNo", "categoryName"})
+                @UniqueConstraint(columnNames = {"accountBookNo", "categoryName"})
         })
 public class CategoryEntity extends BaseEntity{
 
@@ -30,13 +30,16 @@ public class CategoryEntity extends BaseEntity{
     @Column(columnDefinition = "varchar(5000) default ''")
     private String categoryDesc;
 
+    @Column
+    private String categoryIcon;
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "categoryInfo")
     @Builder.Default
     private List<PurchaseEntity> purchaseEntityList = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "userNo")
-    private UserEntity userInfo;
+    @JoinColumn(name = "accountBookNo")
+    private AccountBookEntity accountBookInfo;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parentCategoryNo")

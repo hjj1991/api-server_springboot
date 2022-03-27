@@ -5,20 +5,20 @@ import com.hjj.apiserver.common.ApiResponse;
 import com.hjj.apiserver.common.ApiUtils;
 import com.hjj.apiserver.dto.AccountBookDto;
 import com.hjj.apiserver.dto.TokenDto;
-import com.hjj.apiserver.dto.UserDto;
 import com.hjj.apiserver.service.AccountBookService;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.*;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 
+@Api(tags = {"5. AccountBook"})
 @Slf4j
 @RestController
 @AllArgsConstructor

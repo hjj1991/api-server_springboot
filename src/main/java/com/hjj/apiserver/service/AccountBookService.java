@@ -25,6 +25,7 @@ public class AccountBookService {
 
     private final AccountBookUserRepository accountBookUserRepository;
     private final AccountBookRepository accountBookRepository;
+    private final CategoryService categoryService;
     private final PurchaseRepository purchaseRepository;
     private final UserRepository userRepository;
 
@@ -41,19 +42,23 @@ public class AccountBookService {
         accountBookUserDto.setAccountBookInfo(accountBookEntity);
         accountBookUserDto.setAccountRole(AccountBookUserEntity.AccountRole.OWNER);
         accountBookUserDto.setUserInfo(userEntity);
+        accountBookUserDto.setBackGroundColor(accountBookDto.getBackGroundColor());
         AccountBookUserEntity accountBookUserEntity = accountBookUserDto.toEntity();
         accountBookUserRepository.save(accountBookUserEntity);
+
+        categoryService.addBasicCategory(accountBookEntity);
     }
 
 
     public List<AccountBookDto.ResponseAccountBookFindAll> findAllAccountBook(AccountBookDto accountBookDto) {
+        /* userNo으로 가계부 <-> 유저 매핑 테이블 조회 */
         List<AccountBookUserEntity> accountBookUserEntityList =  accountBookUserRepository.findEntityGraphByUserInfo_userNo(accountBookDto.getUserNo());
         List<Long> accountBookNoList = new ArrayList<>();
-        accountBookUserEntityList.stream().forEach(accountBookUserEntity -> accountBookNoList.add(accountBookUserEntity.getAccountBookInfo().getAccountBookNo()));
         List<AccountBookDto.ResponseAccountBookFindAll> responseAccountBookFindAllList = new ArrayList<>();
 
+        accountBookUserEntityList.stream().forEach(accountBookUserEntity -> accountBookNoList.add(accountBookUserEntity.getAccountBookInfo().getAccountBookNo()));
 
-        List<PurchaseEntity> purchaseEntityList = purchaseRepository.findAllEntityGraphByPurchaseDateBetweenAndUserInfo_UserNoAndDeleteYnOrderByPurchaseDateDesc(accountBookDto.getStartDate(), accountBookDto.getEndDate(), accountBookDto.getUserNo(), 'N');
+        List<PurchaseEntity> purchaseEntityList = purchaseRepository.findAllEntityGraphByPurchaseDateBetweenAndUserInfo_UserNoOrderByPurchaseDateDesc(accountBookDto.getStartDate(), accountBookDto.getEndDate(), accountBookDto.getUserNo());
         List<AccountBookUserEntity> tempAccountBookUserList = accountBookUserRepository.findEntityGraphByAccountBookInfo_accountBookNoIn(accountBookNoList);
 
 
@@ -63,6 +68,8 @@ public class AccountBookService {
             responseAccountBookFindAll.setAccountBookNo(accountBookNo);
             responseAccountBookFindAll.setAccountBookName(accountBookUserEntity.getAccountBookInfo().getAccountBookName());
             responseAccountBookFindAll.setAccountBookDesc(accountBookUserEntity.getAccountBookInfo().getAccountBookDesc());
+            responseAccountBookFindAll.setAccountRole(accountBookUserEntity.getAccountRole());
+            responseAccountBookFindAll.setBackGroundColor(accountBookUserEntity.getBackGroundColor());
 
             int totalIncomeAmount = 0;
             int totalOutgoingAmount = 0;
@@ -82,6 +89,7 @@ public class AccountBookService {
             tempAccountBookUserList.stream().forEach(tempAccountBookEntity ->{
                 if(accountBookNo == tempAccountBookEntity.getAccountBookInfo().getAccountBookNo()){
                     AccountBookDto.ResponseAccountBookFindAll.JoinedUser joinedUser = new AccountBookDto.ResponseAccountBookFindAll.JoinedUser();
+                    joinedUser.setUserNo(tempAccountBookEntity.getUserInfo().getUserNo());
                     joinedUser.setNickName(tempAccountBookEntity.getUserInfo().getNickName());
                     joinedUser.setPicture(tempAccountBookEntity.getUserInfo().getPicture());
                     joinedUserList.add(joinedUser);

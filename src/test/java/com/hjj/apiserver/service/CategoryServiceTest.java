@@ -31,7 +31,6 @@ class CategoryServiceTest {
         CategoryDto categoryDto = new CategoryDto();
         categoryDto.setCategoryName("식비");
         categoryDto.setCategoryDesc("커피값");
-        categoryDto.setUserEntity(userRepository.getById(1L));
 
         CategoryEntity categoryEntity = categoryDto.toEntity();
         categoryRepository.save(categoryEntity);
@@ -44,7 +43,6 @@ class CategoryServiceTest {
         CategoryDto categoryDto = new CategoryDto();
         categoryDto.setCategoryName("경조사");
         categoryDto.setCategoryDesc("커피값입니다.");
-        categoryDto.setUserEntity(userRepository.getById(1L));
         categoryDto.setParentCategory(categoryRepository.getById(1L));
         CategoryEntity categoryEntity = categoryDto.toEntity();
 
@@ -54,7 +52,7 @@ class CategoryServiceTest {
     @Test
     void findCategoryAll(){
 
-        List<CategoryDto.ResponseCategory> categoryList =  categoryService.findCategory(1L);
+        List<CategoryDto.ResponseCategory> categoryList =  categoryService.findCategory(1L, 1L);
 
         for (CategoryDto.ResponseCategory responseCategory : categoryList) {
             System.out.println("responseCategory.getCategoryName() = " + responseCategory.getCategoryName());
@@ -82,20 +80,11 @@ class CategoryServiceTest {
         CategoryDto categoryDto = new CategoryDto();
         categoryDto.setCategoryName("경조사");
         categoryDto.setCategoryDesc("커피값입니다.");
-        categoryDto.setUserEntity(userEntity);
         CategoryEntity categoryEntity = categoryDto.toEntity();
 
         categoryRepository.save(categoryEntity);
         categoryRepository.flush();
 
-        CategoryEntity updateCategory =  categoryRepository.findByCategoryNoAndUserInfo_UserNo(categoryEntity.getCategoryNo(), userEntity.getUserNo()).get();
-        CategoryDto updateCategoryDto = new CategoryDto();
-        updateCategoryDto.setCategoryName("파워붐붐");
-        updateCategory.updateCategory(updateCategoryDto);
-        categoryRepository.flush();
-
-
-        Assertions.assertEquals(updateCategory.getCategoryName(), "파워붐붐");
     }
 
     @Test
@@ -110,7 +99,6 @@ class CategoryServiceTest {
         CategoryDto categoryDto = new CategoryDto();
         categoryDto.setCategoryName("경조사");
         categoryDto.setCategoryDesc("커피값입니다.");
-        categoryDto.setUserEntity(userEntity);
         CategoryEntity categoryEntity = categoryDto.toEntity();
 
         categoryRepository.save(categoryEntity);
@@ -129,7 +117,6 @@ class CategoryServiceTest {
             purchaseRepository.flush();
         }
 
-        System.out.println(categoryRepository.existsByCategoryNoAndUserInfo_UserNo(categoryEntity.getCategoryNo(), userEntity.getUserNo()));
 
         purchaseRepository.deleteCategoryAllPurchaseEntityByCategoryNo(categoryEntity.getCategoryNo());
         categoryRepository.delete(categoryEntity);

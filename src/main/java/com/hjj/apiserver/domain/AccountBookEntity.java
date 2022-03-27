@@ -33,4 +33,7 @@ public class AccountBookEntity extends BaseEntity {
     @BatchSize(size = 100)
     private List<PurchaseEntity> purchaseEntityList = new ArrayList<>();
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "accountBookInfo")
+    private List<CategoryEntity> categoryEntityList = new ArrayList<>();
+
 }

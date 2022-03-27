@@ -15,7 +15,7 @@ import javax.persistence.*;
 public class AccountBookUserEntity extends BaseEntity{
 
     public enum AccountRole{
-        USER,OWNER;
+        OWNER, MEMBER, GUEST;
     }
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,6 +32,9 @@ public class AccountBookUserEntity extends BaseEntity{
     @Column
     @Enumerated(EnumType.STRING)
     private AccountRole accountRole;
+
+    @Column(length = 10)
+    private String backGroundColor = "#FFFFFF";
 
     /* 연관관계 편의 메소드 */
     public void changeAccountBookInfo(AccountBookEntity accountBookInfo){

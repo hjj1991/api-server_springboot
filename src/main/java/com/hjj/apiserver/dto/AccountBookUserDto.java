@@ -11,14 +11,16 @@ public class AccountBookUserDto {
     private Long accountBookUserNo;
     private Long accountBookNo;
     private Long userNo;
+    private String backGroundColor;
     private AccountBookEntity accountBookInfo;
     private UserEntity userInfo;
-    private AccountBookUserEntity.AccountRole accountRole = AccountBookUserEntity.AccountRole.USER;
+    private AccountBookUserEntity.AccountRole accountRole = AccountBookUserEntity.AccountRole.GUEST;
 
     public AccountBookUserEntity toEntity(){
         AccountBookUserEntity accountBookUserEntity = AccountBookUserEntity.builder()
                 .accountRole(accountRole)
                 .accountBookInfo(accountBookInfo)
+                .backGroundColor(backGroundColor)
                 .userInfo(userInfo)
                 .build();
 

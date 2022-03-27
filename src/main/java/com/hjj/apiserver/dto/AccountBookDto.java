@@ -1,6 +1,7 @@
 package com.hjj.apiserver.dto;
 
 import com.hjj.apiserver.domain.AccountBookEntity;
+import com.hjj.apiserver.domain.AccountBookUserEntity;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -15,6 +16,7 @@ public class AccountBookDto {
     private Long userNo;
     private String accountBookName;
     private String accountBookDesc;
+    private String backGroundColor;
     private LocalDate startDate;
     private LocalDate endDate;
 
@@ -34,6 +36,7 @@ public class AccountBookDto {
         @NotBlank
         private String accountBookName;
         private String accountBookDesc;
+        private String backGroundColor;
     }
 
     @Data
@@ -49,12 +52,15 @@ public class AccountBookDto {
         private Long accountBookNo;
         private String accountBookName;
         private String accountBookDesc;
+        private String backGroundColor;
+        private AccountBookUserEntity.AccountRole accountRole;
         private int totalIncomeAmount;
         private int totalOutgoingAmount;
         private List<JoinedUser> joinedUserList;
 
         @Data
         public static class JoinedUser{
+            private Long userNo;
             private String nickName;
             private String picture;
         }

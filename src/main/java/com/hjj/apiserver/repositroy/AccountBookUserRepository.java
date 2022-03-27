@@ -14,4 +14,6 @@ public interface AccountBookUserRepository extends JpaRepository<AccountBookUser
     List<AccountBookUserEntity> findEntityGraphByUserInfo_userNo(Long userNo);
     @EntityGraph(attributePaths = {"accountBookInfo", "userInfo"})
     List<AccountBookUserEntity> findEntityGraphByAccountBookInfo_accountBookNoIn(List<Long> accountBookNoList);
+
+    Boolean existsByUserInfo_UserNoAndAccountBookInfo_AccountBookNoAndAccountRole(Long userNo, Long accountBookNo, AccountBookUserEntity.AccountRole accountRole);
 }
