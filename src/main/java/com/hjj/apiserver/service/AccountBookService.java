@@ -43,6 +43,7 @@ public class AccountBookService {
         accountBookUserDto.setAccountRole(AccountBookUserEntity.AccountRole.OWNER);
         accountBookUserDto.setUserInfo(userEntity);
         accountBookUserDto.setBackGroundColor(accountBookDto.getBackGroundColor());
+        accountBookUserDto.setColor(accountBookDto.getColor());
         AccountBookUserEntity accountBookUserEntity = accountBookUserDto.toEntity();
         accountBookUserRepository.save(accountBookUserEntity);
 
@@ -70,6 +71,7 @@ public class AccountBookService {
             responseAccountBookFindAll.setAccountBookDesc(accountBookUserEntity.getAccountBookInfo().getAccountBookDesc());
             responseAccountBookFindAll.setAccountRole(accountBookUserEntity.getAccountRole());
             responseAccountBookFindAll.setBackGroundColor(accountBookUserEntity.getBackGroundColor());
+            responseAccountBookFindAll.setColor(accountBookUserEntity.getColor());
 
             int totalIncomeAmount = 0;
             int totalOutgoingAmount = 0;

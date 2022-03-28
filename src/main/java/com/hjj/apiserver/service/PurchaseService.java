@@ -74,6 +74,14 @@ public class PurchaseService {
             }
             if(purchaseEntity.getCategoryInfo() != null){
                 CategoryDto.PurchaseCategoryInfo categoryInfo =  modelMapper.map(purchaseEntity.getCategoryInfo(), CategoryDto.PurchaseCategoryInfo.class);
+                if(purchaseEntity.getCategoryInfo().getParentCategory() == null){
+                    categoryInfo.setParentCategoryNo(purchaseEntity.getCategoryInfo().getCategoryNo());
+                    categoryInfo.setParentCategoryName(purchaseEntity.getCategoryInfo().getCategoryName());
+                }else{
+                    categoryInfo.setParentCategoryNo(purchaseEntity.getCategoryInfo().getParentCategory().getCategoryNo());
+                    categoryInfo.setParentCategoryName(purchaseEntity.getCategoryInfo().getParentCategory().getCategoryName());
+                }
+
                 responsePurchaseList.setCategoryInfo(categoryInfo);
             }
             purchaseList.add(responsePurchaseList);

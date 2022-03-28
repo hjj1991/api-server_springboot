@@ -58,6 +58,7 @@ public class CategoryDto {
     public static class PurchaseCategoryInfo{
         private Long parentCategoryNo;
         private Long categoryNo;
+        private String parentCategoryName;
         private String categoryName;
         private String categoryDesc;
         private String categoryIcon;

@@ -17,6 +17,7 @@ public class AccountBookDto {
     private String accountBookName;
     private String accountBookDesc;
     private String backGroundColor;
+    private String color;
     private LocalDate startDate;
     private LocalDate endDate;
 
@@ -37,6 +38,7 @@ public class AccountBookDto {
         private String accountBookName;
         private String accountBookDesc;
         private String backGroundColor;
+        private String color;
     }
 
     @Data
@@ -53,6 +55,7 @@ public class AccountBookDto {
         private String accountBookName;
         private String accountBookDesc;
         private String backGroundColor;
+        private String color;
         private AccountBookUserEntity.AccountRole accountRole;
         private int totalIncomeAmount;
         private int totalOutgoingAmount;

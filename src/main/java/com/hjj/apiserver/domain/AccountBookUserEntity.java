@@ -34,7 +34,10 @@ public class AccountBookUserEntity extends BaseEntity{
     private AccountRole accountRole;
 
     @Column(length = 10)
-    private String backGroundColor = "#FFFFFF";
+    private String backGroundColor;
+
+    @Column(length = 10)
+    private String color;
 
     /* 연관관계 편의 메소드 */
     public void changeAccountBookInfo(AccountBookEntity accountBookInfo){

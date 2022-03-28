@@ -68,10 +68,10 @@ public class CategoryService {
         List<CategoryDto.ResponseCategory> responseCategoryList = new ArrayList<>();
         categoryEntityList.stream().forEach(categoryEntity -> {
             CategoryDto.ResponseCategory responseCategory = modelMapper.map(categoryEntity, CategoryDto.ResponseCategory.class);
-            if(categoryEntity.getParentCategory() != null){
-                responseCategory.setParentCategoryNo(categoryEntity.getParentCategory().getCategoryNo());
+            if(categoryEntity.getParentCategory() == null){
+                responseCategoryList.add(responseCategory);
             }
-            responseCategoryList.add(responseCategory);
+
 
         });
         return responseCategoryList;
