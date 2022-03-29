@@ -39,6 +39,7 @@ public class PurchaseDto {
 
     @Data
     public static class ResponsePurchaseList {
+        private String accountBookName;
         private List<Purchase> purchaseList;
         private List<CardDto> cardList;
         private List<CategoryDto.ResponseCategory> categoryList;

@@ -5,9 +5,10 @@ import com.hjj.apiserver.common.ApiResponse;
 import com.hjj.apiserver.common.ApiUtils;
 import com.hjj.apiserver.dto.PurchaseDto;
 import com.hjj.apiserver.dto.TokenDto;
+import com.hjj.apiserver.repositroy.AccountBookRepository;
 import com.hjj.apiserver.service.CardService;
-import com.hjj.apiserver.service.PurchaseService;
 import com.hjj.apiserver.service.CategoryService;
+import com.hjj.apiserver.service.PurchaseService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -17,8 +18,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.HashMap;
 
 @Api(tags = {"3. Purchase"})
 @RestController
@@ -30,6 +29,7 @@ public class PurchaseController {
     private final PurchaseService purchaseService;
     private final CardService cardService;
     private final CategoryService categoryService;
+    private final AccountBookRepository accountBookRepository;
 
     @ApiImplicitParams({
             @ApiImplicitParam(name = "access_token", value = "로그인 성공 후 access_token", required = true, dataType = "String", paramType = "header")})
@@ -59,6 +59,7 @@ public class PurchaseController {
             PurchaseDto purchaseDto = modelMapper.map(form, PurchaseDto.class);
             purchaseDto.setUserNo(user.getUserNo());
             PurchaseDto.ResponsePurchaseList responsePurchaseList = new PurchaseDto.ResponsePurchaseList();
+            responsePurchaseList.setAccountBookName(accountBookRepository.getById(form.getAccountBookNo()).getAccountBookName());
             responsePurchaseList.setPurchaseList(purchaseService.findPurchaseList(purchaseDto));
             responsePurchaseList.setCardList(cardService.selectCardList(user.getUserNo()));
             responsePurchaseList.setCategoryList(categoryService.findCategory(user.getUserNo(), form.getAccountBookNo()));
