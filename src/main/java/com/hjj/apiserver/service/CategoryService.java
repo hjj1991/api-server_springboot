@@ -69,6 +69,7 @@ public class CategoryService {
         categoryEntityList.stream().forEach(categoryEntity -> {
             CategoryDto.ResponseCategory responseCategory = modelMapper.map(categoryEntity, CategoryDto.ResponseCategory.class);
             if(categoryEntity.getParentCategory() == null){
+                responseCategory.setAccountBookNo(accountBookNo);
                 responseCategoryList.add(responseCategory);
             }
 
