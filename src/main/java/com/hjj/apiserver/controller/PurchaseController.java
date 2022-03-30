@@ -5,9 +5,10 @@ import com.hjj.apiserver.common.ApiResponse;
 import com.hjj.apiserver.common.ApiUtils;
 import com.hjj.apiserver.dto.PurchaseDto;
 import com.hjj.apiserver.dto.TokenDto;
+import com.hjj.apiserver.repositroy.AccountBookRepository;
 import com.hjj.apiserver.service.CardService;
+import com.hjj.apiserver.service.CategoryService;
 import com.hjj.apiserver.service.PurchaseService;
-import com.hjj.apiserver.service.StoreService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -18,8 +19,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-
 @Api(tags = {"3. Purchase"})
 @RestController
 @AllArgsConstructor
@@ -29,7 +28,8 @@ public class PurchaseController {
     private final ModelMapper modelMapper;
     private final PurchaseService purchaseService;
     private final CardService cardService;
-    private final StoreService storeService;
+    private final CategoryService categoryService;
+    private final AccountBookRepository accountBookRepository;
 
     @ApiImplicitParams({
             @ApiImplicitParam(name = "access_token", value = "로그인 성공 후 access_token", required = true, dataType = "String", paramType = "header")})
@@ -47,22 +47,25 @@ public class PurchaseController {
             log.error("addPurchase: {}", e);
             return ApiUtils.error(ApiError.ErrCode.ERR_CODE0005.getMsg(), ApiError.ErrCode.ERR_CODE0005);
         }
-
     }
 
     @ApiImplicitParams({
             @ApiImplicitParam(name = "access_token", value = "로그인 성공 후 access_token", required = true, dataType = "String", paramType = "header")})
     @ApiOperation(value = "지출,수입 리스트", notes = "지출, 수입을 리스트를 불러온다.")
     @GetMapping("/purchase")
-    public ApiResponse getPurchaseList(@AuthenticationPrincipal TokenDto user, PurchaseDto.RequestGetPurchaseListForm requestGetPurchaseListForm) {
+    public ApiResponse getPurchaseList(@AuthenticationPrincipal TokenDto user, PurchaseDto.RequestPurchaseFindForm form) {
         try {
 
-            HashMap<String, Object> resultMap = new HashMap<>();
-            resultMap.put("purchaseList", purchaseService.getPurchaseList(user, requestGetPurchaseListForm));
-            resultMap.put("cardList", cardService.selectCardList(user.getUserNo()));
-            resultMap.put("storeList", storeService.selectStoreList());
+            PurchaseDto purchaseDto = modelMapper.map(form, PurchaseDto.class);
+            purchaseDto.setUserNo(user.getUserNo());
+            PurchaseDto.ResponsePurchaseList responsePurchaseList = new PurchaseDto.ResponsePurchaseList();
+            responsePurchaseList.setAccountBookName(accountBookRepository.getById(form.getAccountBookNo()).getAccountBookName());
+            responsePurchaseList.setPurchaseList(purchaseService.findPurchaseList(purchaseDto));
+            responsePurchaseList.setCardList(cardService.selectCardList(user.getUserNo()));
+            responsePurchaseList.setCategoryList(categoryService.findCategory(user.getUserNo(), form.getAccountBookNo()));
 
-            return ApiUtils.success(resultMap);
+
+            return ApiUtils.success(responsePurchaseList);
         } catch (Exception e) {
             log.error("getPurchaseList: {}", e);
             return ApiUtils.error(ApiError.ErrCode.ERR_CODE0005.getMsg(), ApiError.ErrCode.ERR_CODE0005);

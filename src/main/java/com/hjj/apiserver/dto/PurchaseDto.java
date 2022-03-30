@@ -1,14 +1,12 @@
 package com.hjj.apiserver.dto;
 
-import com.hjj.apiserver.domain.CardEntity;
-import com.hjj.apiserver.domain.PurchaseEntity;
-import com.hjj.apiserver.domain.StoreEntity;
-import com.hjj.apiserver.domain.UserEntity;
+import com.hjj.apiserver.domain.*;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 public class PurchaseDto {
@@ -16,19 +14,23 @@ public class PurchaseDto {
     private Long purchaseNo;
     private Long userNo;
     private Long cardNo;
-    private Long storeNo;
+    private Long categoryNo;
+    private Long accountBookNo;
     private String storeName;
     private PurchaseEntity.PurchaseType purchaseType;
     private int price;
     private String reason;
-    private char refundYn;
     private LocalDate purchaseDate;
     private CardEntity cardInfo;
-    private StoreEntity storeInfo;
+    private CategoryEntity categoryInfo;
     private UserEntity userInfo;
+    private AccountBookEntity accountBookInfo;
+    private LocalDate startDate;
+    private LocalDate endDate;
 
     @Data
-    public static class RequestGetPurchaseListForm {
+    public static class RequestPurchaseFindForm {
+        private Long accountBookNo;
         @DateTimeFormat(pattern = "yyyy-MM-dd")
         private LocalDate startDate;
         @DateTimeFormat(pattern = "yyyy-MM-dd")
@@ -36,31 +38,37 @@ public class PurchaseDto {
     }
 
     @Data
-    public static class ResponseGetPurchase {
-        private Long purchaseNo;
-        private Long userNo;
-        private Long cardNo;
-        private Long storeNo;
-        private String storeName;
-        private PurchaseEntity.PurchaseType purchaseType;
-        private int price;
-        private String reason;
-        private char refundYn;
-        private LocalDate purchaseDate;
-        private CardDto cardInfo;
-        private StoreDto storeInfo;
+    public static class ResponsePurchaseList {
+        private String accountBookName;
+        private List<Purchase> purchaseList;
+        private List<CardDto> cardList;
+        private List<CategoryDto.ResponseCategory> categoryList;
 
+        @Data
+        public static class Purchase{
+            private Long purchaseNo;
+            private Long userNo;
+            private Long cardNo;
+            private Long accountBookNo;
+            private PurchaseEntity.PurchaseType purchaseType;
+            private int price;
+            private String reason;
+            private LocalDate purchaseDate;
+            private CardDto cardInfo;
+            private CategoryDto.PurchaseCategoryInfo categoryInfo;
+        }
     }
 
 
     @Data
     public static class RequestAddPurchaseForm {
+        private Long accountBookNo;
+        private Long cardNo;
+        private Long categoryNo;
         private String storeName;
         private PurchaseEntity.PurchaseType purchaseType;
         private int price;
         private String reason;
-        private Long cardNo;
-        private Long storeNo;
         private LocalDate purchaseDate;
 
     }
@@ -71,14 +79,14 @@ public class PurchaseDto {
                 .purchaseType(purchaseType)
                 .price(price)
                 .reason(reason)
-                .refundYn('N')
                 .purchaseDate(purchaseDate)
+                .accountBookInfo(accountBookInfo)
                 .cardInfo(cardInfo)
                 .userInfo(userInfo)
                 .build();
         /* 연관관계 편의 메소드 */
-        if(storeInfo != null){
-            purchaseEntity.changeStoreInfo(storeInfo);
+        if(categoryInfo != null){
+            purchaseEntity.changeCategoryInfo(categoryInfo);
         }
         return purchaseEntity;
     }

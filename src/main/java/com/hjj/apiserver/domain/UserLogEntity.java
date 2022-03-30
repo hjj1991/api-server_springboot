@@ -40,7 +40,7 @@ public class UserLogEntity {
     private LogType logType;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="userEntity_userNo")
+    @JoinColumn(name="userNo")
     private UserEntity userInfo;
 
     @Column

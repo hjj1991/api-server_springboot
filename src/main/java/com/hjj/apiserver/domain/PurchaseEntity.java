@@ -1,16 +1,18 @@
 package com.hjj.apiserver.domain;
 
+import com.hjj.apiserver.dto.PurchaseDto;
 import lombok.*;
+import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "tb_purchase")
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@DynamicUpdate
 @Getter
 public class PurchaseEntity extends BaseEntity {
 
@@ -36,31 +38,48 @@ public class PurchaseEntity extends BaseEntity {
     @Column(columnDefinition = "varchar(5000) default ''", nullable = true)
     private String reason;
 
-    @Column(columnDefinition = "char(1) default 'N'", nullable = false)
-    private char refundYn;
-
     @Column
     private LocalDate purchaseDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="cardEntity_cardNo", foreignKey = @ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
+    @JoinColumn(name="cardNo", nullable = true)
     private CardEntity cardInfo;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="storeEntity_storeNo", foreignKey = @ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
-    private StoreEntity storeInfo;
+    @JoinColumn(name="categoryNo")
+    private CategoryEntity categoryInfo;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="userEntity_userNo", nullable = false, foreignKey = @ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
+    @JoinColumn(name="userNo", nullable = false)
     private UserEntity userInfo;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="accountBookNo", nullable = false)
+    private AccountBookEntity accountBookInfo;
 
-    public void changeStoreInfo(StoreEntity storeInfo){
-        if(this.storeInfo != null){
-            this.storeInfo.getPurchaseEntityList().remove(storeInfo);
+
+    public void changeCategoryInfo(CategoryEntity categoryInfo){
+        if(this.categoryInfo != null){
+            this.categoryInfo.getPurchaseEntityList().remove(this);
         }
-        this.storeInfo = storeInfo;
-        storeInfo.getPurchaseEntityList().add(this);
+        this.categoryInfo = categoryInfo;
+        categoryInfo.getPurchaseEntityList().add(this);
+    }
+
+    public void changeUserInfo(UserEntity userInfo){
+        if(this.userInfo != null){
+            this.userInfo.getPurchaseEntityList().remove(this);
+        }
+        this.userInfo = userInfo;
+        userInfo.getPurchaseEntityList().add(this);
+    }
+
+    public void changeAccountBookInfo(AccountBookEntity accountBookInfo){
+        if(this.accountBookInfo != null){
+            this.accountBookInfo.getPurchaseEntityList().remove(accountBookInfo);
+        }
+        this.accountBookInfo = accountBookInfo;
+        accountBookInfo.getPurchaseEntityList().add(this);
     }
 
     public void delete(){

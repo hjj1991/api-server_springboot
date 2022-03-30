@@ -15,7 +15,6 @@ class UserServiceTest {
     @Test
     public void 객체생성_테스트(){
         UserDto.RequestUserUpdateForm userUpdateForm = new UserDto.RequestUserUpdateForm();
-        userUpdateForm.setUserNo(3L);
 
         UserDto userDto = modelMapper.map(userUpdateForm, UserDto.class);
 

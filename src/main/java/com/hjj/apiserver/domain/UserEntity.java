@@ -82,6 +82,14 @@ public class UserEntity implements UserDetails {
     @OrderBy("loginDateTime desc")
     private List<UserLogEntity> userLogEntityList = new ArrayList<>();
 
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "userInfo", fetch = FetchType.LAZY)
+    @Builder.Default
+    private List<AccountBookUserEntity> accountBookUserEntityList = new ArrayList<>();
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "userInfo", fetch = FetchType.LAZY)
+    @Builder.Default
+    private List<CardEntity> cardEntityList = new ArrayList<>();
+
     @Column(columnDefinition = "datetime default now()", nullable = false)
     private LocalDateTime createdDate;
 
