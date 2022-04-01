@@ -2,7 +2,6 @@ package com.hjj.apiserver.dto;
 
 import com.hjj.apiserver.domain.AccountBookEntity;
 import com.hjj.apiserver.domain.CategoryEntity;
-import com.hjj.apiserver.domain.UserEntity;
 import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
@@ -64,18 +63,28 @@ public class CategoryDto {
         private String categoryIcon;
     }
 
-
     @Data
-    public static class ResponseCategory{
+    public static class Category{
         private Long accountBookNo;
         private Long categoryNo;
         private Long parentCategoryNo;
         private String categoryName;
         private String categoryDesc;
         private String categoryIcon;
-        private List<ChildCategory> childCategoryList;
+        private List<ResponseCategory.ChildCategory> childCategoryList;
         private LocalDateTime createdDate;
         private LocalDateTime lastModifiedDate;
+    }
+
+
+    @Data
+    public static class ResponseCategory{
+
+        private List<Category> categoryList;
+        private String accountBookName;
+
+
+
 
         @Data
         public static class ChildCategory {
