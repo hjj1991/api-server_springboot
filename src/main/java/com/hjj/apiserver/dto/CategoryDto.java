@@ -83,9 +83,6 @@ public class CategoryDto {
         private List<Category> categoryList;
         private String accountBookName;
 
-
-
-
         @Data
         public static class ChildCategory {
             private Long accountBookNo;

@@ -50,7 +50,7 @@ class CategoryServiceTest {
     @Test
     void findCategoryAll(){
 
-        CategoryDto.ResponseCategory categoryList =  categoryService.findCategory(1L, 1L);
+        CategoryDto.ResponseCategory categoryList =  categoryService.findAllCategory(1L, 1L);
 
         for (CategoryDto.Category responseCategory : categoryList.getCategoryList()) {
             System.out.println("responseCategory.getCategoryName() = " + responseCategory.getCategoryName());

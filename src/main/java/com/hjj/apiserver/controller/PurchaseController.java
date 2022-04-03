@@ -62,7 +62,7 @@ public class PurchaseController {
             responsePurchaseList.setAccountBookName(accountBookRepository.getById(form.getAccountBookNo()).getAccountBookName());
             responsePurchaseList.setPurchaseList(purchaseService.findPurchaseList(purchaseDto));
             responsePurchaseList.setCardList(cardService.selectCardList(user.getUserNo()));
-            responsePurchaseList.setCategoryList(categoryService.findCategory(user.getUserNo(), form.getAccountBookNo()));
+            responsePurchaseList.setCategoryList(categoryService.findAllCategory(user.getUserNo(), form.getAccountBookNo()));
 
 
             return ApiUtils.success(responsePurchaseList);

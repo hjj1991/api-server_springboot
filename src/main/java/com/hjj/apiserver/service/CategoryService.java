@@ -64,7 +64,7 @@ public class CategoryService {
         categoryRepository.save(categoryEntity);
     }
 
-    public CategoryDto.ResponseCategory findCategory(Long userNo, Long accountBookNo){
+    public CategoryDto.ResponseCategory findAllCategory(Long userNo, Long accountBookNo){
         List<CategoryEntity> categoryEntityList = categoryRepository.findEntityGraphBySubQuery(accountBookNo, userNo);
         CategoryDto.ResponseCategory responseCategory = new CategoryDto.ResponseCategory();
         List<CategoryDto.Category> categoryList = new ArrayList<>();
@@ -79,7 +79,13 @@ public class CategoryService {
         responseCategory.setAccountBookName(accountBookRepository.findById(accountBookNo).get().getAccountBookName());
 
         return responseCategory;
+    }
 
+    public CategoryDto.Category findCategory(Long categoryNo){
+        CategoryEntity categoryEntity = categoryRepository.findById(categoryNo).orElseThrow();
+        CategoryDto.Category category = modelMapper.map(categoryEntity, CategoryDto.Category.class);
+
+        return category;
     }
 
     @Transactional(readOnly = false, rollbackFor = Exception.class)
