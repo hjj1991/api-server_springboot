@@ -1,6 +1,7 @@
 package com.hjj.apiserver.dto;
 
 import com.hjj.apiserver.domain.AccountBookEntity;
+import com.hjj.apiserver.domain.AccountBookUserEntity;
 import com.hjj.apiserver.domain.CategoryEntity;
 import lombok.Data;
 
@@ -82,6 +83,7 @@ public class CategoryDto {
 
         private List<Category> categoryList;
         private String accountBookName;
+        private AccountBookUserEntity.AccountRole accountRole;
 
         @Data
         public static class ChildCategory {
@@ -90,6 +92,7 @@ public class CategoryDto {
             private Long parentCategoryNo;
             private String categoryName;
             private String categoryDesc;
+            private String categoryIcon;
             private LocalDateTime createdDate;
             private LocalDateTime lastModifiedDate;
         }

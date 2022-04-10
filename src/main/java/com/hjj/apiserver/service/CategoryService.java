@@ -76,6 +76,7 @@ public class CategoryService {
             }
         });
         responseCategory.setCategoryList(categoryList);
+        responseCategory.setAccountRole(accountBookUserRepository.findByUserInfo_UserNoAndAccountBookInfo_AccountBookNo(userNo, accountBookNo).orElseThrow().getAccountRole());
         responseCategory.setAccountBookName(accountBookRepository.findById(accountBookNo).get().getAccountBookName());
 
         return responseCategory;
@@ -100,8 +101,8 @@ public class CategoryService {
     }
 
     @Transactional(readOnly = false, rollbackFor = Exception.class)
-    public void deleteCategory(Long categoryNo, Long userNo, Long accountBookNo) throws UserNotFoundException {
-        CategoryEntity categoryEntity = categoryRepository.findByCategoryNoAndSubQuery(categoryNo, userNo, accountBookNo, new ArrayList<>(Collections.singleton(AccountBookUserEntity.AccountRole.OWNER))).orElseThrow(UserNotFoundException::new);
+    public void deleteCategory(Long categoryNo, Long accountBookNo, Long userNo) throws UserNotFoundException {
+        CategoryEntity categoryEntity = categoryRepository.findByCategoryNoAndSubQuery(categoryNo, accountBookNo, userNo, new ArrayList<>(Collections.singleton(AccountBookUserEntity.AccountRole.OWNER))).orElseThrow(UserNotFoundException::new);
         categoryRepository.delete(categoryEntity);
     }
 }

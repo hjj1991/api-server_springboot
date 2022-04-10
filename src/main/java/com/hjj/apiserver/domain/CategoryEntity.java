@@ -60,6 +60,9 @@ public class CategoryEntity extends BaseEntity{
             this.parentCategory = categoryDto.getParentCategory();
             changeParentCategory(categoryDto.getParentCategory());
         }
+        if(categoryDto.getCategoryIcon() != null){
+            this.categoryIcon = categoryDto.getCategoryIcon();
+        }
 
         return this;
     }

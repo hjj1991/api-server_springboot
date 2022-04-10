@@ -92,7 +92,7 @@ public class CategoryController {
     @DeleteMapping("/category/{categoryNo}")
     public ApiResponse categoryDelete(@AuthenticationPrincipal TokenDto user, @ApiParam(value = "categoryNo", required = true) @PathVariable("categoryNo") Long categoryNo, @RequestBody CategoryDto.RequestCategoryRemoveForm form) {
         try {
-            categoryService.deleteCategory(categoryNo, user.getUserNo(), form.getAccountBookNo());
+            categoryService.deleteCategory(categoryNo, form.getAccountBookNo(), user.getUserNo());
 
             return ApiUtils.success(null);
         } catch (Exception e) {
