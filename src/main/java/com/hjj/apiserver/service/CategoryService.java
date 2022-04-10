@@ -18,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -58,25 +57,36 @@ public class CategoryService {
         AccountBookEntity accountBookEntity = accountBookRepository.findAccountBookBySubQuery(categoryDto.getUserNo(), categoryDto.getAccountBookNo(), AccountBookUserEntity.AccountRole.OWNER).orElseThrow(UserNotFoundException::new);
 
         categoryDto.setAccountBookEntity(accountBookEntity);
-        categoryDto.setParentCategory(categoryRepository.getById(categoryDto.getParentCategoryNo()));
+        if(categoryDto.getParentCategoryNo() != null){
+            categoryDto.setParentCategory(categoryRepository.getById(categoryDto.getParentCategoryNo()));
+        }
         CategoryEntity categoryEntity = categoryDto.toEntity();
         categoryRepository.save(categoryEntity);
     }
 
-    public List<CategoryDto.ResponseCategory> findCategory(Long userNo, Long accountBookNo){
+    public CategoryDto.ResponseCategory findAllCategory(Long userNo, Long accountBookNo){
         List<CategoryEntity> categoryEntityList = categoryRepository.findEntityGraphBySubQuery(accountBookNo, userNo);
-        List<CategoryDto.ResponseCategory> responseCategoryList = new ArrayList<>();
+        CategoryDto.ResponseCategory responseCategory = new CategoryDto.ResponseCategory();
+        List<CategoryDto.Category> categoryList = new ArrayList<>();
         categoryEntityList.stream().forEach(categoryEntity -> {
-            CategoryDto.ResponseCategory responseCategory = modelMapper.map(categoryEntity, CategoryDto.ResponseCategory.class);
+            CategoryDto.Category category = modelMapper.map(categoryEntity, CategoryDto.Category.class);
             if(categoryEntity.getParentCategory() == null){
-                responseCategory.setAccountBookNo(accountBookNo);
-                responseCategoryList.add(responseCategory);
+                category.setAccountBookNo(accountBookNo);
+                categoryList.add(category);
             }
-
-
         });
-        return responseCategoryList;
+        responseCategory.setCategoryList(categoryList);
+        responseCategory.setAccountRole(accountBookUserRepository.findByUserInfo_UserNoAndAccountBookInfo_AccountBookNo(userNo, accountBookNo).orElseThrow().getAccountRole());
+        responseCategory.setAccountBookName(accountBookRepository.findById(accountBookNo).get().getAccountBookName());
 
+        return responseCategory;
+    }
+
+    public CategoryDto.Category findCategory(Long categoryNo){
+        CategoryEntity categoryEntity = categoryRepository.findById(categoryNo).orElseThrow();
+        CategoryDto.Category category = modelMapper.map(categoryEntity, CategoryDto.Category.class);
+
+        return category;
     }
 
     @Transactional(readOnly = false, rollbackFor = Exception.class)
@@ -91,8 +101,8 @@ public class CategoryService {
     }
 
     @Transactional(readOnly = false, rollbackFor = Exception.class)
-    public void deleteCategory(Long categoryNo, Long userNo, Long accountBookNo) throws UserNotFoundException {
-        CategoryEntity categoryEntity = categoryRepository.findByCategoryNoAndSubQuery(categoryNo, userNo, accountBookNo, new ArrayList<>(Collections.singleton(AccountBookUserEntity.AccountRole.OWNER))).orElseThrow(UserNotFoundException::new);
+    public void deleteCategory(Long categoryNo, Long accountBookNo, Long userNo) throws UserNotFoundException {
+        CategoryEntity categoryEntity = categoryRepository.findByCategoryNoAndSubQuery(categoryNo, accountBookNo, userNo, new ArrayList<>(Collections.singleton(AccountBookUserEntity.AccountRole.OWNER))).orElseThrow(UserNotFoundException::new);
         categoryRepository.delete(categoryEntity);
     }
 }

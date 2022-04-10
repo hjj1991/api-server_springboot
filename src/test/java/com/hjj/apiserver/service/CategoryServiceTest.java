@@ -7,7 +7,6 @@ import com.hjj.apiserver.dto.CategoryDto;
 import com.hjj.apiserver.repositroy.CategoryRepository;
 import com.hjj.apiserver.repositroy.PurchaseRepository;
 import com.hjj.apiserver.repositroy.UserRepository;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -15,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Transactional
 @SpringBootTest
@@ -52,9 +50,9 @@ class CategoryServiceTest {
     @Test
     void findCategoryAll(){
 
-        List<CategoryDto.ResponseCategory> categoryList =  categoryService.findCategory(1L, 1L);
+        CategoryDto.ResponseCategory categoryList =  categoryService.findAllCategory(1L, 1L);
 
-        for (CategoryDto.ResponseCategory responseCategory : categoryList) {
+        for (CategoryDto.Category responseCategory : categoryList.getCategoryList()) {
             System.out.println("responseCategory.getCategoryName() = " + responseCategory.getCategoryName());
             System.out.println("responseCategory.getCategoryNo() = " + responseCategory.getCategoryNo());
 

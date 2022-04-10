@@ -13,6 +13,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @Api(tags = {"4. Category"})
 @Slf4j
 @RestController
@@ -44,7 +46,7 @@ public class CategoryController {
     @GetMapping("/category")
     public ApiResponse categoryList(@AuthenticationPrincipal TokenDto user, @RequestParam(value = "accountBookNo") Long accountBookNo) {
         try {
-            return ApiUtils.success(categoryService.findCategory(user.getUserNo(), accountBookNo));
+            return ApiUtils.success(categoryService.findAllCategory(user.getUserNo(), accountBookNo));
         } catch (Exception e) {
             log.error("categoryList Error userNo: {}, accountBookNo: [}, exception: {}", user.getUserNo(), accountBookNo, e);
             return ApiUtils.error(ApiError.ErrCode.ERR_CODE9999.getMsg(), ApiError.ErrCode.ERR_CODE9999);
@@ -53,9 +55,23 @@ public class CategoryController {
 
     @ApiImplicitParams({
             @ApiImplicitParam(name = "access_token", value = "로그인 성공 후 access_token", required = true, dataType = "String", paramType = "header")})
+    @ApiOperation(value = "카테고리 상세 조회", notes = "카테고리를 상세 조회한다.")
+    @GetMapping("/category/{categoryNo}")
+    public ApiResponse categoryDetail(@AuthenticationPrincipal TokenDto user, @ApiParam(value = "categoryNo", required = true) @PathVariable("categoryNo") Long categoryNo) {
+        try {
+
+            return ApiUtils.success(categoryService.findCategory(categoryNo));
+        } catch (Exception e) {
+            log.error("categoryModify Error userNo: {}, categoryNo: {}, exception: {}", user.getUserNo(), categoryNo, e);
+            return ApiUtils.error(ApiError.ErrCode.ERR_CODE9999.getMsg(), ApiError.ErrCode.ERR_CODE9999);
+        }
+    }
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "access_token", value = "로그인 성공 후 access_token", required = true, dataType = "String", paramType = "header")})
     @ApiOperation(value = "카테고리를 변경", notes = "카테고리를 변경한다.")
     @PatchMapping("/category/{categoryNo}")
-    public ApiResponse categoryModify(@AuthenticationPrincipal TokenDto user, @ApiParam(value = "categoryNo", required = true) @PathVariable("categoryNo") Long categoryNo,@RequestBody CategoryDto.RequestCategoryModifyForm form) {
+    public ApiResponse categoryModify(@AuthenticationPrincipal TokenDto user, @ApiParam(value = "categoryNo", required = true) @PathVariable("categoryNo") Long categoryNo, @Valid @RequestBody CategoryDto.RequestCategoryModifyForm form) {
         try {
             CategoryDto categoryDto = modelMapper.map(form, CategoryDto.class);
             categoryDto.setUserNo(user.getUserNo());
@@ -76,7 +92,7 @@ public class CategoryController {
     @DeleteMapping("/category/{categoryNo}")
     public ApiResponse categoryDelete(@AuthenticationPrincipal TokenDto user, @ApiParam(value = "categoryNo", required = true) @PathVariable("categoryNo") Long categoryNo, @RequestBody CategoryDto.RequestCategoryRemoveForm form) {
         try {
-            categoryService.deleteCategory(categoryNo, user.getUserNo(), form.getAccountBookNo());
+            categoryService.deleteCategory(categoryNo, form.getAccountBookNo(), user.getUserNo());
 
             return ApiUtils.success(null);
         } catch (Exception e) {
