@@ -62,7 +62,7 @@ public class PurchaseService {
 
     public List<PurchaseDto.ResponsePurchaseList.Purchase> findPurchaseList(PurchaseDto purchaseDto){
 
-        List<PurchaseEntity> purchaseEntityList = purchaseRepository.findAllEntityGraphByPurchaseDateBetweenAndAccountBookInfo_AccountBookNoOrderByPurchaseDateDesc(purchaseDto.getStartDate(), purchaseDto.getEndDate(), purchaseDto.getAccountBookNo());
+        List<PurchaseEntity> purchaseEntityList = purchaseRepository.findAllEntityGraphByPurchaseDateBetweenAndAccountBookInfo_AccountBookNoAndDeleteYnOrderByPurchaseDateDesc(purchaseDto.getStartDate(), purchaseDto.getEndDate(), purchaseDto.getAccountBookNo(), 'N');
         List<PurchaseDto.ResponsePurchaseList.Purchase> purchaseList = new ArrayList<>();
         purchaseEntityList.stream().forEach(purchaseEntity -> {
             PurchaseDto.ResponsePurchaseList.Purchase responsePurchaseList = modelMapper.map(purchaseEntity, PurchaseDto.ResponsePurchaseList.Purchase.class);

@@ -15,7 +15,7 @@ import java.util.List;
 public interface PurchaseRepository extends JpaRepository<PurchaseEntity, Long> {
 
     @EntityGraph(attributePaths = {"cardInfo", "categoryInfo"})
-    List<PurchaseEntity> findAllEntityGraphByPurchaseDateBetweenAndAccountBookInfo_AccountBookNoOrderByPurchaseDateDesc(LocalDate startDate, LocalDate endDate, Long accountBookNo);
+    List<PurchaseEntity> findAllEntityGraphByPurchaseDateBetweenAndAccountBookInfo_AccountBookNoAndDeleteYnOrderByPurchaseDateDesc(LocalDate startDate, LocalDate endDate, Long accountBookNo, char deleteYn);
 
     @EntityGraph(attributePaths = {"cardInfo", "categoryInfo"})
     List<PurchaseEntity> findAllEntityGraphByPurchaseDateBetweenAndUserInfo_UserNoOrderByPurchaseDateDesc(LocalDate startDate, LocalDate endDate, Long userNo);
