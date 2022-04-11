@@ -96,7 +96,9 @@ public class CategoryService {
         if((updateCategory.getParentCategory() == null && categoryDto.getParentCategoryNo() != null) || updateCategory.getCategoryNo() == categoryDto.getParentCategoryNo()){
             throw new Exception();
         }
-        categoryDto.setParentCategory(categoryRepository.getById(categoryDto.getParentCategoryNo()));
+        if(categoryDto.getParentCategoryNo() != null){
+            categoryDto.setParentCategory(categoryRepository.getById(categoryDto.getParentCategoryNo()));
+        }
         updateCategory.updateCategory(categoryDto);
     }
 
