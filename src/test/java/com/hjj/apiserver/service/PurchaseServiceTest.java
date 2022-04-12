@@ -24,7 +24,6 @@ class PurchaseServiceTest {
     public void 소비추가() throws Exception {
 
         PurchaseDto.RequestAddPurchaseForm requestAddPurchaseForm = new PurchaseDto.RequestAddPurchaseForm();
-        requestAddPurchaseForm.setStoreNo(1L);
         requestAddPurchaseForm.setPrice(1000);
         requestAddPurchaseForm.setPurchaseDate(LocalDate.now());
         requestAddPurchaseForm.setPurchaseType(PurchaseEntity.PurchaseType.OUTGOING);
