@@ -1,11 +1,11 @@
 package com.hjj.apiserver.dto;
 
 import com.hjj.apiserver.domain.*;
+import com.querydsl.core.annotations.QueryProjection;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -56,6 +56,30 @@ public class PurchaseDto {
             private LocalDate purchaseDate;
             private CardDto cardInfo;
             private CategoryDto.PurchaseCategoryInfo categoryInfo;
+        }
+    }
+
+    @Data
+    public static class ResponsePurchaseDetail {
+        private Long accountBookNo;
+        private Long cardNo;
+        private Long categoryNo;
+        private String storeName;
+        private PurchaseEntity.PurchaseType purchaseType;
+        private int price;
+        private String reason;
+        private LocalDate purchaseDate;
+
+        @QueryProjection
+        public ResponsePurchaseDetail(Long accountBookNo, Long cardNo, Long categoryNo, String storeName, PurchaseEntity.PurchaseType purchaseType, int price, String reason, LocalDate purchaseDate) {
+            this.accountBookNo = accountBookNo;
+            this.cardNo = cardNo;
+            this.categoryNo = categoryNo;
+            this.storeName = storeName;
+            this.purchaseType = purchaseType;
+            this.price = price;
+            this.reason = reason;
+            this.purchaseDate = purchaseDate;
         }
     }
 

@@ -12,7 +12,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Repository
-public interface PurchaseRepository extends JpaRepository<PurchaseEntity, Long> {
+public interface PurchaseRepository extends JpaRepository<PurchaseEntity, Long>, PurchaseRepositoryCustom {
 
     @EntityGraph(attributePaths = {"cardInfo", "categoryInfo"})
     List<PurchaseEntity> findAllEntityGraphByPurchaseDateBetweenAndAccountBookInfo_AccountBookNoAndDeleteYnOrderByPurchaseDateDesc(LocalDate startDate, LocalDate endDate, Long accountBookNo, char deleteYn);

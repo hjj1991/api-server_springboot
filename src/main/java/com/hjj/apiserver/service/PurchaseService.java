@@ -98,6 +98,11 @@ public class PurchaseService {
         purchaseEntity.delete();
 
     }
+
+    public PurchaseDto.ResponsePurchaseDetail findPurchase(Long userNo, Long purchaseNo) {
+        return purchaseRepository.findPurchase(userNo, purchaseNo);
+
+    }
 }
 
 

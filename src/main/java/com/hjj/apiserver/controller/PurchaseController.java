@@ -88,6 +88,19 @@ public class PurchaseController {
             log.error("getPurchaseList: {}", e);
             return ApiUtils.error(ApiError.ErrCode.ERR_CODE0005.getMsg(), ApiError.ErrCode.ERR_CODE0005);
         }
-
     }
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "access_token", value = "로그인 성공 후 access_token", required = true, dataType = "String", paramType = "header")})
+    @ApiOperation(value = "지출, 수입 상세조회", notes = "지출, 수입을 상세 조회한다.")
+    @GetMapping("/purchase/{purchaseNo}")
+    public ApiResponse findPurchase(@AuthenticationPrincipal TokenDto user, @PathVariable("purchaseNo") Long purchaseNo) {
+        try {
+            return ApiUtils.success(purchaseService.findPurchase(user.getUserNo(), purchaseNo));
+        } catch (Exception e) {
+            log.error("getPurchaseList: {}", e);
+            return ApiUtils.error(ApiError.ErrCode.ERR_CODE0005.getMsg(), ApiError.ErrCode.ERR_CODE0005);
+        }
+    }
+
 }
