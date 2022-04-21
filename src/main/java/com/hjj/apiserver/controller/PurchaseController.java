@@ -9,10 +9,7 @@ import com.hjj.apiserver.repositroy.AccountBookRepository;
 import com.hjj.apiserver.service.CardService;
 import com.hjj.apiserver.service.CategoryService;
 import com.hjj.apiserver.service.PurchaseService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.*;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -35,7 +32,7 @@ public class PurchaseController {
             @ApiImplicitParam(name = "access_token", value = "로그인 성공 후 access_token", required = true, dataType = "String", paramType = "header")})
     @ApiOperation(value = "지출,수입 등록", notes = "지출, 수입을 등록한다.")
     @PostMapping("/purchase")
-    public ApiResponse addPurchase(@AuthenticationPrincipal TokenDto user, @RequestBody PurchaseDto.RequestAddPurchaseForm requestAddPurchaseForm) {
+    public ApiResponse purchaseAdd(@AuthenticationPrincipal TokenDto user, @RequestBody PurchaseDto.RequestAddPurchaseForm requestAddPurchaseForm) {
         try {
             PurchaseDto purchaseDto = modelMapper.map(requestAddPurchaseForm, PurchaseDto.class);
             purchaseDto.setUserNo(user.getUserNo());
@@ -77,7 +74,7 @@ public class PurchaseController {
             @ApiImplicitParam(name = "access_token", value = "로그인 성공 후 access_token", required = true, dataType = "String", paramType = "header")})
     @ApiOperation(value = "지출,수입 삭제", notes = "지출, 수입을 삭제한다.")
     @DeleteMapping("/purchase/{purchaseNo}")
-    public ApiResponse deletePurchase(@AuthenticationPrincipal TokenDto user, @PathVariable("purchaseNo") Long purchaseNo) {
+    public ApiResponse purchaseDelete(@AuthenticationPrincipal TokenDto user, @PathVariable("purchaseNo") Long purchaseNo) {
         try {
 
             purchaseService.deletePurchase(user.getUserNo(), purchaseNo);
@@ -94,8 +91,25 @@ public class PurchaseController {
             @ApiImplicitParam(name = "access_token", value = "로그인 성공 후 access_token", required = true, dataType = "String", paramType = "header")})
     @ApiOperation(value = "지출, 수입 상세조회", notes = "지출, 수입을 상세 조회한다.")
     @GetMapping("/purchase/{purchaseNo}")
-    public ApiResponse findPurchase(@AuthenticationPrincipal TokenDto user, @PathVariable("purchaseNo") Long purchaseNo) {
+    public ApiResponse purchaseDetail(@AuthenticationPrincipal TokenDto user, @PathVariable("purchaseNo") Long purchaseNo) {
         try {
+            return ApiUtils.success(purchaseService.findPurchase(user.getUserNo(), purchaseNo));
+        } catch (Exception e) {
+            log.error("getPurchaseList: {}", e);
+            return ApiUtils.error(ApiError.ErrCode.ERR_CODE0005.getMsg(), ApiError.ErrCode.ERR_CODE0005);
+        }
+    }
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "access_token", value = "로그인 성공 후 access_token", required = true, dataType = "String", paramType = "header")})
+    @ApiOperation(value = "지출, 수입 상세조회", notes = "지출, 수입을 상세 조회한다.")
+    @PatchMapping("/purchase/{purchaseNo}")
+    public ApiResponse purchaseModify(@AuthenticationPrincipal TokenDto user, @ApiParam(value = "purchaseNo", required = true) @PathVariable("purchaseNo") Long purchaseNo, @RequestBody PurchaseDto.RequestModifyPurchaseForm form) {
+        try {
+            PurchaseDto purchaseDto = modelMapper.map(form, PurchaseDto.class);
+            purchaseDto.setPurchaseNo(purchaseNo);
+            purchaseDto.setUserNo(user.getUserNo());
+            purchaseService.modifyPurchase(purchaseDto);
             return ApiUtils.success(purchaseService.findPurchase(user.getUserNo(), purchaseNo));
         } catch (Exception e) {
             log.error("getPurchaseList: {}", e);

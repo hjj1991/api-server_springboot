@@ -3,6 +3,7 @@ package com.hjj.apiserver.domain;
 import com.hjj.apiserver.dto.PurchaseDto;
 import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
+import org.springframework.util.StringUtils;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -33,7 +34,7 @@ public class PurchaseEntity extends BaseEntity {
     private PurchaseType purchaseType;
 
     @Column
-    private int price;
+    private Integer price;
 
     @Column(columnDefinition = "varchar(5000) default ''", nullable = true)
     private String reason;
@@ -80,6 +81,32 @@ public class PurchaseEntity extends BaseEntity {
         }
         this.accountBookInfo = accountBookInfo;
         accountBookInfo.getPurchaseEntityList().add(this);
+    }
+
+
+    public PurchaseEntity updatePurchase(PurchaseDto purchaseDto){
+        if(purchaseDto.getCardInfo() != null){
+            this.cardInfo = purchaseDto.getCardInfo();
+        }
+        if(purchaseDto.getCategoryInfo() != null){
+            changeCategoryInfo(purchaseDto.getCategoryInfo());
+        }
+        if(purchaseDto.getStoreName() != null){
+            this.storeName = purchaseDto.getStoreName();
+        }
+        if(purchaseDto.getPurchaseType() != null){
+            this.purchaseType = purchaseDto.getPurchaseType();
+        }
+        if(purchaseDto.getPrice() != null){
+            this.price = purchaseDto.getPrice();
+        }
+        if(purchaseDto.getReason() != null){
+            this.reason = purchaseDto.getReason();
+        }
+        if(purchaseDto.getPurchaseDate() != null){
+            this.purchaseDate = purchaseDto.getPurchaseDate();
+        }
+        return this;
     }
 
     public void delete(){

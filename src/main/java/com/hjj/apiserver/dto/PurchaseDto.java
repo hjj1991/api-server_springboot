@@ -18,7 +18,7 @@ public class PurchaseDto {
     private Long accountBookNo;
     private String storeName;
     private PurchaseEntity.PurchaseType purchaseType;
-    private int price;
+    private Integer price;
     private String reason;
     private LocalDate purchaseDate;
     private CardEntity cardInfo;
@@ -86,6 +86,19 @@ public class PurchaseDto {
 
     @Data
     public static class RequestAddPurchaseForm {
+        private Long accountBookNo;
+        private Long cardNo;
+        private Long categoryNo;
+        private String storeName;
+        private PurchaseEntity.PurchaseType purchaseType;
+        private int price;
+        private String reason;
+        private LocalDate purchaseDate;
+
+    }
+
+    @Data
+    public static class RequestModifyPurchaseForm {
         private Long accountBookNo;
         private Long cardNo;
         private Long categoryNo;

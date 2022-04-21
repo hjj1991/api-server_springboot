@@ -101,6 +101,13 @@ public class PurchaseService {
 
     public PurchaseDto.ResponsePurchaseDetail findPurchase(Long userNo, Long purchaseNo) {
         return purchaseRepository.findPurchase(userNo, purchaseNo);
+    }
+
+    @Transactional(readOnly = false, rollbackFor = Exception.class)
+    public void modifyPurchase(PurchaseDto purchaseDto) {
+        PurchaseEntity updatePurchaseEntity = purchaseRepository.findEntityGraphByUserInfo_UserNoAndPurchaseNoAndDeleteYn(purchaseDto.getUserNo(), purchaseDto.getPurchaseNo(), 'N');
+
+        updatePurchaseEntity.updatePurchase(purchaseDto);
 
     }
 }

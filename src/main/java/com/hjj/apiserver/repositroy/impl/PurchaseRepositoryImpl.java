@@ -6,11 +6,7 @@ import com.hjj.apiserver.repositroy.PurchaseRepositoryCustom;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 
-import static com.hjj.apiserver.domain.QAccountBookEntity.accountBookEntity;
-import static com.hjj.apiserver.domain.QCardEntity.cardEntity;
-import static com.hjj.apiserver.domain.QCategoryEntity.categoryEntity;
 import static com.hjj.apiserver.domain.QPurchaseEntity.purchaseEntity;
-import static com.hjj.apiserver.domain.QUserEntity.userEntity;
 
 
 @RequiredArgsConstructor
@@ -31,10 +27,6 @@ public class PurchaseRepositoryImpl implements PurchaseRepositoryCustom {
                         purchaseEntity.purchaseDate
                 ))
                 .from(purchaseEntity)
-                .join(purchaseEntity.userInfo, userEntity)
-                .leftJoin(purchaseEntity.accountBookInfo, accountBookEntity)
-                .leftJoin(purchaseEntity.cardInfo, cardEntity)
-                .leftJoin(purchaseEntity.categoryInfo, categoryEntity)
                 .where(purchaseEntity.purchaseNo.eq(purchaseNo).and(purchaseEntity.userInfo.userNo.eq(userNo)))
                 .fetchOne();
 
