@@ -21,10 +21,10 @@ public class PurchaseDto {
     private Integer price;
     private String reason;
     private LocalDate purchaseDate;
-    private CardEntity cardInfo;
-    private CategoryEntity categoryInfo;
-    private UserEntity userInfo;
-    private AccountBookEntity accountBookInfo;
+    private CardEntity cardEntity;
+    private CategoryEntity categoryEntity;
+    private UserEntity userEntity;
+    private AccountBookEntity accountBookEntity;
     private LocalDate startDate;
     private LocalDate endDate;
 
@@ -54,7 +54,7 @@ public class PurchaseDto {
             private int price;
             private String reason;
             private LocalDate purchaseDate;
-            private CardDto cardInfo;
+            private CardDto cardDto;
             private CategoryDto.PurchaseCategoryInfo categoryInfo;
         }
     }
@@ -117,13 +117,13 @@ public class PurchaseDto {
                 .price(price)
                 .reason(reason)
                 .purchaseDate(purchaseDate)
-                .accountBookInfo(accountBookInfo)
-                .cardInfo(cardInfo)
-                .userInfo(userInfo)
+                .accountBookEntity(accountBookEntity)
+                .cardEntity(cardEntity)
+                .userEntity(userEntity)
                 .build();
         /* 연관관계 편의 메소드 */
-        if(categoryInfo != null){
-            purchaseEntity.changeCategoryInfo(categoryInfo);
+        if(categoryEntity != null){
+            purchaseEntity.changeCategoryEntity(categoryEntity);
         }
         return purchaseEntity;
     }

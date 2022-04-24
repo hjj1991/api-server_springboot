@@ -5,7 +5,6 @@ import com.hjj.apiserver.common.ApiResponse;
 import com.hjj.apiserver.common.ApiUtils;
 import com.hjj.apiserver.common.provider.JwtTokenProvider;
 import com.hjj.apiserver.domain.CardEntity;
-import com.hjj.apiserver.domain.UserEntity;
 import com.hjj.apiserver.dto.CardDto;
 import com.hjj.apiserver.dto.TokenDto;
 import com.hjj.apiserver.repositroy.CardRepository;
@@ -36,7 +35,7 @@ public class CardController {
     @ApiOperation(value = "개인 카드 목록 조회", notes = "개인카드 목록조회한다..")
     @GetMapping("/card")
     public ApiResponse<List<CardDto>> getCardList(@AuthenticationPrincipal TokenDto user) {
-        List<CardEntity> cardEntityList = cardRepository.findByUserInfo_UserNoAndDeleteYn(user.getUserNo(), 'N');
+        List<CardEntity> cardEntityList = cardRepository.findByUserEntity_UserNoAndDeleteYn(user.getUserNo(), 'N');
         List<CardDto> cardDto = cardEntityList.stream().map(tempCardEntity -> modelMapper.map(tempCardEntity, CardDto.class)).collect(Collectors.toList());
 
         return ApiUtils.success(cardDto);
@@ -50,7 +49,7 @@ public class CardController {
     public ApiResponse addCard(@AuthenticationPrincipal TokenDto user, @RequestBody CardDto.RequestAddCardForm requestAddCardForm) {
         try {
             CardDto cardDto = modelMapper.map(requestAddCardForm, CardDto.class);
-            cardDto.setUserInfo(userRepository.getById(user.getUserNo()));
+            cardDto.setUserEntity(userRepository.getById(user.getUserNo()));
             cardService.insertCard(cardDto);
             return ApiUtils.success(null);
         } catch (Exception e) {
@@ -69,7 +68,7 @@ public class CardController {
     public ApiResponse deleteCard(@AuthenticationPrincipal TokenDto user ,@ApiParam(value = "cardNo", required = true) @PathVariable("cardNo") Long cardNo) {
 
         try {
-            CardEntity cardEntity = cardRepository.findByCardNoAndUserInfo_UserNo(cardNo, user.getUserNo()).orElseThrow(() -> new Exception("해당된 값이 없습니다."));
+            CardEntity cardEntity = cardRepository.findByCardNoAndUserEntity_UserNo(cardNo, user.getUserNo()).orElseThrow(() -> new Exception("해당된 값이 없습니다."));
             cardService.deleteCard(cardEntity);
             return ApiUtils.success(null);
         } catch (Exception e) {
@@ -87,7 +86,7 @@ public class CardController {
     @PutMapping("/card/{cardNo}")
     public ApiResponse updateCard(@AuthenticationPrincipal TokenDto user ,@ApiParam(value = "cardNo", required = true) @PathVariable("cardNo") Long cardNo, @RequestBody CardDto.RequestModifyCardForm modifyCardForm) {
         try {
-            CardEntity cardEntity = cardRepository.findByCardNoAndUserInfo_UserNo(cardNo, user.getUserNo()).orElseThrow(() -> new Exception("해당된 값이 없습니다."));
+            CardEntity cardEntity = cardRepository.findByCardNoAndUserEntity_UserNo(cardNo, user.getUserNo()).orElseThrow(() -> new Exception("해당된 값이 없습니다."));
             cardService.updateCard(cardEntity, modifyCardForm.getCardDto());
             return ApiUtils.success(null);
         } catch (Exception e) {
@@ -105,7 +104,7 @@ public class CardController {
     @GetMapping("/card/{cardNo}")
     public ApiResponse selectCardDetail(@AuthenticationPrincipal TokenDto user ,@ApiParam(value = "cardNo", required = true) @PathVariable("cardNo") Long cardNo) {
         try {
-            CardEntity cardEntity = cardRepository.findByCardNoAndUserInfo_UserNo(cardNo, user.getUserNo()).orElseThrow(() -> new Exception("해당된 값이 없습니다."));
+            CardEntity cardEntity = cardRepository.findByCardNoAndUserEntity_UserNo(cardNo, user.getUserNo()).orElseThrow(() -> new Exception("해당된 값이 없습니다."));
             CardDto cardDto = modelMapper.map(cardEntity, CardDto.class);
             return ApiUtils.success(cardDto);
         } catch (Exception e) {

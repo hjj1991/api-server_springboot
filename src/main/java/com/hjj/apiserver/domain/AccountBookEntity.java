@@ -26,14 +26,14 @@ public class AccountBookEntity extends BaseEntity {
     @Column
     private String accountBookDesc;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "accountBookInfo")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "accountBookEntity")
     private List<AccountBookUserEntity> accountBookUserEntityList = new ArrayList<>();
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "accountBookInfo")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "accountBookEntity")
     @BatchSize(size = 100)
     private List<PurchaseEntity> purchaseEntityList = new ArrayList<>();
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "accountBookInfo")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "accountBookEntity")
     private List<CategoryEntity> categoryEntityList = new ArrayList<>();
 
 }

@@ -33,13 +33,13 @@ public class CategoryEntity extends BaseEntity{
     @Column
     private String categoryIcon;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "categoryInfo")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "categoryEntity")
     @Builder.Default
     private List<PurchaseEntity> purchaseEntityList = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "accountBookNo")
-    private AccountBookEntity accountBookInfo;
+    private AccountBookEntity accountBookEntity;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parentCategoryNo")

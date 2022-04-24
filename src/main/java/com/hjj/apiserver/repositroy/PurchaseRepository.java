@@ -14,19 +14,19 @@ import java.util.List;
 @Repository
 public interface PurchaseRepository extends JpaRepository<PurchaseEntity, Long>, PurchaseRepositoryCustom {
 
-    @EntityGraph(attributePaths = {"cardInfo", "categoryInfo"})
-    List<PurchaseEntity> findAllEntityGraphByPurchaseDateBetweenAndAccountBookInfo_AccountBookNoAndDeleteYnOrderByPurchaseDateDesc(LocalDate startDate, LocalDate endDate, Long accountBookNo, char deleteYn);
+    @EntityGraph(attributePaths = {"cardEntity", "categoryEntity"})
+    List<PurchaseEntity> findAllEntityGraphByPurchaseDateBetweenAndAccountBookEntity_AccountBookNoAndDeleteYnOrderByPurchaseDateDesc(LocalDate startDate, LocalDate endDate, Long accountBookNo, char deleteYn);
 
-    @EntityGraph(attributePaths = {"cardInfo", "categoryInfo"})
-    List<PurchaseEntity> findAllEntityGraphByPurchaseDateBetweenAndUserInfo_UserNoOrderByPurchaseDateDesc(LocalDate startDate, LocalDate endDate, Long userNo);
+    @EntityGraph(attributePaths = {"cardEntity", "categoryEntity"})
+    List<PurchaseEntity> findAllEntityGraphByPurchaseDateBetweenAndUserEntity_UserNoOrderByPurchaseDateDesc(LocalDate startDate, LocalDate endDate, Long userNo);
 
-    @EntityGraph(attributePaths = {"userInfo"})
-    PurchaseEntity findEntityGraphByUserInfo_UserNoAndPurchaseNoAndDeleteYn(Long userNo, Long purchaseNo, char deleteYn);
+    @EntityGraph(attributePaths = {"userEntity"})
+    PurchaseEntity findEntityGraphByUserEntity_UserNoAndPurchaseNoAndDeleteYn(Long userNo, Long purchaseNo, char deleteYn);
 
-    List<PurchaseEntity> findByCategoryInfo_CategoryNo(Long categoryNo);
+    List<PurchaseEntity> findByCategoryEntity_CategoryNo(Long categoryNo);
 
     @Modifying(clearAutomatically = true)
-    @Query("update PurchaseEntity set categoryInfo = null where categoryInfo.categoryNo = :categoryNo")
+    @Query("update PurchaseEntity set categoryEntity = null where categoryEntity.categoryNo = :categoryNo")
     void deleteCategoryAllPurchaseEntityByCategoryNo(@Param("categoryNo") Long categoryNo);
 
 

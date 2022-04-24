@@ -23,11 +23,11 @@ public class AccountBookUserEntity extends BaseEntity{
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "accountBookNo")
-    private AccountBookEntity accountBookInfo;
+    private AccountBookEntity accountBookEntity;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "userNo")
-    private UserEntity userInfo;
+    private UserEntity userEntity;
 
     @Column
     @Enumerated(EnumType.STRING)
@@ -40,19 +40,19 @@ public class AccountBookUserEntity extends BaseEntity{
     private String color;
 
     /* 연관관계 편의 메소드 */
-    public void changeAccountBookInfo(AccountBookEntity accountBookInfo){
-        if(this.accountBookInfo != null){
-            this.accountBookInfo.getAccountBookUserEntityList().remove(this);
+    public void changeAccountBookEntity(AccountBookEntity accountBookEntity){
+        if(this.accountBookEntity != null){
+            this.accountBookEntity.getAccountBookUserEntityList().remove(this);
         }
-        this.accountBookInfo = accountBookInfo;
-        accountBookInfo.getAccountBookUserEntityList().add(this);
+        this.accountBookEntity = accountBookEntity;
+        accountBookEntity.getAccountBookUserEntityList().add(this);
     }
 
-    public void changeUserInfo(UserEntity userInfo){
-        if(this.userInfo != null){
-            this.userInfo.getAccountBookUserEntityList().remove(this);
+    public void changeUserEntity(UserEntity userEntity){
+        if(this.userEntity != null){
+            this.userEntity.getAccountBookUserEntityList().remove(this);
         }
-        this.userInfo = userInfo;
-        userInfo.getAccountBookUserEntityList().add(this);
+        this.userEntity = userEntity;
+        userEntity.getAccountBookUserEntityList().add(this);
     }
 }

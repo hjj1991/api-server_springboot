@@ -41,7 +41,7 @@ public class UserLogEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="userNo")
-    private UserEntity userInfo;
+    private UserEntity userEntity;
 
     @Column
     private LocalDateTime createdDate;

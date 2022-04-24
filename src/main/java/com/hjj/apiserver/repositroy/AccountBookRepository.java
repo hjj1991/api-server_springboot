@@ -13,13 +13,13 @@ import java.util.Optional;
 public interface AccountBookRepository extends JpaRepository<AccountBookEntity, Long> {
 
     @Query("select ab from AccountBookEntity ab where ab.accountBookNo = " +
-            "(select abu.accountBookInfo.accountBookNo from AccountBookUserEntity abu " +
-            "where abu.userInfo.userNo = :userNo and abu.accountBookInfo.accountBookNo = :accountBookNo and abu.accountRole = :accountRole)")
+            "(select abu.accountBookEntity.accountBookNo from AccountBookUserEntity abu " +
+            "where abu.userEntity.userNo = :userNo and abu.accountBookEntity.accountBookNo = :accountBookNo and abu.accountRole = :accountRole)")
     Optional<AccountBookEntity> findAccountBookBySubQuery(@Param("userNo") Long userNo, @Param("accountBookNo")Long accountBookNo, @Param("accountRole") AccountBookUserEntity.AccountRole accountRole);
 
     @Query("select ab from AccountBookEntity ab where ab.accountBookNo = " +
-            "(select abu.accountBookInfo.accountBookNo from AccountBookUserEntity abu " +
-            "where abu.userInfo.userNo = :userNo and abu.accountBookInfo.accountBookNo = :accountBookNo and abu.accountRole in ('OWNER', 'MEMBER'))")
+            "(select abu.accountBookEntity.accountBookNo from AccountBookUserEntity abu " +
+            "where abu.userEntity.userNo = :userNo and abu.accountBookEntity.accountBookNo = :accountBookNo and abu.accountRole in ('OWNER', 'MEMBER'))")
     Optional<AccountBookEntity> findAccountBookBySubQuery(@Param("userNo") Long userNo, @Param("accountBookNo") Long accountBookNo);
 
 }

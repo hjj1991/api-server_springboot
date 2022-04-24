@@ -13,7 +13,7 @@ public class CardDto {
     private CardEntity.CardType cardType;
     private String cardDesc;
     @JsonIgnore
-    private UserEntity userInfo;
+    private UserEntity userEntity;
 
 
     public CardEntity toEntity() {
@@ -21,7 +21,7 @@ public class CardDto {
                 .cardName(cardName)
                 .cardType(cardType)
                 .cardDesc(cardDesc)
-                .userInfo(userInfo)
+                .userEntity(userEntity)
                 .build();
     }
 

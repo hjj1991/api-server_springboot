@@ -17,9 +17,9 @@ public class PurchaseRepositoryImpl implements PurchaseRepositoryCustom {
     public PurchaseDto.ResponsePurchaseDetail findPurchase(Long userNo, Long purchaseNo){
         return jpaQueryFactory
                 .select(new QPurchaseDto_ResponsePurchaseDetail(
-                        purchaseEntity.accountBookInfo.accountBookNo,
-                        purchaseEntity.cardInfo.cardNo,
-                        purchaseEntity.categoryInfo.categoryNo,
+                        purchaseEntity.accountBookEntity.accountBookNo,
+                        purchaseEntity.cardEntity.cardNo,
+                        purchaseEntity.categoryEntity.categoryNo,
                         purchaseEntity.storeName,
                         purchaseEntity.purchaseType,
                         purchaseEntity.price,
@@ -27,7 +27,7 @@ public class PurchaseRepositoryImpl implements PurchaseRepositoryCustom {
                         purchaseEntity.purchaseDate
                 ))
                 .from(purchaseEntity)
-                .where(purchaseEntity.purchaseNo.eq(purchaseNo).and(purchaseEntity.userInfo.userNo.eq(userNo)))
+                .where(purchaseEntity.purchaseNo.eq(purchaseNo).and(purchaseEntity.userEntity.userNo.eq(userNo)))
                 .fetchOne();
 
 

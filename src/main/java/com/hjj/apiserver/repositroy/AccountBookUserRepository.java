@@ -11,11 +11,11 @@ import java.util.Optional;
 @Repository
 public interface AccountBookUserRepository extends JpaRepository<AccountBookUserEntity, Long> {
 
-    @EntityGraph(attributePaths = {"accountBookInfo", "userInfo"})
-    List<AccountBookUserEntity> findEntityGraphByUserInfo_userNo(Long userNo);
-    @EntityGraph(attributePaths = {"accountBookInfo", "userInfo"})
-    List<AccountBookUserEntity> findEntityGraphByAccountBookInfo_accountBookNoIn(List<Long> accountBookNoList);
-    Optional<AccountBookUserEntity> findByUserInfo_UserNoAndAccountBookInfo_AccountBookNo(Long userNo, Long accountBookNo);
+    @EntityGraph(attributePaths = {"accountBookEntity", "userEntity"})
+    List<AccountBookUserEntity> findEntityGraphByUserEntity_userNo(Long userNo);
+    @EntityGraph(attributePaths = {"accountBookEntity", "userEntity"})
+    List<AccountBookUserEntity> findEntityGraphByAccountBookEntity_accountBookNoIn(List<Long> accountBookNoList);
+    Optional<AccountBookUserEntity> findByUserEntity_UserNoAndAccountBookEntity_AccountBookNo(Long userNo, Long accountBookNo);
 
-    Boolean existsByUserInfo_UserNoAndAccountBookInfo_AccountBookNoAndAccountRole(Long userNo, Long accountBookNo, AccountBookUserEntity.AccountRole accountRole);
+    Boolean existsByUserEntity_UserNoAndAccountBookEntity_AccountBookNoAndAccountRole(Long userNo, Long accountBookNo, AccountBookUserEntity.AccountRole accountRole);
 }

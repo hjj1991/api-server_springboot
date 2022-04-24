@@ -76,7 +76,7 @@ public class CategoryService {
             }
         });
         responseCategory.setCategoryList(categoryList);
-        responseCategory.setAccountRole(accountBookUserRepository.findByUserInfo_UserNoAndAccountBookInfo_AccountBookNo(userNo, accountBookNo).orElseThrow().getAccountRole());
+        responseCategory.setAccountRole(accountBookUserRepository.findByUserEntity_UserNoAndAccountBookEntity_AccountBookNo(userNo, accountBookNo).orElseThrow().getAccountRole());
         responseCategory.setAccountBookName(accountBookRepository.findById(accountBookNo).get().getAccountBookName());
 
         return responseCategory;

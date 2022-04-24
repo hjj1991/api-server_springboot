@@ -14,12 +14,12 @@ public class UserLogDto {
     private LocalDateTime loginDateTime;
     private UserLogEntity.SignInType signInType;
     private UserLogEntity.LogType logType;
-    private UserEntity userInfo;
+    private UserEntity userEntity;
     private LocalDateTime createdDate;
 
     public UserLogEntity toEntity(){
         return UserLogEntity.builder()
-                .userInfo(userInfo)
+                .userEntity(userEntity)
                 .logType(logType)
                 .loginDateTime(loginDateTime)
                 .createdDate(LocalDateTime.now())
