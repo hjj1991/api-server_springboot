@@ -63,6 +63,7 @@ public class PurchaseDto {
     public static class ResponsePurchaseDetail {
         private Long accountBookNo;
         private Long cardNo;
+        private Long parentCategoryNo;
         private Long categoryNo;
         private String storeName;
         private PurchaseEntity.PurchaseType purchaseType;
@@ -71,9 +72,10 @@ public class PurchaseDto {
         private LocalDate purchaseDate;
 
         @QueryProjection
-        public ResponsePurchaseDetail(Long accountBookNo, Long cardNo, Long categoryNo, String storeName, PurchaseEntity.PurchaseType purchaseType, int price, String reason, LocalDate purchaseDate) {
+        public ResponsePurchaseDetail(Long accountBookNo, Long cardNo, Long parentCategoryNo, Long categoryNo, String storeName, PurchaseEntity.PurchaseType purchaseType, int price, String reason, LocalDate purchaseDate) {
             this.accountBookNo = accountBookNo;
             this.cardNo = cardNo;
+            this.parentCategoryNo = parentCategoryNo;
             this.categoryNo = categoryNo;
             this.storeName = storeName;
             this.purchaseType = purchaseType;

@@ -102,7 +102,7 @@ public class PurchaseController {
 
     @ApiImplicitParams({
             @ApiImplicitParam(name = "access_token", value = "로그인 성공 후 access_token", required = true, dataType = "String", paramType = "header")})
-    @ApiOperation(value = "지출, 수입 상세조회", notes = "지출, 수입을 상세 조회한다.")
+    @ApiOperation(value = "지출, 수입 수정", notes = "지출, 수입을 수정한다.")
     @PatchMapping("/purchase/{purchaseNo}")
     public ApiResponse purchaseModify(@AuthenticationPrincipal TokenDto user, @ApiParam(value = "purchaseNo", required = true) @PathVariable("purchaseNo") Long purchaseNo, @RequestBody PurchaseDto.RequestModifyPurchaseForm form) {
         try {
