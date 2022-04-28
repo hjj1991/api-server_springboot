@@ -9,6 +9,6 @@ import java.util.Optional;
 
 @Repository
 public interface CardRepository extends JpaRepository<CardEntity, Long> {
-    List<CardEntity> findByUserInfo_UserNoAndDeleteYn(Long userNo, char deleteYn);
-    Optional<CardEntity> findByCardNoAndUserInfo_UserNo(Long cardNo, Long userNo);
+    List<CardEntity> findByUserEntity_UserNoAndDeleteYn(Long userNo, char deleteYn);
+    Optional<CardEntity> findByCardNoAndUserEntity_UserNo(Long cardNo, Long userNo);
 }

@@ -9,7 +9,6 @@ import com.hjj.apiserver.dto.*;
 import com.hjj.apiserver.repositroy.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.imgscalr.Scalr;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -20,9 +19,6 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
 import java.net.URLEncoder;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -91,7 +87,7 @@ public class UserService  {
         userEntity.updateUserLogin(refreshToken);
         UserLogDto userLogDto = new UserLogDto();
         userLogDto.setSignInType(userEntity.getProvider() == null? UserLogEntity.SignInType.GENERAL: UserLogEntity.SignInType.SOCIAL);
-        userLogDto.setUserInfo(userEntity);
+        userLogDto.setUserEntity(userEntity);
         userLogDto.setLogType(UserLogEntity.LogType.SIGNIN);
         userLogDto.setLoginDateTime(lastLoginDateTime);
         userLogService.insertUserLog(userLogDto);
@@ -224,7 +220,7 @@ public class UserService  {
         UserDto userDto = modelMapper.map(form, UserDto.class);
         UserEntity userEntity = userRepository.save(userDto.toEntityWithPasswordEncode(passwordEncoder));
         UserLogDto userLogDto = new UserLogDto();
-        userLogDto.setUserInfo(userEntity);
+        userLogDto.setUserEntity(userEntity);
         userLogDto.setLogType(UserLogEntity.LogType.INSERT);
         userLogDto.setCreatedDate(LocalDateTime.now());
         userLogService.insertUserLog(userLogDto);
@@ -241,7 +237,7 @@ public class UserService  {
 
         userEntity.updateUser(userDto);
         UserLogDto userLogDto = new UserLogDto();
-        userLogDto.setUserInfo(userEntity);
+        userLogDto.setUserEntity(userEntity);
         userLogDto.setLogType(UserLogEntity.LogType.MODIFY);
         userRepository.flush();
         userLogService.insertUserLog(userLogDto);
@@ -327,7 +323,7 @@ public class UserService  {
                     userRepository.save(userEntity);
 
                     UserLogDto userLogDto = new UserLogDto();
-                    userLogDto.setUserInfo(userEntity);
+                    userLogDto.setUserEntity(userEntity);
                     userLogDto.setLogType(UserLogEntity.LogType.INSERT);
                     userLogDto.setCreatedDate(LocalDateTime.now());
                     userLogService.insertUserLog(userLogDto);
@@ -365,7 +361,7 @@ public class UserService  {
                     userRepository.save(userEntity);
 
                     UserLogDto userLogDto = new UserLogDto();
-                    userLogDto.setUserInfo(userEntity);
+                    userLogDto.setUserEntity(userEntity);
                     userLogDto.setLogType(UserLogEntity.LogType.INSERT);
                     userLogDto.setCreatedDate(LocalDateTime.now());
                     userLogService.insertUserLog(userLogDto);
@@ -425,7 +421,7 @@ public class UserService  {
 
                 UserLogDto userLogDto = new UserLogDto();
                 userLogDto.setLogType(UserLogEntity.LogType.MODIFY);
-                userLogDto.setUserInfo(currentUser);
+                userLogDto.setUserEntity(currentUser);
                 userLogService.insertUserLog(userLogDto);
             }
         }else if(provider.equals("KAKAO")){
@@ -445,7 +441,7 @@ public class UserService  {
 
                 UserLogDto userLogDto = new UserLogDto();
                 userLogDto.setLogType(UserLogEntity.LogType.MODIFY);
-                userLogDto.setUserInfo(currentUser);
+                userLogDto.setUserEntity(currentUser);
                 userLogService.insertUserLog(userLogDto);
             }
         }

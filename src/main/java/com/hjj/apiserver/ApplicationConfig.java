@@ -9,6 +9,7 @@ import com.google.firebase.FirebaseOptions;
 import com.hjj.apiserver.config.P6spySqlFormatConfiguration;
 import com.hjj.apiserver.dto.TokenDto;
 import com.p6spy.engine.spy.P6SpyOptions;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
@@ -26,6 +27,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 import javax.annotation.PostConstruct;
+import javax.persistence.EntityManager;
 import java.io.IOException;
 import java.util.Optional;
 
@@ -68,6 +70,11 @@ public class ApplicationConfig implements AuditorAware<Long> {
                         }
                 ))
                 .build();
+    }
+
+    @Bean
+    public JPAQueryFactory jpaQueryFactory(EntityManager em){
+        return new JPAQueryFactory(em);
     }
 
 

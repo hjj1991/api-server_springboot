@@ -53,15 +53,15 @@ class AccountBookServiceTest {
         UserEntity userEntity = create_basic_user();
 
         AccountBookUserDto accountBookUserDto = new AccountBookUserDto();
-        accountBookUserDto.setAccountBookInfo(accountBookEntity);
-        accountBookUserDto.setUserInfo(userEntity);
+        accountBookUserDto.setAccountBookEntity(accountBookEntity);
+        accountBookUserDto.setUserEntity(userEntity);
         accountBookUserDto.setAccountRole(AccountBookUserEntity.AccountRole.OWNER);
 
         AccountBookUserEntity accountBookUserEntity = accountBookUserDto.toEntity();
         accountBookUserRepository.save(accountBookUserEntity);
 
-        Assertions.assertEquals(accountBookUserEntity.getUserInfo(), userEntity);
-        Assertions.assertEquals(accountBookUserEntity.getAccountBookInfo(), accountBookEntity);
+        Assertions.assertEquals(accountBookUserEntity.getUserEntity(), userEntity);
+        Assertions.assertEquals(accountBookUserEntity.getAccountBookEntity(), accountBookEntity);
         Assertions.assertEquals(accountBookUserEntity.getAccountRole(), AccountBookUserEntity.AccountRole.OWNER);
 
 

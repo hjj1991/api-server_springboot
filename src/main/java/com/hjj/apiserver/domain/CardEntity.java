@@ -36,7 +36,7 @@ public class CardEntity extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="userNo", nullable = false)
-    private UserEntity userInfo;
+    private UserEntity userEntity;
 
     public CardEntity update(String cardName, CardType cardType, String cardDesc){
         this.cardName = cardName;

@@ -14,14 +14,14 @@ import java.util.Optional;
 @Repository
 public interface CategoryRepository  extends JpaRepository<CategoryEntity, Long> {
 
-    @Query("select c from CategoryEntity c where c.accountBookInfo.accountBookNo = " +
-            "(select abu.accountBookInfo.accountBookNo from AccountBookUserEntity abu " +
-            "where abu.accountBookInfo.accountBookNo = :accountBookNo and abu.userInfo.userNo = :userNo and abu.accountRole <> 'GUEST')")
+    @Query("select c from CategoryEntity c where c.accountBookEntity.accountBookNo = " +
+            "(select abu.accountBookEntity.accountBookNo from AccountBookUserEntity abu " +
+            "where abu.accountBookEntity.accountBookNo = :accountBookNo and abu.userEntity.userNo = :userNo and abu.accountRole <> 'GUEST')")
     @EntityGraph(attributePaths = {"parentCategory"})
     List<CategoryEntity> findEntityGraphBySubQuery(@Param("accountBookNo") Long accountBookNo, @Param("userNo") Long userNo);
 
-    @Query("select c from CategoryEntity c where c.categoryNo = :categoryNo and c.accountBookInfo.accountBookNo = " +
-            "(select abu.accountBookInfo.accountBookNo from AccountBookUserEntity abu " +
-            "where abu.accountBookInfo.accountBookNo = :accountBookNo and abu.userInfo.userNo = :userNo and abu.accountRole in :accountRole)")
+    @Query("select c from CategoryEntity c where c.categoryNo = :categoryNo and c.accountBookEntity.accountBookNo = " +
+            "(select abu.accountBookEntity.accountBookNo from AccountBookUserEntity abu " +
+            "where abu.accountBookEntity.accountBookNo = :accountBookNo and abu.userEntity.userNo = :userNo and abu.accountRole in :accountRole)")
     Optional<CategoryEntity> findByCategoryNoAndSubQuery(@Param("categoryNo") Long categoryNo, @Param("accountBookNo") Long accountBookNo, @Param("userNo") Long userNo, @Param("accountRole")List<AccountBookUserEntity.AccountRole> accountRole);
 }

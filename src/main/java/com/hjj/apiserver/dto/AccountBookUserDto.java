@@ -13,17 +13,17 @@ public class AccountBookUserDto {
     private Long userNo;
     private String backGroundColor;
     private String color;
-    private AccountBookEntity accountBookInfo;
-    private UserEntity userInfo;
+    private AccountBookEntity accountBookEntity;
+    private UserEntity userEntity;
     private AccountBookUserEntity.AccountRole accountRole = AccountBookUserEntity.AccountRole.GUEST;
 
     public AccountBookUserEntity toEntity(){
         AccountBookUserEntity accountBookUserEntity = AccountBookUserEntity.builder()
                 .accountRole(accountRole)
-                .accountBookInfo(accountBookInfo)
+                .accountBookEntity(accountBookEntity)
                 .color(color)
                 .backGroundColor(backGroundColor)
-                .userInfo(userInfo)
+                .userEntity(userEntity)
                 .build();
 
         return accountBookUserEntity;

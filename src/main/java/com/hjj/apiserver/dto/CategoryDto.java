@@ -103,7 +103,7 @@ public class CategoryDto {
                 .categoryName(categoryName)
                 .categoryDesc(categoryDesc)
                 .categoryIcon(categoryIcon)
-                .accountBookInfo(accountBookEntity)
+                .accountBookEntity(accountBookEntity)
                 .parentCategory(parentCategory)
                 .build();
         return categoryEntity;

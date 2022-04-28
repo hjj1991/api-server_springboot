@@ -33,7 +33,7 @@ public class PurchaseEntity extends BaseEntity {
     private PurchaseType purchaseType;
 
     @Column
-    private int price;
+    private Integer price;
 
     @Column(columnDefinition = "varchar(5000) default ''", nullable = true)
     private String reason;
@@ -43,43 +43,69 @@ public class PurchaseEntity extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="cardNo", nullable = true)
-    private CardEntity cardInfo;
+    private CardEntity cardEntity;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="categoryNo")
-    private CategoryEntity categoryInfo;
+    private CategoryEntity categoryEntity;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="userNo", nullable = false)
-    private UserEntity userInfo;
+    private UserEntity userEntity;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="accountBookNo", nullable = false)
-    private AccountBookEntity accountBookInfo;
+    private AccountBookEntity accountBookEntity;
 
 
-    public void changeCategoryInfo(CategoryEntity categoryInfo){
-        if(this.categoryInfo != null){
-            this.categoryInfo.getPurchaseEntityList().remove(this);
+    public void changeCategoryEntity(CategoryEntity categoryEntity){
+        if(this.categoryEntity != null){
+            this.categoryEntity.getPurchaseEntityList().remove(this);
         }
-        this.categoryInfo = categoryInfo;
-        categoryInfo.getPurchaseEntityList().add(this);
+        this.categoryEntity = categoryEntity;
+        categoryEntity.getPurchaseEntityList().add(this);
     }
 
-    public void changeUserInfo(UserEntity userInfo){
-        if(this.userInfo != null){
-            this.userInfo.getPurchaseEntityList().remove(this);
+    public void changeUserEntity(UserEntity userEntity){
+        if(this.userEntity != null){
+            this.userEntity.getPurchaseEntityList().remove(this);
         }
-        this.userInfo = userInfo;
-        userInfo.getPurchaseEntityList().add(this);
+        this.userEntity = userEntity;
+        userEntity.getPurchaseEntityList().add(this);
     }
 
-    public void changeAccountBookInfo(AccountBookEntity accountBookInfo){
-        if(this.accountBookInfo != null){
-            this.accountBookInfo.getPurchaseEntityList().remove(accountBookInfo);
+    public void changeAccountBookEntity(AccountBookEntity accountBookEntity){
+        if(this.accountBookEntity != null){
+            this.accountBookEntity.getPurchaseEntityList().remove(accountBookEntity);
         }
-        this.accountBookInfo = accountBookInfo;
-        accountBookInfo.getPurchaseEntityList().add(this);
+        this.accountBookEntity = accountBookEntity;
+        accountBookEntity.getPurchaseEntityList().add(this);
+    }
+
+
+    public PurchaseEntity updatePurchase(PurchaseDto purchaseDto){
+        if(purchaseDto.getCardEntity() != null){
+            this.cardEntity = purchaseDto.getCardEntity();
+        }
+        if(purchaseDto.getCategoryEntity() != null){
+            changeCategoryEntity(purchaseDto.getCategoryEntity());
+        }
+        if(purchaseDto.getStoreName() != null){
+            this.storeName = purchaseDto.getStoreName();
+        }
+        if(purchaseDto.getPurchaseType() != null){
+            this.purchaseType = purchaseDto.getPurchaseType();
+        }
+        if(purchaseDto.getPrice() != null){
+            this.price = purchaseDto.getPrice();
+        }
+        if(purchaseDto.getReason() != null){
+            this.reason = purchaseDto.getReason();
+        }
+        if(purchaseDto.getPurchaseDate() != null){
+            this.purchaseDate = purchaseDto.getPurchaseDate();
+        }
+        return this;
     }
 
     public void delete(){

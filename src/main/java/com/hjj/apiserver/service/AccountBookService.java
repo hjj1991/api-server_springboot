@@ -39,9 +39,9 @@ public class AccountBookService {
 
         /* 가계부 생성후 유저와 매핑 해주어야 한다. (기본 권한은 USER이므로 OWNER를 넣는다. */
         AccountBookUserDto accountBookUserDto = new AccountBookUserDto();
-        accountBookUserDto.setAccountBookInfo(accountBookEntity);
+        accountBookUserDto.setAccountBookEntity(accountBookEntity);
         accountBookUserDto.setAccountRole(AccountBookUserEntity.AccountRole.OWNER);
-        accountBookUserDto.setUserInfo(userEntity);
+        accountBookUserDto.setUserEntity(userEntity);
         accountBookUserDto.setBackGroundColor(accountBookDto.getBackGroundColor());
         accountBookUserDto.setColor(accountBookDto.getColor());
         AccountBookUserEntity accountBookUserEntity = accountBookUserDto.toEntity();
@@ -53,22 +53,22 @@ public class AccountBookService {
 
     public List<AccountBookDto.ResponseAccountBookFindAll> findAllAccountBook(AccountBookDto accountBookDto) {
         /* userNo으로 가계부 <-> 유저 매핑 테이블 조회 */
-        List<AccountBookUserEntity> accountBookUserEntityList =  accountBookUserRepository.findEntityGraphByUserInfo_userNo(accountBookDto.getUserNo());
+        List<AccountBookUserEntity> accountBookUserEntityList =  accountBookUserRepository.findEntityGraphByUserEntity_userNo(accountBookDto.getUserNo());
         List<Long> accountBookNoList = new ArrayList<>();
         List<AccountBookDto.ResponseAccountBookFindAll> responseAccountBookFindAllList = new ArrayList<>();
 
-        accountBookUserEntityList.stream().forEach(accountBookUserEntity -> accountBookNoList.add(accountBookUserEntity.getAccountBookInfo().getAccountBookNo()));
+        accountBookUserEntityList.stream().forEach(accountBookUserEntity -> accountBookNoList.add(accountBookUserEntity.getAccountBookEntity().getAccountBookNo()));
 
-        List<PurchaseEntity> purchaseEntityList = purchaseRepository.findAllEntityGraphByPurchaseDateBetweenAndUserInfo_UserNoOrderByPurchaseDateDesc(accountBookDto.getStartDate(), accountBookDto.getEndDate(), accountBookDto.getUserNo());
-        List<AccountBookUserEntity> tempAccountBookUserList = accountBookUserRepository.findEntityGraphByAccountBookInfo_accountBookNoIn(accountBookNoList);
+        List<PurchaseEntity> purchaseEntityList = purchaseRepository.findAllEntityGraphByPurchaseDateBetweenAndUserEntity_UserNoOrderByPurchaseDateDesc(accountBookDto.getStartDate(), accountBookDto.getEndDate(), accountBookDto.getUserNo());
+        List<AccountBookUserEntity> tempAccountBookUserList = accountBookUserRepository.findEntityGraphByAccountBookEntity_accountBookNoIn(accountBookNoList);
 
 
         accountBookUserEntityList.stream().forEach(accountBookUserEntity -> {
-            Long accountBookNo = accountBookUserEntity.getAccountBookInfo().getAccountBookNo();
+            Long accountBookNo = accountBookUserEntity.getAccountBookEntity().getAccountBookNo();
             AccountBookDto.ResponseAccountBookFindAll responseAccountBookFindAll = new AccountBookDto.ResponseAccountBookFindAll();
             responseAccountBookFindAll.setAccountBookNo(accountBookNo);
-            responseAccountBookFindAll.setAccountBookName(accountBookUserEntity.getAccountBookInfo().getAccountBookName());
-            responseAccountBookFindAll.setAccountBookDesc(accountBookUserEntity.getAccountBookInfo().getAccountBookDesc());
+            responseAccountBookFindAll.setAccountBookName(accountBookUserEntity.getAccountBookEntity().getAccountBookName());
+            responseAccountBookFindAll.setAccountBookDesc(accountBookUserEntity.getAccountBookEntity().getAccountBookDesc());
             responseAccountBookFindAll.setAccountRole(accountBookUserEntity.getAccountRole());
             responseAccountBookFindAll.setBackGroundColor(accountBookUserEntity.getBackGroundColor());
             responseAccountBookFindAll.setColor(accountBookUserEntity.getColor());
@@ -76,9 +76,9 @@ public class AccountBookService {
             int totalIncomeAmount = 0;
             int totalOutgoingAmount = 0;
             for (PurchaseEntity purchaseEntity : purchaseEntityList) {
-                if(purchaseEntity.getPurchaseType().equals(PurchaseEntity.PurchaseType.INCOME) && purchaseEntity.getAccountBookInfo().getAccountBookNo() == accountBookNo){
+                if(purchaseEntity.getPurchaseType().equals(PurchaseEntity.PurchaseType.INCOME) && purchaseEntity.getAccountBookEntity().getAccountBookNo() == accountBookNo){
                     totalIncomeAmount += purchaseEntity.getPrice();
-                }else if(purchaseEntity.getPurchaseType().equals(PurchaseEntity.PurchaseType.OUTGOING) && purchaseEntity.getAccountBookInfo().getAccountBookNo() == accountBookNo){
+                }else if(purchaseEntity.getPurchaseType().equals(PurchaseEntity.PurchaseType.OUTGOING) && purchaseEntity.getAccountBookEntity().getAccountBookNo() == accountBookNo){
                     totalOutgoingAmount += purchaseEntity.getPrice();
                 }
 
@@ -89,11 +89,11 @@ public class AccountBookService {
             List<AccountBookDto.ResponseAccountBookFindAll.JoinedUser> joinedUserList = new ArrayList<>();
 
             tempAccountBookUserList.stream().forEach(tempAccountBookEntity ->{
-                if(accountBookNo == tempAccountBookEntity.getAccountBookInfo().getAccountBookNo()){
+                if(accountBookNo == tempAccountBookEntity.getAccountBookEntity().getAccountBookNo()){
                     AccountBookDto.ResponseAccountBookFindAll.JoinedUser joinedUser = new AccountBookDto.ResponseAccountBookFindAll.JoinedUser();
-                    joinedUser.setUserNo(tempAccountBookEntity.getUserInfo().getUserNo());
-                    joinedUser.setNickName(tempAccountBookEntity.getUserInfo().getNickName());
-                    joinedUser.setPicture(tempAccountBookEntity.getUserInfo().getPicture());
+                    joinedUser.setUserNo(tempAccountBookEntity.getUserEntity().getUserNo());
+                    joinedUser.setNickName(tempAccountBookEntity.getUserEntity().getNickName());
+                    joinedUser.setPicture(tempAccountBookEntity.getUserEntity().getPicture());
                     joinedUserList.add(joinedUser);
                 }
             });

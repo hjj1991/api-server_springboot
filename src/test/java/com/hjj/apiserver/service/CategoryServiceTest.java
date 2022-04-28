@@ -104,8 +104,8 @@ class CategoryServiceTest {
 
         for(int i = 0; i < 20; i ++){
             PurchaseEntity purchaseEntity = PurchaseEntity.builder()
-                    .categoryInfo(categoryEntity)
-                    .userInfo(userEntity)
+                    .categoryEntity(categoryEntity)
+                    .userEntity(userEntity)
                     .purchaseDate(LocalDate.now())
                     .price(1000)
                     .purchaseType(PurchaseEntity.PurchaseType.OUTGOING)

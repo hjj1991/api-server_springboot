@@ -37,7 +37,7 @@ public class CardService {
     }
 
     public List<CardDto> selectCardList(Long userNo){
-        List<CardEntity> cardEntityList = cardRepository.findByUserInfo_UserNoAndDeleteYn(userNo, 'N');
+        List<CardEntity> cardEntityList = cardRepository.findByUserEntity_UserNoAndDeleteYn(userNo, 'N');
         List<CardDto> cardDtoList = new ArrayList<>();
 
         cardEntityList.stream().forEach(cardEntity -> {
