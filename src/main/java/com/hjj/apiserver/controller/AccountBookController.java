@@ -11,10 +11,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
@@ -39,7 +36,7 @@ public class AccountBookController {
 
             return ApiUtils.success(null);
         }catch (Exception e){
-            return ApiUtils.error(ApiError.ErrCode.ERR_CODE0004.getMsg(), ApiError.ErrCode.ERR_CODE0004);
+            return ApiUtils.error(ApiError.ErrCode.ERR_CODE9999.getMsg(), ApiError.ErrCode.ERR_CODE9999);
         }
     }
 
@@ -53,7 +50,23 @@ public class AccountBookController {
             accountBookDto.setUserNo(tokenDto.getUserNo());
             return ApiUtils.success(accountBookService.findAllAccountBook(accountBookDto));
         }catch (Exception e){
-            return ApiUtils.error(ApiError.ErrCode.ERR_CODE0004.getMsg(), ApiError.ErrCode.ERR_CODE0004);
+            return ApiUtils.error(ApiError.ErrCode.ERR_CODE9999.getMsg(), ApiError.ErrCode.ERR_CODE9999);
+        }
+    }
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "access_token", value = "로그인 성공 후 access_token", required = true, dataType = "String", paramType = "header")})
+    @ApiOperation(value = "개인가계부 상세 조회.", notes = "개인가계부를 상세 조회 한다.")
+    @GetMapping("/account-book/{accountBookNo}")
+    public ApiResponse accountBookFindDetail(@AuthenticationPrincipal TokenDto tokenDto, @PathVariable Long accountBookNo) {
+        try{
+            AccountBookDto accountBookDto = new AccountBookDto();
+            accountBookDto.setUserNo(tokenDto.getUserNo());
+            accountBookDto.setAccountBookNo(accountBookNo);
+
+            return ApiUtils.success(accountBookService.findAccountBookDetail(accountBookDto));
+        }catch (Exception e){
+            return ApiUtils.error(ApiError.ErrCode.ERR_CODE9999.getMsg(), ApiError.ErrCode.ERR_CODE9999);
         }
     }
 }

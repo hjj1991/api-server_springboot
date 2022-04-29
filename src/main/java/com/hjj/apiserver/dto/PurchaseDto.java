@@ -36,9 +36,10 @@ public class PurchaseDto {
         private LocalDate startDate;
         @DateTimeFormat(pattern = "yyyy-MM-dd")
         private LocalDate endDate;
-        private int size = 0;
+        private int size = 10;
         private int page = 0;
     }
+
 
     @Data
     public static class ResponsePurchaseList {
@@ -47,18 +48,20 @@ public class PurchaseDto {
         private List<CardDto> cardList;
         private CategoryDto.ResponseCategory categoryList;
 
-        @Data
-        public static class Purchase{
-            private Long purchaseNo;
-            private Long userNo;
-            private Long cardNo;
-            private Long accountBookNo;
-            private PurchaseEntity.PurchaseType purchaseType;
-            private int price;
-            private String reason;
-            private LocalDate purchaseDate;
-            private CategoryDto.PurchaseCategoryInfo categoryInfo;
-        }
+
+    }
+
+    @Data
+    public static class Purchase{
+        private Long purchaseNo;
+        private Long userNo;
+        private Long cardNo;
+        private Long accountBookNo;
+        private PurchaseEntity.PurchaseType purchaseType;
+        private int price;
+        private String reason;
+        private LocalDate purchaseDate;
+        private CategoryDto.PurchaseCategoryInfo categoryInfo;
     }
 
     @Data

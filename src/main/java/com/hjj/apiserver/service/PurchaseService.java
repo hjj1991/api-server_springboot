@@ -2,7 +2,6 @@ package com.hjj.apiserver.service;
 
 import com.hjj.apiserver.common.exception.UserNotFoundException;
 import com.hjj.apiserver.domain.*;
-import com.hjj.apiserver.dto.CardDto;
 import com.hjj.apiserver.dto.CategoryDto;
 import com.hjj.apiserver.dto.PurchaseDto;
 import com.hjj.apiserver.repositroy.*;
@@ -62,12 +61,12 @@ public class PurchaseService {
 
     }
 
-    public List<PurchaseDto.ResponsePurchaseList.Purchase> findPurchaseList(PurchaseDto purchaseDto){
+    public List<PurchaseDto.Purchase> findPurchaseList(PurchaseDto purchaseDto){
 
         List<PurchaseEntity> purchaseEntityList = purchaseRepository.findAllEntityGraphByPurchaseDateBetweenAndAccountBookEntity_AccountBookNoAndDeleteYnOrderByPurchaseDateDesc(purchaseDto.getStartDate(), purchaseDto.getEndDate(), purchaseDto.getAccountBookNo(), 'N');
-        List<PurchaseDto.ResponsePurchaseList.Purchase> purchaseList = new ArrayList<>();
+        List<PurchaseDto.Purchase> purchaseList = new ArrayList<>();
         purchaseEntityList.stream().forEach(purchaseEntity -> {
-            PurchaseDto.ResponsePurchaseList.Purchase responsePurchaseList = modelMapper.map(purchaseEntity, PurchaseDto.ResponsePurchaseList.Purchase.class);
+            PurchaseDto.Purchase responsePurchaseList = modelMapper.map(purchaseEntity, PurchaseDto.Purchase.class);
             responsePurchaseList.setAccountBookNo(purchaseDto.getAccountBookNo());
             responsePurchaseList.setUserNo(purchaseDto.getUserNo());
             if(purchaseEntity.getCardEntity() != null){
@@ -90,23 +89,23 @@ public class PurchaseService {
         return purchaseList;
     }
 
-    public Slice<PurchaseDto.ResponsePurchaseList.Purchase> findPurchaseListOfPage(PurchaseDto purchaseDto, Pageable pageable){
+    public Slice<PurchaseDto.Purchase> findPurchaseListOfPage(PurchaseDto purchaseDto, Pageable pageable){
 
         List<PurchaseEntity> purchaseEntityList = purchaseRepository.findPurchasePageCustom(purchaseDto, pageable);
-        List<PurchaseDto.ResponsePurchaseList.Purchase> purchaseList = new ArrayList<>();
-        purchaseEntityList.stream().forEach(purchaseEntity -> {
-            PurchaseDto.ResponsePurchaseList.Purchase responsePurchaseList = modelMapper.map(purchaseEntity, PurchaseDto.ResponsePurchaseList.Purchase.class);
+        List<PurchaseDto.Purchase> purchaseList = new ArrayList<>();
+        for (PurchaseEntity purchaseEntity : purchaseEntityList) {
+            PurchaseDto.Purchase responsePurchaseList = modelMapper.map(purchaseEntity, PurchaseDto.Purchase.class);
             responsePurchaseList.setAccountBookNo(purchaseDto.getAccountBookNo());
             responsePurchaseList.setUserNo(purchaseDto.getUserNo());
-            if(purchaseEntity.getCardEntity() != null){
+            if (purchaseEntity.getCardEntity() != null) {
                 responsePurchaseList.setCardNo(purchaseEntity.getCardEntity().getCardNo());
             }
-            if(purchaseEntity.getCategoryEntity() != null){
-                CategoryDto.PurchaseCategoryInfo categoryInfo =  modelMapper.map(purchaseEntity.getCategoryEntity(), CategoryDto.PurchaseCategoryInfo.class);
-                if(purchaseEntity.getCategoryEntity().getParentCategory() == null){
+            if (purchaseEntity.getCategoryEntity() != null) {
+                CategoryDto.PurchaseCategoryInfo categoryInfo = modelMapper.map(purchaseEntity.getCategoryEntity(), CategoryDto.PurchaseCategoryInfo.class);
+                if (purchaseEntity.getCategoryEntity().getParentCategory() == null) {
                     categoryInfo.setParentCategoryNo(purchaseEntity.getCategoryEntity().getCategoryNo());
                     categoryInfo.setParentCategoryName(purchaseEntity.getCategoryEntity().getCategoryName());
-                }else{
+                } else {
                     categoryInfo.setParentCategoryNo(purchaseEntity.getCategoryEntity().getParentCategory().getCategoryNo());
                     categoryInfo.setParentCategoryName(purchaseEntity.getCategoryEntity().getParentCategory().getCategoryName());
                 }
@@ -114,9 +113,9 @@ public class PurchaseService {
                 responsePurchaseList.setCategoryInfo(categoryInfo);
             }
             purchaseList.add(responsePurchaseList);
-        });
+        }
 
-        List<PurchaseDto.ResponsePurchaseList.Purchase> slicePageResult = getSlicePageResult(purchaseList, pageable.getPageSize());
+        List<PurchaseDto.Purchase> slicePageResult = getSlicePageResult(purchaseList, pageable.getPageSize());
         return new SliceImpl<>(slicePageResult, pageable, hasPurchaseNext(purchaseList, pageable.getPageSize()));
     }
 
@@ -142,10 +141,10 @@ public class PurchaseService {
 
     }
 
-    private List<PurchaseDto.ResponsePurchaseList.Purchase> getSlicePageResult(List<PurchaseDto.ResponsePurchaseList.Purchase> result, int limit) {
-        List<PurchaseDto.ResponsePurchaseList.Purchase> returnValue = new ArrayList<>();
+    private List<PurchaseDto.Purchase> getSlicePageResult(List<PurchaseDto.Purchase> result, int limit) {
+        List<PurchaseDto.Purchase> returnValue = new ArrayList<>();
         int cnt = 0;
-        for (PurchaseDto.ResponsePurchaseList.Purchase purchase : result) {
+        for (PurchaseDto.Purchase purchase : result) {
             if(cnt == limit){
                 break;
             }
@@ -155,7 +154,7 @@ public class PurchaseService {
         return returnValue;
     }
 
-    private Boolean hasPurchaseNext(List<PurchaseDto.ResponsePurchaseList.Purchase> result, int limit) {
+    private Boolean hasPurchaseNext(List<PurchaseDto.Purchase> result, int limit) {
         return result.size() > limit ? true: false;
     }
 }

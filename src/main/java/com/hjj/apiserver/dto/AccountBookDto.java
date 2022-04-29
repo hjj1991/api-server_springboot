@@ -68,4 +68,11 @@ public class AccountBookDto {
             private String picture;
         }
     }
+
+    @Data
+    public static class ResponseAccountBookDetail{
+        private String accountBookName;
+        private List<CardDto> cardList;
+        private CategoryDto.ResponseCategory categoryList;
+    }
 }
