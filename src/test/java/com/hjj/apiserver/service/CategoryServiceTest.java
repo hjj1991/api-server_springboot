@@ -48,7 +48,7 @@ class CategoryServiceTest {
     }
 
     @Test
-    void findCategoryAll(){
+    void findCategoryAll() throws Exception {
 
         CategoryDto.ResponseCategory categoryList =  categoryService.findAllCategory(1L, 1L);
 

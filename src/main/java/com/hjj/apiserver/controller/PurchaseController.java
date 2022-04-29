@@ -13,6 +13,7 @@ import io.swagger.annotations.*;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -52,12 +53,14 @@ public class PurchaseController {
     @GetMapping("/purchase")
     public ApiResponse getPurchaseList(@AuthenticationPrincipal TokenDto user, PurchaseDto.RequestPurchaseFindForm form) {
         try {
+            PageRequest pageRequest = PageRequest.of(form.getPage(), form.getSize());
 
             PurchaseDto purchaseDto = modelMapper.map(form, PurchaseDto.class);
             purchaseDto.setUserNo(user.getUserNo());
             PurchaseDto.ResponsePurchaseList responsePurchaseList = new PurchaseDto.ResponsePurchaseList();
             responsePurchaseList.setAccountBookName(accountBookRepository.getById(form.getAccountBookNo()).getAccountBookName());
-            responsePurchaseList.setPurchaseList(purchaseService.findPurchaseList(purchaseDto));
+//            responsePurchaseList.setPurchaseList(purchaseService.findPurchaseList(purchaseDto));
+            responsePurchaseList.setPurchaseList(purchaseService.findPurchaseListOfPage(purchaseDto, pageRequest));
             responsePurchaseList.setCardList(cardService.selectCardList(user.getUserNo()));
             responsePurchaseList.setCategoryList(categoryService.findAllCategory(user.getUserNo(), form.getAccountBookNo()));
 
