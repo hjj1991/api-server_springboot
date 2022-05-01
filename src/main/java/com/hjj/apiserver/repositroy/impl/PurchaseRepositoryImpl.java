@@ -54,7 +54,7 @@ public class PurchaseRepositoryImpl implements PurchaseRepositoryCustom {
                                         .and(purchaseEntity.deleteYn.eq('N'))))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize() + 1)
-                .orderBy(purchaseEntity.purchaseDate.desc())
+                .orderBy(purchaseEntity.purchaseDate.desc(), purchaseEntity.purchaseNo.desc())
                 .fetch();
     }
 
