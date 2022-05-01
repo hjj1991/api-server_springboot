@@ -45,7 +45,7 @@ public class CategoryEntity extends BaseEntity{
     @JoinColumn(name = "parentCategoryNo")
     private CategoryEntity parentCategory;
 
-    @OneToMany(mappedBy = "parentCategory", cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "parentCategory", cascade = CascadeType.ALL)
     @Builder.Default
     private List<CategoryEntity> childCategoryList = new ArrayList<>();
 

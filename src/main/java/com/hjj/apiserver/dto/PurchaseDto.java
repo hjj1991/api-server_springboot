@@ -3,6 +3,7 @@ package com.hjj.apiserver.dto;
 import com.hjj.apiserver.domain.*;
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.Data;
+import org.springframework.data.domain.Slice;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
@@ -35,28 +36,32 @@ public class PurchaseDto {
         private LocalDate startDate;
         @DateTimeFormat(pattern = "yyyy-MM-dd")
         private LocalDate endDate;
+        private int size = 10;
+        private int page = 0;
     }
+
 
     @Data
     public static class ResponsePurchaseList {
         private String accountBookName;
-        private List<Purchase> purchaseList;
+        private Slice<Purchase> purchaseList;
         private List<CardDto> cardList;
         private CategoryDto.ResponseCategory categoryList;
 
-        @Data
-        public static class Purchase{
-            private Long purchaseNo;
-            private Long userNo;
-            private Long cardNo;
-            private Long accountBookNo;
-            private PurchaseEntity.PurchaseType purchaseType;
-            private int price;
-            private String reason;
-            private LocalDate purchaseDate;
-            private CardDto cardDto;
-            private CategoryDto.PurchaseCategoryInfo categoryInfo;
-        }
+
+    }
+
+    @Data
+    public static class Purchase{
+        private Long purchaseNo;
+        private Long userNo;
+        private Long cardNo;
+        private Long accountBookNo;
+        private PurchaseEntity.PurchaseType purchaseType;
+        private int price;
+        private String reason;
+        private LocalDate purchaseDate;
+        private CategoryDto.PurchaseCategoryInfo categoryInfo;
     }
 
     @Data

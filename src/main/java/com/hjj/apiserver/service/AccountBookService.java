@@ -28,6 +28,7 @@ public class AccountBookService {
     private final CategoryService categoryService;
     private final PurchaseRepository purchaseRepository;
     private final UserRepository userRepository;
+    private final CardService cardService;
 
 
     @Transactional(readOnly = false, rollbackFor = Exception.class)
@@ -48,6 +49,15 @@ public class AccountBookService {
         accountBookUserRepository.save(accountBookUserEntity);
 
         categoryService.addBasicCategory(accountBookEntity);
+    }
+
+    public AccountBookDto.ResponseAccountBookDetail findAccountBookDetail(AccountBookDto accountBookDto) throws Exception {
+        AccountBookDto.ResponseAccountBookDetail responseAccountBookDetail = new AccountBookDto.ResponseAccountBookDetail();
+        responseAccountBookDetail.setAccountBookName(accountBookRepository.getById(accountBookDto.getAccountBookNo()).getAccountBookName());
+        responseAccountBookDetail.setCardList(cardService.selectCardList(accountBookDto.getUserNo()));
+        responseAccountBookDetail.setCategoryList(categoryService.findAllCategory(accountBookDto.getUserNo(), accountBookDto.getAccountBookNo()));
+
+        return responseAccountBookDetail;
     }
 
 
