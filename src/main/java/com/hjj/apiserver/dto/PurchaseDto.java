@@ -12,6 +12,8 @@ import java.util.List;
 @Data
 public class PurchaseDto {
 
+    private final static int PURCHASE_DEFAULT_SIZE = 100;
+
     private Long purchaseNo;
     private Long userNo;
     private Long cardNo;
@@ -36,7 +38,7 @@ public class PurchaseDto {
         private LocalDate startDate;
         @DateTimeFormat(pattern = "yyyy-MM-dd")
         private LocalDate endDate;
-        private int size = 10;
+        private int size = PURCHASE_DEFAULT_SIZE;
         private int page = 0;
     }
 
