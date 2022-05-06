@@ -7,6 +7,7 @@ import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.hjj.apiserver.config.P6spySqlFormatConfiguration;
+import com.hjj.apiserver.domain.UserEntity;
 import com.hjj.apiserver.dto.TokenDto;
 import com.p6spy.engine.spy.P6SpyOptions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -84,7 +85,7 @@ public class ApplicationConfig implements AuditorAware<Long> {
         if (null == authentication || !authentication.isAuthenticated()) {
             return null;
         }
-        TokenDto user = (TokenDto) authentication.getPrincipal();
+        UserEntity user = (UserEntity) authentication.getPrincipal();
         return Optional.of(user.getUserNo());
     }
 

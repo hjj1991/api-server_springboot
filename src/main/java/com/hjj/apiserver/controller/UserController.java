@@ -8,14 +8,12 @@ import com.hjj.apiserver.common.exception.ExistedSocialUserException;
 import com.hjj.apiserver.common.exception.UserNotFoundException;
 import com.hjj.apiserver.common.provider.JwtTokenProvider;
 import com.hjj.apiserver.domain.UserEntity;
-import com.hjj.apiserver.dto.TokenDto;
 import com.hjj.apiserver.dto.UserDto;
 import com.hjj.apiserver.repositroy.UserRepository;
 import com.hjj.apiserver.service.FireBaseService;
 import com.hjj.apiserver.service.UserService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import com.hjj.apiserver.util.CurrentUser;
+import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -23,7 +21,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -58,7 +55,7 @@ public class UserController {
 
     @ApiOperation(value = "유저닉네임 중복 조회", notes = "유저닉네임의 중복여부를 확인한다.")
     @GetMapping("/user/{nickName}/exists-nickname")
-    public ApiResponse checkNickNameDuplicate(@AuthenticationPrincipal TokenDto user, @PathVariable String nickName) {
+    public ApiResponse checkNickNameDuplicate(@CurrentUser UserEntity user, @PathVariable String nickName) {
         try{
             if(userRepository.existsUserEntityByNickNameAndUserNoNot(nickName, user == null? 0 : user.getUserNo())) {
                 return ApiUtils.error(ApiError.ErrCode.ERR_CODE0003.getMsg(), ApiError.ErrCode.ERR_CODE0003);
@@ -142,16 +139,18 @@ public class UserController {
         }
     }
 
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "로그인 성공 후 access_token", required = true, dataType = "String", paramType = "header")})
     @ApiOperation(value = "기존 유저를 소셜계정 연동", notes ="기존 유저를 소셜유게정 연동 한다.")
     @PatchMapping("/user/social/mapping")
-    public ApiResponse socialMapping(@AuthenticationPrincipal TokenDto user, @RequestBody HashMap<String, String> requestBody) {
+    public ApiResponse socialMapping(@CurrentUser UserEntity user, @RequestBody HashMap<String, String> requestBody) {
         try{
             String socialType = requestBody.get("provider");
             if(socialType == null){
                 throw new IllegalArgumentException("잘못된 sns타입입니다.");
             }
 
-            userService.socialMapping(user.getUserNo(), requestBody);
+            userService.socialMapping(user, requestBody);
 
             return ApiUtils.success(null);
         }catch (AlreadyExistedUserException e){
@@ -173,24 +172,39 @@ public class UserController {
             return ApiUtils.error("token 재발급에 실패했습니다.", ApiError.ErrCode.ERR_CODE9999);
         }
     }
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "로그인 성공 후 access_token", required = true, dataType = "String", paramType = "header")})
+    @ApiOperation(value = "유저정보 상세조회", notes ="유저 정보를 상세 조회한다.")
+    @GetMapping("/user")
+    public ApiResponse userDetails(@CurrentUser UserEntity user) {
+        try{
+            return ApiUtils.success(userService.findUser(user.getUserNo()));
+        }catch (Exception e){
+            log.error("[UserController] updateUser Error userNo: {}, {}", user.getUserNo(), e);
+            return ApiUtils.error("유저 정보 조회가 실패했습니다.", ApiError.ErrCode.ERR_CODE9999);
+        }
+    }
 
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "로그인 성공 후 access_token", required = true, dataType = "String", paramType = "header")})
     @ApiOperation(value = "유저정보 업데이트", notes ="유저 정보를 업데이트한다.")
     @PatchMapping("/user")
-    public ApiResponse updateUser(@AuthenticationPrincipal TokenDto user, @RequestBody @Valid UserDto.RequestUserUpdateForm form) {
+    public ApiResponse userModify(@CurrentUser UserEntity user, @RequestBody @Valid UserDto.RequestUserUpdateForm form) {
         try{
-            return ApiUtils.success(userService.updateUser(user, form));
+            return ApiUtils.success(userService.modifyUser(user, form));
         }catch (Exception e){
             log.error("[UserController] updateUser Error form: {}, {}", form, e);
             return ApiUtils.error("유저 정보 수정이 실패했습니다.", ApiError.ErrCode.ERR_CODE9999);
         }
     }
-
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "로그인 성공 후 access_token", required = true, dataType = "String", paramType = "header")})
     @ApiOperation(value = "유저프로필 사진 업데이트", notes ="유저 프로필사진을 업데이트한다.")
     @PatchMapping("/user/profile")
-    public ApiResponse updateProfileImg(@AuthenticationPrincipal TokenDto user, MultipartFile pictureFile) {
+    public ApiResponse userProfileImgModify(@CurrentUser UserEntity user, MultipartFile pictureFile) {
         try{
 
-            userService.updateUserPicture(user.getUserNo(), pictureFile);
+            userService.modifyUserPicture(user, pictureFile);
 
             return ApiUtils.success(null);
         }catch (Exception e){
@@ -200,9 +214,9 @@ public class UserController {
     }
 
     @GetMapping(value = "/user/profile", produces = MediaType.IMAGE_JPEG_VALUE)
-    public ResponseEntity getProfileImg(String access_token, String picture) {
+    public ResponseEntity userProfileImgDetails(String Authorization, String picture) {
         try{
-            if (StringUtils.hasText(access_token) && jwtTokenProvider.validateToken(access_token)) {
+            if (StringUtils.hasText(Authorization) && jwtTokenProvider.validateToken(Authorization)) {
                 return new ResponseEntity(fireBaseService.getProfileImg(picture), HttpStatus.OK);
             }
         }catch (Exception e){

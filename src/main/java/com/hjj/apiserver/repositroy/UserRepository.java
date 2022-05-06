@@ -7,10 +7,9 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface UserRepository extends JpaRepository<UserEntity, Long> {
+public interface UserRepository extends JpaRepository<UserEntity, Long>, UserRepositoryCustom {
     Optional<UserEntity> findByUserId(String userId);
     Optional<UserEntity> findByProviderAndProviderId(UserEntity.Provider provider, String providerId);
-    Optional<UserEntity> findByUserNo(Long userNo);
     Boolean existsUserEntityByProviderIdAndProviderAndDeleteYn(String providerId, UserEntity.Provider provider, char deletedYn);
     Boolean existsUserEntityByUserId(String UserId);
     Boolean existsUserEntityByNickNameAndUserNoNot(String nickName, Long userNo);

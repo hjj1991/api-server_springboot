@@ -121,7 +121,7 @@ public class UserEntity implements UserDetails {
 
     @Override
     public String getUsername() {
-        return userId;
+        return String.valueOf(userNo);
     }
 
     @Override   //계정이 만료가 안되었는지
