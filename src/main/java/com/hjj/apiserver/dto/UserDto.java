@@ -1,10 +1,11 @@
 package com.hjj.apiserver.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.hjj.apiserver.domain.UserEntity;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -110,5 +111,22 @@ public class UserDto {
         private String accessToken;
         private String refreshToken;
         private long expireTime;
+    }
+
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class ResponseUserDetails{
+        private Long userNo;
+        private String userId;
+        private String nickName;
+        private String userEmail;
+        private UserEntity.Provider provider;
+        private UserEntity.Role role;
+        private LocalDateTime providerConnectDate;
+        private LocalDateTime createdDate;
+        private LocalDateTime lastLoginDateTime;
+
+
     }
 }

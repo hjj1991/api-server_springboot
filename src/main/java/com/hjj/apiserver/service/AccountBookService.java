@@ -32,8 +32,7 @@ public class AccountBookService {
 
 
     @Transactional(readOnly = false, rollbackFor = Exception.class)
-    public void addAccountBook(AccountBookDto accountBookDto) throws UserNotFoundException {
-        UserEntity userEntity = userRepository.findByUserNo(accountBookDto.getUserNo()).orElseThrow(UserNotFoundException::new);
+    public void addAccountBook(UserEntity user, AccountBookDto accountBookDto) throws UserNotFoundException {
 
         AccountBookEntity accountBookEntity = accountBookDto.toEntity();
         accountBookRepository.save(accountBookEntity);
@@ -42,7 +41,7 @@ public class AccountBookService {
         AccountBookUserDto accountBookUserDto = new AccountBookUserDto();
         accountBookUserDto.setAccountBookEntity(accountBookEntity);
         accountBookUserDto.setAccountRole(AccountBookUserEntity.AccountRole.OWNER);
-        accountBookUserDto.setUserEntity(userEntity);
+        accountBookUserDto.setUserEntity(user);
         accountBookUserDto.setBackGroundColor(accountBookDto.getBackGroundColor());
         accountBookUserDto.setColor(accountBookDto.getColor());
         AccountBookUserEntity accountBookUserEntity = accountBookUserDto.toEntity();
