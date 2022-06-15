@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 public class ScheduleService {
     private final WebScrappingService webScrappingService;
 
-    @Scheduled(cron = "0 45 21 * * *")
+    @Scheduled(cron = "0 00 14 * * *")
     public void scheduleliivMateTodayQuizTask(){
         try{
             log.info("scheduleliivMateTodayQuizTask: {}", LocalDateTime.now());
