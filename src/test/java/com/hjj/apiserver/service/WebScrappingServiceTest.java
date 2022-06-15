@@ -20,9 +20,14 @@ public class WebScrappingServiceTest {
 
 
     @Test
-    public void seleniumTest() throws InterruptedException {
+    public void seleniumTest()  {
+
+        System.setProperty("GOOGLE_CHROME_BIN", "/app/.apt/usr/bin/google-chrome");
+        System.setProperty("CHROMEDRIVER_PATH", "/app/.chromedriver/bin/chromedriver");
         //세션 시작
         ChromeOptions options = new ChromeOptions();
+        options.setBinary("/app/.apt/usr/bin/google-chrome");
+        options.addArguments("--enable-javascript");
         //페이지가 로드될 때까지 대기
         //Normal: 로드 이벤트 실행이 반환 될 때 까지 기다린다.
         options.setPageLoadStrategy(PageLoadStrategy.NORMAL);
