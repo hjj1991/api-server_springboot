@@ -48,6 +48,8 @@ dependencies {
     implementation 'org.imgscalr:imgscalr-lib:4.2'
     implementation 'com.google.firebase:firebase-admin:8.1.0'
     implementation 'commons-io:commons-io:2.11.0'
+    // https://mvnrepository.com/artifact/org.seleniumhq.selenium/selenium-java
+    implementation group: 'org.seleniumhq.selenium', name: 'selenium-java', version: '4.2.2'
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     //querydsl 추가
