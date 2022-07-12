@@ -4,10 +4,10 @@
     <include resource="org/springframework/boot/logging/logback/console-appender.xml" />
 
     <appender name="redis" class="com.cwbase.logback.RedisAppender">
-        <host>192.168.28.131</host>
-        <port>6379</port>
+        <host>192.168.28.131</host> <!-- redis가 설치된 호스트IP -->
+        <port>6379</port>           <!-- redis사용 포트 -->
         <key>logstash</key>
-        <type>appapi-local</type>
+        <type>appapi-local</type>   <!-- 그전시간에 logstash_writer의 권한 설정때 작성한 Indices 값 -->
         <source>SLOT-1</source>
     </appender>
 
@@ -21,15 +21,15 @@
     <springProfile name="local">
         <root level="INFO">
             <appender-ref ref="CONSOLE" />
-<!--            <appender-ref ref="redis" />-->
+<!--            <appender-ref ref="redisAsync" />-->
         </root>
     </springProfile>
 
 
     <springProfile name="product">
         <root level="INFO">
+            <appender-ref ref="CONSOLE" />
 <!--            <appender-ref ref="redisAsync" />-->
-             <appender-ref ref="CONSOLE" />
         </root>
     </springProfile>
 
