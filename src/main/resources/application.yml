@@ -58,9 +58,9 @@ spring:
   datasource:
     hikari:
       driver-class-name: com.mysql.cj.jdbc.Driver
-      jdbc-url: jdbc:mysql://containers-us-west-26.railway.app:6001/railway?serverTimezone=Asia/Seoul&useUnicode=true&characterEncoding=utf-8
+      jdbc-url: jdbc:mysql://${OPENSHIFT_MYSQL_DB_HOST}:${OPENSHIFT_MYSQL_DB_PORT}/railway?serverTimezone=Asia/Seoul&useUnicode=true&characterEncoding=utf-8
       username: root
-      password: kHxLwtCsXafkwjWtaJae
+      password: ${OPENSHIFT_MYSQL_DB_PASSWORD}
 decorator:
   datasource:
     p6spy:
