@@ -13,13 +13,6 @@ plugins {
 //    id 'war'
 }
 
-bootJar {
-    destinationDirectory = file("./target")
-}
-
-jar {
-    enabled = false
-}
 group = 'com.hjj'
 version = '0.0.1-SNAPSHOT'
 
