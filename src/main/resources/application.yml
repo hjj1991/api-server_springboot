@@ -35,11 +35,9 @@ spring:
     activate:
       on-profile: local
   datasource:
-    hikari:
-      driver-class-name: org.mariadb.jdbc.Driver
-      jdbc-url: jdbc:mysql://localhost:3306/api_server?serverTimezone=Asia/Seoul&useUnicode=true&characterEncoding=utf-8
-      username: hjj1991
-      password: wowjddl1
+    url: jdbc:mysql://localhost:3306/api_server?serverTimezone=Asia/Seoul&useUnicode=true&characterEncoding=utf-8
+    username: hjj1991
+    password: wowjddl1
 decorator:
   datasource:
     p6spy:
@@ -56,11 +54,9 @@ spring:
     activate:
       on-profile: prod
   datasource:
-    hikari:
-      driver-class-name: com.mysql.cj.jdbc.Driver
-      jdbc-url: jdbc:mysql://containers-us-west-26.railway.app:6001/railway?serverTimezone=Asia/Seoul&useUnicode=true&characterEncoding=utf-8
-      username: root
-      password: kHxLwtCsXafkwjWtaJae
+#    username: root
+#    password: kHxLwtCsXafkwjWtaJae
+#    url: jdbc:mysql://containers-us-west-26.railway.app:6001/railway?serverTimezone=Asia/Seoul&useUnicode=true&characterEncoding=utf-8
 decorator:
   datasource:
     p6spy:

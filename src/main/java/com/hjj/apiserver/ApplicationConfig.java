@@ -29,6 +29,8 @@ import reactor.core.publisher.Mono;
 
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Optional;
 
@@ -92,8 +94,9 @@ public class ApplicationConfig implements AuditorAware<Long> {
     @PostConstruct
     public void initialize() {
         try {
+
             FirebaseOptions options = FirebaseOptions.builder()
-                    .setCredentials(GoogleCredentials.fromStream(new ClassPathResource(firebaseConfigPath).getInputStream()))
+                    .setCredentials(GoogleCredentials.fromStream(new FileInputStream(firebaseConfigPath)))
                     .build();
             if(FirebaseApp.getApps().isEmpty()){
                 FirebaseApp.initializeApp(options);
