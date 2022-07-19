@@ -1,7 +1,7 @@
 social:
   naver:
-    client-id: None
-    client-secret: None
+    client-id: sUyp7Y2KoOfRvdsAEdCc
+    client-secret: QjKMK_CkHV
     url:
       profile:
         host: openapi.naver.com
@@ -10,8 +10,8 @@ social:
         host: nid.naver.com
         path: oauth2.0/token
   kakao:
-    client-id: None
-    client-secret: None
+    client-id: 656c5afa5455de8f5ad9eb51e09e3720
+    client-secret: JagIjIiwSdEvn7HWMKZTg9ZWj5HAtwHM
     url:
       profile:
         host: kapi.kakao.com
@@ -20,10 +20,10 @@ social:
         host: kauth.kakao.com
         path: oauth/token
 app:
-  firebase-configuration-file: /usr/src/myapp/firebase-adminsdk.json
+  firebase-configuration-file: /app/firebase-adminsdk.json
   firebase-bucket: spring-api-server.appspot.com
   firebase-storage-uri: https://firebasestorage.googleapis.com/v0/b/
 
 line:
   noti:
-    token: None
+    token: 836cuwws8uEjj8QN4gpmzipmEkb9LodfCOICn8moHmQ
