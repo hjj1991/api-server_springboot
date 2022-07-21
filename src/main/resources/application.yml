@@ -23,7 +23,11 @@ spring:
 #      hibernate:
 #        SQL: debug
 server:
-  port: 8080
+  port: 443
+  ssl:
+    key-store: classpath:ssl/keystore.p12
+    key-store-type: PKCS12
+    key-store-password: None
   servlet:
     multipart:
       maxFileSize: 10MB
