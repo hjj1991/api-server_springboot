@@ -1,7 +1,7 @@
 social:
   naver:
-    client-id: sUyp7Y2KoOfRvdsAEdCc
-    client-secret: QjKMK_CkHV
+    client-id: None
+    client-secret: None
     url:
       profile:
         host: openapi.naver.com
@@ -10,8 +10,8 @@ social:
         host: nid.naver.com
         path: oauth2.0/token
   kakao:
-    client-id: 656c5afa5455de8f5ad9eb51e09e3720
-    client-secret: JagIjIiwSdEvn7HWMKZTg9ZWj5HAtwHM
+    client-id: None
+    client-secret: None
     url:
       profile:
         host: kapi.kakao.com
@@ -26,4 +26,4 @@ app:
 
 line:
   noti:
-    token: 836cuwws8uEjj8QN4gpmzipmEkb9LodfCOICn8moHmQ
+    token: None
