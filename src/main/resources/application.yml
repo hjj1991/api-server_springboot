@@ -23,11 +23,7 @@ spring:
 #      hibernate:
 #        SQL: debug
 server:
-  port: 443
-  ssl:
-    key-store: classpath:ssl/keystore.p12
-    key-store-type: PKCS12
-    key-store-password: None
+  port: 8080
   servlet:
     multipart:
       maxFileSize: 10MB
@@ -70,3 +66,9 @@ logging:
     root: info
     c: error
     com.hjj.apiserver: info
+server:
+  port: 443
+  ssl:
+    key-store: classpath:ssl/keystore.p12
+    key-store-type: PKCS12
+    key-store-password: None
