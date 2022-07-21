@@ -1,6 +1,5 @@
 package com.hjj.apiserver.service;
 
-import com.hjj.apiserver.domain.Bank;
 import com.hjj.apiserver.dto.DepositDto;
 import com.hjj.apiserver.repositroy.DepositRepository;
 import lombok.RequiredArgsConstructor;
@@ -14,8 +13,8 @@ public class DepositService {
 
     private final DepositRepository depositRepository;
 
-    public List<DepositDto.ResponseDepositFindAll> findDepositListByBankType(Bank.BankType bankType){
+    public List<DepositDto.ResponseDepositFindAll> findDepositListByBankType(){
 
-        return depositRepository.findDepositAllByBankType(bankType);
+        return depositRepository.findDepositAllByBankType();
     }
 }

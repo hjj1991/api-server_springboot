@@ -1,9 +1,7 @@
 package com.hjj.apiserver.repositroy.impl;
 
-import com.hjj.apiserver.domain.*;
-import com.hjj.apiserver.dto.BankDto;
+import com.hjj.apiserver.domain.Deposit;
 import com.hjj.apiserver.dto.DepositDto;
-import com.hjj.apiserver.dto.DepositOptionDto;
 import com.hjj.apiserver.repositroy.DepositRepositoryCustom;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -12,9 +10,9 @@ import org.modelmapper.ModelMapper;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.hjj.apiserver.domain.QBank.*;
-import static com.hjj.apiserver.domain.QDeposit.*;
-import static com.hjj.apiserver.domain.QDepositOption.*;
+import static com.hjj.apiserver.domain.QBank.bank;
+import static com.hjj.apiserver.domain.QDeposit.deposit;
+import static com.hjj.apiserver.domain.QDepositOption.depositOption;
 
 @RequiredArgsConstructor
 public class DepositRepositoryImpl implements DepositRepositoryCustom {
@@ -22,7 +20,7 @@ public class DepositRepositoryImpl implements DepositRepositoryCustom {
     private final JPAQueryFactory jpaQueryFactory;
     private final ModelMapper modelMapper;
 
-    public List<DepositDto.ResponseDepositFindAll> findDepositAllByBankType(Bank.BankType bankType){
+    public List<DepositDto.ResponseDepositFindAll> findDepositAllByBankType(){
 
         List<Deposit> deposits = jpaQueryFactory
                 .select(deposit)
