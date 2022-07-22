@@ -88,26 +88,5 @@ public class BankDto {
 
     }
 
-    @Data
-    public static class ResponseBankApi {
-        private Result result;
-
-
-        public boolean requestSuccess(){
-            if(result != null && result.getErrCd().equals("000")){
-                return true;
-            }
-
-            return false;
-        }
-
-        public boolean isOverLastPage(){
-            if(requestSuccess() && Integer.parseInt(result.getMaxPageNo()) < Integer.parseInt(result.getNowPageNo())){
-                return true;
-            }
-
-            return false;
-        }
-    }
 
 }

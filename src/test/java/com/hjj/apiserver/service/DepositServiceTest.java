@@ -16,7 +16,7 @@ class DepositServiceTest {
     @Test
     void findDepositListByBankType(){
 
-        List<DepositDto> depositDtos = depositService.findDepositListByBankType(Bank.BankType.BANK);
+        List<DepositDto> depositDtos = depositService.findDepositList(Bank.BankType.BANK);
 
     }
 

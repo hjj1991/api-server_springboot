@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface DepositRepositoryCustom {
 
-    List<DepositDto.ResponseDepositFindAll> findDepositAllByBankType();
+    List<DepositDto.ResponseDepositFindAll> findDepositAll();
 }

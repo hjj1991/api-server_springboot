@@ -24,17 +24,18 @@ public class Bank extends BaseTimeEntity {
     }
 
     @Id
+    @Column(length = 20)
     private String finCoNo;
 
     @Column
     private String dclsMonth;
-    @Column
+    @Column(length = 100)
     private String korCoNm;
     @Column
     private String dclsChrgMan;
     @Column
     private String hompUrl;
-    @Column
+    @Column(length = 50)
     private String calTel;
 
     @Column

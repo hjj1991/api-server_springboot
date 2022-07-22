@@ -13,8 +13,8 @@ public class DepositService {
 
     private final DepositRepository depositRepository;
 
-    public List<DepositDto.ResponseDepositFindAll> findDepositListByBankType(){
+    public List<DepositDto.ResponseDepositFindAll> findDepositList(){
 
-        return depositRepository.findDepositAllByBankType();
+        return depositRepository.findDepositAll();
     }
 }

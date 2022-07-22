@@ -20,7 +20,7 @@ public class DepositRepositoryImpl implements DepositRepositoryCustom {
     private final JPAQueryFactory jpaQueryFactory;
     private final ModelMapper modelMapper;
 
-    public List<DepositDto.ResponseDepositFindAll> findDepositAllByBankType(){
+    public List<DepositDto.ResponseDepositFindAll> findDepositAll(){
 
         List<Deposit> deposits = jpaQueryFactory
                 .select(deposit)

@@ -35,6 +35,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
                 .antMatchers("/user/*/exists*",
                         "/deposit*",
+                        "/saving*",
                         "/user/signup",
                         "/user/signin",
                         "/user/social/signin",

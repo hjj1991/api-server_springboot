@@ -9,12 +9,12 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "tb_deposit_option")
-public class DepositOption extends BaseTimeEntity {
+@Table(name = "tb_saving_option")
+public class SavingOption extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long depositOptionNo;
+    private Long savingOptionNo;
 
 
 
@@ -26,7 +26,7 @@ public class DepositOption extends BaseTimeEntity {
             @JoinColumn(name = "finCoNo",
                     referencedColumnName = "finCoNo")
     }, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-    private Deposit deposit;
+    private Saving saving;
 
 
 
@@ -42,6 +42,10 @@ public class DepositOption extends BaseTimeEntity {
     private String intrRateType;
     @Column
     private String dclsMonth;
+    @Column(length = 10)
+    private String rsrvType;
+    @Column(length = 100)
+    private String rsrvTypeNm;
 
 
 }

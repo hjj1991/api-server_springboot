@@ -2,19 +2,20 @@ package com.hjj.apiserver.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.hjj.apiserver.domain.Bank;
-import com.hjj.apiserver.domain.Deposit;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serializable;
 import java.util.List;
 
 @Data
-public class DepositDto {
+public class SavingDto implements Serializable {
+    private static final long serialVersionUID = -8289104489574860595L;
+
 
     private String finCoSubmDay;
     private String dclsStrtDay;
-    private String dclsEndDay;
     private long maxLimit;
     private String etcNote;
     private String joinMember;
@@ -27,39 +28,16 @@ public class DepositDto {
     private String finPrdtCd;
     private String finCoNo;
     private String dclsMonth;
-
+    private String dclsEndDay;
     private Bank.BankType bankType;
     private BankDto bankDto;
 
-    private List<DepositOptionDto> options;
-
-    public Deposit toEntity(Bank bank){
-
-//        List<DepositOption> depositOptions = options.stream().map(option -> option.toEntity()).collect(Collectors.toList());
-
-        return Deposit.builder()
-                .finPrdtCd(finPrdtCd)
-                .bank(bank)
-                .finCoSubmDay(finCoSubmDay)
-                .dclsStrtDay(dclsStrtDay)
-                .dclsEndDay(dclsEndDay)
-                .maxLimit(maxLimit)
-                .etcNote(etcNote)
-                .joinMember(joinMember)
-                .joinDeny(joinDeny)
-                .spclCnd(spclCnd)
-                .mtrtInt(mtrtInt)
-                .joinWay(joinWay)
-                .finPrdtNm(finPrdtNm)
-                .korCoNm(korCoNm)
-                .dclsMonth(dclsMonth)
-                .build();
-    }
+    private List<SavingOptionDto> options;
 
     @Getter
     @Setter
     public static class Result {
-        private List<DepositOptionDto> optionList;
+        private List<SavingOptionDto> optionList;
         private List<Baselist> baseList;
         @JsonProperty("err_msg")
         private String errMsg;
@@ -74,7 +52,6 @@ public class DepositDto {
         @JsonProperty("prdt_div")
         private String prdtDiv;
     }
-
 
     @Getter
     @Setter
@@ -109,15 +86,19 @@ public class DepositDto {
         private String finCoNo;
         @JsonProperty("dcls_month")
         private String dclsMonth;
+
+        public boolean isSavingOption(SavingOptionDto savingOptionDto){
+            if(finCoNo.equals(savingOptionDto.getFinCoNo()) && finPrdtCd.equals(savingOptionDto.getFinPrdtCd())){
+                return true;
+            }
+            return false;
+        }
     }
 
-
-
     @Data
-    public static class ResponseDepositFindAll{
+    public static class ResponseSavingFindAll{
         private String finCoSubmDay;
         private String dclsStrtDay;
-        private String dclsEndDay;
         private long maxLimit;
         private String etcNote;
         private String joinMember;
@@ -130,12 +111,13 @@ public class DepositDto {
         private String finPrdtCd;
         private String finCoNo;
         private String dclsMonth;
+        private String dclsEndDay;
         private Bank.BankType bankType;
         private String calTel;
         private String hompUrl;
         private String dclsChrgMan;
 
-        private List<Option> options;
+        private List<ResponseSavingFindAll.Option> options;
 
         @Data
         public static class Option{
@@ -143,8 +125,11 @@ public class DepositDto {
             private double intrRate2;
             private double intrRate;
             private String saveTrm;
+            private String rsrvTypeNm;
+            private String rsrvType;
             private String intrRateTypeNm;
             private String intrRateType;
+            private String dclsMonth;
 
         }
     }
