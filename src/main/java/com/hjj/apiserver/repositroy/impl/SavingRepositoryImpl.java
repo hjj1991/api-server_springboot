@@ -23,6 +23,7 @@ public class SavingRepositoryImpl implements SavingRepositoryCustom {
     @Override
     public List<SavingDto.ResponseSavingFindAll> findSavingAll() {
         List<Saving> savings = jpaQueryFactory.select(saving)
+                .distinct()
                 .from(saving)
                 .join(saving.bank, bank).fetchJoin()
                 .leftJoin(saving.savingOptions, savingOption).fetchJoin()
@@ -33,7 +34,7 @@ public class SavingRepositoryImpl implements SavingRepositoryCustom {
         return savings.stream().map(tempSaving -> {
             SavingDto.ResponseSavingFindAll responseSavingFindAll = modelMapper.map(tempSaving, SavingDto.ResponseSavingFindAll.class);
             responseSavingFindAll.setFinCoNo(tempSaving.getBank().getFinCoNo());
-            responseSavingFindAll.setBankType(tempSaving.getBank().getBankType());
+            responseSavingFindAll.setBankType(tempSaving.getBank().getBankType().getTitle());
             responseSavingFindAll.setCalTel(tempSaving.getBank().getCalTel());
             responseSavingFindAll.setDclsChrgMan(tempSaving.getBank().getDclsChrgMan());
             responseSavingFindAll.setHompUrl(tempSaving.getBank().getHompUrl());

@@ -112,7 +112,7 @@ public class SavingDto implements Serializable {
         private String finCoNo;
         private String dclsMonth;
         private String dclsEndDay;
-        private Bank.BankType bankType;
+        private String bankType;
         private String calTel;
         private String hompUrl;
         private String dclsChrgMan;

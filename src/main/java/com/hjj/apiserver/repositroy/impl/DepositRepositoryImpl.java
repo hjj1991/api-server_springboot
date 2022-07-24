@@ -34,7 +34,7 @@ public class DepositRepositoryImpl implements DepositRepositoryCustom {
         return deposits.stream().map(tempDeposit ->{
             DepositDto.ResponseDepositFindAll responseDepositFindAll = modelMapper.map(tempDeposit, DepositDto.ResponseDepositFindAll.class);
             responseDepositFindAll.setFinCoNo(tempDeposit.getBank().getFinCoNo());
-            responseDepositFindAll.setBankType(tempDeposit.getBank().getBankType());
+            responseDepositFindAll.setBankType(tempDeposit.getBank().getBankType().getTitle());
             responseDepositFindAll.setCalTel(tempDeposit.getBank().getCalTel());
             responseDepositFindAll.setDclsChrgMan(tempDeposit.getBank().getDclsChrgMan());
             responseDepositFindAll.setHompUrl(tempDeposit.getBank().getHompUrl());

@@ -130,7 +130,7 @@ public class DepositDto {
         private String finPrdtCd;
         private String finCoNo;
         private String dclsMonth;
-        private Bank.BankType bankType;
+        private String bankType;
         private String calTel;
         private String hompUrl;
         private String dclsChrgMan;

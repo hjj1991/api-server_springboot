@@ -15,6 +15,7 @@ import java.util.List;
 public class Bank extends BaseTimeEntity {
 
     @RequiredArgsConstructor
+    @Getter
     public enum BankType {
         BANK(020000, "은행"),
         SAVING_BANK(030300, "저축은행");
