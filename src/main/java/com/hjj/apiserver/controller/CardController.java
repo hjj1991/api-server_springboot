@@ -24,7 +24,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class CardController {
 
-    private final JwtTokenProvider jwtTokenProvider;
     private final CardRepository cardRepository;
     private final ModelMapper modelMapper;
     private final UserRepository userRepository;
