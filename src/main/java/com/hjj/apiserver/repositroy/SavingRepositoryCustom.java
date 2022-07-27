@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface SavingRepositoryCustom {
     List<SavingDto.ResponseSavingFindAll> findSavingAll();
+    List<SavingDto.SavingIntrRateDesc> findSavingByHome();
 }

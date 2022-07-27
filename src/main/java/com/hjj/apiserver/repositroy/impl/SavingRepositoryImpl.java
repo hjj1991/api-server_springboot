@@ -1,6 +1,7 @@
 package com.hjj.apiserver.repositroy.impl;
 
 import com.hjj.apiserver.domain.Saving;
+import com.hjj.apiserver.dto.QSavingDto_SavingIntrRateDesc;
 import com.hjj.apiserver.dto.SavingDto;
 import com.hjj.apiserver.repositroy.SavingRepositoryCustom;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -45,5 +46,19 @@ public class SavingRepositoryImpl implements SavingRepositoryCustom {
             return responseSavingFindAll;
         }).collect(Collectors.toList());
 
+    }
+
+    @Override
+    public List<SavingDto.SavingIntrRateDesc> findSavingByHome(){
+        return jpaQueryFactory
+                .select(new QSavingDto_SavingIntrRateDesc(saving.korCoNm, saving.finPrdtNm, savingOption.intrRate, savingOption.intrRate2))
+                .from(saving)
+                .join(saving.bank, bank)
+                .leftJoin(saving.savingOptions, savingOption)
+                .where(saving.enable.eq(1).and(savingOption.saveTrm.eq("12")))
+                .groupBy(saving.finPrdtCd)
+                .orderBy(savingOption.intrRate2.desc())
+                .limit(10)
+                .fetch();
     }
 }

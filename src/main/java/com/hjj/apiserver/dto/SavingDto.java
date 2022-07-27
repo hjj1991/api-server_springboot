@@ -2,6 +2,7 @@ package com.hjj.apiserver.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.hjj.apiserver.domain.Bank;
+import com.querydsl.core.annotations.QueryProjection;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -132,6 +133,24 @@ public class SavingDto implements Serializable {
             private String dclsMonth;
 
         }
+    }
+
+
+    @Data
+    public static class SavingIntrRateDesc{
+
+        @QueryProjection
+        public SavingIntrRateDesc(String korCoNm, String finPrdtNm, Double intrRate, Double intrRate2) {
+            this.korCoNm = korCoNm;
+            this.finPrdtNm = finPrdtNm;
+            this.intrRate = intrRate;
+            this.intrRate2 = intrRate2;
+        }
+
+        private String korCoNm;
+        private String finPrdtNm;
+        private Double intrRate;
+        private Double intrRate2;
     }
 
 }
