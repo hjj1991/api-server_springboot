@@ -2,7 +2,9 @@ package com.hjj.apiserver.repositroy.impl;
 
 import com.hjj.apiserver.domain.Deposit;
 import com.hjj.apiserver.dto.DepositDto;
+import com.hjj.apiserver.dto.QDepositDto_DepositIntrRateDesc;
 import com.hjj.apiserver.repositroy.DepositRepositoryCustom;
+import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -43,6 +45,20 @@ public class DepositRepositoryImpl implements DepositRepositoryCustom {
                     modelMapper.map(option, DepositDto.ResponseDepositFindAll.Option.class)).collect(Collectors.toList()));
             return responseDepositFindAll;
         }).collect(Collectors.toList());
+    }
 
+    public List<DepositDto.DepositIntrRateDesc> findDepositByHome(){
+
+        return jpaQueryFactory
+                .select(new QDepositDto_DepositIntrRateDesc(
+                        deposit.korCoNm, deposit.finPrdtNm, depositOption.intrRate2.max(), depositOption.intrRate))
+                .from(deposit)
+                .join(deposit.bank, bank)
+                .leftJoin(deposit.depositOptions, depositOption)
+                .where(deposit.enable.eq(1).and(depositOption.saveTrm.eq("12")))
+                .groupBy(deposit.finPrdtCd)
+                .orderBy(depositOption.intrRate2.desc())
+                .limit(10)
+                .fetch();
     }
 }
