@@ -56,7 +56,7 @@ public class SavingRepositoryImpl implements SavingRepositoryCustom {
                 .join(saving.bank, bank)
                 .leftJoin(saving.savingOptions, savingOption)
                 .where(saving.enable.eq(1).and(savingOption.saveTrm.eq("12")))
-                .groupBy(saving.finPrdtCd)
+                .groupBy(saving.finPrdtCd, saving.korCoNm, saving.finPrdtNm, savingOption.intrRate, savingOption.intrRate2)
                 .orderBy(savingOption.intrRate2.desc())
                 .limit(10)
                 .fetch();

@@ -51,12 +51,12 @@ public class DepositRepositoryImpl implements DepositRepositoryCustom {
 
         return jpaQueryFactory
                 .select(new QDepositDto_DepositIntrRateDesc(
-                        deposit.korCoNm, deposit.finPrdtNm, depositOption.intrRate2.max(), depositOption.intrRate))
+                        deposit.korCoNm, deposit.finPrdtNm, depositOption.intrRate2, depositOption.intrRate))
                 .from(deposit)
                 .join(deposit.bank, bank)
                 .leftJoin(deposit.depositOptions, depositOption)
                 .where(deposit.enable.eq(1).and(depositOption.saveTrm.eq("12")))
-                .groupBy(deposit.finPrdtCd)
+                .groupBy(deposit.korCoNm, deposit.finPrdtCd, deposit.finPrdtNm, depositOption.intrRate, depositOption.intrRate2)
                 .orderBy(depositOption.intrRate2.desc())
                 .limit(10)
                 .fetch();
