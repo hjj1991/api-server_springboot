@@ -1,9 +1,11 @@
 package com.hjj.apiserver.repositroy.impl;
 
+import com.hjj.apiserver.domain.QSavingOption;
 import com.hjj.apiserver.domain.Saving;
 import com.hjj.apiserver.dto.QSavingDto_SavingIntrRateDesc;
 import com.hjj.apiserver.dto.SavingDto;
 import com.hjj.apiserver.repositroy.SavingRepositoryCustom;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -50,13 +52,26 @@ public class SavingRepositoryImpl implements SavingRepositoryCustom {
 
     @Override
     public List<SavingDto.SavingIntrRateDesc> findSavingByHome(){
+        QSavingOption subSaving = new QSavingOption("subSaving");
+
         return jpaQueryFactory
                 .select(new QSavingDto_SavingIntrRateDesc(saving.korCoNm, saving.finPrdtNm, savingOption.intrRate, savingOption.intrRate2))
                 .from(saving)
                 .join(saving.bank, bank)
-                .leftJoin(saving.savingOptions, savingOption)
-                .where(saving.enable.eq(1).and(savingOption.saveTrm.eq("12")))
-                .groupBy(saving.finPrdtCd, saving.korCoNm, saving.finPrdtNm, savingOption.intrRate, savingOption.intrRate2)
+                .join(saving.savingOptions, savingOption)
+                .on(saving.bank.eq(savingOption.saving.bank)
+                        .and(saving.finPrdtCd.eq(savingOption.saving.finPrdtCd))
+                        .and(savingOption.intrRate2.eq(
+                                JPAExpressions.select(subSaving.intrRate2.max())
+                                        .from(subSaving)
+                                        .where(subSaving.saving.bank.eq(saving.bank)
+                                                .and(subSaving.saving.finPrdtCd.eq(saving.finPrdtCd))
+                                                .and(subSaving.saveTrm.eq("12")))
+                                        .orderBy(subSaving.intrRate2.desc())
+                        ))
+                )
+                .where(saving.enable.eq(1))
+                .groupBy(saving.korCoNm, saving.finPrdtNm, savingOption.intrRate, savingOption.intrRate2)
                 .orderBy(savingOption.intrRate2.desc())
                 .limit(10)
                 .fetch();
