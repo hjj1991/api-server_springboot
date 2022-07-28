@@ -51,7 +51,7 @@ public class DepositRepositoryImpl implements DepositRepositoryCustom {
 
         return jpaQueryFactory
                 .select(new QDepositDto_DepositIntrRateDesc(
-                        deposit.korCoNm, deposit.finPrdtNm, depositOption.intrRate2, depositOption.intrRate))
+                        deposit.korCoNm, deposit.finPrdtNm, depositOption.intrRate, depositOption.intrRate2))
                 .from(deposit)
                 .join(deposit.bank, bank)
                 .leftJoin(deposit.depositOptions, depositOption)
