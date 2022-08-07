@@ -1,7 +1,14 @@
 package com.hjj.apiserver.common;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.springframework.context.MessageSource;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.PostConstruct;
+import java.util.Arrays;
+import java.util.Locale;
 
 @Getter
 @Setter
@@ -20,13 +27,24 @@ public class ApiError{
         ERR_CODE9999("잘못된 요청입니다.");
 
 
-        private final String msg;
+        private String msg;
 
         ErrCode(String msg) {
             this.msg = msg;
         }
         public String getMsg() {
             return msg;
+        }
+    }
+
+    @RequiredArgsConstructor
+    @Component
+    public static class ErrorInjector {
+        private final MessageSource messageSource;
+
+        @PostConstruct
+        public void postConstruct(){
+            Arrays.stream(ErrCode.values()).forEach(errCode1 -> errCode1.msg = messageSource.getMessage(errCode1.name(), null, Locale.KOREA));
         }
     }
 
