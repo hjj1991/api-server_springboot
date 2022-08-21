@@ -1,7 +1,7 @@
 package com.hjj.apiserver.service;
 
-import com.hjj.apiserver.domain.CategoryEntity;
-import com.hjj.apiserver.domain.PurchaseEntity;
+import com.hjj.apiserver.domain.CategoryEntityJava;
+import com.hjj.apiserver.domain.PurchaseEntityJava;
 import com.hjj.apiserver.domain.UserEntity;
 import com.hjj.apiserver.dto.CategoryDto;
 import com.hjj.apiserver.repositroy.CategoryRepository;
@@ -30,7 +30,7 @@ class CategoryServiceTest {
         categoryDto.setCategoryName("식비");
         categoryDto.setCategoryDesc("커피값");
 
-        CategoryEntity categoryEntity = categoryDto.toEntity();
+        CategoryEntityJava categoryEntity = categoryDto.toEntity();
         categoryRepository.save(categoryEntity);
 
         System.out.println("categoryEntity = " + categoryEntity);
@@ -42,7 +42,7 @@ class CategoryServiceTest {
         categoryDto.setCategoryName("경조사");
         categoryDto.setCategoryDesc("커피값입니다.");
         categoryDto.setParentCategory(categoryRepository.getById(1L));
-        CategoryEntity categoryEntity = categoryDto.toEntity();
+        CategoryEntityJava categoryEntity = categoryDto.toEntity();
 
         categoryRepository.save(categoryEntity);
     }
@@ -78,7 +78,7 @@ class CategoryServiceTest {
         CategoryDto categoryDto = new CategoryDto();
         categoryDto.setCategoryName("경조사");
         categoryDto.setCategoryDesc("커피값입니다.");
-        CategoryEntity categoryEntity = categoryDto.toEntity();
+        CategoryEntityJava categoryEntity = categoryDto.toEntity();
 
         categoryRepository.save(categoryEntity);
         categoryRepository.flush();
@@ -97,18 +97,18 @@ class CategoryServiceTest {
         CategoryDto categoryDto = new CategoryDto();
         categoryDto.setCategoryName("경조사");
         categoryDto.setCategoryDesc("커피값입니다.");
-        CategoryEntity categoryEntity = categoryDto.toEntity();
+        CategoryEntityJava categoryEntity = categoryDto.toEntity();
 
         categoryRepository.save(categoryEntity);
         categoryRepository.flush();
 
         for(int i = 0; i < 20; i ++){
-            PurchaseEntity purchaseEntity = PurchaseEntity.builder()
+            PurchaseEntityJava purchaseEntity = PurchaseEntityJava.builder()
                     .categoryEntity(categoryEntity)
                     .userEntity(userEntity)
                     .purchaseDate(LocalDate.now())
                     .price(1000)
-                    .purchaseType(PurchaseEntity.PurchaseType.OUTGOING)
+                    .purchaseType(PurchaseEntityJava.PurchaseType.OUTGOING)
                     .reason("커피묵느라")
                     .build();
             purchaseRepository.save(purchaseEntity);

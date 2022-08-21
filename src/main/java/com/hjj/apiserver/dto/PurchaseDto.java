@@ -20,14 +20,14 @@ public class PurchaseDto {
     private Long categoryNo;
     private Long accountBookNo;
     private String storeName;
-    private PurchaseEntity.PurchaseType purchaseType;
+    private PurchaseEntityJava.PurchaseType purchaseType;
     private Integer price;
     private String reason;
     private LocalDate purchaseDate;
-    private CardEntity cardEntity;
-    private CategoryEntity categoryEntity;
+    private CardEntityJava cardEntity;
+    private CategoryEntityJava categoryEntity;
     private UserEntity userEntity;
-    private AccountBookEntity accountBookEntity;
+    private AccountBookEntityJava accountBookEntity;
     private LocalDate startDate;
     private LocalDate endDate;
 
@@ -59,7 +59,7 @@ public class PurchaseDto {
         private Long userNo;
         private Long cardNo;
         private Long accountBookNo;
-        private PurchaseEntity.PurchaseType purchaseType;
+        private PurchaseEntityJava.PurchaseType purchaseType;
         private int price;
         private String reason;
         private LocalDate purchaseDate;
@@ -73,13 +73,13 @@ public class PurchaseDto {
         private Long parentCategoryNo;
         private Long categoryNo;
         private String storeName;
-        private PurchaseEntity.PurchaseType purchaseType;
+        private PurchaseEntityJava.PurchaseType purchaseType;
         private int price;
         private String reason;
         private LocalDate purchaseDate;
 
         @QueryProjection
-        public ResponsePurchaseDetail(Long accountBookNo, Long cardNo, Long parentCategoryNo, Long categoryNo, String storeName, PurchaseEntity.PurchaseType purchaseType, int price, String reason, LocalDate purchaseDate) {
+        public ResponsePurchaseDetail(Long accountBookNo, Long cardNo, Long parentCategoryNo, Long categoryNo, String storeName, PurchaseEntityJava.PurchaseType purchaseType, int price, String reason, LocalDate purchaseDate) {
             this.accountBookNo = accountBookNo;
             this.cardNo = cardNo;
             this.parentCategoryNo = parentCategoryNo;
@@ -99,7 +99,7 @@ public class PurchaseDto {
         private Long cardNo;
         private Long categoryNo;
         private String storeName;
-        private PurchaseEntity.PurchaseType purchaseType;
+        private PurchaseEntityJava.PurchaseType purchaseType;
         private int price;
         private String reason;
         private LocalDate purchaseDate;
@@ -112,15 +112,15 @@ public class PurchaseDto {
         private Long cardNo;
         private Long categoryNo;
         private String storeName;
-        private PurchaseEntity.PurchaseType purchaseType;
+        private PurchaseEntityJava.PurchaseType purchaseType;
         private int price;
         private String reason;
         private LocalDate purchaseDate;
 
     }
 
-    public PurchaseEntity toEntity(){
-        PurchaseEntity purchaseEntity = PurchaseEntity.builder()
+    public PurchaseEntityJava toEntity(){
+        PurchaseEntityJava purchaseEntity = PurchaseEntityJava.builder()
                 .storeName(storeName)
                 .purchaseType(purchaseType)
                 .price(price)

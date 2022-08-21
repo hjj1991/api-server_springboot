@@ -38,24 +38,24 @@ public class PurchaseService {
             purchaseDto.setUserEntity(userEntity);
         }
 
-        AccountBookEntity accountBookEntity = accountBookRepository.findAccountBookBySubQuery(purchaseDto.getUserNo(), purchaseDto.getAccountBookNo()).orElseThrow(UserNotFoundException::new);
+        AccountBookEntityJava accountBookEntity = accountBookRepository.findAccountBookBySubQuery(purchaseDto.getUserNo(), purchaseDto.getAccountBookNo()).orElseThrow(UserNotFoundException::new);
         purchaseDto.setAccountBookEntity(accountBookEntity);
 
         if(purchaseDto.getCardNo() != null){
-            CardEntity cardEntity = cardRepository.getById(purchaseDto.getCardNo());
+            CardEntityJava cardEntity = cardRepository.getById(purchaseDto.getCardNo());
             if(cardEntity == null)
                 throw new Exception("해당 되는 카드가 존재하지 않습니다.");
             purchaseDto.setCardEntity(cardEntity);
         }
         if(purchaseDto.getCategoryNo() != null){
-            List<AccountBookUserEntity.AccountRole> accountRoleList = new ArrayList<>();
-            accountRoleList.add(AccountBookUserEntity.AccountRole.OWNER);
-            accountRoleList.add(AccountBookUserEntity.AccountRole.MEMBER);
-            CategoryEntity categoryEntity = categoryRepository.findByCategoryNoAndSubQuery(purchaseDto.getCategoryNo(), purchaseDto.getAccountBookNo(), purchaseDto.getUserNo(), accountRoleList).orElseThrow(() -> new Exception("해당하는 카테고리가 없습니다."));
+            List<AccountBookUserEntityJava.AccountRole> accountRoleList = new ArrayList<>();
+            accountRoleList.add(AccountBookUserEntityJava.AccountRole.OWNER);
+            accountRoleList.add(AccountBookUserEntityJava.AccountRole.MEMBER);
+            CategoryEntityJava categoryEntity = categoryRepository.findByCategoryNoAndSubQuery(purchaseDto.getCategoryNo(), purchaseDto.getAccountBookNo(), purchaseDto.getUserNo(), accountRoleList).orElseThrow(() -> new Exception("해당하는 카테고리가 없습니다."));
             purchaseDto.setCategoryEntity(categoryEntity);
         }
 
-        PurchaseEntity purchaseEntity = purchaseDto.toEntity();
+        PurchaseEntityJava purchaseEntity = purchaseDto.toEntity();
 
         purchaseRepository.save(purchaseEntity);
 
@@ -63,7 +63,7 @@ public class PurchaseService {
 
     public List<PurchaseDto.Purchase> findPurchaseList(PurchaseDto purchaseDto){
 
-        List<PurchaseEntity> purchaseEntityList = purchaseRepository.findAllEntityGraphByPurchaseDateBetweenAndAccountBookEntity_AccountBookNoAndDeleteYnOrderByPurchaseDateDesc(purchaseDto.getStartDate(), purchaseDto.getEndDate(), purchaseDto.getAccountBookNo(), 'N');
+        List<PurchaseEntityJava> purchaseEntityList = purchaseRepository.findAllEntityGraphByPurchaseDateBetweenAndAccountBookEntity_AccountBookNoAndDeleteYnOrderByPurchaseDateDesc(purchaseDto.getStartDate(), purchaseDto.getEndDate(), purchaseDto.getAccountBookNo(), 'N');
         List<PurchaseDto.Purchase> purchaseList = new ArrayList<>();
         purchaseEntityList.stream().forEach(purchaseEntity -> {
             PurchaseDto.Purchase responsePurchaseList = modelMapper.map(purchaseEntity, PurchaseDto.Purchase.class);
@@ -91,9 +91,9 @@ public class PurchaseService {
 
     public Slice<PurchaseDto.Purchase> findPurchaseListOfPage(PurchaseDto purchaseDto, Pageable pageable){
 
-        List<PurchaseEntity> purchaseEntityList = purchaseRepository.findPurchasePageCustom(purchaseDto, pageable);
+        List<PurchaseEntityJava> purchaseEntityList = purchaseRepository.findPurchasePageCustom(purchaseDto, pageable);
         List<PurchaseDto.Purchase> purchaseList = new ArrayList<>();
-        for (PurchaseEntity purchaseEntity : purchaseEntityList) {
+        for (PurchaseEntityJava purchaseEntity : purchaseEntityList) {
             PurchaseDto.Purchase responsePurchaseList = modelMapper.map(purchaseEntity, PurchaseDto.Purchase.class);
             responsePurchaseList.setAccountBookNo(purchaseDto.getAccountBookNo());
             responsePurchaseList.setUserNo(purchaseDto.getUserNo());
@@ -121,7 +121,7 @@ public class PurchaseService {
 
     @Transactional(readOnly = false, rollbackFor = Exception.class)
     public void deletePurchase(Long userNo, Long purchaseNo) throws Exception{
-        PurchaseEntity purchaseEntity = purchaseRepository.findEntityGraphByUserEntity_UserNoAndPurchaseNoAndDeleteYn(userNo, purchaseNo, 'N');
+        PurchaseEntityJava purchaseEntity = purchaseRepository.findEntityGraphByUserEntity_UserNoAndPurchaseNoAndDeleteYn(userNo, purchaseNo, 'N');
         if(purchaseEntity == null){
             throw new Exception("해당값이 존재하지 않습니다.");
         }
@@ -135,7 +135,7 @@ public class PurchaseService {
 
     @Transactional(readOnly = false, rollbackFor = Exception.class)
     public void modifyPurchase(PurchaseDto purchaseDto) {
-        PurchaseEntity updatePurchaseEntity = purchaseRepository.findEntityGraphByUserEntity_UserNoAndPurchaseNoAndDeleteYn(purchaseDto.getUserNo(), purchaseDto.getPurchaseNo(), 'N');
+        PurchaseEntityJava updatePurchaseEntity = purchaseRepository.findEntityGraphByUserEntity_UserNoAndPurchaseNoAndDeleteYn(purchaseDto.getUserNo(), purchaseDto.getPurchaseNo(), 'N');
 
         updatePurchaseEntity.updatePurchase(purchaseDto);
 

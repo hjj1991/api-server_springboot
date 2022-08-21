@@ -13,7 +13,7 @@ import java.util.List;
 @Builder
 @IdClass(SavingPK.class)
 @Table(name = "tb_saving")
-public class Saving extends BaseTimeEntity{
+public class Saving extends BaseTimeEntity_Java {
 
     @Id//금융상품코드
     @Column(length = 50)

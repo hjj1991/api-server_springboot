@@ -10,7 +10,7 @@ import javax.persistence.*;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "tb_saving_option")
-public class SavingOption extends BaseTimeEntity {
+public class SavingOption extends BaseTimeEntity_Java {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

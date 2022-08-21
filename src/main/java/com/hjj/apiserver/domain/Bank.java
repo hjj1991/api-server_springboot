@@ -12,7 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "tb_bank")
-public class Bank extends BaseTimeEntity {
+public class Bank extends BaseTimeEntity_Java {
 
     @RequiredArgsConstructor
     @Getter

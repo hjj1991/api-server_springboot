@@ -13,7 +13,7 @@ import java.util.List;
 @Entity
 @Table(name = "tb_deposit")
 @IdClass(DepositPK.class)
-public class Deposit extends BaseTimeEntity {
+public class Deposit extends BaseTimeEntity_Java {
 
 
 

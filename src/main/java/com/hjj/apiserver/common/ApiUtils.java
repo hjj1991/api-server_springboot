@@ -1,16 +1,16 @@
 package com.hjj.apiserver.common;
 
 public class ApiUtils {
-    public static <T>ApiResponse<T> success(T response) {
-        return new ApiResponse<>(true, response, null);
+    public static <T> ApiResponse_Java<T> success(T response) {
+        return new ApiResponse_Java<>(true, response, null);
     }
 
 
-    public static <T>ApiResponse<T> success() {
-        return new ApiResponse<>(true, null, null);
+    public static <T> ApiResponse_Java<T> success() {
+        return new ApiResponse_Java<>(true, null, null);
     }
 
-    public static ApiResponse<?> error(String message, ApiError.ErrCode errCode){
-        return new ApiResponse<>(false, null, new ApiError(message, errCode));
+    public static ApiResponse_Java<?> error(String message, ApiError_Java.ErrCode errCode){
+        return new ApiResponse_Java<>(false, null, new ApiError_Java(message, errCode));
     }
 }

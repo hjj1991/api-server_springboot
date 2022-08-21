@@ -1,10 +1,9 @@
 package com.hjj.apiserver.service;
 
 import com.hjj.apiserver.common.exception.UserNotFoundException;
-import com.hjj.apiserver.domain.AccountBookEntity;
-import com.hjj.apiserver.domain.AccountBookUserEntity;
-import com.hjj.apiserver.domain.PurchaseEntity;
-import com.hjj.apiserver.domain.UserEntity;
+import com.hjj.apiserver.domain.*;
+import com.hjj.apiserver.domain.AccountBookEntityJava;
+import com.hjj.apiserver.domain.PurchaseEntityJava;
 import com.hjj.apiserver.dto.AccountBookDto;
 import com.hjj.apiserver.dto.AccountBookUserDto;
 import com.hjj.apiserver.repositroy.AccountBookRepository;
@@ -34,17 +33,17 @@ public class AccountBookService {
     @Transactional(readOnly = false, rollbackFor = Exception.class)
     public void addAccountBook(UserEntity user, AccountBookDto accountBookDto) throws UserNotFoundException {
 
-        AccountBookEntity accountBookEntity = accountBookDto.toEntity();
+        AccountBookEntityJava accountBookEntity = accountBookDto.toEntity();
         accountBookRepository.save(accountBookEntity);
 
         /* 가계부 생성후 유저와 매핑 해주어야 한다. (기본 권한은 USER이므로 OWNER를 넣는다. */
         AccountBookUserDto accountBookUserDto = new AccountBookUserDto();
         accountBookUserDto.setAccountBookEntity(accountBookEntity);
-        accountBookUserDto.setAccountRole(AccountBookUserEntity.AccountRole.OWNER);
+        accountBookUserDto.setAccountRole(AccountBookUserEntityJava.AccountRole.OWNER);
         accountBookUserDto.setUserEntity(user);
         accountBookUserDto.setBackGroundColor(accountBookDto.getBackGroundColor());
         accountBookUserDto.setColor(accountBookDto.getColor());
-        AccountBookUserEntity accountBookUserEntity = accountBookUserDto.toEntity();
+        AccountBookUserEntityJava accountBookUserEntity = accountBookUserDto.toEntity();
         accountBookUserRepository.save(accountBookUserEntity);
 
         categoryService.addBasicCategory(accountBookEntity);
@@ -62,14 +61,14 @@ public class AccountBookService {
 
     public List<AccountBookDto.ResponseAccountBookFindAll> findAllAccountBook(AccountBookDto accountBookDto) {
         /* userNo으로 가계부 <-> 유저 매핑 테이블 조회 */
-        List<AccountBookUserEntity> accountBookUserEntityList =  accountBookUserRepository.findEntityGraphByUserEntity_userNo(accountBookDto.getUserNo());
+        List<AccountBookUserEntityJava> accountBookUserEntityList =  accountBookUserRepository.findEntityGraphByUserEntity_userNo(accountBookDto.getUserNo());
         List<Long> accountBookNoList = new ArrayList<>();
         List<AccountBookDto.ResponseAccountBookFindAll> responseAccountBookFindAllList = new ArrayList<>();
 
         accountBookUserEntityList.stream().forEach(accountBookUserEntity -> accountBookNoList.add(accountBookUserEntity.getAccountBookEntity().getAccountBookNo()));
 
-        List<PurchaseEntity> purchaseEntityList = purchaseRepository.findAllEntityGraphByPurchaseDateBetweenAndUserEntity_UserNoOrderByPurchaseDateDesc(accountBookDto.getStartDate(), accountBookDto.getEndDate(), accountBookDto.getUserNo());
-        List<AccountBookUserEntity> tempAccountBookUserList = accountBookUserRepository.findEntityGraphByAccountBookEntity_accountBookNoIn(accountBookNoList);
+        List<PurchaseEntityJava> purchaseEntityList = purchaseRepository.findAllEntityGraphByPurchaseDateBetweenAndUserEntity_UserNoOrderByPurchaseDateDesc(accountBookDto.getStartDate(), accountBookDto.getEndDate(), accountBookDto.getUserNo());
+        List<AccountBookUserEntityJava> tempAccountBookUserList = accountBookUserRepository.findEntityGraphByAccountBookEntity_accountBookNoIn(accountBookNoList);
 
 
         accountBookUserEntityList.stream().forEach(accountBookUserEntity -> {
@@ -84,10 +83,10 @@ public class AccountBookService {
 
             int totalIncomeAmount = 0;
             int totalOutgoingAmount = 0;
-            for (PurchaseEntity purchaseEntity : purchaseEntityList) {
-                if(purchaseEntity.getPurchaseType().equals(PurchaseEntity.PurchaseType.INCOME) && purchaseEntity.getAccountBookEntity().getAccountBookNo() == accountBookNo){
+            for (PurchaseEntityJava purchaseEntity : purchaseEntityList) {
+                if(purchaseEntity.getPurchaseType().equals(PurchaseEntityJava.PurchaseType.INCOME) && purchaseEntity.getAccountBookEntity().getAccountBookNo() == accountBookNo){
                     totalIncomeAmount += purchaseEntity.getPrice();
-                }else if(purchaseEntity.getPurchaseType().equals(PurchaseEntity.PurchaseType.OUTGOING) && purchaseEntity.getAccountBookEntity().getAccountBookNo() == accountBookNo){
+                }else if(purchaseEntity.getPurchaseType().equals(PurchaseEntityJava.PurchaseType.OUTGOING) && purchaseEntity.getAccountBookEntity().getAccountBookNo() == accountBookNo){
                     totalOutgoingAmount += purchaseEntity.getPrice();
                 }
 

@@ -1,6 +1,6 @@
 package com.hjj.apiserver.repositroy.impl;
 
-import com.hjj.apiserver.domain.PurchaseEntity;
+import com.hjj.apiserver.domain.PurchaseEntityJava;
 import com.hjj.apiserver.dto.PurchaseDto;
 import com.hjj.apiserver.dto.QPurchaseDto_ResponsePurchaseDetail;
 import com.hjj.apiserver.repositroy.PurchaseRepositoryCustom;
@@ -42,7 +42,7 @@ public class PurchaseRepositoryImpl implements PurchaseRepositoryCustom {
     }
 
     @Override
-    public List<PurchaseEntity> findPurchasePageCustom(PurchaseDto purchaseDto, Pageable pageable) {
+    public List<PurchaseEntityJava> findPurchasePageCustom(PurchaseDto purchaseDto, Pageable pageable) {
         return jpaQueryFactory
                 .select(purchaseEntity)
                 .from(purchaseEntity)

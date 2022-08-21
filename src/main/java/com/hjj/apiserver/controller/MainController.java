@@ -1,7 +1,7 @@
 package com.hjj.apiserver.controller;
 
-import com.hjj.apiserver.common.ApiError;
-import com.hjj.apiserver.common.ApiResponse;
+import com.hjj.apiserver.common.ApiError_Java;
+import com.hjj.apiserver.common.ApiResponse_Java;
 import com.hjj.apiserver.common.ApiUtils;
 import com.hjj.apiserver.service.MainService;
 import lombok.RequiredArgsConstructor;
@@ -17,12 +17,12 @@ public class MainController {
     private final MainService mainService;
 
     @GetMapping("/main")
-    public ApiResponse main(){
+    public ApiResponse_Java main(){
         try{
             return ApiUtils.success(mainService.findMain());
         } catch (Exception e) {
             log.error("main Error exception: {}", e);
-            return ApiUtils.error(ApiError.ErrCode.ERR_CODE0005.getMsg(), ApiError.ErrCode.ERR_CODE0005);
+            return ApiUtils.error(ApiError_Java.ErrCode.ERR_CODE0005.getMsg(), ApiError_Java.ErrCode.ERR_CODE0005);
         }
     }
 }

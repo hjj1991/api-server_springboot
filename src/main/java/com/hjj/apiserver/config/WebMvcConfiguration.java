@@ -1,6 +1,5 @@
 package com.hjj.apiserver.config;
 
-import com.hjj.apiserver.util.CurrentUser;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.Pageable;
@@ -35,7 +34,7 @@ public class WebMvcConfiguration implements WebMvcConfigurer{
     @Bean
     public Docket swaggerApi() {
         return new Docket(DocumentationType.SWAGGER_2)
-                .ignoredParameterTypes(AuthenticationPrincipal.class, Pageable.class, CurrentUser.class) //제외할 파라미터
+                .ignoredParameterTypes(AuthenticationPrincipal.class, Pageable.class) //제외할 파라미터
                 .apiInfo(swaggerInfo()).select()
                 .apis(RequestHandlerSelectors.basePackage("com.hjj.apiserver"))
                 .paths(PathSelectors.any())

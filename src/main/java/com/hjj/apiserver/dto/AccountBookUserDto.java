@@ -1,7 +1,7 @@
 package com.hjj.apiserver.dto;
 
-import com.hjj.apiserver.domain.AccountBookEntity;
-import com.hjj.apiserver.domain.AccountBookUserEntity;
+import com.hjj.apiserver.domain.AccountBookEntityJava;
+import com.hjj.apiserver.domain.AccountBookUserEntityJava;
 import com.hjj.apiserver.domain.UserEntity;
 import lombok.Data;
 
@@ -13,12 +13,12 @@ public class AccountBookUserDto {
     private Long userNo;
     private String backGroundColor;
     private String color;
-    private AccountBookEntity accountBookEntity;
+    private AccountBookEntityJava accountBookEntity;
     private UserEntity userEntity;
-    private AccountBookUserEntity.AccountRole accountRole = AccountBookUserEntity.AccountRole.GUEST;
+    private AccountBookUserEntityJava.AccountRole accountRole = AccountBookUserEntityJava.AccountRole.GUEST;
 
-    public AccountBookUserEntity toEntity(){
-        AccountBookUserEntity accountBookUserEntity = AccountBookUserEntity.builder()
+    public AccountBookUserEntityJava toEntity(){
+        AccountBookUserEntityJava accountBookUserEntity = AccountBookUserEntityJava.builder()
                 .accountRole(accountRole)
                 .accountBookEntity(accountBookEntity)
                 .color(color)

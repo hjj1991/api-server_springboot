@@ -1,7 +1,7 @@
 package com.hjj.apiserver.dto;
 
-import com.hjj.apiserver.domain.AccountBookEntity;
-import com.hjj.apiserver.domain.AccountBookUserEntity;
+import com.hjj.apiserver.domain.AccountBookEntityJava;
+import com.hjj.apiserver.domain.AccountBookUserEntityJava;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -22,8 +22,8 @@ public class AccountBookDto {
     private LocalDate endDate;
 
 
-    public AccountBookEntity toEntity(){
-        AccountBookEntity accountBookEntity = AccountBookEntity.builder()
+    public AccountBookEntityJava toEntity(){
+        AccountBookEntityJava accountBookEntity = AccountBookEntityJava.builder()
                 .accountBookName(accountBookName)
                 .accountBookDesc(accountBookDesc)
                 .build();
@@ -56,7 +56,7 @@ public class AccountBookDto {
         private String accountBookDesc;
         private String backGroundColor;
         private String color;
-        private AccountBookUserEntity.AccountRole accountRole;
+        private AccountBookUserEntityJava.AccountRole accountRole;
         private int totalIncomeAmount;
         private int totalOutgoingAmount;
         private List<JoinedUser> joinedUserList;

@@ -1,8 +1,8 @@
 package com.hjj.apiserver.dto;
 
-import com.hjj.apiserver.domain.AccountBookEntity;
-import com.hjj.apiserver.domain.AccountBookUserEntity;
-import com.hjj.apiserver.domain.CategoryEntity;
+import com.hjj.apiserver.domain.AccountBookEntityJava;
+import com.hjj.apiserver.domain.AccountBookUserEntityJava;
+import com.hjj.apiserver.domain.CategoryEntityJava;
 import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
@@ -17,8 +17,8 @@ public class CategoryDto {
     private Long accountBookNo;
     private Long parentCategoryNo;
     private Long categoryNo;
-    private CategoryEntity parentCategory;
-    private AccountBookEntity accountBookEntity;
+    private CategoryEntityJava parentCategory;
+    private AccountBookEntityJava accountBookEntity;
     private String categoryName;
     private String categoryDesc;
     private String categoryIcon;
@@ -83,7 +83,7 @@ public class CategoryDto {
 
         private List<Category> categoryList;
         private String accountBookName;
-        private AccountBookUserEntity.AccountRole accountRole;
+        private AccountBookUserEntityJava.AccountRole accountRole;
 
         @Data
         public static class ChildCategory {
@@ -98,8 +98,8 @@ public class CategoryDto {
         }
     }
 
-    public CategoryEntity toEntity(){
-        CategoryEntity categoryEntity = CategoryEntity.builder()
+    public CategoryEntityJava toEntity(){
+        CategoryEntityJava categoryEntity = CategoryEntityJava.builder()
                 .categoryName(categoryName)
                 .categoryDesc(categoryDesc)
                 .categoryIcon(categoryIcon)

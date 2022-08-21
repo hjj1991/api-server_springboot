@@ -1,7 +1,7 @@
 package com.hjj.apiserver.controller;
 
-import com.hjj.apiserver.common.ApiError;
-import com.hjj.apiserver.common.ApiResponse;
+import com.hjj.apiserver.common.ApiError_Java;
+import com.hjj.apiserver.common.ApiResponse_Java;
 import com.hjj.apiserver.common.ApiUtils;
 import com.hjj.apiserver.service.SavingService;
 import io.swagger.annotations.Api;
@@ -24,13 +24,13 @@ public class SavingController {
 
     @ApiOperation(value = "적금 목록", notes = "적금 목록 조회.")
     @GetMapping("/saving")
-    public ApiResponse savingList() {
+    public ApiResponse_Java savingList() {
         try {
 
             return ApiUtils.success(savingService.findSavingList());
         } catch (Exception e) {
             log.error("savingList Error exception: {}", e);
-            return ApiUtils.error(ApiError.ErrCode.ERR_CODE0005.getMsg(), ApiError.ErrCode.ERR_CODE0005);
+            return ApiUtils.error(ApiError_Java.ErrCode.ERR_CODE0005.getMsg(), ApiError_Java.ErrCode.ERR_CODE0005);
         }
 
     }

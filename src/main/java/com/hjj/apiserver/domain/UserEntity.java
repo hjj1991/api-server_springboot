@@ -75,7 +75,7 @@ public class UserEntity implements UserDetails {
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "userEntity", fetch = FetchType.LAZY)
     @Builder.Default
-    private List<PurchaseEntity> purchaseEntityList = new ArrayList<>();
+    private List<PurchaseEntityJava> purchaseEntityList = new ArrayList<>();
 
     @OneToMany(mappedBy = "userEntity", fetch = FetchType.LAZY)
     @Builder.Default
@@ -84,11 +84,11 @@ public class UserEntity implements UserDetails {
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "userEntity", fetch = FetchType.LAZY)
     @Builder.Default
-    private List<AccountBookUserEntity> accountBookUserEntityList = new ArrayList<>();
+    private List<AccountBookUserEntityJava> accountBookUserEntityList = new ArrayList<>();
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "userEntity", fetch = FetchType.LAZY)
     @Builder.Default
-    private List<CardEntity> cardEntityList = new ArrayList<>();
+    private List<CardEntityJava> cardEntityList = new ArrayList<>();
 
     @Column(columnDefinition = "datetime default now()", nullable = false)
     private LocalDateTime createdDate;
