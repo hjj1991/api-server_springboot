@@ -14,24 +14,24 @@ import com.hjj.apiserver.dto.user.response.UserReIssueTokenResponse
 import com.hjj.apiserver.dto.user.response.UserSignInResponse
 import com.hjj.apiserver.repository.user.UserLogRepository
 import com.hjj.apiserver.repository.user.UserRepository
+import com.hjj.apiserver.service.FireBaseService
 import com.hjj.apiserver.util.logger
+import org.imgscalr.Scalr
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.core.ParameterizedTypeReference
-import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.HttpStatus
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import org.springframework.web.reactive.function.client.ClientResponse
+import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.reactive.function.client.WebClient
-import org.springframework.web.reactive.function.client.bodyToMono
 import org.springframework.web.util.UriBuilder
 import reactor.core.publisher.Mono
+import java.io.ByteArrayOutputStream
+import java.net.URLEncoder
 import java.time.LocalDateTime
-import java.util.*
-import java.util.function.Supplier
-import kotlin.collections.HashMap
+import javax.imageio.ImageIO
 
 @Service
 @Transactional(readOnly = true)
@@ -42,6 +42,7 @@ class UserService(
     private val userLogRepository: UserLogRepository,
     private val jwtTokenProvider: JwtTokenProvider,
     private val webClient: WebClient,
+    private val fireBaseService: FireBaseService,
 
     @Value(value = "\${social.naver.url.token.host}")
     private val naverTokenHost: String,
@@ -72,6 +73,9 @@ class UserService(
     @Value(value = "\${app.firebase-bucket}")
     private val  firebaseBucket: String,
 ) {
+    companion object{
+        const val PROFILE_IMG_PATH = "profile/"
+    }
     private val log = logger()
 
 
@@ -224,5 +228,30 @@ class UserService(
     }
 
 
+    @Transactional(readOnly = false, rollbackFor = [Exception::class])
+    fun modifyUserPicture(user: User, pictureFile: MultipartFile) {
+        /*  이미지 썸네일 제작 프론트에서 처리하도록 수정
+        val bufferedImage = ImageIO.read(pictureFile.inputStream)
+        val imgWidth = bufferedImage.height.coerceAtMost(bufferedImage.width)
+        val scaledImg = Scalr.crop(
+            bufferedImage,
+            (bufferedImage.width - imgWidth) / 2,
+            (bufferedImage.height - imgWidth) / 2,
+            imgWidth,
+            imgWidth,
+            null
+        )
+        val resizedImg = Scalr.resize(scaledImg, 100, 100, null)
+        */
+        /* outputStream에 image객체 저장 *//*
+
+        ImageIO.write(resizedImg, "jpg", ByteArrayOutputStream())
+        */
+
+        val fileName = PROFILE_IMG_PATH + user.userNo + ".png"
+        fireBaseService.putProfileImg(pictureFile.bytes, fileName)
+        val picturePath = firebaseStorageUri + firebaseBucket + "/o/" + URLEncoder.encode(fileName, "UTF-8") + "?alt=media"
+        user.updateUser(picture = picturePath)
+    }
 
 }

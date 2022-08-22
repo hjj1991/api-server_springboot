@@ -10,7 +10,6 @@ import com.hjj.apiserver.common.provider.JwtTokenProvider;
 import com.hjj.apiserver.domain.UserEntity;
 import com.hjj.apiserver.dto.UserDto;
 import com.hjj.apiserver.repositroy.UserRepository;
-import com.hjj.apiserver.service.FireBaseService;
 import com.hjj.apiserver.service.UserService;
 import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;

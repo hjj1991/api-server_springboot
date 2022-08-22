@@ -2,7 +2,7 @@ package com.hjj.apiserver.common.provider;
 
 import com.hjj.apiserver.domain.UserEntity;
 import com.hjj.apiserver.dto.TokenDto;
-import com.hjj.apiserver.service.CustomUserDetailsService;
+import com.hjj.apiserver.service.user.CustomUserDetailService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
@@ -13,16 +13,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
-import java.util.*;
+import java.util.Base64;
+import java.util.Date;
+import java.util.HashMap;
 
 @Component
 @RequiredArgsConstructor
@@ -38,7 +36,7 @@ public class JwtTokenProvider  {
 
     private long tokenValidMilisecond = 1000L * 60 * 20; // 20분만 토큰 유효
     private long refreshTokenValidMilisecond = 1000L * 3600 * 24 * 14; // 2주 동안만 토큰 유효
-    private final CustomUserDetailsService customUserDetailsService;
+    private final CustomUserDetailService customUserDetailsService;
 
 
     public enum TokenKey{
