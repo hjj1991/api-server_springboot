@@ -32,12 +32,14 @@ import javax.annotation.PostConstruct
 import javax.persistence.EntityManager
 
 @Configuration
-class ApplicationConfig: AuditorAware<Long> {
+class ApplicationConfig(
+        @Value("\${app.firebase-configuration-file}")
+        private val firebaseConfigPath: String
+): AuditorAware<Long> {
 
     private val log = logger()
 
-    @Value("\${app.firebase-configuration-file}")
-    lateinit var firebaseConfigPath: String
+
 
     @Bean
     fun passwordEncoder(): PasswordEncoder {
