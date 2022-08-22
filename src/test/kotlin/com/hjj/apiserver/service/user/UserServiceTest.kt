@@ -25,7 +25,7 @@ class UserServiceTest @Autowired constructor(
 
 
         //then
-        val foundUser = userRepository.findUserByUserId("testUser12")
+        val foundUser = userRepository.findByUserId("testUser12")
         Assertions.assertThat(foundUser!!.nickName).isEqualTo("뜨끔이당")
         Assertions.assertThat(foundUser!!.userEmail).isEqualTo("testUser@naver.com")
     }

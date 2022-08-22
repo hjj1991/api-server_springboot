@@ -21,8 +21,8 @@ import javax.persistence.*
 )
 class User(
     userId: String? = null,
-    nickName: String? = null,
-    userEmail: String? = null,
+    nickName: String,
+    userEmail: String,
     userPw: String? = null,
     picture: String? = null,
     providerId: String? = null,
@@ -47,10 +47,10 @@ class User(
     val userId: String? = userId
 
     @Column(length = 20, unique = true)
-    var nickName: String? = nickName
+    var nickName: String = nickName
 
     @Column(length = 200)
-    var userEmail: String? = userEmail
+    var userEmail: String = userEmail
 
     @Column(length = 300)
     var userPw: String? = userPw
@@ -112,6 +112,10 @@ class User(
         providerConnectDate?.also { this.providerConnectDate = it }
 
         return this
+    }
+
+    fun isSocialUser(): Boolean{
+        return this.provider != null
     }
 
 
