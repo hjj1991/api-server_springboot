@@ -1,35 +1,32 @@
 package com.hjj.apiserver.dto.user.response
 
-import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.databind.PropertyNamingStrategies
+import com.fasterxml.jackson.databind.annotation.JsonNaming
 
-class KakaoProfileResponse {
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy::class)
+class KakaoProfileResponse(
+    val id: String,
+    val properties: Properties,
+    val kakaoAccount: KakaoAccount,
+) {
 
-    val id: String? = null
-    val properties: Properties? = null
-
-    @JsonProperty("kakao_account")
-    val kakaoAccount: KakaoAccount? = null
-
-
-    class Properties {
-        val nickname: String? = null
-        val thumbnail_image: String? = null
-        val profile_image: String? = null
-    }
+    @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy::class)
+    class Properties(
+        val nickname: String,
+        val thumbnailImage: String? = null,
+        val profileImage: String? = null,
+    )
 
 
-    class KakaoAccount {
-        val profile: Profile? = null
-
-        @JsonProperty("has_email")
-        val hasEmail: Boolean? = null
-        val email: String? = null
-    }
-
-    class Profile {
-        val nickname: String? = null
-
-        @JsonProperty("profile_image_url")
-        val profileImageUrl: String? = null
-    }
+    @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy::class)
+    class KakaoAccount(
+        val profile: Profile,
+        val hasEmail: Boolean? = null,
+        val email: String? = null,
+    )
+    @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy::class)
+    class Profile(
+        val nickname: String,
+        val profileImageUrl: String? = null,
+    )
 }

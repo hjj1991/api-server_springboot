@@ -2,7 +2,6 @@ package com.hjj.apiserver.service;
 
 import com.hjj.apiserver.common.exception.AlreadyExistedUserException;
 import com.hjj.apiserver.common.exception.UserNotFoundException;
-import com.hjj.apiserver.common.provider.JwtTokenProvider;
 import com.hjj.apiserver.domain.UserEntity;
 import com.hjj.apiserver.domain.UserLogEntity;
 import com.hjj.apiserver.dto.*;
@@ -34,7 +33,6 @@ import java.util.Random;
 public class UserService  {
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
-    private final JwtTokenProvider jwtTokenProvider;
     private final WebClient webClient;
     private final PasswordEncoder passwordEncoder;
     private final UserLogService userLogService;
@@ -72,64 +70,6 @@ public class UserService  {
     @Value(value = "${app.firebase-bucket}")
     private String firebaseBucket;
 
-
-
-
-    /* 로그인 로직 */
-    @Transactional(readOnly = false, rollbackFor = Exception.class)
-    public UserDto.ResponseSignIn signIn(UserEntity userEntity){
-
-        HashMap<JwtTokenProvider.TokenKey, Object> token = jwtTokenProvider.createToken(userEntity);
-        String refreshToken = jwtTokenProvider.createRefreshToken(userEntity);
-        LocalDateTime lastLoginDateTime = LocalDateTime.now();
-
-        /* 리프레쉬 토큰 업데이트 */
-        userEntity.updateUserLogin(refreshToken);
-        UserLogDto userLogDto = new UserLogDto();
-        userLogDto.setSignInType(userEntity.getProvider() == null? UserLogEntity.SignInType.GENERAL: UserLogEntity.SignInType.SOCIAL);
-        userLogDto.setUserEntity(userEntity);
-        userLogDto.setLogType(UserLogEntity.LogType.SIGNIN);
-        userLogDto.setLoginDateTime(lastLoginDateTime);
-        userLogService.insertUserLog(userLogDto);
-
-        UserDto.ResponseSignIn responseSignIn = new UserDto.ResponseSignIn();
-        responseSignIn.setAccessToken((String) token.get(JwtTokenProvider.TokenKey.TOKEN));
-        responseSignIn.setExpireTime((Long) token.get(JwtTokenProvider.TokenKey.EXPIRETIME));
-        responseSignIn.setRefreshToken(refreshToken);
-        responseSignIn.setCreatedDate(userEntity.getCreatedDate().format(DateTimeFormatter.ofPattern("YYYY-MM-dd HH:mm:ss")));
-        responseSignIn.setPicture(userEntity.getPicture());
-        responseSignIn.setUserEmail(userEntity.getUserEmail());
-        responseSignIn.setNickName(userEntity.getNickName());
-        responseSignIn.setProvider(userEntity.getProvider());
-        responseSignIn.setUserId(userEntity.getUserId());
-        responseSignIn.setLastLoginDateTime(lastLoginDateTime.format(DateTimeFormatter.ofPattern("YYYY-MM-dd HH:mm:ss")));
-
-        return responseSignIn;
-
-    }
-
-    @Transactional(readOnly = false, rollbackFor = Exception.class)
-    public UserDto.ResponseReIssueToken reIssueeToken(UserDto.RequestReIssueToken form) throws Exception {
-        String refreshToken = form.getRefreshToken();
-        if(!jwtTokenProvider.validateToken(refreshToken))
-            throw new Exception("유효하지 않은 토큰입니다.");
-
-        UserEntity user = userRepository.findByRefreshToken(refreshToken).orElseThrow(() -> new Exception("유효한 토큰이 존재하지 않습니다."));
-
-        String newRefreshToken = jwtTokenProvider.createRefreshToken(user);
-        HashMap<JwtTokenProvider.TokenKey, Object> newAccessToken = jwtTokenProvider.createToken(user);
-
-        /* refresh token 업데이트 */
-        user.updateUserLogin(newRefreshToken);
-
-        UserDto.ResponseReIssueToken responseReIssueToken = new UserDto.ResponseReIssueToken();
-        responseReIssueToken.setAccessToken((String) newAccessToken.get(JwtTokenProvider.TokenKey.TOKEN));
-        responseReIssueToken.setExpireTime((Long) newAccessToken.get(JwtTokenProvider.TokenKey.EXPIRETIME));
-        responseReIssueToken.setRefreshToken(newRefreshToken);
-
-        return responseReIssueToken;
-
-    }
 
 
     /* Naver 소셜 로그인 token 요청 */
@@ -225,38 +165,6 @@ public class UserService  {
         userLogDto.setCreatedDate(LocalDateTime.now());
         userLogService.insertUserLog(userLogDto);
         return userEntity;
-
-    }
-
-    @Transactional(readOnly = false, rollbackFor = Exception.class)
-    public UserDto.ResponseSignIn modifyUser(UserEntity user, UserDto.RequestUserUpdateForm form) throws Exception {
-        UserDto userDto = modelMapper.map(form, UserDto.class);
-        if(user.getProvider() == null && !passwordEncoder.matches(form.getUserPw(), user.getUserPw()))
-            throw new UserNotFoundException();
-
-        UserEntity currentUserEntity = userRepository.findById(user.getUserNo()).orElseThrow(UserNotFoundException::new);
-
-        currentUserEntity.updateUser(userDto);
-        UserLogDto userLogDto = new UserLogDto();
-        userLogDto.setUserEntity(currentUserEntity);
-        userLogDto.setLogType(UserLogEntity.LogType.MODIFY);
-        userRepository.flush();
-        userLogService.insertUserLog(userLogDto);
-
-        HashMap<JwtTokenProvider.TokenKey, Object> token = jwtTokenProvider.createToken(currentUserEntity);
-
-        UserDto.ResponseSignIn responseSignIn = new UserDto.ResponseSignIn();
-        responseSignIn.setAccessToken((String) token.get(JwtTokenProvider.TokenKey.TOKEN));
-        responseSignIn.setExpireTime((Long) token.get(JwtTokenProvider.TokenKey.EXPIRETIME));
-        responseSignIn.setRefreshToken(currentUserEntity.getRefreshToken());
-        responseSignIn.setCreatedDate(currentUserEntity.getCreatedDate().format(DateTimeFormatter.ofPattern("YYYY-MM-dd HH:mm:ss")));
-        responseSignIn.setPicture(currentUserEntity.getPicture());
-        responseSignIn.setUserEmail(currentUserEntity.getUserEmail());
-        responseSignIn.setNickName(currentUserEntity.getNickName());
-        responseSignIn.setProvider(currentUserEntity.getProvider());
-        responseSignIn.setUserId(currentUserEntity.getUserId());
-
-        return responseSignIn;
 
     }
 
@@ -372,31 +280,6 @@ public class UserService  {
 
     }
 
-    @Transactional(readOnly = false, rollbackFor = Exception.class)
-    public UserDto.ResponseSignIn socialSinIn(HashMap<String, String> requestBody) throws Exception {
-        String provider = requestBody.get("provider");
-        UserDto.ResponseSignIn responseSignIn = new UserDto.ResponseSignIn();
-
-        /* 네이버 로그인 로직 */
-        if(provider.equals("NAVER")){
-            Map resultMap = this.findNaverTokenInfo(requestBody.get("code"), requestBody.get("state"));
-            NaverProfileDto naverProfileDto = findNaverProfile((String) resultMap.get("access_token"));
-            if(naverProfileDto != null && naverProfileDto.getMessage().equals("success")){
-                UserEntity user = userRepository.findByProviderAndProviderId(UserEntity.Provider.valueOf(provider), naverProfileDto.getResponse().getId()).orElseThrow(UserNotFoundException::new);
-                responseSignIn = signIn(user);
-            }
-            /* 카카오 로그인 로직 */
-        }else if(provider.equals("KAKAO")){
-            Map resultMap = this.findKakaoTokenInfo(requestBody.get("code"), requestBody.get("state"));
-            KaKaoProfileDto kakaoProfileDto = findKakaoProfile((String) resultMap.get("access_token"));
-            if(kakaoProfileDto != null){
-                UserEntity user = userRepository.findByProviderAndProviderId(UserEntity.Provider.valueOf(provider), kakaoProfileDto.getId()).orElseThrow(UserNotFoundException::new);
-                responseSignIn =  signIn(user);
-            }
-        }
-
-        return responseSignIn;
-    }
 
     @Transactional(readOnly = false, rollbackFor = Exception.class)
     public void socialMapping(UserEntity user, HashMap<String, String> requestBody) throws Exception {

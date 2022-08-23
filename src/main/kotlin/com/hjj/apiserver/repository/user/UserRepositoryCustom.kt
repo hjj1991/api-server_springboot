@@ -1,4 +1,7 @@
 package com.hjj.apiserver.repository.user
 
-class UserRepositoryCustom {
+import com.hjj.apiserver.domain.user.User
+
+interface UserRepositoryCustom {
+    fun findUserLeftJoinUserLogByUserNo(userNo: Long): User?
 }

@@ -1,6 +1,6 @@
 package com.hjj.apiserver.service.user
 
-import com.hjj.apiserver.dto.user.request.UserAddRequest
+import com.hjj.apiserver.dto.user.request.UserSinUpRequest
 import com.hjj.apiserver.repository.user.UserRepository
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.DisplayName
@@ -18,7 +18,7 @@ class UserServiceTest @Autowired constructor(
     @DisplayName("회원가입")
     fun signUpTest(){
         // given
-        val request = UserAddRequest("testUser12", "뜨끔이당", "testUser@naver.com", "testPassword12#$")
+        val request = UserSinUpRequest("testUser12", "뜨끔이당", "testUser@naver.com", "testPassword12#$")
 
         // when
         val savedUser = userService.signUp(request)

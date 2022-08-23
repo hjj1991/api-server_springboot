@@ -1,7 +1,7 @@
 package com.hjj.apiserver.config;
 
+import com.hjj.apiserver.common.JwtTokenProvider;
 import com.hjj.apiserver.common.filter.JwtAuthenticationFilter;
-import com.hjj.apiserver.common.provider.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;

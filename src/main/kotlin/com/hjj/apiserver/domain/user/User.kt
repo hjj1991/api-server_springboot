@@ -22,7 +22,7 @@ import javax.persistence.*
 class User(
     userId: String? = null,
     nickName: String,
-    userEmail: String,
+    userEmail: String? = null,
     userPw: String? = null,
     picture: String? = null,
     providerId: String? = null,
@@ -50,7 +50,7 @@ class User(
     var nickName: String = nickName
 
     @Column(length = 200)
-    var userEmail: String = userEmail
+    var userEmail: String? = userEmail
 
     @Column(length = 300)
     var userPw: String? = userPw
