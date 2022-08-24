@@ -1,7 +1,7 @@
 package com.hjj.apiserver.domain.deposit
 
-import com.hjj.apiserver.domain.Bank
 import com.hjj.apiserver.domain.BaseTimeEntity
+import com.hjj.apiserver.domain.bank.Bank
 import javax.persistence.*
 
 @Entity

@@ -2,8 +2,10 @@ package com.hjj.apiserver.service;
 
 import com.hjj.apiserver.common.exception.UserNotFoundException;
 import com.hjj.apiserver.domain.*;
+import com.hjj.apiserver.domain.user.User;
 import com.hjj.apiserver.dto.CategoryDto;
 import com.hjj.apiserver.dto.PurchaseDto;
+import com.hjj.apiserver.repository.user.UserRepository;
 import com.hjj.apiserver.repositroy.*;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,7 +35,7 @@ public class PurchaseService {
 
     @Transactional(readOnly = false, rollbackFor = Exception.class)
     public void addPurchase(PurchaseDto purchaseDto) throws Exception {
-        UserEntity userEntity = userRepository.getById(purchaseDto.getUserNo());
+        User userEntity = userRepository.getById(purchaseDto.getUserNo());
         if(userEntity != null){
             purchaseDto.setUserEntity(userEntity);
         }

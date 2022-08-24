@@ -1,7 +1,6 @@
 package com.hjj.apiserver.domain.deposit
 
 import com.hjj.apiserver.domain.BaseTimeEntity
-import com.hjj.apiserver.domain.Deposit
 import javax.persistence.*
 
 @Entity

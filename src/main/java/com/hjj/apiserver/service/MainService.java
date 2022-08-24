@@ -1,7 +1,7 @@
 package com.hjj.apiserver.service;
 
 import com.hjj.apiserver.dto.MainDto;
-import com.hjj.apiserver.repositroy.DepositRepository;
+import com.hjj.apiserver.repository.deposit.DepositRepository;
 import com.hjj.apiserver.repositroy.SavingRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

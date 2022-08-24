@@ -1,15 +1,11 @@
 package com.hjj.apiserver.service;
 
 import com.hjj.apiserver.common.exception.UserNotFoundException;
-import com.hjj.apiserver.domain.*;
 import com.hjj.apiserver.domain.AccountBookEntityJava;
 import com.hjj.apiserver.domain.PurchaseEntityJava;
 import com.hjj.apiserver.dto.AccountBookDto;
 import com.hjj.apiserver.dto.AccountBookUserDto;
-import com.hjj.apiserver.repositroy.AccountBookRepository;
-import com.hjj.apiserver.repositroy.AccountBookUserRepository;
 import com.hjj.apiserver.repositroy.PurchaseRepository;
-import com.hjj.apiserver.repositroy.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
-@Service
+
 @Transactional(readOnly = true)
 @AllArgsConstructor
 public class AccountBookService {

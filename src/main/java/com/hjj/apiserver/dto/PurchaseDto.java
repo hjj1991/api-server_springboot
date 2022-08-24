@@ -1,6 +1,10 @@
 package com.hjj.apiserver.dto;
 
-import com.hjj.apiserver.domain.*;
+import com.hjj.apiserver.domain.accountbook.AccountBook;
+import com.hjj.apiserver.domain.card.Card;
+import com.hjj.apiserver.domain.category.Category;
+import com.hjj.apiserver.domain.purchase.PurchaseType;
+import com.hjj.apiserver.domain.user.User;
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.Data;
 import org.springframework.data.domain.Slice;
@@ -20,14 +24,14 @@ public class PurchaseDto {
     private Long categoryNo;
     private Long accountBookNo;
     private String storeName;
-    private PurchaseEntityJava.PurchaseType purchaseType;
+    private PurchaseType purchaseType;
     private Integer price;
     private String reason;
     private LocalDate purchaseDate;
-    private CardEntityJava cardEntity;
-    private CategoryEntityJava categoryEntity;
-    private UserEntity userEntity;
-    private AccountBookEntityJava accountBookEntity;
+    private Card cardEntity;
+    private Category categoryEntity;
+    private User userEntity;
+    private AccountBook accountBookEntity;
     private LocalDate startDate;
     private LocalDate endDate;
 
@@ -59,7 +63,7 @@ public class PurchaseDto {
         private Long userNo;
         private Long cardNo;
         private Long accountBookNo;
-        private PurchaseEntityJava.PurchaseType purchaseType;
+        private PurchaseType purchaseType;
         private int price;
         private String reason;
         private LocalDate purchaseDate;
@@ -73,13 +77,13 @@ public class PurchaseDto {
         private Long parentCategoryNo;
         private Long categoryNo;
         private String storeName;
-        private PurchaseEntityJava.PurchaseType purchaseType;
+        private PurchaseType purchaseType;
         private int price;
         private String reason;
         private LocalDate purchaseDate;
 
         @QueryProjection
-        public ResponsePurchaseDetail(Long accountBookNo, Long cardNo, Long parentCategoryNo, Long categoryNo, String storeName, PurchaseEntityJava.PurchaseType purchaseType, int price, String reason, LocalDate purchaseDate) {
+        public ResponsePurchaseDetail(Long accountBookNo, Long cardNo, Long parentCategoryNo, Long categoryNo, String storeName, PurchaseType purchaseType, int price, String reason, LocalDate purchaseDate) {
             this.accountBookNo = accountBookNo;
             this.cardNo = cardNo;
             this.parentCategoryNo = parentCategoryNo;
@@ -99,7 +103,7 @@ public class PurchaseDto {
         private Long cardNo;
         private Long categoryNo;
         private String storeName;
-        private PurchaseEntityJava.PurchaseType purchaseType;
+        private PurchaseType purchaseType;
         private int price;
         private String reason;
         private LocalDate purchaseDate;
@@ -112,15 +116,15 @@ public class PurchaseDto {
         private Long cardNo;
         private Long categoryNo;
         private String storeName;
-        private PurchaseEntityJava.PurchaseType purchaseType;
+        private PurchaseType purchaseType;
         private int price;
         private String reason;
         private LocalDate purchaseDate;
 
     }
 
-    public PurchaseEntityJava toEntity(){
-        PurchaseEntityJava purchaseEntity = PurchaseEntityJava.builder()
+    public Purchase toEntity(){
+        Purchase purchaseEntity = Purchase.builder()
                 .storeName(storeName)
                 .purchaseType(purchaseType)
                 .price(price)

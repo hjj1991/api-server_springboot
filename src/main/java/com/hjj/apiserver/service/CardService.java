@@ -2,7 +2,6 @@ package com.hjj.apiserver.service;
 
 import com.hjj.apiserver.domain.CardEntityJava;
 import com.hjj.apiserver.dto.CardDto;
-import com.hjj.apiserver.repositroy.CardRepository;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -11,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
-@Service
+
 @AllArgsConstructor
 @Transactional(readOnly = true)
 public class CardService {

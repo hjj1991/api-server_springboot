@@ -5,10 +5,6 @@ import com.hjj.apiserver.domain.AccountBookEntityJava;
 import com.hjj.apiserver.domain.AccountBookUserEntityJava;
 import com.hjj.apiserver.domain.CategoryEntityJava;
 import com.hjj.apiserver.dto.CategoryDto;
-import com.hjj.apiserver.repositroy.AccountBookRepository;
-import com.hjj.apiserver.repositroy.AccountBookUserRepository;
-import com.hjj.apiserver.repositroy.CategoryRepository;
-import com.hjj.apiserver.repositroy.UserRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -19,7 +15,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-@Service
+
 @AllArgsConstructor
 @Slf4j
 @Transactional(readOnly = true)

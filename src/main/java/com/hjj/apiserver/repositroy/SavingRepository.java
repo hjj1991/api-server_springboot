@@ -1,7 +1,7 @@
 package com.hjj.apiserver.repositroy;
 
-import com.hjj.apiserver.domain.Saving;
-import com.hjj.apiserver.domain.SavingPK;
+import com.hjj.apiserver.domain.saving.Saving;
+import com.hjj.apiserver.domain.saving.SavingPK;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

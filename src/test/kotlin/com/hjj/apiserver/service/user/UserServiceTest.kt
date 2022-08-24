@@ -2,6 +2,7 @@ package com.hjj.apiserver.service.user
 
 import com.hjj.apiserver.dto.user.request.UserSinUpRequest
 import com.hjj.apiserver.repository.user.UserRepository
+import com.hjj.apiserver.service.UserService
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test

@@ -10,7 +10,6 @@ import java.time.LocalDateTime;
 
 @Slf4j
 @Component
-@EnableAsync
 @RequiredArgsConstructor
 public class ScheduleService {
     private final WebScrappingService webScrappingService;

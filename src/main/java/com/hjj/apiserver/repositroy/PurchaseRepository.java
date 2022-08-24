@@ -1,6 +1,6 @@
 package com.hjj.apiserver.repositroy;
 
-import com.hjj.apiserver.domain.PurchaseEntityJava;
+import com.hjj.apiserver.domain.purchase.Purchase;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -12,21 +12,21 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Repository
-public interface PurchaseRepository extends JpaRepository<PurchaseEntityJava, Long>, PurchaseRepositoryCustom {
+public interface PurchaseRepository extends JpaRepository<Purchase, Long>, PurchaseRepositoryCustom {
 
     @EntityGraph(attributePaths = {"cardEntity", "categoryEntity"})
-    List<PurchaseEntityJava> findAllEntityGraphByPurchaseDateBetweenAndAccountBookEntity_AccountBookNoAndDeleteYnOrderByPurchaseDateDesc(LocalDate startDate, LocalDate endDate, Long accountBookNo, char deleteYn);
+    List<Purchase> findAllEntityGraphByPurchaseDateBetweenAndAccountBookEntity_AccountBookNoAndDeleteYnOrderByPurchaseDateDesc(LocalDate startDate, LocalDate endDate, Long accountBookNo, char deleteYn);
 
     @EntityGraph(attributePaths = {"cardEntity", "categoryEntity"})
-    List<PurchaseEntityJava> findAllEntityGraphByPurchaseDateBetweenAndUserEntity_UserNoOrderByPurchaseDateDesc(LocalDate startDate, LocalDate endDate, Long userNo);
+    List<Purchase> findAllEntityGraphByPurchaseDateBetweenAndUserEntity_UserNoOrderByPurchaseDateDesc(LocalDate startDate, LocalDate endDate, Long userNo);
 
     @EntityGraph(attributePaths = {"userEntity"})
-    PurchaseEntityJava findEntityGraphByUserEntity_UserNoAndPurchaseNoAndDeleteYn(Long userNo, Long purchaseNo, char deleteYn);
+    Purchase findEntityGraphByUserEntity_UserNoAndPurchaseNoAndDeleteYn(Long userNo, Long purchaseNo, char deleteYn);
 
-    List<PurchaseEntityJava> findByCategoryEntity_CategoryNo(Long categoryNo);
+    List<Purchase> findByCategoryEntity_CategoryNo(Long categoryNo);
 
     @Modifying(clearAutomatically = true)
-    @Query("update PurchaseEntityJava set categoryEntity = null where categoryEntity.categoryNo = :categoryNo")
+    @Query("update Purchase set category = null where category.categoryNo = :categoryNo")
     void deleteCategoryAllPurchaseEntityByCategoryNo(@Param("categoryNo") Long categoryNo);
 
 
