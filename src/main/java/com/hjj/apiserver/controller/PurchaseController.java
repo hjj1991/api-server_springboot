@@ -5,7 +5,6 @@ import com.hjj.apiserver.common.ApiResponse_Java;
 import com.hjj.apiserver.common.ApiUtils;
 import com.hjj.apiserver.domain.UserEntity;
 import com.hjj.apiserver.dto.PurchaseDto;
-import com.hjj.apiserver.service.PurchaseService;
 import io.swagger.annotations.*;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

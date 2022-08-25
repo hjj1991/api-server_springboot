@@ -1,12 +1,18 @@
 package com.hjj.apiserver.service
 
 import com.hjj.apiserver.domain.accountbook.AccountBook
+import com.hjj.apiserver.domain.accountbook.AccountRole
 import com.hjj.apiserver.domain.category.Category
+import com.hjj.apiserver.domain.user.User
+import com.hjj.apiserver.dto.category.request.CategoryAddRequest
+import com.hjj.apiserver.dto.category.request.CategoryModifyRequest
+import com.hjj.apiserver.dto.category.response.CategoryDetailResponse
 import com.hjj.apiserver.repository.accountbook.AccountBookRepository
 import com.hjj.apiserver.repository.accountbook.AccountBookUserRepository
 import com.hjj.apiserver.repository.category.CategoryRepository
 import com.hjj.apiserver.repository.user.UserRepository
 import org.modelmapper.ModelMapper
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -85,5 +91,68 @@ class CategoryService(
         }
 
         categoryRepository.saveAll(categories)
+    }
+
+    @Transactional(readOnly = false, rollbackFor = [Exception::class])
+    fun addCategory(user: User, request: CategoryAddRequest){
+        val accountBook = accountBookRepository.findAccountBookBySubQuery(
+            userNo = user.userNo!!,
+            accountBookNo = request.accountBookNo,
+            AccountRole.OWNER
+        )?: throw IllegalArgumentException()
+
+        categoryRepository.save(Category(
+            categoryName = request.categoryName,
+            categoryDesc = request.categoryDesc,
+            categoryIcon = request.categoryIcon,
+            accountBook = accountBook,
+            parentCategory = request.parentCategoryNo?.let { categoryRepository.getById(it) }
+        ))
+    }
+
+    fun findAllCategories(userNo: Long, accountBookNo: Long){
+
+    }
+
+    fun findCategory(categoryNo: Long): CategoryDetailResponse{
+        return categoryRepository.findByIdOrNull(categoryNo)?.run { CategoryDetailResponse(
+            accountBookNo = accountBook.accountBookNo!!,
+            categoryNo = categoryNo,
+            categoryName = categoryName,
+            categoryDesc = categoryDesc,
+            categoryIcon = categoryIcon,
+            childCategories = childCategories.map {
+                CategoryDetailResponse.ChildCategory(
+                    accountBookNo = it.accountBook.accountBookNo!!,
+                    categoryNo = it.categoryNo!!,
+                    parentCategoryNo = it.parentCategory!!.categoryNo!!,
+                    categoryName = it.categoryName,
+                    categoryDesc = it.categoryDesc,
+                    categoryIcon = it.categoryIcon,
+                    createdDate = it.createdDate,
+                    lastModifiedDate = it.lastModifiedDate
+            ) }
+        ) }?: throw IllegalArgumentException()
+    }
+
+    @Transactional(readOnly = false)
+    fun modifyCategory(userNo: Long, categoryNo: Long, request: CategoryModifyRequest){
+        categoryRepository.findByCategoryNoAndSubQuery(categoryNo, request.accountBookNo, userNo, listOf(AccountRole.OWNER))?.also {
+            if((it.parentCategory == null && request.parentCategoryNo != null) || it.categoryNo == categoryNo){
+                throw IllegalArgumentException()
+            }
+
+            it.updateCategory(
+                categoryName = request.categoryName,
+                categoryDesc = request.categoryDesc,
+                categoryIcon = request.categoryIcon,
+                parentCategory = request.parentCategoryNo?.let { categoryRepository.getById(categoryNo) },
+            )
+        }
+    }
+
+    @Transactional(readOnly = false, rollbackFor = [Exception::class])
+    fun deleteCategory(categoryNo: Long, accountBookNo: Long, userNo: Long){
+        categoryRepository.delete(categoryRepository.findByCategoryNoAndSubQuery(categoryNo, accountBookNo, userNo, listOf(AccountRole.OWNER)))
     }
 }

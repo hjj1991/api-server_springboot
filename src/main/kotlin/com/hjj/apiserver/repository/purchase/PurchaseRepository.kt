@@ -29,7 +29,7 @@ interface PurchaseRepository: JpaRepository<Purchase, Long>, PurchaseRepositoryC
     fun findEntityGraphByUser_UserNoAndPurchaseNoAndDeleteYn(
         userNo: Long,
         purchaseNo: Long,
-        deleteYn: Char
+        deleteYn: Char = 'N',
     ): Purchase?
 
     fun findByCategory_CategoryNo(categoryNo: Long): List<Purchase>

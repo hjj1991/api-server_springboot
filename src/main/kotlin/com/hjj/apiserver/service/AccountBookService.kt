@@ -55,7 +55,7 @@ class AccountBookService(
         return accountBookDetail
     }
 
-    fun findAllAccountBook(userNo: Long): AccountBookFindAllResponse{
-
+    fun findAllAccountBook(userNo: Long): List<AccountBookFindAllResponse>{
+        return accountBookUserRepository.findAllAccountBookByUserNo(userNo)
     }
 }
