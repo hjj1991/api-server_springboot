@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
 
-interface AccountBookRepository: JpaRepository<AccountBook, Long> {
+interface AccountBookRepository: JpaRepository<AccountBook, Long>, AccountBookRepositoryCustom {
 
     @Query(
         "select ab from AccountBook ab where ab.accountBookNo = " +

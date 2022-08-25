@@ -17,6 +17,7 @@ allOpen {
     annotation("javax.persistence.Embeddable")
 }
 
+
 group = 'com.hjj'
 version = '0.0.1-SNAPSHOT'
 

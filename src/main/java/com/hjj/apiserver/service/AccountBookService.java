@@ -5,9 +5,11 @@ import com.hjj.apiserver.domain.AccountBookEntityJava;
 import com.hjj.apiserver.domain.PurchaseEntityJava;
 import com.hjj.apiserver.dto.AccountBookDto;
 import com.hjj.apiserver.dto.AccountBookUserDto;
-import com.hjj.apiserver.repositroy.PurchaseRepository;
+import com.hjj.apiserver.repository.accountbook.AccountBookRepository;
+import com.hjj.apiserver.repository.accountbook.AccountBookUserRepository;
+import com.hjj.apiserver.repository.purchase.PurchaseRepository;
+import com.hjj.apiserver.repository.user.UserRepository;
 import lombok.AllArgsConstructor;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;

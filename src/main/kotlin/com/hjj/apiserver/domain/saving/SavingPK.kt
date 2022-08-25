@@ -1,6 +1,6 @@
 package com.hjj.apiserver.domain.saving
 
-import java.io.Serial
+
 import java.io.Serializable
 
 data class SavingPK(
@@ -8,7 +8,7 @@ data class SavingPK(
     val finPrdtCd: String,
 ) : Serializable {
     companion object {
-        @Serial
-        private const val serialVersionUID: Long = 2024642832502408822L
+        private const val serialVersionUID: Long = 5473249419463926971L
     }
+
 }

@@ -1,6 +1,5 @@
 package com.hjj.apiserver.domain.deposit
 
-import java.io.Serial
 import java.io.Serializable
 
 data class DepositPK(
@@ -8,7 +7,7 @@ data class DepositPK(
     var finPrdCd: String,
 ) : Serializable {
     companion object {
-        @Serial
-        private const val serialVersionUID: Long = -5950103347155460286L
+        private const val serialVersionUID: Long = 2379397187016502760L
     }
+
 }

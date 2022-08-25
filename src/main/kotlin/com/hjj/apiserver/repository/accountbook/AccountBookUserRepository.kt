@@ -5,7 +5,7 @@ import com.hjj.apiserver.domain.accountbook.AccountRole
 import org.springframework.data.jpa.repository.EntityGraph
 import org.springframework.data.jpa.repository.JpaRepository
 
-interface AccountBookUserRepository: JpaRepository<AccountBookUser, Long> {
+interface AccountBookUserRepository: JpaRepository<AccountBookUser, Long>, AccountBookUserRepositoryCustom {
 
     @EntityGraph(attributePaths = ["accountBookEntity", "userEntity"])
     fun findGraphByUser_userNo(userNo: Long): MutableList<AccountBookUser>

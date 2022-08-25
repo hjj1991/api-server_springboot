@@ -4,7 +4,6 @@ import com.hjj.apiserver.domain.CategoryEntityJava;
 import com.hjj.apiserver.domain.PurchaseEntityJava;
 import com.hjj.apiserver.domain.UserEntity;
 import com.hjj.apiserver.dto.CategoryDto;
-import com.hjj.apiserver.repositroy.PurchaseRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
