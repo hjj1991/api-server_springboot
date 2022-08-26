@@ -85,7 +85,7 @@ class CategoryService(
             categories.add(Category(
                 categoryName = categoryName[i],
                 categoryDesc = categoryDesc[i],
-                categoryIcon = categoryIcon[i],
+                categoryIcon = baseIconUrl + categoryIcon[i],
                 accountBook = accountBook,
             ))
         }

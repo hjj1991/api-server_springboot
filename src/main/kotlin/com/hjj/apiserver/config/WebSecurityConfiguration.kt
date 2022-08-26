@@ -31,7 +31,7 @@ import javax.servlet.http.HttpServletRequest
 class WebSecurityConfiguration(
     private val jwtTokenProvider: JwtTokenProvider,
     private val customAuthenticationEntryPoint: CustomAuthenticationEntryPoint,
-): WebSecurityConfigurerAdapter(), WebMvcConfigurer {
+): WebSecurityConfigurerAdapter() {
 
 
     override fun configure(http: HttpSecurity) {
@@ -45,11 +45,8 @@ class WebSecurityConfiguration(
             .cors()
             .and()
             .authorizeRequests() // 다음 리퀘스트에 대한 사용권한 체크
-            .requestMatchers(RequestMatcher { request: HttpServletRequest? ->
-                CorsUtils.isPreFlightRequest(
-                    request
-                )
-            }).permitAll()
+            .requestMatchers(RequestMatcher { CorsUtils.isPreFlightRequest(it) })
+            .permitAll()
             .antMatchers(
                 "/user/*/exists*",
                 "/main*",
@@ -90,29 +87,5 @@ class WebSecurityConfiguration(
     }
 
 
-    override fun addCorsMappings(registry: CorsRegistry) {
-        registry.addMapping("/**")
-            .allowedOrigins("http://localhost:3000", "https://cash.sundry.ninja", "https://post-react.pages.dev")
-            .allowedMethods("GET", "POST", "OPTIONS", "PUT", "DELETE", "PATCH")
-            .allowCredentials(false)
-            .maxAge(3600)
-        super.addCorsMappings(registry)
-    }
 
-    @Bean
-    fun swaggerApi(): Docket? {
-        return Docket(DocumentationType.SWAGGER_2)
-            .ignoredParameterTypes(AuthenticationPrincipal::class.java, Pageable::class.java) //제외할 파라미터
-            .apiInfo(swaggerInfo()).select()
-            .apis(RequestHandlerSelectors.basePackage("com.hjj.apiserver"))
-            .paths(PathSelectors.any())
-            .build()
-            .useDefaultResponseMessages(false) // 기본으로 세팅되는 200,401,403,404 메시지를 표시 하지 않음
-    }
-
-    private fun swaggerInfo(): ApiInfo? {
-        return ApiInfoBuilder().title("Spring API Documentation")
-            .description("앱 개발시 사용되는 서버 API에 대한 연동 문서입니다")
-            .license("황재정").licenseUrl("http://localhost").version("1").build()
-    }
 }

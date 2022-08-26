@@ -5,6 +5,7 @@ import com.hjj.apiserver.domain.user.User
 import com.hjj.apiserver.dto.card.reqeust.CardAddRequest
 import com.hjj.apiserver.dto.card.reqeust.CardModifyRequest
 import com.hjj.apiserver.dto.card.response.CardFindAllResponse
+import com.hjj.apiserver.dto.card.response.CardFindResponse
 import com.hjj.apiserver.repository.card.CardRepository
 import org.modelmapper.ModelMapper
 import org.springframework.stereotype.Service
@@ -37,5 +38,10 @@ class CardService(
     fun selectCards(userNo: Long):List<CardFindAllResponse>{
         val cards = cardRepository.findByUser_UserNoAndDeleteYn(userNo)
         return cards.map { CardFindAllResponse(it.cardNo!!, it.cardName, it.cardType, it.cardDesc) }
+    }
+
+    fun selectCard(userNo: Long, cardNo: Long): CardFindResponse {
+        return cardRepository.findByCardNoAndUser_UserNo(cardNo, userNo)?.run { CardFindResponse(cardNo, cardName, cardType, cardDesc) }
+            ?: throw IllegalArgumentException()
     }
 }

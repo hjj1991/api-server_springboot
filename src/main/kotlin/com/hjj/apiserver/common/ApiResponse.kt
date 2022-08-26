@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonInclude
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 class ApiResponse<T>(
-    private val success: Boolean,
-    private val response: T?,
-    private val apiError: ApiError?,
+    val success: Boolean,
+    val response: T?,
+    val apiError: ApiError?,
 ) {
 }

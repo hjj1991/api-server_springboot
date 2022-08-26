@@ -18,10 +18,14 @@ class CustomAuthenticationEntryPoint(
         authException: AuthenticationException
     ) {
 
-        response.status = 401
-        response.contentType = "application/json;charset=utf-8"
+        if(request.getHeader("Accept") == "application/json"){
+            response.status = 401
+            response.contentType = "application/json;charset=utf-8"
+            response.writer.print(objectMapper.writeValueAsString(ApiUtils.error(ErrCode.ERR_CODE0009)))
+        }
 
-        response.writer.print(objectMapper.writeValueAsString(ApiUtils.error(ErrCode.ERR_CODE0009)))
+        response.sendError(401)
+
 
 
     }
