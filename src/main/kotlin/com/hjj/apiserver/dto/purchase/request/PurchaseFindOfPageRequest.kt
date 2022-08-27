@@ -3,7 +3,7 @@ package com.hjj.apiserver.dto.purchase.request
 import org.springframework.format.annotation.DateTimeFormat
 import java.time.LocalDate
 
-class PurchaseFindOfPageRequest(
+data class PurchaseFindOfPageRequest(
     val accountBookNo: Long,
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     val startDate: LocalDate,

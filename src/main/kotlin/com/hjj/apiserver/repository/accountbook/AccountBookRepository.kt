@@ -25,4 +25,7 @@ interface AccountBookRepository: JpaRepository<AccountBook, Long>, AccountBookRe
         @Param("userNo") userNo: Long,
         @Param("accountBookNo") accountBookNo: Long
     ): AccountBook?
+
+
+
 }

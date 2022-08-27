@@ -6,18 +6,20 @@ import javax.persistence.Column
 import javax.persistence.MappedSuperclass
 
 @MappedSuperclass
-abstract class BaseEntity: BaseTimeEntity() {
-
+abstract class BaseEntity(
     @Column(columnDefinition = "char(1) default 'N'", nullable = false, insertable = false)
-    var deleteYn: Char = 'N'
+    var deleteYn: Char = 'N',
 
     @CreatedBy
     @Column(updatable = false)
-    var createdBy: Long? = null
+    var createdBy: Long? = null,
 
     @LastModifiedBy
     @Column
-    var lastModifiedBy: Long? = null
+    var lastModifiedBy: Long? = null,
+): BaseTimeEntity() {
+
+
 
 
 }

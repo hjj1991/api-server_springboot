@@ -1,13 +1,9 @@
-package com.hjj.apiserver
+package com.hjj.apiserver.config
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.SerializationFeature
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.google.auth.oauth2.GoogleCredentials
 import com.google.firebase.FirebaseApp
 import com.google.firebase.FirebaseOptions
-import com.hjj.apiserver.config.P6spySqlFormatConfiguration
-import com.hjj.apiserver.domain.user.User
+import com.hjj.apiserver.dto.user.CurrentUserInfo
 import com.hjj.apiserver.util.logger
 import com.p6spy.engine.spy.P6SpyOptions
 import com.querydsl.jpa.impl.JPAQueryFactory
@@ -46,13 +42,6 @@ class ApplicationConfig(
         return PasswordEncoderFactories.createDelegatingPasswordEncoder()
     }
 
-    @Bean
-    fun objectMapper(): ObjectMapper {
-        val objectMapper = ObjectMapper()
-        objectMapper.registerModule(JavaTimeModule())
-        objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
-        return objectMapper
-    }
 
     @Bean
     fun modelMapper(): ModelMapper {
@@ -82,11 +71,11 @@ class ApplicationConfig(
 
     override fun getCurrentAuditor(): Optional<Long> {
         val authentication = SecurityContextHolder.getContext().authentication
-        if (null == authentication || !authentication.isAuthenticated) {
+        if (null == authentication || !authentication.isAuthenticated || authentication.principal == "anonymousUser") {
             return Optional.empty()
         }
-        val user = authentication.principal as User
-        return Optional.of(user.userNo!!)
+        val currentUserInfo = authentication.principal as CurrentUserInfo
+        return Optional.of(currentUserInfo.userNo)
     }
 
     @PostConstruct

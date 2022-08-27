@@ -4,4 +4,5 @@ import com.hjj.apiserver.domain.user.User
 
 interface UserRepositoryCustom {
     fun findUserLeftJoinUserLogByUserNo(userNo: Long): User?
+    fun findExistsUserNickName(nickName: String): Boolean
 }

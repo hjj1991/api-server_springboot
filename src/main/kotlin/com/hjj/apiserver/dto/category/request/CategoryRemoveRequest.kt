@@ -1,6 +1,6 @@
 package com.hjj.apiserver.dto.category.request
 
-class CategoryRemoveRequest(
+data class CategoryRemoveRequest(
     val accountBookNo: Long,
 ) {
 }

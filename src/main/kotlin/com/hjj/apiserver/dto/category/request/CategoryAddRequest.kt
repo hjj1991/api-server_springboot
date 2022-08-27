@@ -2,7 +2,7 @@ package com.hjj.apiserver.dto.category.request
 
 import javax.validation.constraints.NotEmpty
 
-class CategoryAddRequest(
+data class CategoryAddRequest(
     val accountBookNo: Long,
     val parentCategoryNo: Long? = null,
     @NotEmpty

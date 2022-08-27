@@ -1,0 +1,29 @@
+social:
+  naver:
+    client-id: None
+    client-secret: None
+    url:
+      profile:
+        host: openapi.naver.com
+        path: v1/nid/me
+      token:
+        host: nid.naver.com
+        path: oauth2.0/token
+  kakao:
+    client-id: None
+    client-secret: None
+    url:
+      profile:
+        host: kapi.kakao.com
+        path: v2/user/me
+      token:
+        host: kauth.kakao.com
+        path: oauth/token
+app:
+  firebase-configuration-file: /app/firebase-adminsdk.json
+  firebase-bucket: spring-api-server.appspot.com
+  firebase-storage-uri: https://firebasestorage.googleapis.com/v0/b/
+
+line:
+  noti:
+    token: None

@@ -1,0 +1,44 @@
+spring:
+  profiles:
+    include: oauth
+  datasource:
+    url: jdbc:h2:mem:test;MODE=MySQL;
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        jdbc:
+          batch_size: 100
+        dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+        format_sql: true
+        default_batch_fetch_size: 100
+  #    show-sql: true
+  jwt:
+    secret: testToken
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+
+#    org:
+#      hibernate:
+#        SQL: debug
+server:
+  port: 8080
+  servlet:
+    multipart:
+      maxFileSize: 10MB
+      maxRequestSize: 30MB
+  error:
+    whitelabel:
+      enabled: false
+decorator:
+  datasource:
+    p6spy:
+      enable-logging: true
+logging:
+  level:
+    root: info

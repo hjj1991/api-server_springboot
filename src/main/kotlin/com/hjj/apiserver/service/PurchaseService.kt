@@ -2,7 +2,6 @@ package com.hjj.apiserver.service
 
 import com.hjj.apiserver.domain.accountbook.AccountRole
 import com.hjj.apiserver.domain.purchase.Purchase
-import com.hjj.apiserver.domain.user.User
 import com.hjj.apiserver.dto.purchase.request.PurchaseAddRequest
 import com.hjj.apiserver.dto.purchase.request.PurchaseFindOfPageRequest
 import com.hjj.apiserver.dto.purchase.request.PurchaseModifyRequest
@@ -32,8 +31,8 @@ class PurchaseService(
 ) {
 
     @Transactional(readOnly = false, rollbackFor = [Exception::class])
-    fun addPurchase(user: User, request: PurchaseAddRequest) {
-        val accountBook = accountBookRepository.findAccountBookBySubQuery(user.userNo!!, request.accountBookNo)
+    fun addPurchase(userNo: Long, request: PurchaseAddRequest) {
+        val accountBook = accountBookRepository.findAccountBookBySubQuery(userNo, request.accountBookNo)
             ?: throw IllegalArgumentException()
 
 
@@ -50,11 +49,11 @@ class PurchaseService(
                     categoryRepository.findByCategoryNoAndSubQuery(
                         request.categoryNo,
                         request.accountBookNo,
-                        user.userNo!!,
+                        userNo,
                         listOf(AccountRole.OWNER, AccountRole.MEMBER)
                     ) ?: throw IllegalArgumentException()
                 },
-                user = user,
+                user = userRepository.getById(userNo),
                 accountBook = accountBook,
             )
         )

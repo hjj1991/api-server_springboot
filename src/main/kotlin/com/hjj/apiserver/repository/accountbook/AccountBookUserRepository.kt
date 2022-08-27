@@ -24,4 +24,6 @@ interface AccountBookUserRepository: JpaRepository<AccountBookUser, Long>, Accou
         accountBookNo: Long,
         accountRole: AccountRole
     ): Boolean?
+
+    fun findFirstByUser_UserNo(userNo: Long):AccountBookUser
 }

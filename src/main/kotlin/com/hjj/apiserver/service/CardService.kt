@@ -1,13 +1,12 @@
 package com.hjj.apiserver.service
 
 import com.hjj.apiserver.domain.card.Card
-import com.hjj.apiserver.domain.user.User
 import com.hjj.apiserver.dto.card.reqeust.CardAddRequest
 import com.hjj.apiserver.dto.card.reqeust.CardModifyRequest
 import com.hjj.apiserver.dto.card.response.CardFindAllResponse
 import com.hjj.apiserver.dto.card.response.CardFindResponse
 import com.hjj.apiserver.repository.card.CardRepository
-import org.modelmapper.ModelMapper
+import com.hjj.apiserver.repository.user.UserRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -15,33 +14,41 @@ import org.springframework.transaction.annotation.Transactional
 @Transactional(readOnly = true)
 class CardService(
     private val cardRepository: CardRepository,
-    private val modelMapper: ModelMapper,
+    private val userRepository: UserRepository,
 ) {
 
     @Transactional(readOnly = false, rollbackFor = [Exception::class])
-    fun insertCard(user: User, request: CardAddRequest){
-        cardRepository.save(Card(cardName = request.cardName, cardType = request.cardType, user = user))
+    fun insertCard(userNo: Long, request: CardAddRequest) {
+        cardRepository.save(
+            Card(
+                cardName = request.cardName,
+                cardType = request.cardType,
+                user = userRepository.getById(userNo)
+            )
+        )
     }
 
     @Transactional(readOnly = false, rollbackFor = [Exception::class])
-    fun deleteCard(userNo: Long, cardNo: Long){
+    fun deleteCard(userNo: Long, cardNo: Long) {
         cardRepository.findByCardNoAndUser_UserNo(cardNo, userNo)?.delete()
-            ?:throw IllegalArgumentException()
+            ?: throw IllegalArgumentException()
     }
 
     @Transactional(readOnly = false, rollbackFor = [Exception::class])
-    fun updateCard(userNo: Long, cardNo: Long, request: CardModifyRequest){
-        cardRepository.findByCardNoAndUser_UserNo(cardNo = cardNo, userNo = userNo)?.updateCard(request.cardName, request.cardType, request.cardDesc)
-            ?:throw IllegalArgumentException()
+    fun updateCard(userNo: Long, cardNo: Long, request: CardModifyRequest) {
+        cardRepository.findByCardNoAndUser_UserNo(cardNo = cardNo, userNo = userNo)
+            ?.updateCard(request.cardName, request.cardType, request.cardDesc)
+            ?: throw IllegalArgumentException()
     }
 
-    fun selectCards(userNo: Long):List<CardFindAllResponse>{
+    fun selectCards(userNo: Long): List<CardFindAllResponse> {
         val cards = cardRepository.findByUser_UserNoAndDeleteYn(userNo)
         return cards.map { CardFindAllResponse(it.cardNo!!, it.cardName, it.cardType, it.cardDesc) }
     }
 
     fun selectCard(userNo: Long, cardNo: Long): CardFindResponse {
-        return cardRepository.findByCardNoAndUser_UserNo(cardNo, userNo)?.run { CardFindResponse(cardNo, cardName, cardType, cardDesc) }
+        return cardRepository.findByCardNoAndUser_UserNo(cardNo, userNo)
+            ?.run { CardFindResponse(cardNo, cardName, cardType, cardDesc) }
             ?: throw IllegalArgumentException()
     }
 }

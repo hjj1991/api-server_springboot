@@ -1,6 +1,6 @@
 package com.hjj.apiserver.dto.user.request
 
-class UserSignInRequest(
+data class UserSignInRequest(
     val userId: String,
     val userPw: String,
 )

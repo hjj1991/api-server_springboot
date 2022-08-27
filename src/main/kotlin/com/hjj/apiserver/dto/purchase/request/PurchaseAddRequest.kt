@@ -3,7 +3,7 @@ package com.hjj.apiserver.dto.purchase.request
 import com.hjj.apiserver.domain.purchase.PurchaseType
 import java.time.LocalDate
 
-class PurchaseAddRequest(
+data class PurchaseAddRequest(
     val accountBookNo: Long,
     val cardNo: Long,
     val categoryNo: Long,

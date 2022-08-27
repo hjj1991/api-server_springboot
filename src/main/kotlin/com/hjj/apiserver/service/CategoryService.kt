@@ -3,15 +3,12 @@ package com.hjj.apiserver.service
 import com.hjj.apiserver.domain.accountbook.AccountBook
 import com.hjj.apiserver.domain.accountbook.AccountRole
 import com.hjj.apiserver.domain.category.Category
-import com.hjj.apiserver.domain.user.User
 import com.hjj.apiserver.dto.category.request.CategoryAddRequest
 import com.hjj.apiserver.dto.category.request.CategoryModifyRequest
 import com.hjj.apiserver.dto.category.response.CategoryDetailResponse
 import com.hjj.apiserver.repository.accountbook.AccountBookRepository
-import com.hjj.apiserver.repository.accountbook.AccountBookUserRepository
 import com.hjj.apiserver.repository.category.CategoryRepository
 import com.hjj.apiserver.repository.user.UserRepository
-import org.modelmapper.ModelMapper
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -19,11 +16,8 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 @Transactional(readOnly = true)
 class CategoryService(
-    private val accountBookUserRepository: AccountBookUserRepository,
     private val accountBookRepository: AccountBookRepository,
     private val categoryRepository: CategoryRepository,
-    private val userRepository: UserRepository,
-    private val modelMapper: ModelMapper,
 ) {
 
     @Transactional(readOnly = false, rollbackFor = [Exception::class])
@@ -94,9 +88,9 @@ class CategoryService(
     }
 
     @Transactional(readOnly = false, rollbackFor = [Exception::class])
-    fun addCategory(user: User, request: CategoryAddRequest){
+    fun addCategory(userNo: Long, request: CategoryAddRequest){
         val accountBook = accountBookRepository.findAccountBookBySubQuery(
-            userNo = user.userNo!!,
+            userNo = userNo,
             accountBookNo = request.accountBookNo,
             AccountRole.OWNER
         )?: throw IllegalArgumentException()

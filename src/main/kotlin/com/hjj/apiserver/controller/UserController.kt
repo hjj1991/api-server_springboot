@@ -4,7 +4,7 @@ import com.hjj.apiserver.common.ApiResponse
 import com.hjj.apiserver.common.ErrCode
 import com.hjj.apiserver.common.JwtTokenProvider
 import com.hjj.apiserver.domain.user.Provider
-import com.hjj.apiserver.domain.user.User
+import com.hjj.apiserver.dto.user.CurrentUserInfo
 import com.hjj.apiserver.dto.user.request.ReIssueTokenRequest
 import com.hjj.apiserver.dto.user.request.UserModifyRequest
 import com.hjj.apiserver.dto.user.request.UserSignInRequest
@@ -31,6 +31,12 @@ class UserController(
     private val fireBaseService: FireBaseService,
 ) {
     private val log = logger()
+
+    @ApiOperation(value = "유저닉네임 중복 조회", notes = "유저닉네임의 중복여부를 확인한다.")
+    @GetMapping("/user/{nickName}/exists-nickname")
+    fun checkUserNickNameDuplicate(@PathVariable nickName: String): ApiResponse<*>{
+        return ApiUtils.success(userService.existsNickName(nickName))
+    }
 
     @ApiOperation(value = "유저Id 중복 조회", notes = "유저id의 중복여부를 확인한다.")
     @GetMapping("/user/{userId}/exists-id")
@@ -82,16 +88,17 @@ class UserController(
             value = "로그인 성공 후 access_token",
             required = true,
             dataType = "String",
+            dataTypeClass = String::class,
             paramType = "header"
         )
     )
     @ApiOperation(value = "기존 유저를 소셜계정 연동", notes = "기존 유저를 소셜유게정 연동 한다.")
     @PatchMapping("/user/social/mapping")
-    fun socialMapping(@CurrentUser user:User, @RequestBody request:HashMap<String, String>): ApiResponse<*> {
+    fun socialMapping(@CurrentUser currentUserInfo: CurrentUserInfo, @RequestBody request:HashMap<String, String>): ApiResponse<*> {
         if(!Provider.isExist(request["provider"])){
             return ApiUtils.error(ErrCode.ERR_CODE0009)
         }
-        userService.socialMapping(user, request)
+        userService.socialMapping(currentUserInfo.userNo, request)
         return ApiUtils.success()
     }
 
@@ -109,12 +116,13 @@ class UserController(
             value = "로그인 성공 후 access_token",
             required = true,
             dataType = "String",
+            dataTypeClass = String::class,
             paramType = "header"
         )
     )
     @ApiOperation(value = "유저정보 상세조회", notes = "유저 정보를 상세 조회한다.")
     @GetMapping("/user")
-    fun userDetails(@CurrentUser user: User): ApiResponse<*>{
+    fun userDetails(@CurrentUser currentUserInfo: CurrentUserInfo): ApiResponse<*>{
         return ApiUtils.success()
     }
 
@@ -124,13 +132,14 @@ class UserController(
             value = "로그인 성공 후 access_token",
             required = true,
             dataType = "String",
+            dataTypeClass = String::class,
             paramType = "header"
         )
     )
     @ApiOperation(value = "유저정보 업데이트", notes = "유저 정보를 업데이트한다.")
     @PatchMapping("/user")
-    fun userModify(@CurrentUser user: User, @RequestBody @Valid request: UserModifyRequest): ApiResponse<*>{
-        return ApiUtils.success(userService.modifyUser(user, request))
+    fun userModify(@CurrentUser currentUserInfo: CurrentUserInfo, @RequestBody @Valid request: UserModifyRequest): ApiResponse<*>{
+        return ApiUtils.success(userService.modifyUser(currentUserInfo.userNo, request))
     }
 
     @ApiImplicitParams(
@@ -139,14 +148,15 @@ class UserController(
             value = "로그인 성공 후 access_token",
             required = true,
             dataType = "String",
+            dataTypeClass = String::class,
             paramType = "header"
         )
     )
     @ApiOperation(value = "유저프로필 사진 업데이트", notes = "유저 프로필사진을 업데이트한다.")
     @PatchMapping("/user/profile")
-    fun userProfileImgModify(@CurrentUser user: User, pictureFile: MultipartFile): ApiResponse<*>{
+    fun userProfileImgModify(@CurrentUser currentUserInfo: CurrentUserInfo, pictureFile: MultipartFile): ApiResponse<*>{
 
-        userService.modifyUserPicture(user, pictureFile)
+        userService.modifyUserPicture(currentUserInfo.userNo, pictureFile)
         return ApiUtils.success()
 
     }
