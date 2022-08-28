@@ -128,8 +128,7 @@ class AccountBookServiceTest @Autowired constructor(
         val accountBookUser = accountBookUserRepository.findFirstByUser_UserNo(savedUser.userNo!!)
 
         // when
-        val accountBookDetail =
-            accountBookService.findAccountBookDetail(accountBookUser.accountBook.accountBookNo!!, savedUser.userNo!!)?: throw IllegalStateException()
+        val accountBookDetail = accountBookService.findAccountBookDetail(accountBookUser.accountBook.accountBookNo!!, savedUser.userNo!!)?: throw IllegalStateException()
 
         // then
         assertThat(accountBookDetail.accountBookName).isEqualTo(request.accountBookName)

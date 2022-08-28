@@ -17,48 +17,47 @@ class AccountBookRepositoryImpl(
 
         val childCategory = QCategory("childCategory")
 
-        return jpaQueryFactory
-//            .select(
-//            Projections.constructor(
-//                AccountBookDetailResponse::class.java,
-//                accountBook.accountBookName,
-//                Projections.constructor(
-//                    AccountBookDetailResponse.CategoryDetail::class.java,
-//                    accountBook.categories.any().categoryNo,
-//                    accountBook.categories.any().categoryName,
-//                    accountBook.categories.any().categoryIcon,
-//                    accountBook.accountBookName,
-//                    Projections.constructor(
-//                        AccountBookDetailResponse.CategoryDetail::class.java,
-//                    ),
-//
-//                )
-//            )
-//        )
+        val transform = jpaQueryFactory
             .selectFrom(accountBook)
             .innerJoin(accountBook.categories, category)
-            .leftJoin(category.childCategories, childCategory).on(category.categoryNo.eq(childCategory.parentCategory.categoryNo))
-            .where(accountBook.accountBookNo.eq(accountBookNo)
-                    .and(category.parentCategory.isNull))
+            .leftJoin(category.childCategories, childCategory)
+            .where(
+                accountBook.accountBookNo.eq(accountBookNo)
+                    .and(category.parentCategory.isNull)
+            )
             .distinct()
-            .transform(groupBy(
-                accountBook.accountBookName,
-            ).list(
-                Projections.constructor(
-                    AccountBookDetailResponse::class.java,
+            .transform(
+                groupBy(
                     accountBook.accountBookName,
-                    list(
-                        Projections.constructor(
-                            AccountBookDetailResponse.CategoryDetail::class.java,
-                            category.categoryNo,
-                            category.categoryName,
-                            category.categoryIcon,
-                            category.accountBook.accountBookNo,
-                            category.accountBook.accountBookName,
+                ).list(
+                    Projections.constructor(
+                        AccountBookDetailResponse::class.java,
+                        accountBook.accountBookName,
+                        list(
+                            Projections.constructor(
+                                AccountBookDetailResponse.CategoryDetail::class.java,
+                                category.categoryNo,
+                                category.categoryName,
+                                category.categoryIcon,
+                                category.accountBook.accountBookNo,
+                                category.accountBook.accountBookName,
+                                list(
+                                    Projections.constructor(
+                                        AccountBookDetailResponse.ChildrenCategory::class.java,
+                                        childCategory.categoryNo,
+                                        childCategory.categoryName,
+                                        childCategory.categoryIcon,
+                                        childCategory.accountBook.accountBookNo,
+                                        childCategory.accountBook.accountBookName,
+                                        childCategory.parentCategory.categoryNo
+                                    )
+                                )
+                            )
                         )
                     )
                 )
             )
-            )[0]
+
+        return transform[0]
     }
 }
