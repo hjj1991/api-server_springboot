@@ -16,11 +16,15 @@ class AccountBookRepositoryImpl(
     override fun findAccountBookDetail(accountBookNo: Long): AccountBookDetailResponse? {
 
         val childCategory = QCategory("childCategory")
+        val childAccountBook = QAccountBook("childAccountBook")
+        val childAccountBook2 = QAccountBook("childAccountBook2")
 
         val transform = jpaQueryFactory
             .selectFrom(accountBook)
             .innerJoin(accountBook.categories, category)
             .leftJoin(category.childCategories, childCategory)
+            .leftJoin(category.accountBook, childAccountBook2)
+            .leftJoin(childCategory.accountBook, childAccountBook)
             .where(
                 accountBook.accountBookNo.eq(accountBookNo)
                     .and(category.parentCategory.isNull)
