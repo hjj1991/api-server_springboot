@@ -1,4 +1,4 @@
-package com.hjj.apiserver.service.user
+package com.hjj.apiserver.service
 
 import com.hjj.apiserver.dto.user.request.UserSinUpRequest
 import com.hjj.apiserver.repository.user.UserRepository

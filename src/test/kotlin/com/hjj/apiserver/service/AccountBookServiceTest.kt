@@ -46,11 +46,21 @@ class AccountBookServiceTest @Autowired constructor(
             backGroundColor = "#ffffff",
             color = "#000000",
         )
-        val savedUser = userRepository.save(User(
+        val savedUsers: MutableList<User> = mutableListOf()
+        for (i in 0..10){
+            savedUsers.add(User(
+                userId = "testUser${i}",
+                nickName = "닉네임${i}",
+                userEmail = "tester@test.co.kr"
+            ))
+        }
+        val savedUser = User(
             userId = "testUser",
             nickName = "닉네임",
             userEmail = "tester@test.co.kr"
-        ))
+        )
+        userRepository.save(savedUser)
+
         accountBookService.addAccountBook(savedUser.userNo!!, request)
 
 
@@ -99,35 +109,33 @@ class AccountBookServiceTest @Autowired constructor(
         assertThat(accountBook.accountBookDesc).isEqualTo(request.accountBookDesc)
     }
 
-
-    private fun accountBookReturnList(): List<AccountBookFindAllResponse> {
-        return listOf(
-            AccountBookFindAllResponse(
-                accountBookNo = 1,
-                accountBookName = "가게부1",
-                accountBookDesc = "가게부설명1",
-                backGroundColor = "#ffffff",
-                color = "#000000",
-                accountRole = AccountRole.MEMBER,
-                joinedUsers = listOf(
-                    AccountBookFindAllResponse.JoinedUser(
-                        userNo = 1,
-                        nickName = "계정1",
-                        picture = null,
-                    ),
-                    AccountBookFindAllResponse.JoinedUser(
-                        userNo = 2,
-                        nickName = "계정2",
-                        picture = "샬라샬라",
-                    ),
-                    AccountBookFindAllResponse.JoinedUser(
-                        userNo = 3,
-                        nickName = "계정3",
-                        picture = null,
-                    ),
-                )
-            )
+    @Test
+    @DisplayName("가계부가 상세 조회 된다.")
+    fun findAccountBookDetailTest(){
+        // given
+        val request = AccountBookAddRequest(
+            accountBookName = "가계부명",
+            accountBookDesc = "가계부설명",
+            backGroundColor = "#ffffff",
+            color = "#000000",
         )
+        val savedUser = userRepository.save(User(
+            userId = "testUser",
+            nickName = "닉네임",
+            userEmail = "tester@test.co.kr"
+        ))
+        accountBookService.addAccountBook(savedUser.userNo!!, request)
+        val accountBookUser = accountBookUserRepository.findFirstByUser_UserNo(savedUser.userNo!!)
+
+        // when
+        val accountBookDetail =
+            accountBookService.findAccountBookDetail(accountBookUser.accountBook.accountBookNo!!, savedUser.userNo!!)?: throw IllegalStateException()
+
+        // then
+        assertThat(accountBookDetail.accountBookName).isEqualTo(request.accountBookName)
+        assertThat(accountBookDetail.categories).hasSize(15)
+        assertThat(accountBookDetail.cards).hasSize(0)
     }
+
 
 }
