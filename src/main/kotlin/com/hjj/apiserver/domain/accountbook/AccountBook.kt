@@ -39,6 +39,7 @@ class AccountBook(
         protected set
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "accountBook")
+    @BatchSize(size = 100)
     var categories: MutableList<Category> = categories
         protected set
 }

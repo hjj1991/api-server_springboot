@@ -1,8 +1,8 @@
 package com.hjj.apiserver.repository.accountbook
 
-import com.hjj.apiserver.dto.accountbook.response.AccountBookDetailResponse
+import com.hjj.apiserver.domain.accountbook.AccountBook
 
 interface AccountBookRepositoryCustom {
 
-    fun findAccountBookDetail(accountBookNo: Long): AccountBookDetailResponse?
+    fun findAccountBookByAccountBookNo(accountBookNo: Long): AccountBook?
 }

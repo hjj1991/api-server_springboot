@@ -1,19 +1,15 @@
 package com.hjj.apiserver.dto.accountbook.response
 
+import java.time.LocalDateTime
+
 class AccountBookDetailResponse(
+    var accountBookNo: Long,
     var accountBookName: String,
+    var accountBookDesc: String,
+    var createdDate: LocalDateTime,
+    var cards: List<CardDetail> = listOf(),
     var categories: List<CategoryDetail> = listOf(),
 ) {
-
-    constructor(
-        accountBookName: String,
-        categories: List<CategoryDetail> = listOf(),
-        cards: List<CardDetail> = listOf(),
-    ) : this(accountBookName, categories) {
-        this.cards = cards
-    }
-    var cards: List<CardDetail> = listOf()
-
     class CardDetail(
         var cardNo: Long,
         var cardName: String,
