@@ -1,9 +1,11 @@
 package com.hjj.apiserver.service
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.hjj.apiserver.domain.accountbook.AccountRole
 import com.hjj.apiserver.domain.user.User
 import com.hjj.apiserver.dto.accountbook.request.AccountBookAddRequest
 import com.hjj.apiserver.dto.accountbook.response.AccountBookFindAllResponse
+import com.hjj.apiserver.dto.category.request.CategoryAddRequest
 import com.hjj.apiserver.repository.accountbook.AccountBookRepository
 import com.hjj.apiserver.repository.accountbook.AccountBookUserRepository
 import com.hjj.apiserver.repository.category.CategoryRepository
@@ -25,6 +27,8 @@ class AccountBookServiceTest @Autowired constructor(
     private val accountBookUserRepository: AccountBookUserRepository,
     private val accountBookRepository: AccountBookRepository,
     private val categoryRepository: CategoryRepository,
+    private val objectMapper: ObjectMapper,
+    private val categoryService: CategoryService,
 ) {
 
     @BeforeEach
@@ -126,10 +130,18 @@ class AccountBookServiceTest @Autowired constructor(
         ))
         accountBookService.addAccountBook(savedUser.userNo!!, request)
         val accountBookUser = accountBookUserRepository.findFirstByUser_UserNo(savedUser.userNo!!)
+        categoryService.addCategory(1, CategoryAddRequest(
+            accountBookNo = 1,
+            parentCategoryNo = 1,
+            categoryName = "테스트카테고리입니다.",
+            categoryDesc = "테스터야",
+            categoryIcon = "테스트아이콘",
+        ))
 
         // when
         val accountBookDetail = accountBookService.findAccountBookDetail(accountBookUser.accountBook.accountBookNo!!, savedUser.userNo!!)?: throw IllegalStateException()
 
+        println(objectMapper.writeValueAsString(accountBookDetail))
         // then
         assertThat(accountBookDetail.accountBookName).isEqualTo(request.accountBookName)
         assertThat(accountBookDetail.categories).hasSize(15)

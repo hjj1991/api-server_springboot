@@ -23,17 +23,13 @@ class AccountBookDetailResponse(
         var categoryNo: Long?,
         var categoryName: String?,
         var categoryIcon: String?,
-        var accountBookNo: Long?,
-        var accountBookName: String?,
-        var childCategories: List<ChildrenCategory> = mutableListOf()
+        var childCategories: List<ChildrenCategory>? = mutableListOf()
     )
 
     class ChildrenCategory(
         var categoryNo: Long?,
         var categoryName: String?,
         var categoryIcon: String?,
-        var accountBookNo: Long?,
-        var accountBookName: String?,
         var parentCategoryNo: Long?,
     )
 }
