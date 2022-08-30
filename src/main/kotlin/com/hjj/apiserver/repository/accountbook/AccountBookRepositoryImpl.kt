@@ -13,10 +13,10 @@ class AccountBookRepositoryImpl(
     override fun findAccountBookByAccountBookNo(accountBookNo: Long): AccountBook? {
         return jpaQueryFactory
             .selectFrom(accountBook)
-            .innerJoin(accountBook.categories, category)
+            .distinct()
+            .innerJoin(accountBook.categories, category).fetchJoin()
             .where(
                 accountBook.accountBookNo.eq(accountBookNo)
-                    .and(category.parentCategory.categoryNo.isNull)
             ).fetchOne()
     }
 }

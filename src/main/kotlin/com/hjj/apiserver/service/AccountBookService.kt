@@ -12,7 +12,6 @@ import com.hjj.apiserver.repository.accountbook.AccountBookUserRepository
 import com.hjj.apiserver.repository.card.CardRepository
 import com.hjj.apiserver.repository.category.CategoryRepository
 import com.hjj.apiserver.repository.user.UserRepository
-import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -28,7 +27,7 @@ class AccountBookService(
 ) {
 
     @Transactional(readOnly = false, rollbackFor = [Exception::class])
-    fun addAccountBook(userNo: Long, request: AccountBookAddRequest){
+    fun addAccountBook(userNo: Long, request: AccountBookAddRequest) {
 
         val newAccountBook = AccountBook(
             accountBookName = request.accountBookName,
@@ -48,27 +47,29 @@ class AccountBookService(
         categoryService.addBasicCategory(newAccountBook)
     }
 
-    fun findAccountBookDetail(accountBookNo:Long, userNo: Long): AccountBookDetailResponse {
-        val accountBook = accountBookRepository.findAccountBookByAccountBookNo(accountBookNo)?:throw IllegalArgumentException()
+    fun findAccountBookDetail(accountBookNo: Long, userNo: Long): AccountBookDetailResponse {
+        val accountBook = accountBookRepository.findAccountBookByAccountBookNo(accountBookNo) ?: throw IllegalArgumentException()
 
-        val categoryOptional = categoryRepository.findByIdOrNull(1)
+        val categories: MutableList<AccountBookDetailResponse.CategoryDetail> = mutableListOf()
 
-        val categories = accountBook.categories.map {
-            AccountBookDetailResponse.CategoryDetail(
-                categoryNo = it.categoryNo,
-                categoryName = it.categoryName,
-                categoryIcon = it.categoryIcon,
-                childCategories = it.childCategories.map { childCategory: Category ->
-                    AccountBookDetailResponse.ChildrenCategory(
-                        categoryNo = childCategory.categoryNo,
-                        categoryName = childCategory.categoryName,
-                        categoryIcon = childCategory.categoryIcon,
-                        parentCategoryNo = childCategory.parentCategory!!.categoryNo
-                    )
-                }
-            )
+        for (category in accountBook.categories) {
+            if (category.parentCategory == null) {
+                categories.add(AccountBookDetailResponse.CategoryDetail(
+                    categoryNo = category.categoryNo,
+                    categoryName = category.categoryName,
+                    categoryIcon = category.categoryIcon,
+                    childCategories = category.childCategories.map { childCategory: Category ->
+                        AccountBookDetailResponse.ChildrenCategory(
+                            categoryNo = childCategory.categoryNo,
+                            categoryName = childCategory.categoryName,
+                            categoryIcon = childCategory.categoryIcon,
+                            parentCategoryNo = childCategory.parentCategory!!.categoryNo
+                        )
+                    }
+                )
+                )
+            }
         }
-
 
 
         val accountBookDetailResponse = AccountBookDetailResponse(
@@ -88,7 +89,7 @@ class AccountBookService(
         return accountBookDetailResponse
     }
 
-    fun findAllAccountBook(userNo: Long): List<AccountBookFindAllResponse>{
+    fun findAllAccountBook(userNo: Long): List<AccountBookFindAllResponse> {
         return accountBookUserRepository.findAllAccountBookByUserNo(userNo)
     }
 }

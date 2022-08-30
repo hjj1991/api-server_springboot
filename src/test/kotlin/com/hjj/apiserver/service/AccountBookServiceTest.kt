@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.transaction.annotation.Transactional
+import javax.persistence.EntityManager
 
 @SpringBootTest
 @Transactional
@@ -29,6 +30,7 @@ class AccountBookServiceTest @Autowired constructor(
     private val categoryRepository: CategoryRepository,
     private val objectMapper: ObjectMapper,
     private val categoryService: CategoryService,
+    private val entityManager: EntityManager,
 ) {
 
 //    @BeforeEach
@@ -144,6 +146,7 @@ class AccountBookServiceTest @Autowired constructor(
             categoryDesc = "22테스터야",
             categoryIcon = "22테스트아이콘",
         ))
+        entityManager.clear()
 
         // when
         val accountBookDetail = accountBookService.findAccountBookDetail(accountBookUser.accountBook.accountBookNo!!, savedUser.userNo!!)?: throw IllegalStateException()

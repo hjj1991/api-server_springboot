@@ -3,7 +3,7 @@ package com.hjj.apiserver.domain.category
 import com.hjj.apiserver.domain.BaseEntity
 import com.hjj.apiserver.domain.accountbook.AccountBook
 import com.hjj.apiserver.domain.purchase.Purchase
-import com.hjj.apiserver.dto.category.request.CategoryModifyRequest
+import org.hibernate.annotations.BatchSize
 import org.hibernate.annotations.DynamicUpdate
 import javax.persistence.*
 
@@ -53,6 +53,7 @@ class Category(
     var parentCategory: Category? = parentCategory
         protected set
 
+    @BatchSize(size = 100)
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "parentCategory", cascade = [CascadeType.ALL])
     var childCategories: MutableList<Category> = childCategories
         protected set
