@@ -18,11 +18,12 @@ class CardService(
 ) {
 
     @Transactional(readOnly = false, rollbackFor = [Exception::class])
-    fun insertCard(userNo: Long, request: CardAddRequest) {
-        cardRepository.save(
+    fun insertCard(userNo: Long, request: CardAddRequest): Card {
+        return cardRepository.save(
             Card(
                 cardName = request.cardName,
                 cardType = request.cardType,
+                cardDesc = request.cardDesc,
                 user = userRepository.getById(userNo)
             )
         )
@@ -42,8 +43,8 @@ class CardService(
     }
 
     fun selectCards(userNo: Long): List<CardFindAllResponse> {
-        val cards = cardRepository.findByUser_UserNoAndDeleteYn(userNo)
-        return cards.map { CardFindAllResponse(it.cardNo!!, it.cardName, it.cardType, it.cardDesc) }
+        return cardRepository.findByUser_UserNoAndDeleteYn(userNo)
+            .map { CardFindAllResponse(it.cardNo!!, it.cardName, it.cardType, it.cardDesc) }
     }
 
     fun selectCard(userNo: Long, cardNo: Long): CardFindResponse {

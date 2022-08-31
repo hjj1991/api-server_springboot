@@ -27,14 +27,14 @@ class AccountBookService(
 ) {
 
     @Transactional(readOnly = false, rollbackFor = [Exception::class])
-    fun addAccountBook(userNo: Long, request: AccountBookAddRequest) {
+    fun addAccountBook(userNo: Long, request: AccountBookAddRequest): AccountBook {
 
         val newAccountBook = AccountBook(
             accountBookName = request.accountBookName,
             accountBookDesc = request.accountBookDesc,
         )
 
-        accountBookRepository.save(newAccountBook)
+        val savedAccountBook = accountBookRepository.save(newAccountBook)
         accountBookUserRepository.save(
             AccountBookUser(
                 accountBook = newAccountBook,
@@ -45,6 +45,7 @@ class AccountBookService(
             )
         )
         categoryService.addBasicCategory(newAccountBook)
+        return savedAccountBook
     }
 
     fun findAccountBookDetail(accountBookNo: Long, userNo: Long): AccountBookDetailResponse {
@@ -72,7 +73,7 @@ class AccountBookService(
         }
 
 
-        val accountBookDetailResponse = AccountBookDetailResponse(
+        return AccountBookDetailResponse(
             accountBookNo = accountBook.accountBookNo!!,
             accountBookName = accountBook.accountBookName,
             accountBookDesc = accountBook.accountBookDesc,
@@ -85,8 +86,6 @@ class AccountBookService(
             },
             categories = categories
         )
-
-        return accountBookDetailResponse
     }
 
     fun findAllAccountBook(userNo: Long): List<AccountBookFindAllResponse> {

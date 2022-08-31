@@ -11,6 +11,7 @@ import javax.persistence.*
 class Card(
     cardName: String,
     cardType: CardType,
+    cardDesc: String = "",
     user: User,
 ): BaseEntity(){
 
@@ -29,7 +30,7 @@ class Card(
         protected set
 
     @Column(columnDefinition = "varchar(5000) default ''")
-    var cardDesc: String = ""
+    var cardDesc: String = cardDesc
         protected set
 
     @ManyToOne(fetch = FetchType.LAZY)

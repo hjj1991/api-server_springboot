@@ -155,7 +155,7 @@ class AccountBookServiceTest @Autowired constructor(
         // then
         assertThat(accountBookDetail.accountBookName).isEqualTo(request.accountBookName)
         assertThat(accountBookDetail.categories).hasSize(15)
-//        assertThat(accountBookDetail.cards).hasSize(0)
+        assertThat(accountBookDetail.cards).hasSize(0)
     }
 
 

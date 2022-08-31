@@ -6,9 +6,9 @@ import com.hjj.apiserver.domain.category.Category
 import com.hjj.apiserver.dto.category.request.CategoryAddRequest
 import com.hjj.apiserver.dto.category.request.CategoryModifyRequest
 import com.hjj.apiserver.dto.category.response.CategoryDetailResponse
+import com.hjj.apiserver.dto.category.response.CategoryFindAllResponse
 import com.hjj.apiserver.repository.accountbook.AccountBookRepository
 import com.hjj.apiserver.repository.category.CategoryRepository
-import com.hjj.apiserver.repository.user.UserRepository
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -104,7 +104,8 @@ class CategoryService(
         ))
     }
 
-    fun findAllCategories(userNo: Long, accountBookNo: Long){
+    fun findAllCategories(userNo: Long, accountBookNo: Long): List<CategoryFindAllResponse> {
+        return categoryRepository.findCategories(userNo, accountBookNo)
 
     }
 

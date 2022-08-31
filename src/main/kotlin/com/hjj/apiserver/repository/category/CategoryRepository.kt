@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
 import java.util.*
 
-interface CategoryRepository: JpaRepository<Category, Long> {
+interface CategoryRepository: JpaRepository<Category, Long>, CategoryRepositoryCustom {
 
     @Query(
         "select c from Category c where c.accountBook.accountBookNo = " +
