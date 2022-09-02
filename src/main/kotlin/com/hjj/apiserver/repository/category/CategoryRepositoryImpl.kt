@@ -2,6 +2,7 @@ package com.hjj.apiserver.repository.category
 
 import com.hjj.apiserver.domain.accountbook.AccountRole
 import com.hjj.apiserver.domain.accountbook.QAccountBookUser.accountBookUser
+import com.hjj.apiserver.domain.category.Category
 import com.hjj.apiserver.domain.category.QCategory
 import com.hjj.apiserver.domain.category.QCategory.category
 import com.hjj.apiserver.dto.category.response.CategoryFindAllResponse
@@ -64,5 +65,27 @@ class CategoryRepositoryImpl(
                 )
             )
     }
+
+    override fun findCategoryByOwner(categoryNo: Long, accountBookNo: Long, userNo: Long): Category? {
+        val parentCategory = QCategory("parentCategory")
+        return jpaQueryFactory.select(category)
+            .from(category)
+            .leftJoin(category.parentCategory, parentCategory).fetchJoin()
+            .where(
+                category.categoryNo.eq(categoryNo)
+                    .and(
+                        category.accountBook.accountBookNo.eq(
+                            JPAExpressions.select(accountBookUser.accountBook.accountBookNo)
+                                .from(accountBookUser)
+                                .where(
+                                    accountBookUser.user.userNo.eq(userNo)
+                                        .and(accountBookUser.accountRole.eq(AccountRole.OWNER))
+                                )
+                        )
+                    )
+
+            ).fetchOne()
+    }
+
 
 }

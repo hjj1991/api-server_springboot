@@ -33,14 +33,17 @@ class AccountBookServiceTest @Autowired constructor(
     private val entityManager: EntityManager,
 ) {
 
-//    @BeforeEach
-//    fun clean(){
-//        categoryRepository.deleteAll()
-//        accountBookRepository.deleteAll()
-//        accountBookUserRepository.deleteAll()
-//        userRepository.deleteAll()
-//
-//    }
+    @BeforeEach
+    fun clean(){
+        entityManager.createNativeQuery("SET REFERENTIAL_INTEGRITY FALSE; " +
+                "TRUNCATE TABLE tb_category; " +
+                "TRUNCATE TABLE tb_account_book_user; " +
+                "TRUNCATE TABLE tb_account_book; " +
+                "TRUNCATE TABLE tb_purchase; " +
+                "TRUNCATE TABLE tb_user; " +
+                "TRUNCATE TABLE tb_card; " +
+                "SET REFERENTIAL_INTEGRITY TRUE; ").executeUpdate()
+    }
 
     @Test
     @DisplayName("해당 유저의 모든 가계부 정보가 정상 조회된다.")
@@ -130,17 +133,17 @@ class AccountBookServiceTest @Autowired constructor(
             nickName = "닉네임",
             userEmail = "tester@test.co.kr"
         ))
-        accountBookService.addAccountBook(savedUser.userNo!!, request)
+        val savedAccountBook = accountBookService.addAccountBook(savedUser.userNo!!, request)
         val accountBookUser = accountBookUserRepository.findFirstByUser_UserNo(savedUser.userNo!!)
-        categoryService.addCategory(1, CategoryAddRequest(
-            accountBookNo = 1,
+        categoryService.addCategory(savedUser.userNo!!, CategoryAddRequest(
+            accountBookNo = savedAccountBook.accountBookNo!!,
             parentCategoryNo = 1,
             categoryName = "테스트카테고리입니다.",
             categoryDesc = "테스터야",
             categoryIcon = "테스트아이콘",
         ))
-        categoryService.addCategory(1, CategoryAddRequest(
-            accountBookNo = 1,
+        categoryService.addCategory(savedUser.userNo!!, CategoryAddRequest(
+            accountBookNo = savedAccountBook.accountBookNo!!,
             parentCategoryNo = 1,
             categoryName = "22테스트카테고리입니다.",
             categoryDesc = "22테스터야",

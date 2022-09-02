@@ -14,18 +14,28 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.data.repository.findByIdOrNull
+import org.springframework.transaction.annotation.Transactional
+import javax.persistence.EntityManager
 
 @SpringBootTest
+@Transactional
 internal class CardServiceTest @Autowired constructor(
     private val cardService: CardService,
     private val userRepository: UserRepository,
     private val cardRepository: CardRepository,
+    private val entityManager: EntityManager,
 ) {
 
     @BeforeEach
     fun clean(){
-        cardRepository.deleteAll()
-        userRepository.deleteAll()
+        entityManager.createNativeQuery("SET REFERENTIAL_INTEGRITY FALSE; " +
+                "TRUNCATE TABLE tb_category; " +
+                "TRUNCATE TABLE tb_account_book_user; " +
+                "TRUNCATE TABLE tb_account_book; " +
+                "TRUNCATE TABLE tb_purchase; " +
+                "TRUNCATE TABLE tb_user; " +
+                "TRUNCATE TABLE tb_card; " +
+                "SET REFERENTIAL_INTEGRITY TRUE; ").executeUpdate()
     }
 
     @Test

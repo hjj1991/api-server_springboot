@@ -132,8 +132,10 @@ class CategoryService(
 
     @Transactional(readOnly = false)
     fun modifyCategory(userNo: Long, categoryNo: Long, request: CategoryModifyRequest){
-        categoryRepository.findByCategoryNoAndSubQuery(categoryNo, request.accountBookNo, userNo, listOf(AccountRole.OWNER))?.also {
-            if((it.parentCategory == null && request.parentCategoryNo != null) || it.categoryNo == categoryNo){
+        categoryRepository.findCategoryByOwner(categoryNo, request.accountBookNo, userNo)?.also {
+            /* 최상위 카테고리의 경우 자식카테고리가 될 수 없다. 자기자신을 부모 카테고리로 설정 할시 에러 */
+            if((it.parentCategory == null && request.parentCategoryNo != null)
+                || it.categoryNo == request.parentCategoryNo){
                 throw IllegalArgumentException()
             }
 
@@ -141,13 +143,13 @@ class CategoryService(
                 categoryName = request.categoryName,
                 categoryDesc = request.categoryDesc,
                 categoryIcon = request.categoryIcon,
-                parentCategory = request.parentCategoryNo?.let { categoryRepository.getById(categoryNo) },
+                parentCategory = request.parentCategoryNo?.let { categoryRepository.getById(request.parentCategoryNo) },
             )
         }
     }
 
     @Transactional(readOnly = false, rollbackFor = [Exception::class])
     fun deleteCategory(categoryNo: Long, accountBookNo: Long, userNo: Long){
-        categoryRepository.delete(categoryRepository.findByCategoryNoAndSubQuery(categoryNo, accountBookNo, userNo, listOf(AccountRole.OWNER)))
+        categoryRepository.delete(categoryRepository.findCategoryByOwner(categoryNo, accountBookNo, userNo))
     }
 }

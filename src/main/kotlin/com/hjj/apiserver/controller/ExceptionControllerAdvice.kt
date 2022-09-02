@@ -59,7 +59,7 @@ class ExceptionControllerAdvice{
     @ExceptionHandler(Exception::class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     protected fun basicException(request: HttpServletRequest, e: Exception): ApiResponse<*> {
-        log.error("[{}] Error Request: {}, ErrorInfo: {}", e.stackTrace[0].methodName, request, e.printStackTrace())
+        log.error("[{}] Error Request: {}, ErrorInfo: {}", e.javaClass.name, request, e.printStackTrace())
         return ApiUtils.error(ErrCode.ERR_CODE0009)
     }
 

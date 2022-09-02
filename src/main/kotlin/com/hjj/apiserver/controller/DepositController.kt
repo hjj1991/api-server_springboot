@@ -17,7 +17,7 @@ class DepositController(
     @ApiOperation(value = "예금 목록", notes = "예금 목록 조회.")
     @GetMapping("/deposit")
     fun depositList(): ApiResponse<*> {
-        return ApiUtils.success()
+        return ApiUtils.success(depositService.findDepositList())
     }
 
 }
