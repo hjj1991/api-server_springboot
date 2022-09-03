@@ -6,8 +6,8 @@ import java.time.LocalDate
 class PurchaseDetailResponse(
     var accountBookNo: Long,
     val cardNo: Long? = null,
-    val parentCategoryNo: Long? = null,
     val categoryNo: Long? = null,
+    val parentCategoryNo: Long? = null,
     val purchaseType: PurchaseType,
     val price: Int,
     val reason: String,

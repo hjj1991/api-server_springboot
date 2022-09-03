@@ -20,6 +20,7 @@ class PurchaseRepositoryImpl(
                     PurchaseDetailResponse::class.java,
                     purchase.accountBook.accountBookNo,
                     purchase.card.cardNo,
+                    category.categoryNo,
                     category.parentCategory.categoryNo,
                     purchase.purchaseType,
                     purchase.price,

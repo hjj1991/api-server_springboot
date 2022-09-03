@@ -12,7 +12,7 @@ import com.hjj.apiserver.repository.card.CardRepository
 import com.hjj.apiserver.repository.category.CategoryRepository
 import com.hjj.apiserver.repository.purchase.PurchaseRepository
 import com.hjj.apiserver.repository.user.UserRepository
-import org.modelmapper.ModelMapper
+import com.hjj.apiserver.util.CommonUtils
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Slice
 import org.springframework.data.domain.SliceImpl
@@ -27,23 +27,24 @@ class PurchaseService(
     private val purchaseRepository: PurchaseRepository,
     private val userRepository: UserRepository,
     private val cardRepository: CardRepository,
-    private val modelMapper: ModelMapper,
 ) {
 
     @Transactional(readOnly = false, rollbackFor = [Exception::class])
-    fun addPurchase(userNo: Long, request: PurchaseAddRequest) {
+    fun addPurchase(userNo: Long, request: PurchaseAddRequest): Purchase {
         val accountBook = accountBookRepository.findAccountBookBySubQuery(userNo, request.accountBookNo)
             ?: throw IllegalArgumentException()
 
+        request.validRequest()
 
-        purchaseRepository.save(
+
+        return purchaseRepository.save(
             Purchase(
                 purchaseType = request.purchaseType,
                 price = request.price,
                 reason = request.reason,
                 purchaseDate = request.purchaseDate,
                 card = request.cardNo?.let {
-                    cardRepository.getById(request.cardNo) ?: throw IllegalArgumentException()
+                    cardRepository.getById(it) ?: throw IllegalArgumentException()
                 },
                 category = request.categoryNo?.let {
                     categoryRepository.findByCategoryNoAndSubQuery(
@@ -91,8 +92,7 @@ class PurchaseService(
         }.toMutableList()
 
         val hasNext = purchaseFindOfPageResponseList.size > pageable.pageSize
-
-        return SliceImpl(purchaseFindOfPageResponseList.subList(0, pageable.pageSize - 1), pageable, hasNext)
+        return SliceImpl(CommonUtils.getSlicePageResult(purchaseFindOfPageResponseList, pageable.pageSize), pageable, hasNext)
     }
 
     @Transactional(readOnly = false, rollbackFor = [Exception::class])

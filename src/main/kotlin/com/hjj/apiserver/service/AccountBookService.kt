@@ -49,7 +49,7 @@ class AccountBookService(
     }
 
     fun findAccountBookDetail(accountBookNo: Long, userNo: Long): AccountBookDetailResponse {
-        val accountBook = accountBookRepository.findAccountBookByAccountBookNo(accountBookNo) ?: throw IllegalArgumentException()
+        val accountBook = accountBookRepository.findAccountBook(userNo, accountBookNo, listOf(AccountRole.MEMBER, AccountRole.OWNER)) ?: throw IllegalArgumentException()
 
         val categories: MutableList<AccountBookDetailResponse.CategoryDetail> = mutableListOf()
 

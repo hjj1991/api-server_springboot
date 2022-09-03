@@ -52,7 +52,7 @@ class AccountBookController(
     )
     @ApiOperation(value = "개인가계부 목록을 조회.", notes = "개인가계부를 조회 한다.")
     @GetMapping("/account-book")
-    fun accountBooksFind(@CurrentUser user: CurrentUserInfo, @Valid request: AccountBookFindAllResponse): ApiResponse<*>{
+    fun accountBooksFind(@CurrentUser user: CurrentUserInfo): ApiResponse<*>{
         return ApiUtils.success(accountBookService.findAllAccountBook(user.userNo))
     }
 
