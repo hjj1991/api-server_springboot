@@ -14,7 +14,7 @@ spring:
         default_batch_fetch_size: 100
 #    show-sql: true
   jwt:
-    scret: hjjJWT
+    secret: testToken
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
@@ -28,6 +28,9 @@ server:
     multipart:
       maxFileSize: 10MB
       maxRequestSize: 30MB
+  error:
+    whitelabel:
+      enabled: false
 
 --- #local
 spring:
