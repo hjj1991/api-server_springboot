@@ -16,7 +16,7 @@ class SavingController(
 
     @ApiOperation(value = "적금 목록", notes = "적금 목록 조회.")
     @GetMapping("/saving")
-    fun savingList(): ApiResponse<*> {
+    fun savingsFind(): ApiResponse<*> {
         return ApiUtils.success(savingService.findSavings())
     }
 }

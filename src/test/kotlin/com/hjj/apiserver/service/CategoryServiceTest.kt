@@ -9,7 +9,6 @@ import com.hjj.apiserver.repository.accountbook.AccountBookUserRepository
 import com.hjj.apiserver.repository.category.CategoryRepository
 import com.hjj.apiserver.repository.user.UserRepository
 import org.assertj.core.api.Assertions.*
-import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
@@ -69,7 +68,7 @@ internal class CategoryServiceTest @Autowired constructor(
 
         // then
         val findAllCategories = categoryService.findAllCategories(savedUser.userNo!!, savedAccountBook.accountBookNo!!)
-        assertThat(findAllCategories).hasSize(15)
+        assertThat(findAllCategories.categories).hasSize(15)
     }
 
     @Test
@@ -147,7 +146,7 @@ internal class CategoryServiceTest @Autowired constructor(
 
 
         // then
-        assertThat(findAllCategories).hasSize(15)
+        assertThat(findAllCategories.categories).hasSize(15)
     }
 
     @Test

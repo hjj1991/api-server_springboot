@@ -1,8 +1,9 @@
 package com.hjj.apiserver.repository.user
 
-import com.hjj.apiserver.domain.user.User
+import com.hjj.apiserver.dto.user.response.UserDetailResponse
 
 interface UserRepositoryCustom {
-    fun findUserLeftJoinUserLogByUserNo(userNo: Long): User?
+    fun findUserDetail(userNo: Long): UserDetailResponse?
     fun findExistsUserNickName(nickName: String): Boolean
+    fun findExistsUserId(userId: String): Boolean
 }

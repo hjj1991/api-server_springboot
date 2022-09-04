@@ -1,5 +1,6 @@
 package com.hjj.apiserver.repository.accountbook
 
+import com.hjj.apiserver.domain.accountbook.AccountRole
 import com.hjj.apiserver.domain.accountbook.QAccountBook.accountBook
 import com.hjj.apiserver.domain.accountbook.QAccountBookUser
 import com.hjj.apiserver.domain.accountbook.QAccountBookUser.accountBookUser
@@ -50,5 +51,13 @@ class AccountBookUserRepositoryImpl(
                     )
                 )
             )
+    }
+
+    override fun findAccountRole(userNo: Long, accountBookNo: Long): AccountRole? {
+        return jpaQueryFactory.select(accountBookUser.accountRole)
+            .from(accountBookUser)
+            .where(accountBookUser.user.userNo.eq(userNo),
+                accountBookUser.accountBook.accountBookNo.eq(accountBookNo)
+            ).fetchOne()
     }
 }

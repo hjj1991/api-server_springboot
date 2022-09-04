@@ -5,7 +5,6 @@ import com.google.firebase.FirebaseApp
 import com.google.firebase.FirebaseOptions
 import com.hjj.apiserver.dto.user.CurrentUserInfo
 import com.hjj.apiserver.util.logger
-import com.p6spy.engine.spy.P6SpyOptions
 import com.querydsl.jpa.impl.JPAQueryFactory
 import org.modelmapper.ModelMapper
 import org.modelmapper.convention.MatchingStrategies
@@ -93,8 +92,4 @@ class ApplicationConfig(
         }
     }
 
-    @PostConstruct
-    fun setLogMessageFormat() {
-        P6SpyOptions.getActiveInstance().logMessageFormat = P6spySqlFormatConfiguration::class.java.name
-    }
 }

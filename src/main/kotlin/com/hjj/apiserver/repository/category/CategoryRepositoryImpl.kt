@@ -15,7 +15,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory
 class CategoryRepositoryImpl(
     private val jpaQueryFactory: JPAQueryFactory,
 ) : CategoryRepositoryCustom {
-    override fun findCategories(userNo: Long, accountBookNo: Long): List<CategoryFindAllResponse> {
+    override fun findCategories(userNo: Long, accountBookNo: Long): List<CategoryFindAllResponse.Categories> {
         val childCategory = QCategory("childrenCategory")
         return jpaQueryFactory
             .selectFrom(category)
@@ -44,7 +44,7 @@ class CategoryRepositoryImpl(
                     category.accountBook.accountBookNo,
                 ).list(
                     Projections.constructor(
-                        CategoryFindAllResponse::class.java,
+                        CategoryFindAllResponse.Categories::class.java,
                         category.categoryNo,
                         category.categoryName,
                         category.categoryDesc,
@@ -66,7 +66,7 @@ class CategoryRepositoryImpl(
             )
     }
 
-    override fun findCategoryByOwner(categoryNo: Long, accountBookNo: Long, userNo: Long): Category? {
+    override fun findCategoryByAccountRole(categoryNo: Long, accountBookNo: Long, userNo: Long, accountRoles: Set<AccountRole>): Category? {
         val parentCategory = QCategory("parentCategory")
         return jpaQueryFactory.select(category)
             .from(category)
@@ -79,7 +79,7 @@ class CategoryRepositoryImpl(
                                 .from(accountBookUser)
                                 .where(
                                     accountBookUser.user.userNo.eq(userNo)
-                                        .and(accountBookUser.accountRole.eq(AccountRole.OWNER))
+                                        .and(accountBookUser.accountRole.`in`(accountRoles))
                                 )
                         )
                     )

@@ -9,7 +9,7 @@ class DepositService(
     private val depositRepository: DepositRepository,
 ) {
 
-    fun findDepositList():List<DepositFindAllResponse> {
+    fun findDeposits():List<DepositFindAllResponse> {
         return depositRepository.findDepositAll()
     }
 }

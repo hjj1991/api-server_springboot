@@ -5,7 +5,6 @@ import com.hjj.apiserver.domain.user.User
 import org.springframework.data.jpa.repository.JpaRepository
 
 interface UserRepository: JpaRepository<User, Long>, UserRepositoryCustom {
-    fun existsUserByUserId(userId: String):Boolean
     fun findByUserId(userId: String): User?
     fun findByRefreshToken(refreshToken: String): User?
     fun findByProviderAndProviderId(provider: Provider, providerId: String): User?

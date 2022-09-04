@@ -28,8 +28,8 @@ class CardController(
     )
     @ApiOperation(value = "개인 카드 목록 조회", notes = "개인카드 목록조회한다..")
     @GetMapping("/card")
-    fun cardFindList(@CurrentUser currentUserInfo: CurrentUserInfo): ApiResponse<*> {
-        return ApiUtils.success(cardService.selectCards(currentUserInfo.userNo))
+    fun cardsFind(@CurrentUser currentUserInfo: CurrentUserInfo): ApiResponse<*> {
+        return ApiUtils.success(cardService.findCards(currentUserInfo.userNo))
     }
 
     @ApiImplicitParams(
@@ -45,7 +45,7 @@ class CardController(
     @ApiOperation(value = "개인 카드 등록", notes = "개인카드 등록한다.")
     @PostMapping("/card")
     fun cardAdd(@CurrentUser currentUserInfo: CurrentUserInfo, @RequestBody request: CardAddRequest) {
-        ApiUtils.success(cardService.insertCard(currentUserInfo.userNo, request))
+        ApiUtils.success(cardService.findCard(currentUserInfo.userNo, request))
     }
 
     @ApiImplicitParams(
@@ -64,7 +64,7 @@ class CardController(
         @CurrentUser currentUserInfo: CurrentUserInfo,
         @ApiParam(value = "cardNo", required = true) @PathVariable("cardNo") cardNo: Long
     ) {
-        cardService.deleteCard(currentUserInfo.userNo, cardNo)
+        cardService.removeCard(currentUserInfo.userNo, cardNo)
     }
 
     @ApiImplicitParams(
@@ -84,7 +84,7 @@ class CardController(
         @ApiParam(value = "cardNo", required = true) @PathVariable("cardNo") cardNo: Long,
         @RequestBody request: CardModifyRequest
     ) {
-        cardService.updateCard(currentUserInfo.userNo, cardNo, request)
+        cardService.modifyCard(currentUserInfo.userNo, cardNo, request)
         ApiUtils.success()
     }
 
@@ -100,11 +100,11 @@ class CardController(
     )
     @ApiOperation(httpMethod = "GET", value = "개인 카드 상세", notes = "개인 카드 상세확인페이지", responseContainer = "Integer")
     @GetMapping("/card/{cardNo}")
-    fun cardDetails(
+    fun cardDetail(
         @CurrentUser currentUserInfo: CurrentUserInfo,
         @ApiParam(value = "cardNo", required = true) @PathVariable("cardNo") cardNo: Long
     ): ApiResponse<*> {
-        return ApiUtils.success(cardService.selectCard(currentUserInfo.userNo, cardNo))
+        return ApiUtils.success(cardService.findCard(currentUserInfo.userNo, cardNo))
     }
 
 }

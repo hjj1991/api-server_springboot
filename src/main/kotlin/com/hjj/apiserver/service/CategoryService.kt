@@ -8,6 +8,7 @@ import com.hjj.apiserver.dto.category.request.CategoryModifyRequest
 import com.hjj.apiserver.dto.category.response.CategoryDetailResponse
 import com.hjj.apiserver.dto.category.response.CategoryFindAllResponse
 import com.hjj.apiserver.repository.accountbook.AccountBookRepository
+import com.hjj.apiserver.repository.accountbook.AccountBookUserRepository
 import com.hjj.apiserver.repository.category.CategoryRepository
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
@@ -18,10 +19,11 @@ import org.springframework.transaction.annotation.Transactional
 class CategoryService(
     private val accountBookRepository: AccountBookRepository,
     private val categoryRepository: CategoryRepository,
+    private val accountBookUserRepository: AccountBookUserRepository,
 ) {
 
     @Transactional(readOnly = false, rollbackFor = [Exception::class])
-    fun addBasicCategory(accountBook: AccountBook){
+    fun addBasicCategory(accountBook: AccountBook) {
         val categoryName = arrayOf(
             "식비",
             "카페/간식",
@@ -75,25 +77,27 @@ class CategoryService(
             "pet.png"
         )
         val categories = mutableListOf<Category>()
-        for(i: Int in categoryName.indices){
-            categories.add(Category(
-                categoryName = categoryName[i],
-                categoryDesc = categoryDesc[i],
-                categoryIcon = baseIconUrl + categoryIcon[i],
-                accountBook = accountBook,
-            ))
+        for (i: Int in categoryName.indices) {
+            categories.add(
+                Category(
+                    categoryName = categoryName[i],
+                    categoryDesc = categoryDesc[i],
+                    categoryIcon = baseIconUrl + categoryIcon[i],
+                    accountBook = accountBook,
+                )
+            )
         }
 
         categoryRepository.saveAll(categories)
     }
 
     @Transactional(readOnly = false, rollbackFor = [Exception::class])
-    fun addCategory(userNo: Long, request: CategoryAddRequest){
-        val accountBook = accountBookRepository.findAccountBookBySubQuery(
+    fun addCategory(userNo: Long, request: CategoryAddRequest) {
+        val accountBook = accountBookRepository.findAccountBook(
             userNo = userNo,
             accountBookNo = request.accountBookNo,
-            AccountRole.OWNER
-        )?: throw IllegalArgumentException()
+            listOf(AccountRole.OWNER)
+        ) ?: throw IllegalArgumentException()
 
         categoryRepository.save(Category(
             categoryName = request.categoryName,
@@ -104,38 +108,49 @@ class CategoryService(
         ))
     }
 
-    fun findAllCategories(userNo: Long, accountBookNo: Long): List<CategoryFindAllResponse> {
-        return categoryRepository.findCategories(userNo, accountBookNo)
-
+    fun findAllCategories(userNo: Long, accountBookNo: Long): CategoryFindAllResponse {
+        return CategoryFindAllResponse(
+            categories = categoryRepository.findCategories(userNo, accountBookNo),
+            accountRole = accountBookUserRepository.findAccountRole(userNo, accountBookNo)
+        )
     }
 
-    fun findCategory(categoryNo: Long): CategoryDetailResponse{
-        return categoryRepository.findByIdOrNull(categoryNo)?.run { CategoryDetailResponse(
-            accountBookNo = accountBook.accountBookNo!!,
-            categoryNo = categoryNo,
-            categoryName = categoryName,
-            categoryDesc = categoryDesc,
-            categoryIcon = categoryIcon,
-            childCategories = childCategories.map {
-                CategoryDetailResponse.ChildCategory(
-                    accountBookNo = it.accountBook.accountBookNo!!,
-                    categoryNo = it.categoryNo!!,
-                    parentCategoryNo = it.parentCategory!!.categoryNo!!,
-                    categoryName = it.categoryName,
-                    categoryDesc = it.categoryDesc,
-                    categoryIcon = it.categoryIcon,
-                    createdDate = it.createdDate,
-                    lastModifiedDate = it.lastModifiedDate
-            ) }
-        ) }?: throw IllegalArgumentException()
+    fun findCategory(categoryNo: Long): CategoryDetailResponse {
+        return categoryRepository.findByIdOrNull(categoryNo)?.run {
+            CategoryDetailResponse(
+                accountBookNo = accountBook.accountBookNo!!,
+                categoryNo = categoryNo,
+                categoryName = categoryName,
+                categoryDesc = categoryDesc,
+                categoryIcon = categoryIcon,
+                childCategories = childCategories.map {
+                    CategoryDetailResponse.ChildCategory(
+                        accountBookNo = it.accountBook.accountBookNo!!,
+                        categoryNo = it.categoryNo!!,
+                        parentCategoryNo = it.parentCategory!!.categoryNo!!,
+                        categoryName = it.categoryName,
+                        categoryDesc = it.categoryDesc,
+                        categoryIcon = it.categoryIcon,
+                        createdDate = it.createdDate,
+                        lastModifiedDate = it.lastModifiedDate
+                    )
+                }
+            )
+        } ?: throw IllegalArgumentException()
     }
 
     @Transactional(readOnly = false)
-    fun modifyCategory(userNo: Long, categoryNo: Long, request: CategoryModifyRequest){
-        categoryRepository.findCategoryByOwner(categoryNo, request.accountBookNo, userNo)?.also {
+    fun modifyCategory(userNo: Long, categoryNo: Long, request: CategoryModifyRequest) {
+        categoryRepository.findCategoryByAccountRole(
+            categoryNo,
+            request.accountBookNo,
+            userNo,
+            setOf(AccountRole.OWNER)
+        )?.also {
             /* 최상위 카테고리의 경우 자식카테고리가 될 수 없다. 자기자신을 부모 카테고리로 설정 할시 에러 */
-            if((it.parentCategory == null && request.parentCategoryNo != null)
-                || it.categoryNo == request.parentCategoryNo){
+            if ((it.parentCategory == null && request.parentCategoryNo != null)
+                || it.categoryNo == request.parentCategoryNo
+            ) {
                 throw IllegalArgumentException()
             }
 
@@ -149,7 +164,14 @@ class CategoryService(
     }
 
     @Transactional(readOnly = false, rollbackFor = [Exception::class])
-    fun deleteCategory(categoryNo: Long, accountBookNo: Long, userNo: Long){
-        categoryRepository.delete(categoryRepository.findCategoryByOwner(categoryNo, accountBookNo, userNo))
+    fun deleteCategory(categoryNo: Long, accountBookNo: Long, userNo: Long) {
+        categoryRepository.delete(
+            categoryRepository.findCategoryByAccountRole(
+                categoryNo,
+                accountBookNo,
+                userNo,
+                setOf(AccountRole.OWNER)
+            )
+        )
     }
 }

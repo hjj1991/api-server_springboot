@@ -31,8 +31,11 @@ class PurchaseService(
 
     @Transactional(readOnly = false, rollbackFor = [Exception::class])
     fun addPurchase(userNo: Long, request: PurchaseAddRequest): Purchase {
-        val accountBook = accountBookRepository.findAccountBookBySubQuery(userNo, request.accountBookNo)
-            ?: throw IllegalArgumentException()
+        val accountBook = accountBookRepository.findAccountBook(
+            userNo = userNo,
+            accountBookNo = request.accountBookNo,
+            accountRoles = listOf(AccountRole.MEMBER, AccountRole.OWNER)
+        ) ?: throw IllegalArgumentException()
 
         request.validRequest()
 
@@ -47,11 +50,11 @@ class PurchaseService(
                     cardRepository.getById(it) ?: throw IllegalArgumentException()
                 },
                 category = request.categoryNo?.let {
-                    categoryRepository.findByCategoryNoAndSubQuery(
+                    categoryRepository.findCategoryByAccountRole(
                         request.categoryNo,
                         request.accountBookNo,
                         userNo,
-                        listOf(AccountRole.OWNER, AccountRole.MEMBER)
+                        setOf(AccountRole.OWNER, AccountRole.MEMBER)
                     ) ?: throw IllegalArgumentException()
                 },
                 user = userRepository.getById(userNo),
@@ -92,11 +95,15 @@ class PurchaseService(
         }.toMutableList()
 
         val hasNext = purchaseFindOfPageResponseList.size > pageable.pageSize
-        return SliceImpl(CommonUtils.getSlicePageResult(purchaseFindOfPageResponseList, pageable.pageSize), pageable, hasNext)
+        return SliceImpl(
+            CommonUtils.getSlicePageResult(purchaseFindOfPageResponseList, pageable.pageSize),
+            pageable,
+            hasNext
+        )
     }
 
     @Transactional(readOnly = false, rollbackFor = [Exception::class])
-    fun deletePurchase(userNo: Long, purchaseNo: Long) {
+    fun removePurchase(userNo: Long, purchaseNo: Long) {
         purchaseRepository.findEntityGraphByUser_UserNoAndPurchaseNoAndDeleteYn(userNo, purchaseNo)?.delete()
             ?: throw IllegalArgumentException()
     }
@@ -106,18 +113,17 @@ class PurchaseService(
         val purchase = purchaseRepository.findEntityGraphByUser_UserNoAndPurchaseNoAndDeleteYn(userNo, purchaseNo)
             ?: throw IllegalArgumentException()
 
+        request.validRequest()
+
         purchase.updatePurchase(
             request = request,
-            card = if (request.cardNo != purchase.card?.cardNo ?: null) {
-                cardRepository.findByCardNoAndUser_UserNo(request.cardNo?: 0, userNo)
-            } else {
-                purchase.card
-            },
-            category = if(request.categoryNo != purchase.category?.categoryNo?: null){
-                categoryRepository.findByCategoryNoAndSubQuery(request.categoryNo?: 0, request.accountBookNo, userNo, listOf(AccountRole.OWNER))
-            }else {
-                purchase.category
-            }
+            card = cardRepository.findByCardNoAndUser_UserNo(request.cardNo ?: 0, userNo),
+            category = categoryRepository.findCategoryByAccountRole(
+                categoryNo = request.categoryNo ?: 0,
+                accountBookNo = request.accountBookNo,
+                userNo = userNo,
+                accountRoles = setOf(AccountRole.MEMBER, AccountRole.OWNER)
+            ),
         )
     }
 

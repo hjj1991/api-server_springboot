@@ -9,10 +9,7 @@ import com.hjj.apiserver.domain.user.*
 import com.hjj.apiserver.dto.user.request.UserModifyRequest
 import com.hjj.apiserver.dto.user.request.UserSignInRequest
 import com.hjj.apiserver.dto.user.request.UserSinUpRequest
-import com.hjj.apiserver.dto.user.response.KakaoProfileResponse
-import com.hjj.apiserver.dto.user.response.NaverProfileResponse
-import com.hjj.apiserver.dto.user.response.UserReIssueTokenResponse
-import com.hjj.apiserver.dto.user.response.UserSignInResponse
+import com.hjj.apiserver.dto.user.response.*
 import com.hjj.apiserver.repository.user.UserLogRepository
 import com.hjj.apiserver.repository.user.UserRepository
 import com.hjj.apiserver.util.logger
@@ -84,7 +81,7 @@ class UserService(
     }
 
     fun existsUserId(userId: String): Boolean {
-        return userRepository.existsUserByUserId(userId)
+        return userRepository.findExistsUserId(userId)
     }
 
     @Transactional(readOnly = false, rollbackFor = [Exception::class])
@@ -123,7 +120,7 @@ class UserService(
         user.updateUserLogin(refreshToken)
 
         /* 유저 로그 INSERT */
-        userLogService.insertUserLog(UserLog(LocalDateTime.now(), SignInType.GENERAL, LogType.SIGNIN, user))
+        userLogService.addUserLog(UserLog(LocalDateTime.now(), SignInType.GENERAL, LogType.SIGNIN, user))
 
         return UserSignInResponse(
             user.userId,
@@ -241,7 +238,7 @@ class UserService(
 
         user.updateUser(request.nickName, request.userEmail)
         userRepository.flush()
-        userLogService.insertUserLog(UserLog(logType = LogType.MODIFY, user = user))
+        userLogService.addUserLog(UserLog(logType = LogType.MODIFY, user = user))
 
 
         val accessToken = jwtTokenProvider.createToken(user, TokenType.ACCESS_TOKEN)
@@ -333,7 +330,7 @@ class UserService(
 
             userRepository.save(newUser)
 
-            userLogService.insertUserLog(UserLog(user = newUser, logType = LogType.INSERT))
+            userLogService.addUserLog(UserLog(user = newUser, logType = LogType.INSERT))
 
         } else if (provider == Provider.KAKAO.name) {
             val resultMap = findSocialTokenInfo(request["code"].toString(), request["state"].toString(), Provider.KAKAO)
@@ -366,7 +363,7 @@ class UserService(
 
             userRepository.save(newUser)
 
-            userLogService.insertUserLog(UserLog(user = newUser, logType = LogType.INSERT))
+            userLogService.addUserLog(UserLog(user = newUser, logType = LogType.INSERT))
 
         }
     }
@@ -405,7 +402,7 @@ class UserService(
             user.updateUserLogin(refreshToken)
 
             /* 유저 로그 INSERT */
-            userLogService.insertUserLog(UserLog(LocalDateTime.now(), SignInType.SOCIAL, LogType.SIGNIN, user))
+            userLogService.addUserLog(UserLog(LocalDateTime.now(), SignInType.SOCIAL, LogType.SIGNIN, user))
 
             return UserSignInResponse(
                 user.userId,
@@ -446,7 +443,7 @@ class UserService(
                     providerConnectDate = LocalDateTime.now()
                 )
                 userRepository.flush()
-                userLogService.insertUserLog(UserLog(logType = LogType.MODIFY, user = user))
+                userLogService.addUserLog(UserLog(logType = LogType.MODIFY, user = user))
             }
         } else {
             val socialTokenInfo =
@@ -459,13 +456,13 @@ class UserService(
                     providerConnectDate = LocalDateTime.now()
                 )
                 userRepository.flush()
-                userLogService.insertUserLog(UserLog(logType = LogType.MODIFY, user = user))
+                userLogService.addUserLog(UserLog(logType = LogType.MODIFY, user = user))
             }
         }
     }
 
-//    fun findUser(userNo: Long): UserDetailResponse {
-//
-//    }
+    fun findUser(userNo: Long): UserDetailResponse? {
+        return userRepository.findUserDetail(userNo)
+    }
 
 }

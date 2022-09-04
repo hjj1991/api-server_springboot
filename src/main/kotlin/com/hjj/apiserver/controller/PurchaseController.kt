@@ -70,7 +70,7 @@ class PurchaseController(
     @ApiOperation(value = "지출,수입 삭제", notes = "지출, 수입을 삭제한다.")
     @DeleteMapping("/purchase/{purchaseNo}")
     fun purchaseRemove(@CurrentUser currentUserInfo: CurrentUserInfo, @PathVariable("purchaseNo") purchaseNo: Long): ApiResponse<*> {
-        purchaseService.deletePurchase(currentUserInfo.userNo, purchaseNo)
+        purchaseService.removePurchase(currentUserInfo.userNo, purchaseNo)
         return ApiUtils.success()
     }
 

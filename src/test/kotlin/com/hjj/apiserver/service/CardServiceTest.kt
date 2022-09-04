@@ -57,7 +57,7 @@ internal class CardServiceTest @Autowired constructor(
 
 
         // when
-        val insertCard = cardService.insertCard(savedUser.userNo!!, cardAddRequest)
+        val insertCard = cardService.findCard(savedUser.userNo!!, cardAddRequest)
 
         // then
         assertThat(insertCard.cardName).isEqualTo("테스트카드")
@@ -82,10 +82,10 @@ internal class CardServiceTest @Autowired constructor(
             cardType = CardType.CHECK_CARD,
             cardDesc = "카드설명",
         )
-        val insertCard = cardService.insertCard(savedUser.userNo!!, cardAddRequest)
+        val insertCard = cardService.findCard(savedUser.userNo!!, cardAddRequest)
 
         // when
-        cardService.deleteCard(savedUser.userNo!!, insertCard.cardNo!!)
+        cardService.removeCard(savedUser.userNo!!, insertCard.cardNo!!)
 
         // then
         val card = cardRepository.findByIdOrNull(insertCard.cardNo) ?: throw IllegalStateException()
@@ -109,7 +109,7 @@ internal class CardServiceTest @Autowired constructor(
             cardType = CardType.CHECK_CARD,
             cardDesc = "카드설명",
         )
-        val insertCard = cardService.insertCard(savedUser.userNo!!, cardAddRequest)
+        val insertCard = cardService.findCard(savedUser.userNo!!, cardAddRequest)
 
         val cardModifyRequest = CardModifyRequest(
             cardName = "변경한카드명",
@@ -118,7 +118,7 @@ internal class CardServiceTest @Autowired constructor(
         )
 
         // when
-        cardService.updateCard(savedUser.userNo!!, insertCard.cardNo!!, cardModifyRequest)
+        cardService.modifyCard(savedUser.userNo!!, insertCard.cardNo!!, cardModifyRequest)
 
         // then
         val card = cardRepository.findByIdOrNull(insertCard.cardNo) ?: throw IllegalStateException()
@@ -152,7 +152,7 @@ internal class CardServiceTest @Autowired constructor(
 
         cardRepository.saveAll(cards)
         // when
-        val selectCards = cardService.selectCards(savedUser.userNo!!)
+        val selectCards = cardService.findCards(savedUser.userNo!!)
 
         // then
         assertThat(selectCards).hasSize(11)
@@ -180,10 +180,10 @@ internal class CardServiceTest @Autowired constructor(
             cardType = CardType.CHECK_CARD,
             cardDesc = "카드설명",
         )
-        val insertCard = cardService.insertCard(savedUser.userNo!!, cardAddRequest)
+        val insertCard = cardService.findCard(savedUser.userNo!!, cardAddRequest)
 
         // when
-        val selectCard = cardService.selectCard(savedUser.userNo!!, insertCard.cardNo!!)
+        val selectCard = cardService.findCard(savedUser.userNo!!, insertCard.cardNo!!)
 
         // then
 

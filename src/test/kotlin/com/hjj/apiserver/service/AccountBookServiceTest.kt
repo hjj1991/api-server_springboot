@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.hjj.apiserver.domain.accountbook.AccountRole
 import com.hjj.apiserver.domain.user.User
 import com.hjj.apiserver.dto.accountbook.request.AccountBookAddRequest
-import com.hjj.apiserver.dto.accountbook.response.AccountBookFindAllResponse
 import com.hjj.apiserver.dto.category.request.CategoryAddRequest
 import com.hjj.apiserver.repository.accountbook.AccountBookRepository
 import com.hjj.apiserver.repository.accountbook.AccountBookUserRepository

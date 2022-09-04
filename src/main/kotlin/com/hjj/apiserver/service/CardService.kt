@@ -18,7 +18,7 @@ class CardService(
 ) {
 
     @Transactional(readOnly = false, rollbackFor = [Exception::class])
-    fun insertCard(userNo: Long, request: CardAddRequest): Card {
+    fun findCard(userNo: Long, request: CardAddRequest): Card {
         return cardRepository.save(
             Card(
                 cardName = request.cardName,
@@ -30,24 +30,24 @@ class CardService(
     }
 
     @Transactional(readOnly = false, rollbackFor = [Exception::class])
-    fun deleteCard(userNo: Long, cardNo: Long) {
+    fun removeCard(userNo: Long, cardNo: Long) {
         cardRepository.findByCardNoAndUser_UserNo(cardNo, userNo)?.delete()
             ?: throw IllegalArgumentException()
     }
 
     @Transactional(readOnly = false, rollbackFor = [Exception::class])
-    fun updateCard(userNo: Long, cardNo: Long, request: CardModifyRequest) {
+    fun modifyCard(userNo: Long, cardNo: Long, request: CardModifyRequest) {
         cardRepository.findByCardNoAndUser_UserNo(cardNo = cardNo, userNo = userNo)
             ?.updateCard(request.cardName, request.cardType, request.cardDesc)
             ?: throw IllegalArgumentException()
     }
 
-    fun selectCards(userNo: Long): List<CardFindAllResponse> {
+    fun findCards(userNo: Long): List<CardFindAllResponse> {
         return cardRepository.findByUser_UserNoAndDeleteYn(userNo)
             .map { CardFindAllResponse(it.cardNo!!, it.cardName, it.cardType, it.cardDesc) }
     }
 
-    fun selectCard(userNo: Long, cardNo: Long): CardFindResponse {
+    fun findCard(userNo: Long, cardNo: Long): CardFindResponse {
         return cardRepository.findByCardNoAndUser_UserNo(cardNo, userNo)
             ?.run { CardFindResponse(cardNo, cardName, cardType, cardDesc) }
             ?: throw IllegalArgumentException()

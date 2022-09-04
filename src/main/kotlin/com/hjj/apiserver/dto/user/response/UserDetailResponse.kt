@@ -13,6 +13,6 @@ class UserDetailResponse(
     val role: Role,
     val providerConnectDate: LocalDateTime? = null,
     val createdDate: LocalDateTime,
-    val lastLoginDateTime: LocalDateTime,
+    val lastLoginDateTime: LocalDateTime? = null,
 ) {
 }

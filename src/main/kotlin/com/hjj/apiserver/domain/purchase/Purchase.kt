@@ -92,8 +92,15 @@ class Purchase(
     }
 
     fun updatePurchase(request: PurchaseModifyRequest, card: Card?, category: Category?): Purchase{
-        category?.also { changeCategory(it) }?: run { this.category = category }
-        this.card = card
+        var updateCard = card
+        var updateCategory = category
+        if(request.purchaseType == PurchaseType.INCOME){
+            updateCard = null
+            updateCategory = null
+        }
+
+        this.category = updateCategory
+        this.card = updateCard
         purchaseType = request.purchaseType
         price = request.price
         reason = request.reason

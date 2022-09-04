@@ -77,6 +77,7 @@ class AccountBookService(
             accountBookNo = accountBook.accountBookNo!!,
             accountBookName = accountBook.accountBookName,
             accountBookDesc = accountBook.accountBookDesc,
+            accountRole = accountBook.accountBookUserList.find { it.user.userNo == userNo }!!.accountRole,
             createdDate = accountBook.createdDate,
             cards = cardRepository.findByUser_UserNoAndDeleteYn(userNo).map {
                 AccountBookDetailResponse.CardDetail(

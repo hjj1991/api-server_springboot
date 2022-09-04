@@ -12,7 +12,7 @@ class UserLogService(
 ) {
 
     @Transactional(readOnly = false, rollbackFor = [Exception::class])
-    fun insertUserLog(userLog: UserLog){
+    fun addUserLog(userLog: UserLog){
         userLogRepository.save(userLog)
     }
 }

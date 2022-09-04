@@ -10,7 +10,7 @@ import java.time.LocalDate
 
 interface PurchaseRepository: JpaRepository<Purchase, Long>, PurchaseRepositoryCustom {
 
-    @EntityGraph(attributePaths = ["cardEntity", "categoryEntity"])
+    @EntityGraph(attributePaths = ["card", "category"])
     fun findAllEntityGraphByPurchaseDateBetweenAndAccountBook_AccountBookNoAndDeleteYnOrderByPurchaseDateDesc(
         startDate: LocalDate,
         endDate: LocalDate,
@@ -18,14 +18,14 @@ interface PurchaseRepository: JpaRepository<Purchase, Long>, PurchaseRepositoryC
         deleteYn: Char
     ): List<Purchase>
 
-    @EntityGraph(attributePaths = ["cardEntity", "categoryEntity"])
+    @EntityGraph(attributePaths = ["card", "category"])
     fun findAllEntityGraphByPurchaseDateBetweenAndUser_UserNoOrderByPurchaseDateDesc(
         startDate: LocalDate,
         endDate: LocalDate,
         userNo: Long
     ): List<Purchase>
 
-    @EntityGraph(attributePaths = ["userEntity"])
+    @EntityGraph(attributePaths = ["user"])
     fun findEntityGraphByUser_UserNoAndPurchaseNoAndDeleteYn(
         userNo: Long,
         purchaseNo: Long,

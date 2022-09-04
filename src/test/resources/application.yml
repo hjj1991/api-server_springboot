@@ -7,6 +7,7 @@ spring:
     password:
     driver-class-name: org.h2.Driver
   jpa:
+    database: h2
     hibernate:
       ddl-auto: create
     properties:
@@ -16,8 +17,7 @@ spring:
         format_sql: true
         default_batch_fetch_size: 100
         dialect: org.hibernate.dialect.MySQL5InnoDBDialect
-    database: h2
-  #    show-sql: true
+        show_sql: true
   jwt:
     secret: testToken
   mvc:

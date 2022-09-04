@@ -30,7 +30,10 @@ class CategoryController(
     )
     @ApiOperation(value = "카테고리 등록", notes = "카테고리를 등록한다.")
     @PostMapping("/category")
-    fun categoryAdd(@CurrentUser currentUserInfo: CurrentUserInfo, @RequestBody request: CategoryAddRequest): ApiResponse<*> {
+    fun categoryAdd(
+        @CurrentUser currentUserInfo: CurrentUserInfo,
+        @RequestBody request: CategoryAddRequest
+    ): ApiResponse<*> {
         return ApiUtils.success(categoryService.addCategory(currentUserInfo.userNo, request))
     }
 
@@ -47,7 +50,10 @@ class CategoryController(
     )
     @ApiOperation(value = "카테고리 리스트를 반환", notes = "카테고리를 리스트를 반환한다.")
     @GetMapping("/category")
-    fun categoriesFind(@CurrentUser currentUserInfo: CurrentUserInfo, @RequestParam accountBookNo: Long): ApiResponse<*> {
+    fun categoriesFind(
+        @CurrentUser currentUserInfo: CurrentUserInfo,
+        @RequestParam accountBookNo: Long
+    ): ApiResponse<*> {
         return ApiUtils.success(categoryService.findAllCategories(currentUserInfo.userNo, accountBookNo))
     }
 
@@ -108,7 +114,13 @@ class CategoryController(
         @ApiParam(value = "categoryNo", required = true) @PathVariable("categoryNo") categoryNo: Long,
         @RequestBody request: CategoryRemoveRequest
     ): ApiResponse<*> {
-        return ApiUtils.success(categoryService.deleteCategory(categoryNo, request.accountBookNo, currentUserInfo.userNo))
+        return ApiUtils.success(
+            categoryService.deleteCategory(
+                categoryNo,
+                request.accountBookNo,
+                currentUserInfo.userNo
+            )
+        )
     }
 
 }
