@@ -78,7 +78,8 @@ class CategoryRepositoryImpl(
                             JPAExpressions.select(accountBookUser.accountBook.accountBookNo)
                                 .from(accountBookUser)
                                 .where(
-                                    accountBookUser.user.userNo.eq(userNo)
+                                    accountBookUser.user.userNo.eq(userNo),
+                                    accountBookUser.accountBook.accountBookNo.eq(accountBookNo)
                                         .and(accountBookUser.accountRole.`in`(accountRoles))
                                 )
                         )
