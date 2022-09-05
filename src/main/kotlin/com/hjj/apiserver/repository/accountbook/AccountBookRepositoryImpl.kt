@@ -25,6 +25,7 @@ class AccountBookRepositoryImpl(
                     .from(accountBookUser)
                     .where(
                         accountBookUser.user.userNo.eq(userNo),
+                        accountBookUser.accountBook.accountBookNo.eq(accountBookNo),
                         accountBookUser.accountRole.`in`(accountRoles)
                     )
                 )

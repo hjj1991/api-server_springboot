@@ -34,8 +34,8 @@ class UserController(
 
     @ApiOperation(value = "유저닉네임 중복 조회", notes = "유저닉네임의 중복여부를 확인한다.")
     @GetMapping("/user/{nickName}/exists-nickname")
-    fun checkUserNickNameDuplicate(@PathVariable nickName: String): ApiResponse<*> {
-        return ApiUtils.success(userService.existsNickName(nickName))
+    fun checkUserNickNameDuplicate(@CurrentUser currentUserInfo: CurrentUserInfo?, @PathVariable nickName: String): ApiResponse<*> {
+        return ApiUtils.success(userService.existsNickName(currentUserInfo, nickName))
     }
 
     @ApiOperation(value = "유저Id 중복 조회", notes = "유저id의 중복여부를 확인한다.")

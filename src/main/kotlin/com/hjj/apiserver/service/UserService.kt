@@ -6,6 +6,7 @@ import com.hjj.apiserver.common.exception.AlreadyExistedUserException
 import com.hjj.apiserver.common.exception.ExistedSocialUserException
 import com.hjj.apiserver.common.exception.UserNotFoundException
 import com.hjj.apiserver.domain.user.*
+import com.hjj.apiserver.dto.user.CurrentUserInfo
 import com.hjj.apiserver.dto.user.request.UserModifyRequest
 import com.hjj.apiserver.dto.user.request.UserSignInRequest
 import com.hjj.apiserver.dto.user.request.UserSinUpRequest
@@ -76,8 +77,13 @@ class UserService(
     private val log = logger()
 
 
-    fun existsNickName(nickName: String): Boolean {
-        return userRepository.findExistsUserNickName(nickName)
+    fun existsNickName(currentUserInfo: CurrentUserInfo?, nickName: String): Boolean {
+        /* 자기자신의 닉네임과 동일 한 경우 true 리턴 */
+        return if (currentUserInfo?.nickName == nickName) {
+            true
+        } else {
+            userRepository.findExistsUserNickName(nickName)
+        }
     }
 
     fun existsUserId(userId: String): Boolean {
