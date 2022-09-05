@@ -1,7 +1,7 @@
 package com.hjj.apiserver.dto.user.response
 
 class NaverProfileResponse(
-    val resultCode: String,
+    val resultcode: String,
     val message: String,
     val response: Response,
 ) {
