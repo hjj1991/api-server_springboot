@@ -18,7 +18,7 @@ class DepositFindAllResponse(
     var finPrdtCd: String? = null,
     var finCoNo: String? = null,
     var dclsMonth: String? = null,
-    var bankType: BankType? = null,
+    var bankType: String? = null,
     var calTel: String? = null,
     var hompUrl: String? = null,
     var dclsChrgMan: String? = null,

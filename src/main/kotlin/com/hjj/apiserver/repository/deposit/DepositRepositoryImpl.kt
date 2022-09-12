@@ -27,7 +27,7 @@ class DepositRepositoryImpl(
         return deposits.map {
             val depositFindAllResponse = modelMapper.map(it, DepositFindAllResponse::class.java)
             depositFindAllResponse.finCoNo = it.bank!!.finCoNo
-            depositFindAllResponse.bankType = it.bank!!.bankType
+            depositFindAllResponse.bankType = it.bank!!.bankType.title
             depositFindAllResponse.calTel = it.bank!!.calTel
             depositFindAllResponse.dclsChrgMan = it.bank!!.dclsChrgMan
             depositFindAllResponse.hompUrl = it.bank!!.hompUrl

@@ -18,7 +18,7 @@ class SavingFindAllResponse(
     var finCoNo: String? = null,
     var dclsMonth: String? = null,
     var dclsEndDay: String? = null,
-    var bankType: BankType? = null,
+    var bankType: String? = null,
     var calTel: String? = null,
     var hompUrl: String? = null,
     var dclsChrgMan: String? = null,
