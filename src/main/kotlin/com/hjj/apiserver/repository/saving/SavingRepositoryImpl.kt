@@ -27,7 +27,7 @@ class SavingRepositoryImpl(
         return savings.map {
             val savingFindAllResponse = modelMapper.map(it, SavingFindAllResponse::class.java)
             savingFindAllResponse.finCoNo = it.bank!!.finCoNo
-            savingFindAllResponse.bankType = it.bank!!.bankType
+            savingFindAllResponse.bankType = it.bank!!.bankType.title
             savingFindAllResponse.calTel = it.bank!!.calTel
             savingFindAllResponse.dclsChrgMan = it.bank!!.dclsChrgMan
             savingFindAllResponse.hompUrl = it.bank!!.hompUrl
