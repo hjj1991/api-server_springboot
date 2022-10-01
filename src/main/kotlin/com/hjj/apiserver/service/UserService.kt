@@ -78,6 +78,7 @@ class UserService(
 
 
     fun existsNickName(currentUserInfo: CurrentUserInfo?, nickName: String): Boolean {
+        throw RuntimeException()
         /* 자기자신의 닉네임과 동일 한 경우 true 리턴 */
         return if (currentUserInfo?.nickName == nickName) {
             true
