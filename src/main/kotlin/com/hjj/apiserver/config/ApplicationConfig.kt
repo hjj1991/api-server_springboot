@@ -3,6 +3,7 @@ package com.hjj.apiserver.config
 import com.google.auth.oauth2.GoogleCredentials
 import com.google.firebase.FirebaseApp
 import com.google.firebase.FirebaseOptions
+import com.hjj.apiserver.common.advisor.ControllerExceptionLogTrace
 import com.hjj.apiserver.dto.user.CurrentUserInfo
 import com.hjj.apiserver.util.logger
 import com.querydsl.jpa.impl.JPAQueryFactory
@@ -65,6 +66,11 @@ class ApplicationConfig(
     @Bean
     fun jpaQueryFactory(em: EntityManager): JPAQueryFactory {
         return JPAQueryFactory(em)
+    }
+
+    @Bean
+    fun controllerExceptionLogTrace(): ControllerExceptionLogTrace {
+        return ControllerExceptionLogTrace()
     }
 
 
