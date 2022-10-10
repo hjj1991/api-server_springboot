@@ -36,7 +36,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
     implementation 'org.springframework.boot:spring-boot-starter-cache'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
-    implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.8.0'
+    implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.8.1'
     implementation 'org.modelmapper:modelmapper:3.1.0'
     implementation 'io.jsonwebtoken:jjwt:0.9.1'
     implementation 'io.springfox:springfox-boot-starter:3.0.0'
@@ -45,12 +45,13 @@ dependencies {
     implementation 'commons-io:commons-io:2.11.0'
     implementation 'org.seleniumhq.selenium:selenium-java:4.3.0'
     implementation 'com.cwbase:logback-redis-appender:1.1.6'
+    implementation 'org.mariadb.jdbc:mariadb-java-client:3.0.8'
 
 
 
     implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
     implementation 'org.jetbrains.kotlin:kotlin-reflect'
-    implementation 'com.fasterxml.jackson.module:jackson-module-kotlin:2.13.3'
+    implementation 'com.fasterxml.jackson.module:jackson-module-kotlin:2.13.4'
     implementation 'com.querydsl:querydsl-jpa:5.0.0'
     kapt("com.querydsl:querydsl-apt:5.0.0:jpa")
     kapt("org.springframework.boot:spring-boot-configuration-processor")
@@ -59,7 +60,6 @@ dependencies {
 
     runtimeOnly 'com.h2database:h2'
     runtimeOnly 'mysql:mysql-connector-java'
-    runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
