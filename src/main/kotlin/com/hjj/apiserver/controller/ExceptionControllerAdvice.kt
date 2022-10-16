@@ -60,7 +60,7 @@ class ExceptionControllerAdvice{
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     protected fun basicException(request: HttpServletRequest, e: Exception): ApiResponse<*> {
         log.error("[{}] Error Request: {}, ErrorInfo: {}", e.javaClass.name, request, e.printStackTrace())
-        return ApiUtils.error(ErrCode.ERR_CODE0009)
+        return ApiUtils.error(ErrCode.ERR_CODE9999)
     }
 
     fun makeValidFailMessage(bindingResult: BindingResult): String {
