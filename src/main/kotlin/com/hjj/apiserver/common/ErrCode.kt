@@ -17,7 +17,7 @@ enum class ErrCode(
     ERR_CODE0007("간편 로그인 계정입니다. \n 간편로그인을 이용해주세요."),
     ERR_CODE0008("계정 또는 패스워드를 확인해주세요."),
     ERR_CODE0009("유효한 간편계정 종류가 아닙니다."),
-    ERR_CODE9999("잘못된 요청입니다.");
+    ERR_CODE9999("서버 에러입니다.");
 
     @Component
     class ErrorInjector(

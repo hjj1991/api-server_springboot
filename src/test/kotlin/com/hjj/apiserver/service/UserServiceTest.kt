@@ -45,7 +45,7 @@ class UserServiceTest @Autowired constructor(
         val savedUser = userService.signUp(request)
 
         // when
-        val existsNickName = userService.existsNickName("뜨끔이당")
+        val existsNickName = userService.existsNickName(currentUserInfo = null, nickName = "뜨끔이당")
 
         // then
         assertThat(existsNickName).isFalse
