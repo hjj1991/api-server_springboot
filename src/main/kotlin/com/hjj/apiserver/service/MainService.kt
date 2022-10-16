@@ -28,6 +28,6 @@ class MainService(
             .map { MainFindResponse(it.t1, it.t2) }
             .subscribeOn(Schedulers.parallel())
 //            .onErrorMap { Exception() }
-            .blockOptional().orElseThrow()
+            .blockOptional().orElse(MainFindResponse())
     }
 }
