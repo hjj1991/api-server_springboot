@@ -67,25 +67,6 @@ class UserController(
         return ApiUtils.success(userService.signIn(request))
     }
 
-    @ApiOperation(value = "소셜유저 로그인", notes = "소셜유저 로그인을 한다.")
-    @PostMapping("/user/social/signin")
-    fun socialSignIn(@RequestBody request: HashMap<String, String>): ApiResponse<*> {
-        if (!Provider.isExist(request["provider"])) {
-            return ApiUtils.error(ErrCode.ERR_CODE0009)
-        }
-        return ApiUtils.success(userService.socialSignIn(request))
-    }
-
-    @ApiOperation(value = "소셜유저 회원가입", notes = "소셜유저 회원가입을 한다.")
-    @PutMapping("/user/social/signup")
-    fun socialSignUp(@RequestBody request: HashMap<String, String>): ApiResponse<*> {
-        if (!Provider.isExist(request["provider"])) {
-            return ApiUtils.error(ErrCode.ERR_CODE0009)
-        }
-
-        userService.socialSignUp(request)
-        return ApiUtils.success()
-    }
 
     @ApiImplicitParams(
         ApiImplicitParam(

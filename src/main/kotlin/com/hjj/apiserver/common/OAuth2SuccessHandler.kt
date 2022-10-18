@@ -1,5 +1,9 @@
 package com.hjj.apiserver.common
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.hjj.apiserver.common.exception.AlreadyExistedUserException
+import com.hjj.apiserver.dto.oauth2.OAuth2Attribute
+import com.hjj.apiserver.repository.user.UserRepository
 import com.hjj.apiserver.service.UserService
 import org.springframework.security.core.Authentication
 import org.springframework.security.oauth2.core.user.OAuth2User
@@ -11,7 +15,8 @@ import javax.servlet.http.HttpServletResponse
 @Component
 class OAuth2SuccessHandler(
     private val userService: UserService,
-): SimpleUrlAuthenticationSuccessHandler() {
+    private val objectMapper: ObjectMapper,
+) : SimpleUrlAuthenticationSuccessHandler() {
 
     override fun onAuthenticationSuccess(
         request: HttpServletRequest?,
@@ -19,6 +24,22 @@ class OAuth2SuccessHandler(
         authentication: Authentication?
     ) {
         val oAuth2User = authentication?.principal as OAuth2User
+        val oAuth2Attribute = objectMapper.convertValue(oAuth2User.attributes, OAuth2Attribute::class.java)
+
+        val userSignInResponse = kotlin.runCatching {
+            userService.socialSignUp(oAuth2Attribute)
+            userService.socialSignIn(oAuth2Attribute)
+        }.recoverCatching { exception ->
+            when (exception::class) {
+                AlreadyExistedUserException::class -> {
+                    userService.socialSignIn(oAuth2Attribute)
+                }
+                else -> throw Exception()
+            }
+        }
+
+        println(userSignInResponse)
+
 
     }
 }

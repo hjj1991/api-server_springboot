@@ -8,7 +8,7 @@ class OAuth2Attribute(
     val provider: Provider,
     val providerId: String,
     val userEmail: String? = null,
-    val nickName: String? = null,
+    val nickName: String,
     val name: String? = null,
     val picture: String? = null,
 ) {
@@ -27,7 +27,7 @@ class OAuth2Attribute(
                         provider = Provider.NAVER,
                         providerId = attribute["id"] ?: throw IllegalStateException(),
                         userEmail = attribute["email"],
-                        nickName = attribute["nickname"],
+                        nickName = attribute["nickname"] ?: throw IllegalArgumentException(),
                         name = attribute["name"],
                         picture = attribute["profile_image"]
                     )
