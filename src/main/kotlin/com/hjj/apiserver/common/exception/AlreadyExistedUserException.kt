@@ -1,6 +1,13 @@
 package com.hjj.apiserver.common.exception
 
-class AlreadyExistedUserException: Exception() {
+class AlreadyExistedUserException: Exception {
+
+    constructor() : super()
+    constructor(message: String) : super(message)
+    constructor(message: String, cause: Throwable) : super(message, cause)
+    constructor(cause: Throwable) : super(cause)
+
+
     companion object {
         private const val serialVersionUID: Long = -1065221867236350867L
     }

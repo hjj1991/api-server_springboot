@@ -2,6 +2,7 @@ package com.hjj.apiserver.config
 
 import com.hjj.apiserver.common.CustomAuthenticationEntryPoint
 import com.hjj.apiserver.common.JwtTokenProvider
+import com.hjj.apiserver.common.OAuth2SuccessHandler
 import com.hjj.apiserver.common.filter.JwtAuthenticationFilter
 import com.hjj.apiserver.service.CustomOauth2UserService
 import org.springframework.context.annotation.Configuration
@@ -21,6 +22,7 @@ class WebSecurityConfiguration(
     private val jwtTokenProvider: JwtTokenProvider,
     private val customAuthenticationEntryPoint: CustomAuthenticationEntryPoint,
     private val customOauth2UserService: CustomOauth2UserService,
+    private val oAuth2SuccessHandler: OAuth2SuccessHandler,
 ) : WebSecurityConfigurerAdapter() {
 
 
@@ -33,6 +35,12 @@ class WebSecurityConfiguration(
             .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // jwt token으로 인증하므로 세션은 필요없으므로 생성안함.
             .and()
             .cors()
+            .and()
+            .oauth2Login()  // oauth2 로그인 성공후 가져올 때의 설정
+            .userInfoEndpoint() // 소셜로그인 성공 시 후속 조치를 진행할 UserService 인터페이스 구현체 등록
+            .userService(customOauth2UserService)
+            .and()
+            .successHandler(oAuth2SuccessHandler)
             .and()
             .authorizeRequests() // 다음 리퀘스트에 대한 사용권한 체크
             .requestMatchers(RequestMatcher { CorsUtils.isPreFlightRequest(it) })
@@ -66,9 +74,7 @@ class WebSecurityConfiguration(
                 JwtAuthenticationFilter(jwtTokenProvider),  // jwt token 필터를 id/password 인증 필터 전에 넣는다
                 UsernamePasswordAuthenticationFilter::class.java
             )
-            .oauth2Login()  // oauth2 로그인 성공후 가져올 때의 설정
-            .userInfoEndpoint() // 소셜로그인 성공 시 후속 조치를 진행할 UserService 인터페이스 구현체 등록
-            .userService(customOauth2UserService)
+
     }
 
     // ignore check swagger resource
