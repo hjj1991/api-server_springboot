@@ -5,10 +5,12 @@ import com.hjj.apiserver.common.exception.AlreadyExistedUserException
 import com.hjj.apiserver.dto.oauth2.OAuth2Attribute
 import com.hjj.apiserver.repository.user.UserRepository
 import com.hjj.apiserver.service.UserService
+import com.hjj.apiserver.util.ApiUtils
 import org.springframework.security.core.Authentication
 import org.springframework.security.oauth2.core.user.OAuth2User
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler
 import org.springframework.stereotype.Component
+import org.springframework.web.util.UriComponentsBuilder
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
@@ -19,11 +21,11 @@ class OAuth2SuccessHandler(
 ) : SimpleUrlAuthenticationSuccessHandler() {
 
     override fun onAuthenticationSuccess(
-        request: HttpServletRequest?,
-        response: HttpServletResponse?,
-        authentication: Authentication?
+        request: HttpServletRequest,
+        response: HttpServletResponse,
+        authentication: Authentication
     ) {
-        val oAuth2User = authentication?.principal as OAuth2User
+        val oAuth2User = authentication.principal as OAuth2User
         val oAuth2Attribute = objectMapper.convertValue(oAuth2User.attributes, OAuth2Attribute::class.java)
 
         val userSignInResponse = kotlin.runCatching {
@@ -38,8 +40,7 @@ class OAuth2SuccessHandler(
             }
         }
 
-        println(userSignInResponse)
 
-
+        redirectStrategy.sendRedirect(request, response, objectMapper.writeValueAsString(ApiUtils.success(userSignInResponse)))
     }
 }
