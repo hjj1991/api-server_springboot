@@ -14,16 +14,20 @@ class CustomUserDetailService(
     private val userRepository: UserRepository,
 ) : UserDetailsService {
 
-    @Cacheable(value = ["users"], key = "#username")
+//    @Cacheable(value = ["users"], key = "#username")
     override fun loadUserByUsername(username: String): UserDetails {
-        return userRepository.findByIdOrNull(username.toLong())?.run {
-            CurrentUserInfo(
-                userId = userId,
-                nickName = nickName,
-                userNo = userNo!!,
-                role = role,
-            )
-        } ?: throw UserNotFoundException()
+
+        return userRepository.findByUserId(username)?: throw UserNotFoundException()
+
+
+//        return userRepository.findByIdOrNull(username.toLong())?.run {
+//            CurrentUserInfo(
+//                userId = userId,
+//                nickName = nickName,
+//                userNo = userNo!!,
+//                role = role,
+//            )
+//        } ?: throw UserNotFoundException()
     }
 
 }

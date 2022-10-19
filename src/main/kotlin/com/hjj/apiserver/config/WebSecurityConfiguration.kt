@@ -6,6 +6,7 @@ import com.hjj.apiserver.common.OAuth2SuccessHandler
 import com.hjj.apiserver.common.filter.JwtAuthenticationFilter
 import com.hjj.apiserver.service.CustomOauth2UserService
 import org.springframework.context.annotation.Configuration
+import org.springframework.security.config.Customizer
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.builders.WebSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
@@ -16,8 +17,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.security.web.util.matcher.RequestMatcher
 import org.springframework.web.cors.CorsUtils
 
-@Configuration
-@EnableWebSecurity
+
 class WebSecurityConfiguration(
     private val jwtTokenProvider: JwtTokenProvider,
     private val customAuthenticationEntryPoint: CustomAuthenticationEntryPoint,
@@ -42,6 +42,7 @@ class WebSecurityConfiguration(
             .and()
             .successHandler(oAuth2SuccessHandler)
             .and()
+            .formLogin(Customizer.withDefaults())
             .authorizeRequests() // 다음 리퀘스트에 대한 사용권한 체크
             .requestMatchers(RequestMatcher { CorsUtils.isPreFlightRequest(it) })
             .permitAll()
@@ -65,15 +66,15 @@ class WebSecurityConfiguration(
             //				.antMatchers(HttpMethod.POST, "/*/board/**").permitAll() // hellowworld로 시작하는 GET요청 리소스는 누구나 접근가능
             .anyRequest().hasRole("USER") // 그외 나머지 요청은 모두 인증된 회원만 접근 가능
             //                .anyRequest().hasAnyRole( "MASTER")
-            .and()
-            .exceptionHandling().accessDeniedHandler(AccessDeniedHandlerImpl())
-            .and()
-            .exceptionHandling().authenticationEntryPoint(customAuthenticationEntryPoint)
-            .and()
-            .addFilterBefore(
-                JwtAuthenticationFilter(jwtTokenProvider),  // jwt token 필터를 id/password 인증 필터 전에 넣는다
-                UsernamePasswordAuthenticationFilter::class.java
-            )
+//            .and()
+//            .exceptionHandling().accessDeniedHandler(AccessDeniedHandlerImpl())
+//            .and()
+//            .exceptionHandling().authenticationEntryPoint(customAuthenticationEntryPoint)
+//            .and()
+//            .addFilterBefore(
+//                JwtAuthenticationFilter(jwtTokenProvider),  // jwt token 필터를 id/password 인증 필터 전에 넣는다
+//                UsernamePasswordAuthenticationFilter::class.java
+//            )
 
     }
 

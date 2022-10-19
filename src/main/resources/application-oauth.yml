@@ -15,10 +15,10 @@ spring:
               - account_email
           naver:
             client-id: None
-            client-name: naver
             client-secret: None
-            redirect-uri: http://localhost:8080/login/oauth2/code/naver
             authorization-grant-type: authorization_code
+            client-name: naver
+            redirect-uri: http://localhost:8080/login/oauth2/code/naver
             scope:
               - name
               - email

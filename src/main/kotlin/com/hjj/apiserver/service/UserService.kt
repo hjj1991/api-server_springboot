@@ -299,8 +299,7 @@ class UserService(
     @Transactional(readOnly = false, rollbackFor = [Exception::class])
     fun socialSignUp(oAuth2Attribute: OAuth2Attribute) {
 
-        val user = userRepository.findByProviderAndProviderId(oAuth2Attribute.provider, oAuth2Attribute.providerId)
-        user?: throw AlreadyExistedUserException()
+        userRepository.findByProviderAndProviderId(oAuth2Attribute.provider, oAuth2Attribute.providerId)?.also { throw AlreadyExistedUserException() }
 
         val nickName = userRepository.findByNickName(oAuth2Attribute.nickName)?.let {
             Random().ints(97, 123)
