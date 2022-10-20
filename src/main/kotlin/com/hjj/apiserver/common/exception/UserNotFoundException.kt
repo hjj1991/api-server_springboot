@@ -11,4 +11,8 @@ class UserNotFoundException: Exception {
     override fun fillInStackTrace(): Throwable {
         return this
     }
+
+    companion object {
+        private const val serialVersionUID: Long = 8771134709765542077L
+    }
 }

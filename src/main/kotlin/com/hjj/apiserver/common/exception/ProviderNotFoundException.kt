@@ -10,7 +10,6 @@ class ProviderNotFoundException: Exception {
     constructor(cause: Throwable) : super(cause)
 
     companion object {
-        @Serial
         private const val serialVersionUID: Long = -5895709377922476126L
     }
 }

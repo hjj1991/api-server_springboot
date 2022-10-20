@@ -10,13 +10,14 @@ class ExistedSocialUserException : Exception {
     constructor(cause: Throwable) : super(cause)
 
 
-    companion object {
-        @Serial
-        private const val serialVersionUID: Long = 7301227802946662507L
-    }
+
 
     /* 이미 알고 있는 CUSTOM 예외이기 떄문에 호출 스택을 순회하면 비용 낭비이므로 재정의 */
     override fun fillInStackTrace(): Throwable {
         return this
+    }
+
+    companion object {
+        private const val serialVersionUID: Long = -4014097484328957314L
     }
 }
