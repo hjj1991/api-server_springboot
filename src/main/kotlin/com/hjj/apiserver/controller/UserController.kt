@@ -87,7 +87,7 @@ class UserController(
         if (!Provider.isExist(request["provider"])) {
             return ApiUtils.error(ErrCode.ERR_CODE0009)
         }
-        userService.socialMapping(currentUserInfo.userNo, request)
+//        userService.socialMapping(currentUserInfo.userNo, request)
         return ApiUtils.success()
     }
 

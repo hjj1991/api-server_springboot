@@ -41,7 +41,7 @@ class OAuth2Attribute(
                         providerId = userNameAttributeName,
                         userEmail = kakaoAccount["email"] as String,
                         nickName = profile["nickname"] as String,
-                        name = kakaoAccount["name"] as String,
+                        name = kakaoAccount["name"] as String?,
                         picture = profile["profile_image_url"] as String
                     )
                 }
