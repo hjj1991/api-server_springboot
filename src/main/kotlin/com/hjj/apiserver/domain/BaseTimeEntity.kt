@@ -9,7 +9,6 @@ import javax.persistence.EntityListeners
 import javax.persistence.MappedSuperclass
 
 @MappedSuperclass
-@EntityListeners(AuditingEntityListener::class)
 abstract class BaseTimeEntity {
 
 

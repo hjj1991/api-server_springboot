@@ -6,6 +6,7 @@ import com.hjj.apiserver.common.exception.AlreadyExistedUserException
 import com.hjj.apiserver.common.exception.ExistedSocialUserException
 import com.hjj.apiserver.common.exception.UserNotFoundException
 import com.hjj.apiserver.domain.user.*
+import com.hjj.apiserver.dto.oauth2.OAuth2Attribute
 import com.hjj.apiserver.dto.user.CurrentUserInfo
 import com.hjj.apiserver.dto.user.request.UserModifyRequest
 import com.hjj.apiserver.dto.user.request.UserSignInRequest
@@ -38,33 +39,9 @@ class UserService(
     private val passwordEncoder: PasswordEncoder,
     private val userLogRepository: UserLogRepository,
     private val jwtTokenProvider: JwtTokenProvider,
-    private val webClient: WebClient,
     private val fireBaseService: FireBaseService,
 
-    @Value(value = "\${social.naver.url.token.host}")
-    private val naverTokenHost: String,
-    @Value(value = "\${social.naver.url.token.path}")
-    private val naverTokenPath: String,
-    @Value(value = "\${social.naver.url.profile.host}")
-    private val naverProfileHost: String,
-    @Value(value = "\${social.naver.url.profile.path}")
-    private val naverProfilePath: String,
-    @Value(value = "\${social.naver.client-id}")
-    private val naverClientId: String,
-    @Value(value = "\${social.naver.client-secret}")
-    private val naverClientSecret: String,
-    @Value(value = "\${social.kakao.url.profile.host}")
-    private val kakaoProfileHost: String,
-    @Value(value = "\${social.kakao.url.profile.path}")
-    private val kakaoProfilePath: String,
-    @Value(value = "\${social.kakao.url.token.host}")
-    private val kakaoTokenHost: String,
-    @Value(value = "\${social.kakao.url.token.path}")
-    private val kakaoTokenPath: String,
-    @Value(value = "\${social.kakao.client-id}")
-    private val kakaoClientId: String,
-    @Value(value = "\${social.kakao.client-secret}")
-    private val kakaoClientSecret: String,
+
     @Value(value = "\${app.firebase-storage-uri}")
     private val firebaseStorageUri: String,
     @Value(value = "\${app.firebase-bucket}")
@@ -158,82 +135,6 @@ class UserService(
     }
 
 
-    /* Naver, Naver 소셜 로그인 token 요청 */
-    fun findSocialTokenInfo(code: String, state: String, provider: Provider): Map<String, Any> {
-        return webClient.get()
-            .uri { uriBuilder: UriBuilder ->
-                uriBuilder.scheme("https")
-                    .host(
-                        if (provider == Provider.NAVER) {
-                            naverTokenHost
-                        } else {
-                            kakaoTokenHost
-                        }
-                    )
-                    .path(
-                        if (provider == Provider.NAVER) {
-                            naverTokenPath
-                        } else {
-                            kakaoTokenPath
-                        }
-                    )
-                    .queryParam(
-                        "client_id", if (provider == Provider.NAVER) {
-                            naverClientId
-                        } else {
-                            kakaoClientId
-                        }
-                    )
-                    .queryParam(
-                        "client_secret", if (provider == Provider.NAVER) {
-                            naverClientSecret
-                        } else {
-                            kakaoClientSecret
-                        }
-                    )
-                    .queryParam("grant_type", "authorization_code")
-                    .queryParam("code", code)
-                    .queryParam("state", state)
-                    .build()
-            }
-            .retrieve()
-            .onStatus(HttpStatus::isError) { Mono.error(Exception("접속 실패하였습니다.")) }
-            .bodyToMono(object : ParameterizedTypeReference<Map<String, Any>>() {})
-            .flux().toStream().findFirst().get()
-
-    }
-
-    fun findNaverProfile(accessToken: String): NaverProfileResponse {
-        return webClient.get()
-            .uri { uriBuilder: UriBuilder ->
-                uriBuilder
-                    .scheme("https")
-                    .host(naverProfileHost)
-                    .path(naverProfilePath)
-                    .build()
-            }
-            .header("Authorization", "Bearer ${accessToken}")
-            .retrieve()
-            .onStatus(HttpStatus::isError) { Mono.error(Exception("접속 실패하였습니다.")) }
-            .bodyToMono(NaverProfileResponse::class.java)
-            .flux().toStream().findFirst().get()
-    }
-
-    fun findKakaoProfile(accessToken: String): KakaoProfileResponse {
-        return webClient.get()
-            .uri { uriBuilder: UriBuilder ->
-                uriBuilder
-                    .scheme("https")
-                    .host(kakaoProfileHost)
-                    .path(kakaoProfilePath)
-                    .build()
-            }
-            .header("Authorization", "Bearer ${accessToken}")
-            .retrieve()
-            .onStatus(HttpStatus::isError) { Mono.error(Exception("접속 실패하였습니다.")) }
-            .bodyToMono(KakaoProfileResponse::class.java)
-            .flux().toStream().findFirst().get()
-    }
 
     @Transactional(readOnly = false, rollbackFor = [Exception::class])
     fun modifyUser(userNo: Long, request: UserModifyRequest): UserSignInResponse {
@@ -296,112 +197,34 @@ class UserService(
     }
 
     @Transactional(readOnly = false, rollbackFor = [Exception::class])
-    fun socialSignUp(request: HashMap<String, String>) {
-        val provider = request["provider"]
+    fun socialSignUp(oAuth2Attribute: OAuth2Attribute) {
 
-        if (request["code"] == null || request["state"] == null) {
-            throw IllegalStateException()
-        }
+        userRepository.findByProviderAndProviderId(oAuth2Attribute.provider, oAuth2Attribute.providerId)?.also { throw AlreadyExistedUserException() }
 
-        /* 네이버 가입 로직 */
-        if (provider == Provider.NAVER.name) {
-            val resultMap = findSocialTokenInfo(request["code"].toString(), request["state"].toString(), Provider.NAVER)
-            val naverProfile =
-                resultMap["access_token"]?.let { findNaverProfile(it as String) } ?: throw IllegalStateException()
+        val nickName = userRepository.findByNickName(oAuth2Attribute.nickName)?.let {
+            Random().ints(97, 123)
+                .limit(10).collect({ StringBuilder() }, StringBuilder::appendCodePoint, StringBuilder::append)
+                .toString()
+        }?: oAuth2Attribute.nickName
 
-            if (naverProfile.isFail()) {
-                throw IllegalStateException()
-            }
 
-            val user = userRepository.findByProviderAndProviderId(Provider.NAVER, naverProfile.response.id)
-            if (user != null) {
-                /* 해당 사용자가 이미 가입한 계정인 경우 */
-                throw AlreadyExistedUserException()
-            }
+        val newUser = User(
+            provider = oAuth2Attribute.provider,
+            providerId = oAuth2Attribute.providerId,
+            userEmail = oAuth2Attribute.userEmail,
+            nickName = nickName,
+            picture = oAuth2Attribute.picture
+        )
 
-            val nickName: String = if (userRepository.findByNickName(naverProfile.response.nickname) != null) {
-                Random().ints(97, 123)
-                    .limit(10).collect({ StringBuilder() }, StringBuilder::appendCodePoint, StringBuilder::append)
-                    .toString()
-            } else {
-                naverProfile.response.nickname
-            }
+        userRepository.save(newUser)
 
-            val newUser = User(
-                provider = Provider.NAVER,
-                providerId = naverProfile.response.id,
-                userEmail = naverProfile.response.email,
-                nickName = nickName,
-                picture = naverProfile.response.profile_image
-            )
-
-            userRepository.save(newUser)
-
-            userLogService.addUserLog(UserLog(user = newUser, logType = LogType.INSERT))
-
-        } else if (provider == Provider.KAKAO.name) {
-            val resultMap = findSocialTokenInfo(request["code"].toString(), request["state"].toString(), Provider.KAKAO)
-            val kakaoProfile =
-                resultMap["access_token"]?.let { findKakaoProfile(it as String) } ?: throw IllegalStateException()
-
-            val user = userRepository.findByProviderAndProviderId(Provider.KAKAO, kakaoProfile.id)
-
-            if (user != null) {
-                /* 해당 사용자가 이미 가입한 계정인 경우 */
-                throw AlreadyExistedUserException()
-            }
-
-            val nickName: String =
-                if (userRepository.findByNickName(kakaoProfile.kakaoAccount.profile.nickname) != null) {
-                    Random().ints(97, 123)
-                        .limit(10).collect({ StringBuilder() }, StringBuilder::appendCodePoint, StringBuilder::append)
-                        .toString()
-                } else {
-                    kakaoProfile.kakaoAccount.profile.nickname
-                }
-
-            val newUser = User(
-                provider = Provider.KAKAO,
-                providerId = kakaoProfile.id,
-                userEmail = kakaoProfile.kakaoAccount.email,
-                nickName = nickName,
-                picture = kakaoProfile.kakaoAccount.profile.profileImageUrl
-            )
-
-            userRepository.save(newUser)
-
-            userLogService.addUserLog(UserLog(user = newUser, logType = LogType.INSERT))
-
-        }
+        userLogService.addUserLog(UserLog(user = newUser, logType = LogType.INSERT))
     }
 
     @Transactional(readOnly = false, rollbackFor = [Exception::class])
-    fun socialSignIn(request: HashMap<String, String>): UserSignInResponse {
-        val provider = request["provider"]
-        if (provider == Provider.NAVER.name) {
-            val findSocialTokenInfo =
-                findSocialTokenInfo(request["code"].toString(), request["state"].toString(), Provider.NAVER)
-            val naverProfile = findNaverProfile(findSocialTokenInfo["access_token"].toString())
-            if (naverProfile.isFail()) {
-                throw IllegalStateException()
-            }
-            return returnSocialSignIn(
-                userRepository.findByProviderAndProviderId(
-                    Provider.NAVER,
-                    naverProfile.response.id
-                )
-            )
+    fun socialSignIn(oAuth2Attribute: OAuth2Attribute): UserSignInResponse {
+        val user = userRepository.findByProviderAndProviderId(oAuth2Attribute.provider, oAuth2Attribute.providerId)
 
-        } else {
-            val findSocialTokenInfo =
-                findSocialTokenInfo(request["code"].toString(), request["state"].toString(), Provider.KAKAO)
-            val kakaoProfile = findKakaoProfile(findSocialTokenInfo["access_token"].toString())
-            return returnSocialSignIn(userRepository.findByProviderAndProviderId(Provider.KAKAO, kakaoProfile.id))
-        }
-    }
-
-    @Transactional(readOnly = false, rollbackFor = [Exception::class])
-    fun returnSocialSignIn(user: User?): UserSignInResponse {
         user?.let {
             val accessToken = jwtTokenProvider.createToken(user, TokenType.ACCESS_TOKEN)
             val refreshToken = jwtTokenProvider.createToken(user, TokenType.REFRESH_TOKEN)
@@ -423,49 +246,7 @@ class UserService(
                 LocalDateTime.now()
             )
         } ?: throw UserNotFoundException()
-    }
 
-    @Transactional(readOnly = false, rollbackFor = [Exception::class])
-    fun socialMapping(userNo: Long, request: HashMap<String, String>) {
-        val provider = request["provider"]
-        val user = userRepository.findByIdOrNull(userNo) ?: throw UserNotFoundException()
-
-        if (user.isSocialUser()) {
-            throw AlreadyExistedUserException()
-        }
-
-        if (provider == Provider.NAVER.name) {
-            val socialTokenInfo =
-                findSocialTokenInfo(request["code"].toString(), request["state"].toString(), Provider.NAVER)
-            val naverProfile = findNaverProfile(socialTokenInfo["access_token"].toString())
-
-            if (!naverProfile.isFail() && !userRepository.existsByProviderIdAndProviderAndDeleteYn(
-                    naverProfile.response.id,
-                    Provider.NAVER
-                )
-            ) {
-                user.updateUser(
-                    provider = Provider.NAVER,
-                    providerId = naverProfile.response.id,
-                    providerConnectDate = LocalDateTime.now()
-                )
-                userRepository.flush()
-                userLogService.addUserLog(UserLog(logType = LogType.MODIFY, user = user))
-            }
-        } else {
-            val socialTokenInfo =
-                findSocialTokenInfo(request["code"].toString(), request["state"].toString(), Provider.KAKAO)
-            val kakaoProfile = findKakaoProfile(socialTokenInfo["access_token"].toString())
-            if (!userRepository.existsByProviderIdAndProviderAndDeleteYn(kakaoProfile.id, Provider.KAKAO)) {
-                user.updateUser(
-                    provider = Provider.KAKAO,
-                    providerId = kakaoProfile.id,
-                    providerConnectDate = LocalDateTime.now()
-                )
-                userRepository.flush()
-                userLogService.addUserLog(UserLog(logType = LogType.MODIFY, user = user))
-            }
-        }
     }
 
     fun findUser(userNo: Long): UserDetailResponse? {

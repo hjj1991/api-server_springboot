@@ -2,36 +2,28 @@ package com.hjj.apiserver.config
 
 import com.hjj.apiserver.common.CustomAuthenticationEntryPoint
 import com.hjj.apiserver.common.JwtTokenProvider
+import com.hjj.apiserver.common.OAuth2SuccessHandler
 import com.hjj.apiserver.common.filter.JwtAuthenticationFilter
-import org.springframework.context.annotation.Bean
+import com.hjj.apiserver.service.CustomOauth2UserService
 import org.springframework.context.annotation.Configuration
-import org.springframework.data.domain.Pageable
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.builders.WebSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
 import org.springframework.security.config.http.SessionCreationPolicy
-import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.security.web.access.AccessDeniedHandlerImpl
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 import org.springframework.security.web.util.matcher.RequestMatcher
 import org.springframework.web.cors.CorsUtils
-import org.springframework.web.servlet.config.annotation.CorsRegistry
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
-import springfox.documentation.builders.ApiInfoBuilder
-import springfox.documentation.builders.PathSelectors
-import springfox.documentation.builders.RequestHandlerSelectors
-import springfox.documentation.service.ApiInfo
-import springfox.documentation.spi.DocumentationType
-import springfox.documentation.spring.web.plugins.Docket
-import javax.servlet.http.HttpServletRequest
 
 @Configuration
 @EnableWebSecurity
 class WebSecurityConfiguration(
     private val jwtTokenProvider: JwtTokenProvider,
     private val customAuthenticationEntryPoint: CustomAuthenticationEntryPoint,
-): WebSecurityConfigurerAdapter() {
+    private val customOauth2UserService: CustomOauth2UserService,
+    private val oAuth2SuccessHandler: OAuth2SuccessHandler,
+) : WebSecurityConfigurerAdapter() {
 
 
     override fun configure(http: HttpSecurity) {
@@ -43,6 +35,12 @@ class WebSecurityConfiguration(
             .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // jwt token으로 인증하므로 세션은 필요없으므로 생성안함.
             .and()
             .cors()
+            .and()
+            .oauth2Login()  // oauth2 로그인 성공후 가져올 때의 설정
+            .userInfoEndpoint() // 소셜로그인 성공 시 후속 조치를 진행할 UserService 인터페이스 구현체 등록
+            .userService(customOauth2UserService)
+            .and()
+            .successHandler(oAuth2SuccessHandler)
             .and()
             .authorizeRequests() // 다음 리퀘스트에 대한 사용권한 체크
             .requestMatchers(RequestMatcher { CorsUtils.isPreFlightRequest(it) })
@@ -76,6 +74,7 @@ class WebSecurityConfiguration(
                 JwtAuthenticationFilter(jwtTokenProvider),  // jwt token 필터를 id/password 인증 필터 전에 넣는다
                 UsernamePasswordAuthenticationFilter::class.java
             )
+
     }
 
     // ignore check swagger resource
@@ -85,7 +84,6 @@ class WebSecurityConfiguration(
             "/swagger/**", "/swagger-ui/**"
         )
     }
-
 
 
 }
