@@ -5,28 +5,28 @@ import com.hjj.apiserver.common.TokenType
 import com.hjj.apiserver.common.exception.AlreadyExistedUserException
 import com.hjj.apiserver.common.exception.ExistedSocialUserException
 import com.hjj.apiserver.common.exception.UserNotFoundException
-import com.hjj.apiserver.domain.user.*
+import com.hjj.apiserver.domain.user.LogType
+import com.hjj.apiserver.domain.user.SignInType
+import com.hjj.apiserver.domain.user.User
+import com.hjj.apiserver.domain.user.UserLog
 import com.hjj.apiserver.dto.oauth2.OAuth2Attribute
 import com.hjj.apiserver.dto.user.CurrentUserInfo
 import com.hjj.apiserver.dto.user.request.UserModifyRequest
 import com.hjj.apiserver.dto.user.request.UserSignInRequest
 import com.hjj.apiserver.dto.user.request.UserSinUpRequest
-import com.hjj.apiserver.dto.user.response.*
+import com.hjj.apiserver.dto.user.response.UserDetailResponse
+import com.hjj.apiserver.dto.user.response.UserReIssueTokenResponse
+import com.hjj.apiserver.dto.user.response.UserSignInResponse
 import com.hjj.apiserver.repository.user.UserLogRepository
 import com.hjj.apiserver.repository.user.UserRepository
 import com.hjj.apiserver.util.logger
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.core.ParameterizedTypeReference
 import org.springframework.data.repository.findByIdOrNull
-import org.springframework.http.HttpStatus
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
-import org.springframework.web.reactive.function.client.WebClient
-import org.springframework.web.util.UriBuilder
-import reactor.core.publisher.Mono
 import java.net.URLEncoder
 import java.time.LocalDateTime
 import java.util.*
@@ -135,7 +135,6 @@ class UserService(
     }
 
 
-
     @Transactional(readOnly = false, rollbackFor = [Exception::class])
     fun modifyUser(userNo: Long, request: UserModifyRequest): UserSignInResponse {
 
@@ -199,13 +198,14 @@ class UserService(
     @Transactional(readOnly = false, rollbackFor = [Exception::class])
     fun socialSignUp(oAuth2Attribute: OAuth2Attribute) {
 
-        userRepository.findByProviderAndProviderId(oAuth2Attribute.provider, oAuth2Attribute.providerId)?.also { throw AlreadyExistedUserException() }
+        userRepository.findByProviderAndProviderId(oAuth2Attribute.provider, oAuth2Attribute.providerId)
+            ?.also { throw AlreadyExistedUserException() }
 
         val nickName = userRepository.findByNickName(oAuth2Attribute.nickName)?.let {
             Random().ints(97, 123)
                 .limit(10).collect({ StringBuilder() }, StringBuilder::appendCodePoint, StringBuilder::append)
                 .toString()
-        }?: oAuth2Attribute.nickName
+        } ?: oAuth2Attribute.nickName
 
 
         val newUser = User(

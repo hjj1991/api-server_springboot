@@ -9,6 +9,9 @@ import com.hjj.apiserver.dto.user.request.ReIssueTokenRequest
 import com.hjj.apiserver.dto.user.request.UserModifyRequest
 import com.hjj.apiserver.dto.user.request.UserSignInRequest
 import com.hjj.apiserver.dto.user.request.UserSinUpRequest
+import com.hjj.apiserver.dto.user.response.UserDetailResponse
+import com.hjj.apiserver.dto.user.response.UserReIssueTokenResponse
+import com.hjj.apiserver.dto.user.response.UserSignInResponse
 import com.hjj.apiserver.service.FireBaseService
 import com.hjj.apiserver.service.UserService
 import com.hjj.apiserver.util.ApiUtils
@@ -34,7 +37,7 @@ class UserController(
 
     @ApiOperation(value = "유저닉네임 중복 조회", notes = "유저닉네임의 중복여부를 확인한다.")
     @GetMapping("/user/{nickName}/exists-nickname")
-    fun checkUserNickNameDuplicate(@CurrentUser currentUserInfo: CurrentUserInfo?, @PathVariable nickName: String): ApiResponse<*> {
+    fun checkUserNickNameDuplicate(@CurrentUser currentUserInfo: CurrentUserInfo?, @PathVariable nickName: String): ApiResponse<Boolean> {
         return ApiUtils.success(userService.existsNickName(currentUserInfo, nickName))
     }
 
@@ -63,7 +66,7 @@ class UserController(
 
     @ApiOperation(value = "유저 로그인", notes = "유저 로그인을 한다.")
     @PostMapping("/user/signin")
-    fun signIn(@RequestBody request: UserSignInRequest): ApiResponse<*> {
+    fun signIn(@RequestBody request: UserSignInRequest): ApiResponse<UserSignInResponse> {
         return ApiUtils.success(userService.signIn(request))
     }
 
@@ -93,8 +96,7 @@ class UserController(
 
     @ApiOperation(value = "AcessToken 재발급", notes = "AcessToken을 재발급한다.")
     @PostMapping("/user/oauth/token")
-    fun reIssueToken(@RequestBody request: ReIssueTokenRequest): ApiResponse<*> {
-
+    fun reIssueToken(@RequestBody request: ReIssueTokenRequest): ApiResponse<UserReIssueTokenResponse> {
         return ApiUtils.success(userService.reIssueToken(request.refreshToken))
 
     }
@@ -111,7 +113,7 @@ class UserController(
     )
     @ApiOperation(value = "유저정보 상세조회", notes = "유저 정보를 상세 조회한다.")
     @GetMapping("/user")
-    fun userDetail(@CurrentUser currentUserInfo: CurrentUserInfo): ApiResponse<*> {
+    fun userDetail(@CurrentUser currentUserInfo: CurrentUserInfo): ApiResponse<UserDetailResponse?> {
         return ApiUtils.success(userService.findUser(currentUserInfo.userNo))
     }
 
@@ -130,7 +132,7 @@ class UserController(
     fun userModify(
         @CurrentUser currentUserInfo: CurrentUserInfo,
         @RequestBody @Valid request: UserModifyRequest
-    ): ApiResponse<*> {
+    ): ApiResponse<UserSignInResponse> {
         return ApiUtils.success(userService.modifyUser(currentUserInfo.userNo, request))
     }
 

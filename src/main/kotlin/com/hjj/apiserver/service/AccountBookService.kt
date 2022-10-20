@@ -10,7 +10,6 @@ import com.hjj.apiserver.dto.accountbook.response.AccountBookFindAllResponse
 import com.hjj.apiserver.repository.accountbook.AccountBookRepository
 import com.hjj.apiserver.repository.accountbook.AccountBookUserRepository
 import com.hjj.apiserver.repository.card.CardRepository
-import com.hjj.apiserver.repository.category.CategoryRepository
 import com.hjj.apiserver.repository.user.UserRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -23,7 +22,6 @@ class AccountBookService(
     private val categoryService: CategoryService,
     private val cardRepository: CardRepository,
     private val userRepository: UserRepository,
-    private val categoryRepository: CategoryRepository,
 ) {
 
     @Transactional(readOnly = false, rollbackFor = [Exception::class])
@@ -49,7 +47,9 @@ class AccountBookService(
     }
 
     fun findAccountBookDetail(accountBookNo: Long, userNo: Long): AccountBookDetailResponse {
-        val accountBook = accountBookRepository.findAccountBook(userNo, accountBookNo, listOf(AccountRole.MEMBER, AccountRole.OWNER)) ?: throw IllegalArgumentException()
+        val accountBook =
+            accountBookRepository.findAccountBook(userNo, accountBookNo, listOf(AccountRole.MEMBER, AccountRole.OWNER))
+                ?: throw IllegalArgumentException()
 
         val categories: MutableList<AccountBookDetailResponse.CategoryDetail> = mutableListOf()
 

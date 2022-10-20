@@ -2,6 +2,8 @@ package com.hjj.apiserver.controller
 
 import com.hjj.apiserver.common.ApiResponse
 import com.hjj.apiserver.dto.accountbook.request.AccountBookAddRequest
+import com.hjj.apiserver.dto.accountbook.response.AccountBookDetailResponse
+import com.hjj.apiserver.dto.accountbook.response.AccountBookFindAllResponse
 import com.hjj.apiserver.dto.user.CurrentUserInfo
 import com.hjj.apiserver.service.AccountBookService
 import com.hjj.apiserver.util.ApiUtils
@@ -35,7 +37,8 @@ class AccountBookController(
             required = true
         ) request: AccountBookAddRequest
     ): ApiResponse<*> {
-        return ApiUtils.success(accountBookService.addAccountBook(currentUserInfo.userNo, request))
+        accountBookService.addAccountBook(currentUserInfo.userNo, request)
+        return ApiUtils.success()
     }
 
 
@@ -51,7 +54,7 @@ class AccountBookController(
     )
     @ApiOperation(value = "개인가계부 목록을 조회.", notes = "개인가계부를 조회 한다.")
     @GetMapping("/account-book")
-    fun accountBooksFind(@CurrentUser user: CurrentUserInfo): ApiResponse<*>{
+    fun accountBooksFind(@CurrentUser user: CurrentUserInfo): ApiResponse<List<AccountBookFindAllResponse>>{
         return ApiUtils.success(accountBookService.findAllAccountBook(user.userNo))
     }
 
@@ -68,7 +71,7 @@ class AccountBookController(
     )
     @ApiOperation(value = "개인가계부 상세 조회.", notes = "개인가계부를 상세 조회 한다.")
     @GetMapping("/account-book/{accountBookNo}")
-    fun accountBookDetail(@CurrentUser user: CurrentUserInfo, @PathVariable accountBookNo: Long):ApiResponse<*> {
+    fun accountBookDetail(@CurrentUser user: CurrentUserInfo, @PathVariable accountBookNo: Long):ApiResponse<AccountBookDetailResponse> {
         return ApiUtils.success(accountBookService.findAccountBookDetail(accountBookNo, user.userNo))
     }
 

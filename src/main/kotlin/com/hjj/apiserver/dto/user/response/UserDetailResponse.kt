@@ -12,6 +12,7 @@ class UserDetailResponse(
     val provider: Provider? = null,
     val role: Role,
     val providerConnectDate: LocalDateTime? = null,
+    val picture: String? = null,
     val createdDate: LocalDateTime,
     val lastLoginDateTime: LocalDateTime? = null,
 ) {

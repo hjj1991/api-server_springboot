@@ -22,6 +22,7 @@ class UserRepositoryImpl(
                 user.provider,
                 user.role,
                 user.providerConnectDate,
+                user.picture,
                 user.createdDate,
                 ExpressionUtils.`as`(
                     JPAExpressions.select(userLog.loginDateTime.max())
