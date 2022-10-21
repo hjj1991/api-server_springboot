@@ -34,9 +34,21 @@ class OAuth2SuccessHandler(
         authentication: Authentication
     ) {
         val oAuth2User = authentication.principal as OAuth2User
+        if(isUserModify(oAuth2User)){
+            val redirectUrl = UriComponentsBuilder.newInstance()
+                .scheme(HttpTransportConstants.HTTP_URI_SCHEME)
+                .host(redirectHost)
+                .port(redirectPort)
+                .path(redirectPathMapping)
+                .queryParam("provider", oAuth2User.attributes["provider"])
+                .build()
+                .toUriString()
+
+            redirectStrategy.sendRedirect(request, response, redirectUrl)
+            return
+        }
+
         val oAuth2Attribute = objectMapper.convertValue(oAuth2User.attributes, OAuth2Attribute::class.java)
-
-
 
         if (oAuth2User.attributes.containsKey("mappingUserNo")) {
             userService.socialMapping(oAuth2User)
@@ -80,5 +92,12 @@ class OAuth2SuccessHandler(
 
 
         redirectStrategy.sendRedirect(request, response, redirectUrl)
+    }
+
+    private fun isUserModify(oAuth2User: OAuth2User): Boolean{
+        if(oAuth2User.attributes.containsKey("modify") && oAuth2User.attributes["modify"] == true){
+            return true
+        }
+        return false
     }
 }

@@ -141,7 +141,7 @@ class UserService(
     fun modifyUser(userNo: Long, request: UserModifyRequest): UserSignInResponse {
 
         val user = userRepository.findByIdOrNull(userNo) ?: throw UserNotFoundException()
-        if (!passwordEncoder.matches(request.userPw, user.userPw)) {
+        if (user.provider == null && !passwordEncoder.matches(request.userPw, user.userPw)) {
             throw BadCredentialsException("패스워드가 일치하지 않습니다.")
         }
 

@@ -34,12 +34,8 @@ class CustomAuthorizationRequestResolver(
 
     private fun customAuthorizationRequest(authorizationRequest: OAuth2AuthorizationRequest, request: HttpServletRequest): OAuth2AuthorizationRequest{
         val additionalParameters = LinkedHashMap<String, Any>(authorizationRequest.additionalParameters)
-        for (parameterName in request.parameterNames.toList()) {
-            if(parameterName == "accessToken"){
-                additionalParameters["accessToken"] = request.getParameter("accessToken")
-                break
-            }
-        }
+        request.parameterNames.toList().filter { param -> param == "accessToken" || param == "modify" }
+            .forEach { param -> additionalParameters[param] = request.getParameter(param) }
 
         return OAuth2AuthorizationRequest.from(authorizationRequest)
             .additionalParameters(additionalParameters)
