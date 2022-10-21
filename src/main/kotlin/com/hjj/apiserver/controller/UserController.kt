@@ -47,7 +47,7 @@ class UserController(
         return if (userService.existsUserId(userId)) {
             ApiUtils.error(ErrCode.ERR_CODE0002)
         } else {
-            ApiUtils.success()
+            ApiUtils.success(false)
         }
     }
 

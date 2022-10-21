@@ -40,8 +40,12 @@ app:
 front:
   redirect-uri:
     host: cash.sundry.ninja
+#    host: localhost
     port: 443
-    path: social/signin
+#    port: 3000
+    path:
+      signin: social/signin
+      mapping: social/mapping
 line:
   noti:
     token: None

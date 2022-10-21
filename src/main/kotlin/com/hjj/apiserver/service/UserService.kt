@@ -1,5 +1,6 @@
 package com.hjj.apiserver.service
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.hjj.apiserver.common.JwtTokenProvider
 import com.hjj.apiserver.common.TokenType
 import com.hjj.apiserver.common.exception.AlreadyExistedUserException
@@ -24,6 +25,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.crypto.password.PasswordEncoder
+import org.springframework.security.oauth2.core.user.OAuth2User
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
@@ -40,6 +42,7 @@ class UserService(
     private val userLogRepository: UserLogRepository,
     private val jwtTokenProvider: JwtTokenProvider,
     private val fireBaseService: FireBaseService,
+    private val objectMapper: ObjectMapper,
 
 
     @Value(value = "\${app.firebase-storage-uri}")
@@ -55,7 +58,6 @@ class UserService(
 
 
     fun existsNickName(currentUserInfo: CurrentUserInfo?, nickName: String): Boolean {
-        throw RuntimeException()
         /* 자기자신의 닉네임과 동일 한 경우 true 리턴 */
         return if (currentUserInfo?.nickName == nickName) {
             true
@@ -251,6 +253,26 @@ class UserService(
 
     fun findUser(userNo: Long): UserDetailResponse? {
         return userRepository.findUserDetail(userNo)
+    }
+
+    @Transactional(readOnly = false, rollbackFor = [Exception::class])
+    fun socialMapping(oAuth2User: OAuth2User) {
+        val user = userRepository.findByIdOrNull(oAuth2User.attributes["mappingUserNo"] as Long)?: throw UserNotFoundException()
+        if(user.isSocialUser()){
+            throw AlreadyExistedUserException()
+        }
+
+        val oAuth2Attribute = objectMapper.convertValue(oAuth2User.attributes, OAuth2Attribute::class.java)
+
+        user.updateUser(
+            provider = oAuth2Attribute.provider,
+            providerId = oAuth2Attribute.providerId,
+            providerConnectDate = LocalDateTime.now()
+        )
+
+        userRepository.flush()
+        userLogService.addUserLog(UserLog(logType = LogType.MODIFY, user = user))
+
     }
 
 }

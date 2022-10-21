@@ -43,13 +43,13 @@ class UserRepositoryImpl(
     override fun findExistsUserNickName(nickName: String): Boolean {
         return jpaQueryFactory.selectOne()
             .from(user)
-            .where(user.nickName.eq(nickName)).fetchOne() == null
+            .where(user.nickName.eq(nickName)).fetchOne() != null
     }
 
     override fun findExistsUserId(userId: String): Boolean {
         return jpaQueryFactory.selectOne()
             .from(user)
-            .where(user.userId.eq(userId)).fetchOne() == null
+            .where(user.userId.eq(userId)).fetchOne() != null
     }
 
 }

@@ -1,10 +1,8 @@
 package com.hjj.apiserver.service
 
-import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import com.hjj.apiserver.common.JwtTokenProvider
 import com.hjj.apiserver.dto.oauth2.OAuth2Attribute
-import org.modelmapper.ModelMapper
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest
@@ -16,6 +14,7 @@ import org.springframework.stereotype.Service
 @Service
 class CustomOauth2UserService(
     private val objectMapper: ObjectMapper,
+    private val tokenProvider: JwtTokenProvider,
 ) : OAuth2UserService<OAuth2UserRequest, OAuth2User> {
     override fun loadUser(userRequest: OAuth2UserRequest): OAuth2User {
         val oAuth2UserService = DefaultOAuth2UserService()
@@ -23,12 +22,16 @@ class CustomOauth2UserService(
         val userNameAttributeName =
             userRequest.clientRegistration.providerDetails.userInfoEndpoint.userNameAttributeName
 
-
         val registrationId = userRequest.clientRegistration.registrationId
-
         val oAuth2Attribute = OAuth2Attribute.of(registrationId, oAuth2User, userNameAttributeName)
+        val mutableMap = objectMapper.convertValue(oAuth2Attribute, Map::class.java).toMutableMap()
 
-        val mutableMap = objectMapper.convertValue(oAuth2Attribute, Map::class.java)
+
+        if (userRequest.additionalParameters.containsKey("accessToken") && tokenProvider.validateToken(userRequest.additionalParameters["accessToken"] as String)) {
+            mutableMap["mappingUserNo"] =
+                tokenProvider.getUserNoByToken(userRequest.additionalParameters["accessToken"] as String)
+        }
+
 
         return DefaultOAuth2User(
             listOf(SimpleGrantedAuthority("ROLE_USER")),
