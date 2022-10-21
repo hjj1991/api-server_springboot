@@ -23,7 +23,6 @@ class JwtTokenProvider(
     companion object{
         const val AUTHORIZATION_HEADER = "Authorization"
         const val BEARER_PREFIX = "Bearer "
-        const val AUTHORIZATION_REFRESH_HEADER = "refresh_token"
         const val TOKEN_VALID_TIME: Long = 1000L * 60 * 20
         const val REFRESH_TOKEN_VALID_TIME: Long = 1000L * 3600 * 24 * 14 // 2주 동안만 토큰 유효
 
@@ -59,6 +58,10 @@ class JwtTokenProvider(
         val claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).body
         val user = userDetailService.loadUserByUsername(claims.subject)
         return UsernamePasswordAuthenticationToken(user, "", user.authorities)
+    }
+
+    fun getUserNoByToken(token: String): Long {
+        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).body.subject.toLong()
     }
 
     /* Request의 Header에서 token 파싱 */

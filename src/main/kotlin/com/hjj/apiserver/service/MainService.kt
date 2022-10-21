@@ -16,8 +16,6 @@ class MainService(
 
     private val log = LoggerFactory.getLogger(MainService::class.java)
     fun findMain(): MainFindResponse {
-
-
         val deposit = Mono.fromCallable { depositRepository.findDepositByHome() }
             .doOnError{ error -> log.error("[Error] MainService::findDepositByHome, error={}", error.message)}
             .subscribeOn(Schedulers.parallel())

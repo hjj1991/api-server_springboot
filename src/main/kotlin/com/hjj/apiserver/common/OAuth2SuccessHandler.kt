@@ -20,8 +20,10 @@ class OAuth2SuccessHandler(
     private val objectMapper: ObjectMapper,
     @Value("\${front.redirect-uri.host}")
     private val redirectHost: String,
-    @Value("\${front.redirect-uri.path}")
-    private val redirectPath: String,
+    @Value("\${front.redirect-uri.path.signin}")
+    private val redirectPathSignIn: String,
+    @Value("\${front.redirect-uri.path.mapping}")
+    private val redirectPathMapping: String,
     @Value("\${front.redirect-uri.port}")
     private val redirectPort: String,
 ) : SimpleUrlAuthenticationSuccessHandler() {
@@ -32,7 +34,36 @@ class OAuth2SuccessHandler(
         authentication: Authentication
     ) {
         val oAuth2User = authentication.principal as OAuth2User
+        if(isUserModify(oAuth2User)){
+            val redirectUrl = UriComponentsBuilder.newInstance()
+                .scheme(HttpTransportConstants.HTTP_URI_SCHEME)
+                .host(redirectHost)
+                .port(redirectPort)
+                .path(redirectPathMapping)
+                .queryParam("provider", oAuth2User.attributes["provider"])
+                .build()
+                .toUriString()
+
+            redirectStrategy.sendRedirect(request, response, redirectUrl)
+            return
+        }
+
         val oAuth2Attribute = objectMapper.convertValue(oAuth2User.attributes, OAuth2Attribute::class.java)
+
+        if (oAuth2User.attributes.containsKey("mappingUserNo")) {
+            userService.socialMapping(oAuth2User)
+            val redirectUrl = UriComponentsBuilder.newInstance()
+                .scheme(HttpTransportConstants.HTTP_URI_SCHEME)
+                .host(redirectHost)
+                .port(redirectPort)
+                .path(redirectPathMapping)
+                .queryParam("provider", oAuth2Attribute.provider)
+                .build()
+                .toUriString()
+
+            redirectStrategy.sendRedirect(request, response, redirectUrl)
+            return
+        }
 
         val userSignInResponse = kotlin.runCatching {
             userService.socialSignUp(oAuth2Attribute)
@@ -48,11 +79,12 @@ class OAuth2SuccessHandler(
         }.getOrThrow()
 
 
+
         val redirectUrl = UriComponentsBuilder.newInstance()
             .scheme(HttpTransportConstants.HTTP_URI_SCHEME)
             .host(redirectHost)
-            .path(redirectPath)
             .port(redirectPort)
+            .path(redirectPathSignIn)
             .queryParam("accessToken", userSignInResponse.accessToken)
             .queryParam("refreshToken", userSignInResponse.refreshToken)
             .build()
@@ -60,5 +92,12 @@ class OAuth2SuccessHandler(
 
 
         redirectStrategy.sendRedirect(request, response, redirectUrl)
+    }
+
+    private fun isUserModify(oAuth2User: OAuth2User): Boolean{
+        if(oAuth2User.attributes.containsKey("modify") && oAuth2User.attributes["modify"] == true){
+            return true
+        }
+        return false
     }
 }

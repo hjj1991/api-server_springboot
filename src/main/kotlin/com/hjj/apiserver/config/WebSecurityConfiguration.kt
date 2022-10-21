@@ -1,8 +1,6 @@
 package com.hjj.apiserver.config
 
-import com.hjj.apiserver.common.CustomAuthenticationEntryPoint
-import com.hjj.apiserver.common.JwtTokenProvider
-import com.hjj.apiserver.common.OAuth2SuccessHandler
+import com.hjj.apiserver.common.*
 import com.hjj.apiserver.common.filter.JwtAuthenticationFilter
 import com.hjj.apiserver.service.CustomOauth2UserService
 import org.springframework.context.annotation.Configuration
@@ -11,6 +9,7 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
 import org.springframework.security.config.http.SessionCreationPolicy
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository
 import org.springframework.security.web.access.AccessDeniedHandlerImpl
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 import org.springframework.security.web.util.matcher.RequestMatcher
@@ -23,6 +22,7 @@ class WebSecurityConfiguration(
     private val customAuthenticationEntryPoint: CustomAuthenticationEntryPoint,
     private val customOauth2UserService: CustomOauth2UserService,
     private val oAuth2SuccessHandler: OAuth2SuccessHandler,
+    private val clientRegistrationRepository: ClientRegistrationRepository,
 ) : WebSecurityConfigurerAdapter() {
 
 
@@ -37,6 +37,12 @@ class WebSecurityConfiguration(
             .cors()
             .and()
             .oauth2Login()  // oauth2 로그인 성공후 가져올 때의 설정
+            .authorizationEndpoint()
+            .authorizationRequestResolver(CustomAuthorizationRequestResolver(this.clientRegistrationRepository))
+            .and()
+            .tokenEndpoint()
+            .accessTokenResponseClient(CustomAuthorizationCodeTokenResponseClient())
+            .and()
             .userInfoEndpoint() // 소셜로그인 성공 시 후속 조치를 진행할 UserService 인터페이스 구현체 등록
             .userService(customOauth2UserService)
             .and()

@@ -3,6 +3,8 @@ package com.hjj.apiserver.controller
 import com.hjj.apiserver.common.ApiResponse
 import com.hjj.apiserver.dto.card.reqeust.CardAddRequest
 import com.hjj.apiserver.dto.card.reqeust.CardModifyRequest
+import com.hjj.apiserver.dto.card.response.CardFindAllResponse
+import com.hjj.apiserver.dto.card.response.CardFindResponse
 import com.hjj.apiserver.dto.user.CurrentUserInfo
 import com.hjj.apiserver.service.CardService
 import com.hjj.apiserver.util.ApiUtils
@@ -28,7 +30,7 @@ class CardController(
     )
     @ApiOperation(value = "개인 카드 목록 조회", notes = "개인카드 목록조회한다..")
     @GetMapping("/card")
-    fun cardsFind(@CurrentUser currentUserInfo: CurrentUserInfo): ApiResponse<*> {
+    fun cardsFind(@CurrentUser currentUserInfo: CurrentUserInfo): ApiResponse<List<CardFindAllResponse>> {
         return ApiUtils.success(cardService.findCards(currentUserInfo.userNo))
     }
 
@@ -44,8 +46,9 @@ class CardController(
     )
     @ApiOperation(value = "개인 카드 등록", notes = "개인카드 등록한다.")
     @PostMapping("/card")
-    fun cardAdd(@CurrentUser currentUserInfo: CurrentUserInfo, @RequestBody request: CardAddRequest) {
-        ApiUtils.success(cardService.findCard(currentUserInfo.userNo, request))
+    fun cardAdd(@CurrentUser currentUserInfo: CurrentUserInfo, @RequestBody request: CardAddRequest): ApiResponse<*> {
+        cardService.findCard(currentUserInfo.userNo, request)
+        return ApiUtils.success()
     }
 
     @ApiImplicitParams(
@@ -63,8 +66,9 @@ class CardController(
     fun cardRemove(
         @CurrentUser currentUserInfo: CurrentUserInfo,
         @ApiParam(value = "cardNo", required = true) @PathVariable("cardNo") cardNo: Long
-    ) {
+    ): ApiResponse<*> {
         cardService.removeCard(currentUserInfo.userNo, cardNo)
+        return ApiUtils.success()
     }
 
     @ApiImplicitParams(
@@ -83,9 +87,9 @@ class CardController(
         @CurrentUser currentUserInfo: CurrentUserInfo,
         @ApiParam(value = "cardNo", required = true) @PathVariable("cardNo") cardNo: Long,
         @RequestBody request: CardModifyRequest
-    ) {
+    ): ApiResponse<*> {
         cardService.modifyCard(currentUserInfo.userNo, cardNo, request)
-        ApiUtils.success()
+        return ApiUtils.success()
     }
 
     @ApiImplicitParams(
@@ -103,7 +107,7 @@ class CardController(
     fun cardDetail(
         @CurrentUser currentUserInfo: CurrentUserInfo,
         @ApiParam(value = "cardNo", required = true) @PathVariable("cardNo") cardNo: Long
-    ): ApiResponse<*> {
+    ): ApiResponse<CardFindResponse> {
         return ApiUtils.success(cardService.findCard(currentUserInfo.userNo, cardNo))
     }
 

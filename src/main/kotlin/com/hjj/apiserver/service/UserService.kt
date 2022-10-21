@@ -1,32 +1,34 @@
 package com.hjj.apiserver.service
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.hjj.apiserver.common.JwtTokenProvider
 import com.hjj.apiserver.common.TokenType
 import com.hjj.apiserver.common.exception.AlreadyExistedUserException
 import com.hjj.apiserver.common.exception.ExistedSocialUserException
 import com.hjj.apiserver.common.exception.UserNotFoundException
-import com.hjj.apiserver.domain.user.*
+import com.hjj.apiserver.domain.user.LogType
+import com.hjj.apiserver.domain.user.SignInType
+import com.hjj.apiserver.domain.user.User
+import com.hjj.apiserver.domain.user.UserLog
 import com.hjj.apiserver.dto.oauth2.OAuth2Attribute
 import com.hjj.apiserver.dto.user.CurrentUserInfo
 import com.hjj.apiserver.dto.user.request.UserModifyRequest
 import com.hjj.apiserver.dto.user.request.UserSignInRequest
 import com.hjj.apiserver.dto.user.request.UserSinUpRequest
-import com.hjj.apiserver.dto.user.response.*
+import com.hjj.apiserver.dto.user.response.UserDetailResponse
+import com.hjj.apiserver.dto.user.response.UserReIssueTokenResponse
+import com.hjj.apiserver.dto.user.response.UserSignInResponse
 import com.hjj.apiserver.repository.user.UserLogRepository
 import com.hjj.apiserver.repository.user.UserRepository
 import com.hjj.apiserver.util.logger
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.core.ParameterizedTypeReference
 import org.springframework.data.repository.findByIdOrNull
-import org.springframework.http.HttpStatus
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.crypto.password.PasswordEncoder
+import org.springframework.security.oauth2.core.user.OAuth2User
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
-import org.springframework.web.reactive.function.client.WebClient
-import org.springframework.web.util.UriBuilder
-import reactor.core.publisher.Mono
 import java.net.URLEncoder
 import java.time.LocalDateTime
 import java.util.*
@@ -40,6 +42,7 @@ class UserService(
     private val userLogRepository: UserLogRepository,
     private val jwtTokenProvider: JwtTokenProvider,
     private val fireBaseService: FireBaseService,
+    private val objectMapper: ObjectMapper,
 
 
     @Value(value = "\${app.firebase-storage-uri}")
@@ -55,7 +58,6 @@ class UserService(
 
 
     fun existsNickName(currentUserInfo: CurrentUserInfo?, nickName: String): Boolean {
-        throw RuntimeException()
         /* 자기자신의 닉네임과 동일 한 경우 true 리턴 */
         return if (currentUserInfo?.nickName == nickName) {
             true
@@ -135,12 +137,11 @@ class UserService(
     }
 
 
-
     @Transactional(readOnly = false, rollbackFor = [Exception::class])
     fun modifyUser(userNo: Long, request: UserModifyRequest): UserSignInResponse {
 
         val user = userRepository.findByIdOrNull(userNo) ?: throw UserNotFoundException()
-        if (!passwordEncoder.matches(request.userPw, user.userPw)) {
+        if (user.provider == null && !passwordEncoder.matches(request.userPw, user.userPw)) {
             throw BadCredentialsException("패스워드가 일치하지 않습니다.")
         }
 
@@ -199,13 +200,14 @@ class UserService(
     @Transactional(readOnly = false, rollbackFor = [Exception::class])
     fun socialSignUp(oAuth2Attribute: OAuth2Attribute) {
 
-        userRepository.findByProviderAndProviderId(oAuth2Attribute.provider, oAuth2Attribute.providerId)?.also { throw AlreadyExistedUserException() }
+        userRepository.findByProviderAndProviderId(oAuth2Attribute.provider, oAuth2Attribute.providerId)
+            ?.also { throw AlreadyExistedUserException() }
 
         val nickName = userRepository.findByNickName(oAuth2Attribute.nickName)?.let {
             Random().ints(97, 123)
                 .limit(10).collect({ StringBuilder() }, StringBuilder::appendCodePoint, StringBuilder::append)
                 .toString()
-        }?: oAuth2Attribute.nickName
+        } ?: oAuth2Attribute.nickName
 
 
         val newUser = User(
@@ -251,6 +253,26 @@ class UserService(
 
     fun findUser(userNo: Long): UserDetailResponse? {
         return userRepository.findUserDetail(userNo)
+    }
+
+    @Transactional(readOnly = false, rollbackFor = [Exception::class])
+    fun socialMapping(oAuth2User: OAuth2User) {
+        val user = userRepository.findByIdOrNull(oAuth2User.attributes["mappingUserNo"] as Long)?: throw UserNotFoundException()
+        if(user.isSocialUser()){
+            throw AlreadyExistedUserException()
+        }
+
+        val oAuth2Attribute = objectMapper.convertValue(oAuth2User.attributes, OAuth2Attribute::class.java)
+
+        user.updateUser(
+            provider = oAuth2Attribute.provider,
+            providerId = oAuth2Attribute.providerId,
+            providerConnectDate = LocalDateTime.now()
+        )
+
+        userRepository.flush()
+        userLogService.addUserLog(UserLog(logType = LogType.MODIFY, user = user))
+
     }
 
 }
