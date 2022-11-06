@@ -3,7 +3,7 @@ package com.hjj.apiserver.service
 import com.hjj.apiserver.common.JwtTokenProvider
 import com.hjj.apiserver.dto.user.request.UserModifyRequest
 import com.hjj.apiserver.dto.user.request.UserSignInRequest
-import com.hjj.apiserver.dto.user.request.UserSinUpRequest
+import com.hjj.apiserver.dto.user.request.UserSignUpRequest
 import com.hjj.apiserver.repository.user.UserRepository
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
@@ -41,7 +41,7 @@ class UserServiceTest @Autowired constructor(
     @DisplayName("중복 닉네임 체크가 정상 작동한다.")
     fun existsNickName(){
         // given
-        val request = UserSinUpRequest("testUser12", "뜨끔이당", "testUser@naver.com", "testPassword12#$")
+        val request = UserSignUpRequest("testUser12", "뜨끔이당", "testUser@naver.com", "testPassword12#$")
         val savedUser = userService.signUp(request)
 
         // when
@@ -56,7 +56,7 @@ class UserServiceTest @Autowired constructor(
     @DisplayName("중복 아이디 체크가 정상 작동한다.")
     fun existsUserId(){
         // given
-        val request = UserSinUpRequest("testUser12", "뜨끔이당", "testUser@naver.com", "testPassword12#$")
+        val request = UserSignUpRequest("testUser12", "뜨끔이당", "testUser@naver.com", "testPassword12#$")
         val savedUser = userService.signUp(request)
 
         // when
@@ -71,7 +71,7 @@ class UserServiceTest @Autowired constructor(
     @DisplayName("회원가입")
     fun signUpTest(){
         // given
-        val request = UserSinUpRequest("testUser12", "뜨끔이당", "testUser@naver.com", "testPassword12#$")
+        val request = UserSignUpRequest("testUser12", "뜨끔이당", "testUser@naver.com", "testPassword12#$")
 
         // when
         val savedUser = userService.signUp(request)
@@ -87,7 +87,7 @@ class UserServiceTest @Autowired constructor(
     @DisplayName("일반 로그인이 정상 작동한다.")
     fun signInTest(){
         // given
-        val request = UserSinUpRequest("testUser12", "뜨끔이당", "testUser@naver.com", "testPassword12#$")
+        val request = UserSignUpRequest("testUser12", "뜨끔이당", "testUser@naver.com", "testPassword12#$")
         userService.signUp(request)
 
         // when
@@ -111,7 +111,7 @@ class UserServiceTest @Autowired constructor(
     @DisplayName("토큰 재발급이 정상 작동한다.")
     fun reIssueTokenTest(){
         // given
-        val request = UserSinUpRequest("testUser12", "뜨끔이당", "testUser@naver.com", "testPassword12#$")
+        val request = UserSignUpRequest("testUser12", "뜨끔이당", "testUser@naver.com", "testPassword12#$")
         userService.signUp(request)
         val signIn = userService.signIn(
             UserSignInRequest(
@@ -133,7 +133,7 @@ class UserServiceTest @Autowired constructor(
     @DisplayName("사용자 정보가 정상 수정된다.")
     fun modifyUserTest(){
         // given
-        val request = UserSinUpRequest("testUser12", "뜨끔이당", "testUser@naver.com", "testPassword12#$")
+        val request = UserSignUpRequest("testUser12", "뜨끔이당", "testUser@naver.com", "testPassword12#$")
         val savedUser = userService.signUp(request)
 
         // when
@@ -155,7 +155,7 @@ class UserServiceTest @Autowired constructor(
     @DisplayName("사용자 정보가 정상 조회된다.")
     fun findUser(){
         // given
-        val request = UserSinUpRequest("testUser12", "뜨끔이당", "testUser@naver.com", "testPassword12#$")
+        val request = UserSignUpRequest("testUser12", "뜨끔이당", "testUser@naver.com", "testPassword12#$")
         val savedUser = userService.signUp(request)
 
         // when

@@ -37,16 +37,16 @@ class WebSecurityConfiguration(
             .cors()
             .and()
             .oauth2Login()  // oauth2 로그인 성공후 가져올 때의 설정
-            .authorizationEndpoint()
-            .authorizationRequestResolver(CustomAuthorizationRequestResolver(this.clientRegistrationRepository))
-            .and()
-            .tokenEndpoint()
-            .accessTokenResponseClient(CustomAuthorizationCodeTokenResponseClient())
-            .and()
-            .userInfoEndpoint() // 소셜로그인 성공 시 후속 조치를 진행할 UserService 인터페이스 구현체 등록
-            .userService(customOauth2UserService)
-            .and()
-            .successHandler(oAuth2SuccessHandler)
+                .authorizationEndpoint()
+                .authorizationRequestResolver(CustomAuthorizationRequestResolver(this.clientRegistrationRepository))
+                .and()
+                .tokenEndpoint()
+                .accessTokenResponseClient(CustomAuthorizationCodeTokenResponseClient())
+                .and()
+                .userInfoEndpoint() // 소셜로그인 성공 시 후속 조치를 진행할 UserService 인터페이스 구현체 등록
+                .userService(customOauth2UserService)
+                .and()
+                .successHandler(oAuth2SuccessHandler)
             .and()
             .authorizeRequests() // 다음 리퀘스트에 대한 사용권한 체크
             .requestMatchers(RequestMatcher { CorsUtils.isPreFlightRequest(it) })
