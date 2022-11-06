@@ -14,7 +14,7 @@ import com.hjj.apiserver.dto.oauth2.OAuth2Attribute
 import com.hjj.apiserver.dto.user.CurrentUserInfo
 import com.hjj.apiserver.dto.user.request.UserModifyRequest
 import com.hjj.apiserver.dto.user.request.UserSignInRequest
-import com.hjj.apiserver.dto.user.request.UserSinUpRequest
+import com.hjj.apiserver.dto.user.request.UserSignUpRequest
 import com.hjj.apiserver.dto.user.response.UserDetailResponse
 import com.hjj.apiserver.dto.user.response.UserReIssueTokenResponse
 import com.hjj.apiserver.dto.user.response.UserSignInResponse
@@ -71,7 +71,7 @@ class UserService(
     }
 
     @Transactional(readOnly = false, rollbackFor = [Exception::class])
-    fun signUp(request: UserSinUpRequest): User {
+    fun signUp(request: UserSignUpRequest): User {
         val newUser = User(
             userId = request.userId,
             nickName = request.nickName,

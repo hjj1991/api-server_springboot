@@ -8,7 +8,7 @@ import com.hjj.apiserver.dto.user.CurrentUserInfo
 import com.hjj.apiserver.dto.user.request.ReIssueTokenRequest
 import com.hjj.apiserver.dto.user.request.UserModifyRequest
 import com.hjj.apiserver.dto.user.request.UserSignInRequest
-import com.hjj.apiserver.dto.user.request.UserSinUpRequest
+import com.hjj.apiserver.dto.user.request.UserSignUpRequest
 import com.hjj.apiserver.dto.user.response.UserDetailResponse
 import com.hjj.apiserver.dto.user.response.UserReIssueTokenResponse
 import com.hjj.apiserver.dto.user.response.UserSignInResponse
@@ -57,7 +57,7 @@ class UserController(
         @Valid @RequestBody @ApiParam(
             value = "회원 한 명의 정보를 갖는 객체",
             required = true
-        ) request: UserSinUpRequest
+        ) request: UserSignUpRequest
     ): ApiResponse<*> {
         userService.signUp(request)
         return ApiUtils.success()
