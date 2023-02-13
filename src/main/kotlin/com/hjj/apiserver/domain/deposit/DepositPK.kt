@@ -1,7 +1,7 @@
 package com.hjj.apiserver.domain.deposit
 
 import java.io.Serializable
-import javax.persistence.Embeddable
+import jakarta.persistence.Embeddable
 
 @Embeddable
 data class DepositPK(

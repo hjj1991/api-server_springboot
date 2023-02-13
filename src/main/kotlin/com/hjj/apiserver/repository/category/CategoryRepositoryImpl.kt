@@ -1,10 +1,10 @@
 package com.hjj.apiserver.repository.category
 
 import com.hjj.apiserver.domain.accountbook.AccountRole
-import com.hjj.apiserver.domain.accountbook.QAccountBookUser.accountBookUser
+import com.hjj.apiserver.domain.accountbook.QAccountBookUser.Companion.accountBookUser
 import com.hjj.apiserver.domain.category.Category
 import com.hjj.apiserver.domain.category.QCategory
-import com.hjj.apiserver.domain.category.QCategory.category
+import com.hjj.apiserver.domain.category.QCategory.Companion.category
 import com.hjj.apiserver.dto.category.response.CategoryFindAllResponse
 import com.querydsl.core.group.GroupBy.groupBy
 import com.querydsl.core.group.GroupBy.list

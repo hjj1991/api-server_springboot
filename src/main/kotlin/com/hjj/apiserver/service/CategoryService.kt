@@ -165,13 +165,14 @@ class CategoryService(
 
     @Transactional(readOnly = false, rollbackFor = [Exception::class])
     fun deleteCategory(categoryNo: Long, accountBookNo: Long, userNo: Long) {
-        categoryRepository.delete(
-            categoryRepository.findCategoryByAccountRole(
-                categoryNo,
-                accountBookNo,
-                userNo,
-                setOf(AccountRole.OWNER)
-            )
-        )
+
+        val category = categoryRepository.findCategoryByAccountRole(
+            categoryNo,
+            accountBookNo,
+            userNo,
+            setOf(AccountRole.OWNER)
+        ) ?: throw NoSuchElementException()
+
+        categoryRepository.delete(category)
     }
 }

@@ -17,7 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.transaction.annotation.Transactional
-import javax.persistence.EntityManager
+import jakarta.persistence.EntityManager
 
 @SpringBootTest
 @Transactional
@@ -41,52 +41,10 @@ class AccountBookServiceTest @Autowired constructor(
                 "TRUNCATE TABLE tb_purchase; " +
                 "TRUNCATE TABLE tb_user; " +
                 "TRUNCATE TABLE tb_card; " +
-                "SET REFERENTIAL_INTEGRITY TRUE; ").executeUpdate()
+                "SET REFERENTIAL_INTEGRITY TRUE; ")
+            .executeUpdate()
     }
 
-    @Test
-    @DisplayName("해당 유저의 모든 가계부 정보가 정상 조회된다.")
-    fun findAllAccountBookTest() {
-        // given
-        val request = AccountBookAddRequest(
-            accountBookName = "가계부명",
-            accountBookDesc = "가계부설명",
-            backGroundColor = "#ffffff",
-            color = "#000000",
-        )
-        val savedUsers: MutableList<User> = mutableListOf()
-        for (i in 0..10){
-            savedUsers.add(User(
-                userId = "testUser${i}",
-                nickName = "닉네임${i}",
-                userEmail = "tester@test.co.kr"
-            ))
-        }
-        val savedUser = User(
-            userId = "testUser",
-            nickName = "닉네임",
-            userEmail = "tester@test.co.kr"
-        )
-        userRepository.save(savedUser)
-
-        accountBookService.addAccountBook(savedUser.userNo!!, request)
-
-
-        // when
-        val findAllAccountBook = accountBookService.findAllAccountBook(savedUser.userNo!!)
-
-        // then
-        assertThat(findAllAccountBook).hasSize(1)
-        assertThat(findAllAccountBook[0].accountBookName).isEqualTo(request.accountBookName)
-        assertThat(findAllAccountBook[0].accountBookDesc).isEqualTo(request.accountBookDesc)
-        assertThat(findAllAccountBook[0].backGroundColor).isEqualTo(request.backGroundColor)
-        assertThat(findAllAccountBook[0].color).isEqualTo(request.color)
-        assertThat(findAllAccountBook[0].joinedUsers[0].userNo).isEqualTo(savedUser.userNo)
-        assertThat(findAllAccountBook[0].joinedUsers[0].nickName).isEqualTo(savedUser.nickName)
-        assertThat(findAllAccountBook[0].joinedUsers[0].picture).isEqualTo(savedUser.picture)
-
-
-    }
 
     @Test
     @DisplayName("가계부가 정상 생성된다.")

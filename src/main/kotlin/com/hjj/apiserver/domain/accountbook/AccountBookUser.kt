@@ -3,7 +3,7 @@ package com.hjj.apiserver.domain.accountbook
 import com.hjj.apiserver.domain.BaseEntity
 import com.hjj.apiserver.domain.user.User
 import org.hibernate.annotations.DynamicUpdate
-import javax.persistence.*
+import jakarta.persistence.*
 
 @Entity
 @DynamicUpdate

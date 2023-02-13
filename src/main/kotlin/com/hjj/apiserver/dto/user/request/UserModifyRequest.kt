@@ -1,6 +1,6 @@
 package com.hjj.apiserver.dto.user.request
 
-import javax.validation.constraints.Pattern
+import jakarta.validation.constraints.Pattern
 
 data class UserModifyRequest(
     val nickName: String,

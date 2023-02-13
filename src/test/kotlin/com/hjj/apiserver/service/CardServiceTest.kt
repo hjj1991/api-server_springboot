@@ -15,7 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.transaction.annotation.Transactional
-import javax.persistence.EntityManager
+import jakarta.persistence.EntityManager
 
 @SpringBootTest
 @Transactional
@@ -57,7 +57,7 @@ internal class CardServiceTest @Autowired constructor(
 
 
         // when
-        val insertCard = cardService.findCard(savedUser.userNo!!, cardAddRequest)
+        val insertCard = cardService.addCard(savedUser.userNo!!, cardAddRequest)
 
         // then
         assertThat(insertCard.cardName).isEqualTo("테스트카드")
@@ -82,7 +82,7 @@ internal class CardServiceTest @Autowired constructor(
             cardType = CardType.CHECK_CARD,
             cardDesc = "카드설명",
         )
-        val insertCard = cardService.findCard(savedUser.userNo!!, cardAddRequest)
+        val insertCard = cardService.addCard(savedUser.userNo!!, cardAddRequest)
 
         // when
         cardService.removeCard(savedUser.userNo!!, insertCard.cardNo!!)
@@ -109,7 +109,7 @@ internal class CardServiceTest @Autowired constructor(
             cardType = CardType.CHECK_CARD,
             cardDesc = "카드설명",
         )
-        val insertCard = cardService.findCard(savedUser.userNo!!, cardAddRequest)
+        val insertCard = cardService.addCard(savedUser.userNo!!, cardAddRequest)
 
         val cardModifyRequest = CardModifyRequest(
             cardName = "변경한카드명",
@@ -180,10 +180,10 @@ internal class CardServiceTest @Autowired constructor(
             cardType = CardType.CHECK_CARD,
             cardDesc = "카드설명",
         )
-        val insertCard = cardService.findCard(savedUser.userNo!!, cardAddRequest)
+        val insertCard = cardService.addCard(savedUser.userNo!!, cardAddRequest)
 
         // when
-        val selectCard = cardService.findCard(savedUser.userNo!!, insertCard.cardNo!!)
+        val selectCard = cardService.findCardDetail(savedUser.userNo!!, insertCard.cardNo!!)
 
         // then
 

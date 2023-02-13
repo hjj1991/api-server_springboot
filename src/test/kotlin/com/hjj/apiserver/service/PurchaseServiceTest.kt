@@ -18,7 +18,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.data.domain.PageRequest
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
-import javax.persistence.EntityManager
+import jakarta.persistence.EntityManager
 
 
 @SpringBootTest
@@ -105,7 +105,7 @@ internal class PurchaseServiceTest @Autowired constructor(
             color = "#000000"
         )
         val savedAccountBook = accountBookService.addAccountBook(savedUser.userNo!!, accountBookAddRequest)
-        val insertCard = cardService.findCard(
+        val insertCard = cardService.addCard(
             savedUser.userNo!!, CardAddRequest(
                 cardName = "테스트카드",
                 cardType = CardType.CHECK_CARD,
@@ -173,7 +173,7 @@ internal class PurchaseServiceTest @Autowired constructor(
             color = "#000000"
         )
         val savedAccountBook = accountBookService.addAccountBook(savedUser.userNo!!, accountBookAddRequest)
-        val insertCard = cardService.findCard(
+        val insertCard = cardService.addCard(
             savedUser.userNo!!, CardAddRequest(
                 cardName = "테스트카드",
                 cardType = CardType.CHECK_CARD,
@@ -237,7 +237,7 @@ internal class PurchaseServiceTest @Autowired constructor(
             color = "#000000"
         )
         val savedAccountBook = accountBookService.addAccountBook(savedUser.userNo!!, accountBookAddRequest)
-        val insertCard = cardService.findCard(
+        val insertCard = cardService.addCard(
             savedUser.userNo!!, CardAddRequest(
                 cardName = "테스트카드",
                 cardType = CardType.CHECK_CARD,
@@ -282,7 +282,7 @@ internal class PurchaseServiceTest @Autowired constructor(
             color = "#000000"
         )
         val savedAccountBook = accountBookService.addAccountBook(savedUser.userNo!!, accountBookAddRequest)
-        val insertCard = cardService.findCard(
+        val insertCard = cardService.addCard(
             savedUser.userNo!!, CardAddRequest(
                 cardName = "테스트카드",
                 cardType = CardType.CHECK_CARD,
@@ -372,7 +372,7 @@ internal class PurchaseServiceTest @Autowired constructor(
             color = "#000000"
         )
         val savedAccountBook = accountBookService.addAccountBook(savedUser.userNo!!, accountBookAddRequest)
-        val insertCard = cardService.findCard(
+        val insertCard = cardService.addCard(
             savedUser.userNo!!, CardAddRequest(
                 cardName = "테스트카드",
                 cardType = CardType.CHECK_CARD,

@@ -1,8 +1,8 @@
 package com.hjj.apiserver.service
 
-import com.hjj.apiserver.domain.card.Card
 import com.hjj.apiserver.dto.card.reqeust.CardAddRequest
 import com.hjj.apiserver.dto.card.reqeust.CardModifyRequest
+import com.hjj.apiserver.dto.card.response.CardAddResponse
 import com.hjj.apiserver.dto.card.response.CardFindAllResponse
 import com.hjj.apiserver.dto.card.response.CardFindResponse
 import com.hjj.apiserver.repository.card.CardRepository
@@ -18,15 +18,11 @@ class CardService(
 ) {
 
     @Transactional(readOnly = false, rollbackFor = [Exception::class])
-    fun findCard(userNo: Long, request: CardAddRequest): Card {
-        return cardRepository.save(
-            Card(
-                cardName = request.cardName,
-                cardType = request.cardType,
-                cardDesc = request.cardDesc,
-                user = userRepository.getById(userNo)
-            )
-        )
+    fun addCard(userNo: Long, request: CardAddRequest): CardAddResponse {
+        val userByLazy = userRepository.getReferenceById(userNo)
+        val card = request.toEntity(userByLazy)
+        cardRepository.save(card)
+        return CardAddResponse.of(card)
     }
 
     @Transactional(readOnly = false, rollbackFor = [Exception::class])
@@ -47,7 +43,7 @@ class CardService(
             .map { CardFindAllResponse(it.cardNo!!, it.cardName, it.cardType, it.cardDesc) }
     }
 
-    fun findCard(userNo: Long, cardNo: Long): CardFindResponse {
+    fun findCardDetail(userNo: Long, cardNo: Long): CardFindResponse {
         return cardRepository.findByCardNoAndUser_UserNo(cardNo, userNo)
             ?.run { CardFindResponse(cardNo, cardName, cardType, cardDesc) }
             ?: throw IllegalArgumentException()

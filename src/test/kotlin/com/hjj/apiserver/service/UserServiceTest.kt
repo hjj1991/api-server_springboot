@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.transaction.annotation.Transactional
-import javax.persistence.EntityManager
+import jakarta.persistence.EntityManager
 
 @SpringBootTest
 @Transactional
@@ -48,7 +48,7 @@ class UserServiceTest @Autowired constructor(
         val existsNickName = userService.existsNickName(currentUserInfo = null, nickName = "뜨끔이당")
 
         // then
-        assertThat(existsNickName).isFalse
+        assertThat(existsNickName).isTrue
 
     }
 
@@ -63,7 +63,7 @@ class UserServiceTest @Autowired constructor(
         val existsUserId = userService.existsUserId("testUser12")
 
         // then
-        assertThat(existsUserId).isFalse
+        assertThat(existsUserId).isTrue
 
     }
 

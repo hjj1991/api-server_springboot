@@ -5,7 +5,7 @@ import com.hjj.apiserver.domain.accountbook.AccountBook
 import com.hjj.apiserver.domain.purchase.Purchase
 import org.hibernate.annotations.BatchSize
 import org.hibernate.annotations.DynamicUpdate
-import javax.persistence.*
+import jakarta.persistence.*
 
 @Entity
 @DynamicUpdate

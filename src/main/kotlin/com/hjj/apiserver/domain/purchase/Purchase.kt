@@ -8,7 +8,7 @@ import com.hjj.apiserver.domain.user.User
 import com.hjj.apiserver.dto.purchase.request.PurchaseModifyRequest
 import org.hibernate.annotations.DynamicUpdate
 import java.time.LocalDate
-import javax.persistence.*
+import jakarta.persistence.*
 
 @Entity
 @DynamicUpdate

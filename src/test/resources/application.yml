@@ -16,7 +16,7 @@ spring:
           batch_size: 100
         format_sql: true
         default_batch_fetch_size: 100
-        dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+        dialect: org.hibernate.dialect.MySQL5Dialect
         show_sql: true
   jwt:
     secret: testToken

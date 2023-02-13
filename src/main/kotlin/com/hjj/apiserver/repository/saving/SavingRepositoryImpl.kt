@@ -1,9 +1,9 @@
 package com.hjj.apiserver.repository.saving
 
-import com.hjj.apiserver.domain.bank.QBank.*
-import com.hjj.apiserver.domain.saving.QSaving.*
+import com.hjj.apiserver.domain.bank.QBank.Companion.bank
+import com.hjj.apiserver.domain.saving.QSaving.Companion.saving
 import com.hjj.apiserver.domain.saving.QSavingOption
-import com.hjj.apiserver.domain.saving.QSavingOption.*
+import com.hjj.apiserver.domain.saving.QSavingOption.Companion.savingOption
 import com.hjj.apiserver.dto.saving.response.SavingFindAllResponse
 import com.hjj.apiserver.dto.saving.response.SavingIntrRateDescLimit10
 import com.querydsl.core.types.Projections

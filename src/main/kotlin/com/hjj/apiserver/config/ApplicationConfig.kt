@@ -24,8 +24,8 @@ import java.io.FileInputStream
 import java.io.IOException
 import java.util.*
 import java.util.function.Consumer
-import javax.annotation.PostConstruct
-import javax.persistence.EntityManager
+import jakarta.annotation.PostConstruct
+import jakarta.persistence.EntityManager
 
 @Configuration
 class ApplicationConfig(

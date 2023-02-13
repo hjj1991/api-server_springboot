@@ -1,7 +1,7 @@
 package com.hjj.apiserver.domain.user
 
 import java.time.LocalDateTime
-import javax.persistence.*
+import jakarta.persistence.*
 
 @Entity
 @Table(name = "tb_user_log")

@@ -3,7 +3,7 @@ package com.hjj.apiserver.common
 import org.springframework.context.MessageSource
 import org.springframework.stereotype.Component
 import java.util.*
-import javax.annotation.PostConstruct
+import jakarta.annotation.PostConstruct
 
 enum class ErrCode(
     var msg: String,

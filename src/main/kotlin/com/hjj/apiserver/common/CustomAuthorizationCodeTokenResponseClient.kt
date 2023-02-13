@@ -35,9 +35,9 @@ class CustomAuthorizationCodeTokenResponseClient : OAuth2AccessTokenResponseClie
         authorizationCodeGrantRequest: OAuth2AuthorizationCodeGrantRequest
     ): OAuth2AccessTokenResponse {
         Assert.notNull(authorizationCodeGrantRequest, "authorizationCodeGrantRequest cannot be null")
-        val request = requestEntityConverter.convert(authorizationCodeGrantRequest)
+        val request = requestEntityConverter.convert(authorizationCodeGrantRequest)!!
         val response = getResponse(request)
-        var tokenResponse = response.body
+        var tokenResponse = response.body!!
         if (CollectionUtils.isEmpty(tokenResponse.accessToken.scopes)) {
             tokenResponse = OAuth2AccessTokenResponse.withResponse(tokenResponse)
                 .scopes(authorizationCodeGrantRequest.clientRegistration.scopes)

@@ -2,9 +2,9 @@ package com.hjj.apiserver.repository.accountbook
 
 import com.hjj.apiserver.domain.accountbook.AccountBook
 import com.hjj.apiserver.domain.accountbook.AccountRole
-import com.hjj.apiserver.domain.accountbook.QAccountBook.accountBook
-import com.hjj.apiserver.domain.accountbook.QAccountBookUser.accountBookUser
-import com.hjj.apiserver.domain.category.QCategory.category
+import com.hjj.apiserver.domain.accountbook.QAccountBook.Companion.accountBook
+import com.hjj.apiserver.domain.accountbook.QAccountBookUser.Companion.accountBookUser
+import com.hjj.apiserver.domain.category.QCategory.Companion.category
 import com.querydsl.jpa.JPAExpressions
 import com.querydsl.jpa.impl.JPAQueryFactory
 

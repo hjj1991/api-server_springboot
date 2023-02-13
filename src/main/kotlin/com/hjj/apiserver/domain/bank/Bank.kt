@@ -1,7 +1,7 @@
 package com.hjj.apiserver.domain.bank
 
 import com.hjj.apiserver.domain.BaseTimeEntity
-import javax.persistence.*
+import jakarta.persistence.*
 
 @Entity
 @Table(name = "tb_bank")

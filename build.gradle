@@ -1,33 +1,49 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
+buildscript {
+    ext {
+        restdocsApiSpecVersion = '0.17.1'
+    }
+}
+
 plugins {
-    id 'org.springframework.boot' version '2.6.3'
-    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'org.springframework.boot' version '3.0.2'
+    id 'io.spring.dependency-management' version '1.1.0'
     id 'com.ewerk.gradle.plugins.querydsl' version '1.0.10'
-    id 'java'
-    id 'org.jetbrains.kotlin.jvm' version '1.6.21'
-    id 'org.jetbrains.kotlin.plugin.jpa' version '1.6.21'
-    id 'org.jetbrains.kotlin.plugin.spring' version '1.6.21'
-    id 'org.jetbrains.kotlin.kapt' version '1.6.21'
-    id 'org.jetbrains.kotlin.plugin.allopen' version '1.6.21'
+    id 'org.jetbrains.kotlin.jvm' version '1.8.0'
+    id 'org.jetbrains.kotlin.plugin.spring' version '1.8.0'
+    id 'org.jetbrains.kotlin.plugin.jpa' version '1.8.0'
+    id 'org.jetbrains.kotlin.plugin.allopen' version '1.8.0'
+    id 'org.jetbrains.kotlin.kapt' version '1.8.0'
+    id "org.asciidoctor.jvm.convert" version "3.3.2"
+    id 'com.epages.restdocs-api-spec' version "${restdocsApiSpecVersion}"
+}
+
+configurations {
+    // config 추가
+    asciidoctorExt
 }
 
 // plugins, dependencies와 같은 Level (즉 build.gradle 최상단)
 allOpen {
-    annotation("javax.persistence.Entity")
-    annotation("javax.persistence.MappedSuperclass")
-    annotation("javax.persistence.Embeddable")
+    annotation("jakarta.persistence.Entity")
+    annotation("jakarta.persistence.MappedSuperclass")
+    annotation("jakarta.persistence.Embeddable")
 }
 
 
 group = 'com.hjj'
 version = '0.0.1-SNAPSHOT'
+sourceCompatibility = JavaVersion.VERSION_17
 
 
 repositories {
     mavenCentral()
 }
 
+
+
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -42,20 +58,22 @@ dependencies {
     implementation 'io.jsonwebtoken:jjwt:0.9.1'
     implementation 'io.springfox:springfox-boot-starter:3.0.0'
     implementation 'org.imgscalr:imgscalr-lib:4.2'
-    implementation 'com.google.firebase:firebase-admin:9.0.0'
+    implementation 'com.google.firebase:firebase-admin:9.1.1'
     implementation 'commons-io:commons-io:2.11.0'
     implementation 'org.seleniumhq.selenium:selenium-java:4.3.0'
     implementation 'com.cwbase:logback-redis-appender:1.1.6'
     implementation 'org.mariadb.jdbc:mariadb-java-client:3.0.8'
-
+    implementation 'javax.xml.bind:jaxb-api:2.3.0'
 
 
     implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
     implementation 'org.jetbrains.kotlin:kotlin-reflect'
-    implementation 'com.fasterxml.jackson.module:jackson-module-kotlin:2.13.4'
-    implementation 'com.querydsl:querydsl-jpa:5.0.0'
-    kapt("com.querydsl:querydsl-apt:5.0.0:jpa")
-    kapt("org.springframework.boot:spring-boot-configuration-processor")
+    implementation 'com.fasterxml.jackson.module:jackson-module-kotlin:2.14.2'
+    implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
+    implementation 'com.querydsl:querydsl-core:5.0.0'
+    kapt "com.querydsl:querydsl-apt:5.0.0:jakarta"
+    kapt "com.querydsl:querydsl-kotlin-codegen:5.0.0"
+    kapt "org.springframework.boot:spring-boot-configuration-processor"
 
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
@@ -65,21 +83,85 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
 
+    asciidoctorExt 'org.springframework.restdocs:spring-restdocs-asciidoctor'
+    testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
+
+    testImplementation "com.epages:restdocs-api-spec-mockmvc:${restdocsApiSpecVersion}"
+
+}
+//  spring rest docs를 swagger와 함께 쓰기 위해 주석처리
+ext {
+    snippetsDir = file('build/generated-snippets')
 }
 
+
 test {
+    outputs.dir snippetsDir
     useJUnitPlatform()
 }
 
 
-compileKotlin {
-    kotlinOptions {
-        jvmTarget = "11"
+asciidoctor {
+    inputs.dir snippetsDir
+    configurations 'asciidoctorExt'
+    dependsOn test
+}
+
+
+asciidoctor.doFirst {  // 7
+    println("---------------- delete present asciidoctor.")
+    delete file('src/main/resources/static/docs')
+}
+
+asciidoctor.doLast {  // 8
+    println("---------------- asciidoctor is deleted!")
+}
+
+task copyHTML(type: Copy) {  // 9
+    dependsOn asciidoctor
+    from file("build/docs/asciidoc")
+    into file("src/main/resources/static/docs")
+}
+
+task register(type: Copy) {
+    delete file("src/main/resources/static/swagger-ui/openapi3.yaml") // 기존 OAS 파일 삭제
+    from file("$buildDir/api-spec/openapi3.yaml") // 복제할 OAS 파일 지정
+    into file("src/main/resources/static/swagger-ui/") // 타겟 디렉터리로 파일 복제
+    dependsOn("openapi3") // openapi3 Task가 먼저 실행되도록 설정
+}
+
+build {  // 10
+    dependsOn copyHTML, register
+}
+
+
+bootJar {
+    dependsOn asciidoctor
+    from(asciidoctor.outputDir) {
+        into 'src/main/resources/static/docs'
     }
 }
 
-compileTestKotlin {
-    kotlinOptions {
-        jvmTarget = "11"
+openapi3 {
+    setServer("http://localhost:8080")
+    title = "restdocs-swagger API Documentation"
+    description = "Spring REST Docs with SwaggerUI."
+    version = "0.0.1"
+    format = "yaml"
+
+    copy{
+        from "build/api-spec"
+        into "src/main/resources/static/docs"
     }
 }
+
+
+
+
+tasks.withType(KotlinCompile) {
+    kotlinOptions {
+        freeCompilerArgs = ['-Xjsr305=strict']
+        jvmTarget = '17'
+    }
+}
+

@@ -2,7 +2,7 @@ package com.hjj.apiserver.domain.saving
 
 
 import java.io.Serializable
-import javax.persistence.Embeddable
+import jakarta.persistence.Embeddable
 
 @Embeddable
 data class SavingPK(

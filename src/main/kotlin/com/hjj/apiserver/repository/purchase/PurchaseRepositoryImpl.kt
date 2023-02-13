@@ -1,9 +1,9 @@
 package com.hjj.apiserver.repository.purchase
 
-import com.hjj.apiserver.domain.card.QCard.card
-import com.hjj.apiserver.domain.category.QCategory.category
+import com.hjj.apiserver.domain.card.QCard.Companion.card
+import com.hjj.apiserver.domain.category.QCategory.Companion.category
 import com.hjj.apiserver.domain.purchase.Purchase
-import com.hjj.apiserver.domain.purchase.QPurchase.purchase
+import com.hjj.apiserver.domain.purchase.QPurchase.Companion.purchase
 import com.hjj.apiserver.dto.purchase.response.PurchaseDetailResponse
 import com.querydsl.core.types.Projections
 import com.querydsl.jpa.impl.JPAQueryFactory

@@ -3,13 +3,14 @@ package com.hjj.apiserver.config
 import com.hjj.apiserver.common.*
 import com.hjj.apiserver.common.filter.JwtAuthenticationFilter
 import com.hjj.apiserver.service.CustomOauth2UserService
+import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
-import org.springframework.security.config.annotation.web.builders.WebSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository
+import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.access.AccessDeniedHandlerImpl
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 import org.springframework.security.web.util.matcher.RequestMatcher
@@ -23,35 +24,37 @@ class WebSecurityConfiguration(
     private val customOauth2UserService: CustomOauth2UserService,
     private val oAuth2SuccessHandler: OAuth2SuccessHandler,
     private val clientRegistrationRepository: ClientRegistrationRepository,
-) : WebSecurityConfigurerAdapter() {
+) {
 
-
-    override fun configure(http: HttpSecurity) {
-        http.httpBasic().disable() // rest api 이므로 기본설정 사용안함. 기본설정은 비인증시 로그인폼 화면으로 리다이렉트 된다.
-            .csrf().disable() // rest api이므로 csrf 보안이 필요없으므로 disable처리.
+    @Bean
+    fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
+        http.httpBasic().disable()
+            .formLogin().disable()
+            .csrf().disable()
             .headers().frameOptions().disable()
             .and()
             .sessionManagement()
-            .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // jwt token으로 인증하므로 세션은 필요없으므로 생성안함.
+            .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             .and()
             .cors()
             .and()
-            .oauth2Login()  // oauth2 로그인 성공후 가져올 때의 설정
-                .authorizationEndpoint()
-                .authorizationRequestResolver(CustomAuthorizationRequestResolver(this.clientRegistrationRepository))
-                .and()
-                .tokenEndpoint()
-                .accessTokenResponseClient(CustomAuthorizationCodeTokenResponseClient())
-                .and()
-                .userInfoEndpoint() // 소셜로그인 성공 시 후속 조치를 진행할 UserService 인터페이스 구현체 등록
-                .userService(customOauth2UserService)
-                .and()
-                .successHandler(oAuth2SuccessHandler)
+            .oauth2Login()
+            .authorizationEndpoint()
+            .authorizationRequestResolver(CustomAuthorizationRequestResolver(this.clientRegistrationRepository))
             .and()
-            .authorizeRequests() // 다음 리퀘스트에 대한 사용권한 체크
+            .tokenEndpoint()
+            .accessTokenResponseClient(CustomAuthorizationCodeTokenResponseClient())
+            .and()
+            .userInfoEndpoint() // 소셜로그인 성공 시 후속 조치를 진행할 UserService 인터페이스 구현체 등록
+            .userService(customOauth2UserService)
+            .and()
+            .successHandler(oAuth2SuccessHandler)
+            .and()
+            .authorizeHttpRequests()
             .requestMatchers(RequestMatcher { CorsUtils.isPreFlightRequest(it) })
             .permitAll()
-            .antMatchers(
+            .requestMatchers(
+                "/static/**",
                 "/user/*/exists*",
                 "/main*",
                 "/deposit*",
@@ -81,14 +84,17 @@ class WebSecurityConfiguration(
                 UsernamePasswordAuthenticationFilter::class.java
             )
 
+        return http.build()
     }
 
-    // ignore check swagger resource
-    override fun configure(web: WebSecurity) {
-        web.ignoring().antMatchers(
-            "/v2/api-docs", "/swagger-resources/**", "/swagger-ui/index.html", "/webjars/**",
-            "/swagger/**", "/swagger-ui/**"
-        )
+    @Bean
+    fun webSecurityCustomizer(): WebSecurityCustomizer {
+        return WebSecurityCustomizer { web ->
+            web.ignoring().requestMatchers(
+                "/docs/**", "/swagger-resources/**", "/swagger-ui/swagger-ui.html", "/webjars/**",
+                "/swagger/**", "/swagger-ui/**"
+            )
+        }
     }
 
 

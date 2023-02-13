@@ -12,7 +12,7 @@ import com.hjj.apiserver.util.ApiUtils
 import com.hjj.apiserver.util.CurrentUser
 import io.swagger.annotations.*
 import org.springframework.web.bind.annotation.*
-import javax.validation.Valid
+import jakarta.validation.Valid
 
 @Api(tags = ["4. Category"])
 @RestController

@@ -1,9 +1,9 @@
 package com.hjj.apiserver.repository.deposit
 
 
-import com.hjj.apiserver.domain.bank.QBank.bank
-import com.hjj.apiserver.domain.deposit.QDeposit.deposit
-import com.hjj.apiserver.domain.deposit.QDepositOption.depositOption
+import com.hjj.apiserver.domain.bank.QBank.Companion.bank
+import com.hjj.apiserver.domain.deposit.QDeposit.Companion.deposit
+import com.hjj.apiserver.domain.deposit.QDepositOption.Companion.depositOption
 import com.hjj.apiserver.dto.deposit.response.DepositFindAllResponse
 import com.hjj.apiserver.dto.deposit.response.DepositIntrRateDescLimit10
 import com.querydsl.core.types.Projections

@@ -1,6 +1,6 @@
 package com.hjj.apiserver.dto.category.request
 
-import javax.validation.constraints.NotEmpty
+import jakarta.validation.constraints.NotEmpty
 
 data class CategoryModifyRequest(
     val accountBookNo: Long,

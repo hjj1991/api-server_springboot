@@ -9,7 +9,7 @@ import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
 import java.time.LocalDateTime
-import javax.persistence.*
+import jakarta.persistence.*
 
 @Entity
 @DynamicUpdate
@@ -20,6 +20,7 @@ import javax.persistence.*
     ]
 )
 class User(
+    userNo: Long? = null,
     userId: String? = null,
     nickName: String,
     userEmail: String? = null,
@@ -41,7 +42,7 @@ class User(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val userNo: Long? = null
+    var userNo: Long? = null
 
     @Column(length = 100, unique = true)
     val userId: String? = userId

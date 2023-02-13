@@ -1,7 +1,7 @@
 package com.hjj.apiserver.domain.saving
 
 import com.hjj.apiserver.domain.BaseTimeEntity
-import javax.persistence.*
+import jakarta.persistence.*
 
 @Entity
 @Table(name = "tb_saving_option")

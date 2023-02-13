@@ -2,7 +2,7 @@ package com.hjj.apiserver.domain.deposit
 
 import com.hjj.apiserver.domain.BaseTimeEntity
 import com.hjj.apiserver.domain.bank.Bank
-import javax.persistence.*
+import jakarta.persistence.*
 
 @Entity
 @Table(name = "tb_deposit")

@@ -1,7 +1,7 @@
 package com.hjj.apiserver.repository.user
 
-import com.hjj.apiserver.domain.user.QUser.user
-import com.hjj.apiserver.domain.user.QUserLog.userLog
+import com.hjj.apiserver.domain.user.QUser.Companion.user
+import com.hjj.apiserver.domain.user.QUserLog.Companion.userLog
 import com.hjj.apiserver.dto.user.response.UserDetailResponse
 import com.querydsl.core.types.ExpressionUtils
 import com.querydsl.core.types.Projections
