@@ -99,12 +99,10 @@ class CardControllerTest {
                                     .description("사용자의 카드 목록을 조회합니다.")
                                     .tag(CARD_TAG)
                                     .responseFields(
-                                        fieldWithPath("success").description("성공 여부"),
-                                        fieldWithPath("response").description("결과값"),
-                                        fieldWithPath("response.[].cardNo").description("카드번호"),
-                                        fieldWithPath("response.[].cardName").description("카드이름"),
-                                        fieldWithPath("response.[].cardType").description("카드타입"),
-                                        fieldWithPath("response.[].cardDesc").description("카드설명")
+                                        fieldWithPath("[].cardNo").description("카드번호"),
+                                        fieldWithPath("[].cardName").description("카드이름"),
+                                        fieldWithPath("[].cardType").description("카드타입"),
+                                        fieldWithPath("[].cardDesc").description("카드설명")
                                     )
                                     .requestHeaders(
                                         headerWithName(HttpHeaders.AUTHORIZATION).description(
@@ -182,12 +180,10 @@ class CardControllerTest {
                                     .description("사용자의 카드가 정상 등록됩니다.")
                                     .tag(CARD_TAG)
                                     .responseFields(
-                                        fieldWithPath("success").description("성공 여부"),
-                                        fieldWithPath("response").description("결과값"),
-                                        fieldWithPath("response.cardNo").description("카드번호"),
-                                        fieldWithPath("response.cardName").description("카드이름"),
-                                        fieldWithPath("response.cardType").description("카드타입"),
-                                        fieldWithPath("response.cardDesc").description("카드설명")
+                                        fieldWithPath("cardNo").description("카드번호"),
+                                        fieldWithPath("cardName").description("카드이름"),
+                                        fieldWithPath("cardType").description("카드타입"),
+                                        fieldWithPath("cardDesc").description("카드설명")
                                     )
                                     .requestHeaders(
                                         headerWithName(HttpHeaders.AUTHORIZATION).description(

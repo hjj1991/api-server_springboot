@@ -1,6 +1,5 @@
 package com.hjj.apiserver.controller
 
-import com.hjj.apiserver.common.ApiResponse
 import com.hjj.apiserver.dto.deposit.response.DepositFindAllResponse
 import com.hjj.apiserver.service.DepositService
 import com.hjj.apiserver.util.ApiUtils

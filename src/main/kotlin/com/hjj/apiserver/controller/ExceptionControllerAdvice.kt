@@ -1,6 +1,5 @@
 package com.hjj.apiserver.controller
 
-import com.hjj.apiserver.common.ApiResponse
 import com.hjj.apiserver.common.ErrCode
 import com.hjj.apiserver.common.exception.AlreadyExistedUserException
 import com.hjj.apiserver.common.exception.ExistedSocialUserException

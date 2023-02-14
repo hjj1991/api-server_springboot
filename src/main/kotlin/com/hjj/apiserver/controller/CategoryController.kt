@@ -1,6 +1,5 @@
 package com.hjj.apiserver.controller
 
-import com.hjj.apiserver.common.ApiResponse
 import com.hjj.apiserver.dto.category.request.CategoryAddRequest
 import com.hjj.apiserver.dto.category.request.CategoryModifyRequest
 import com.hjj.apiserver.dto.category.request.CategoryRemoveRequest

@@ -1,6 +1,6 @@
 package com.hjj.apiserver.common.exception
 
-class ExistedSocialUserException : Exception {
+class ExistedSocialUserException : RuntimeException {
 
     constructor() : super()
     constructor(message: String) : super(message)

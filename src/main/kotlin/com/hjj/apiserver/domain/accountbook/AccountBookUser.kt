@@ -6,8 +6,10 @@ import org.hibernate.annotations.DynamicUpdate
 import jakarta.persistence.*
 
 @Entity
-@DynamicUpdate
-@Table(name = "tb_account_book_user")
+@Table(name = "tb_account_book_user",
+    uniqueConstraints = [
+        UniqueConstraint(columnNames = ["accountBookNo", "userNo"])
+    ])
 class AccountBookUser(
     accountBook: AccountBook,
     user: User,
@@ -44,15 +46,4 @@ class AccountBookUser(
         protected set
 
 
-    /* 연관관계 편의 메서드 */
-    fun changeAccountBook(accountBook: AccountBook) {
-        this.accountBook = accountBook
-        accountBook.accountBookUserList.add(this)
-    }
-
-    /* 연관관계 편의 메서드 */
-    fun changeUser(user: User) {
-        this.user = user
-        user.accountBookUserList.add(this)
-    }
 }

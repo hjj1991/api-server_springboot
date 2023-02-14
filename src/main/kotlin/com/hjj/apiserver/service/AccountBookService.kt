@@ -1,10 +1,12 @@
 package com.hjj.apiserver.service
 
+import com.hjj.apiserver.common.exception.AccountBookNotFoundException
 import com.hjj.apiserver.domain.accountbook.AccountBook
 import com.hjj.apiserver.domain.accountbook.AccountBookUser
 import com.hjj.apiserver.domain.accountbook.AccountRole
 import com.hjj.apiserver.domain.category.Category
 import com.hjj.apiserver.dto.accountbook.request.AccountBookAddRequest
+import com.hjj.apiserver.dto.accountbook.response.AccountBookAddResponse
 import com.hjj.apiserver.dto.accountbook.response.AccountBookDetailResponse
 import com.hjj.apiserver.dto.accountbook.response.AccountBookFindAllResponse
 import com.hjj.apiserver.repository.accountbook.AccountBookRepository
@@ -24,32 +26,31 @@ class AccountBookService(
     private val userRepository: UserRepository,
 ) {
 
-    @Transactional(readOnly = false, rollbackFor = [Exception::class])
-    fun addAccountBook(userNo: Long, request: AccountBookAddRequest): AccountBook {
-
+    @Transactional(readOnly = false)
+    fun addAccountBook(userNo: Long, request: AccountBookAddRequest): AccountBookAddResponse {
         val newAccountBook = AccountBook(
             accountBookName = request.accountBookName,
             accountBookDesc = request.accountBookDesc,
         )
+        accountBookRepository.save(newAccountBook)
 
-        val savedAccountBook = accountBookRepository.save(newAccountBook)
-        accountBookUserRepository.save(
+        val savedAccountBookUser = accountBookUserRepository.save(
             AccountBookUser(
                 accountBook = newAccountBook,
-                user = userRepository.getById(userNo),
+                user = userRepository.getReferenceById(userNo),
                 accountRole = AccountRole.OWNER,
                 backGroundColor = request.backGroundColor,
                 color = request.color,
             )
         )
         categoryService.addBasicCategory(newAccountBook)
-        return savedAccountBook
+        return AccountBookAddResponse.of(savedAccountBookUser)
     }
 
     fun findAccountBookDetail(accountBookNo: Long, userNo: Long): AccountBookDetailResponse {
         val accountBook =
             accountBookRepository.findAccountBook(userNo, accountBookNo, listOf(AccountRole.MEMBER, AccountRole.OWNER))
-                ?: throw IllegalArgumentException()
+                ?: throw AccountBookNotFoundException()
 
         val categories: MutableList<AccountBookDetailResponse.CategoryDetail> = mutableListOf()
 

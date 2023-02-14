@@ -1,6 +1,6 @@
 package com.hjj.apiserver.common.exception
 
-class ProviderNotFoundException: Exception {
+class ProviderNotFoundException: RuntimeException {
 
     constructor() : super()
     constructor(message: String) : super(message)

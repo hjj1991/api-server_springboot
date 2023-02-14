@@ -1,6 +1,5 @@
 package com.hjj.apiserver.controller
 
-import com.hjj.apiserver.common.ApiResponse
 import com.hjj.apiserver.dto.purchase.request.PurchaseAddRequest
 import com.hjj.apiserver.dto.purchase.request.PurchaseFindOfPageRequest
 import com.hjj.apiserver.dto.purchase.request.PurchaseModifyRequest

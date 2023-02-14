@@ -13,9 +13,6 @@ import jakarta.persistence.*
 class AccountBook(
     accountBookName: String,
     accountBookDesc: String,
-    accountBookUserList: MutableList<AccountBookUser> = mutableListOf(),
-    purchaseList: MutableList<Purchase> = mutableListOf(),
-    categories: MutableList<Category> = mutableListOf(),
 ): BaseEntity() {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,19 +24,5 @@ class AccountBook(
 
     @Column
     var accountBookDesc: String = accountBookDesc
-        protected set
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "accountBook")
-    var accountBookUserList: MutableList<AccountBookUser> = accountBookUserList
-        protected set
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "accountBook")
-    @BatchSize(size = 100)
-    var purchaseList: MutableList<Purchase> = purchaseList
-        protected set
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "accountBook")
-    @BatchSize(size = 100)
-    var categories: MutableList<Category> = categories
         protected set
 }

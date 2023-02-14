@@ -1,6 +1,6 @@
 package com.hjj.apiserver.common.exception
 
-class UserNotFoundException: Exception {
+class UserNotFoundException: RuntimeException {
 
     constructor() : super()
     constructor(message: String) : super(message)

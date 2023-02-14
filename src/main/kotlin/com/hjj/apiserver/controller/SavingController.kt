@@ -1,6 +1,5 @@
 package com.hjj.apiserver.controller
 
-import com.hjj.apiserver.common.ApiResponse
 import com.hjj.apiserver.dto.saving.response.SavingFindAllResponse
 import com.hjj.apiserver.service.SavingService
 import com.hjj.apiserver.util.ApiUtils

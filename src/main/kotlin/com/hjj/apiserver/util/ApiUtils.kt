@@ -1,7 +1,6 @@
 package com.hjj.apiserver.util
 
 import com.hjj.apiserver.common.ApiError
-import com.hjj.apiserver.common.ApiResponse
 import com.hjj.apiserver.common.ErrCode
 
 class ApiUtils {

@@ -31,7 +31,6 @@ class User(
     providerConnectDate: LocalDateTime? = null,
     purchaseList: MutableList<Purchase> = mutableListOf(),
     userLogList: MutableList<UserLog> = mutableListOf(),
-    accountBookUserList: MutableList<AccountBookUser> = mutableListOf(),
     cards: MutableList<Card> = mutableListOf(),
     role: Role = Role.USER,
     refreshToken: String? = null,
@@ -78,9 +77,6 @@ class User(
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     @OrderBy("loginDateTime desc")
     val userLogList: MutableList<UserLog> = userLogList
-
-    @OneToMany(cascade = [CascadeType.ALL], mappedBy = "user", fetch = FetchType.LAZY)
-    val accountBookUserList: MutableList<AccountBookUser> = accountBookUserList
 
     @OneToMany(cascade = [CascadeType.ALL], mappedBy = "user", fetch = FetchType.LAZY)
     val cards: MutableList<Card> = cards

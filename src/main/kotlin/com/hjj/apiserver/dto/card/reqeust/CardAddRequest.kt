@@ -14,7 +14,6 @@ data class CardAddRequest(
     @field:NotNull
     val cardDesc: String = "",
 ) {
-
     fun toEntity(user: User): Card {
         return Card(
             cardName = cardName,
