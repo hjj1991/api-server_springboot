@@ -4,7 +4,6 @@ import com.hjj.apiserver.common.exception.AccountBookNotFoundException
 import com.hjj.apiserver.domain.accountbook.AccountBook
 import com.hjj.apiserver.domain.accountbook.AccountBookUser
 import com.hjj.apiserver.domain.accountbook.AccountRole
-import com.hjj.apiserver.domain.category.Category
 import com.hjj.apiserver.dto.accountbook.request.AccountBookAddRequest
 import com.hjj.apiserver.dto.accountbook.response.AccountBookAddResponse
 import com.hjj.apiserver.dto.accountbook.response.AccountBookDetailResponse
@@ -12,6 +11,7 @@ import com.hjj.apiserver.dto.accountbook.response.AccountBookFindAllResponse
 import com.hjj.apiserver.repository.accountbook.AccountBookRepository
 import com.hjj.apiserver.repository.accountbook.AccountBookUserRepository
 import com.hjj.apiserver.repository.card.CardRepository
+import com.hjj.apiserver.repository.category.CategoryRepository
 import com.hjj.apiserver.repository.user.UserRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -22,6 +22,7 @@ class AccountBookService(
     private val accountBookUserRepository: AccountBookUserRepository,
     private val accountBookRepository: AccountBookRepository,
     private val categoryService: CategoryService,
+    private val categoryRepository: CategoryRepository,
     private val cardRepository: CardRepository,
     private val userRepository: UserRepository,
 ) {
@@ -47,46 +48,26 @@ class AccountBookService(
         return AccountBookAddResponse.of(savedAccountBookUser)
     }
 
-    fun findAccountBookDetail(accountBookNo: Long, userNo: Long): AccountBookDetailResponse {
-        val accountBook =
-            accountBookRepository.findAccountBook(userNo, accountBookNo, listOf(AccountRole.MEMBER, AccountRole.OWNER))
-                ?: throw AccountBookNotFoundException()
-
-        val categories: MutableList<AccountBookDetailResponse.CategoryDetail> = mutableListOf()
-
-        for (category in accountBook.categories) {
-            if (category.parentCategory == null) {
-                categories.add(AccountBookDetailResponse.CategoryDetail(
-                    categoryNo = category.categoryNo,
-                    categoryName = category.categoryName,
-                    categoryIcon = category.categoryIcon,
-                    childCategories = category.childCategories.map { childCategory: Category ->
-                        AccountBookDetailResponse.ChildrenCategory(
-                            categoryNo = childCategory.categoryNo,
-                            categoryName = childCategory.categoryName,
-                            categoryIcon = childCategory.categoryIcon,
-                            parentCategoryNo = childCategory.parentCategory!!.categoryNo
-                        )
-                    }
-                )
-                )
-            }
+    fun findAccountBookDetail(accountBookNo: Long, userNo: Long): Any? {
+        val findAccountBook = accountBookRepository.findAccountBook(accountBookNo, userNo)?: throw AccountBookNotFoundException()
+        val findCards = cardRepository.findByUser_UserNo(userNo).map {
+            AccountBookDetailResponse.CardDetail(
+                cardNo = it.cardNo!!,
+                cardName = it.cardName,
+                cardType = it.cardType,
+            )
         }
 
+        val findCategories = categoryRepository.findCategories(userNo, accountBookNo)
 
         return AccountBookDetailResponse(
-            accountBookNo = accountBook.accountBookNo!!,
-            accountBookName = accountBook.accountBookName,
-            accountBookDesc = accountBook.accountBookDesc,
-            accountRole = accountBook.accountBookUserList.find { it.user.userNo == userNo }!!.accountRole,
-            createdDate = accountBook.createdDate,
-            cards = cardRepository.findByUser_UserNoAndDeleteYn(userNo).map {
-                AccountBookDetailResponse.CardDetail(
-                    cardNo = it.cardNo!!,
-                    cardName = it.cardName
-                )
-            },
-            categories = categories
+            accountBookNo = findAccountBook.accountBookNo,
+            accountBookName = findAccountBook.accountBookName,
+            accountBookDesc = findAccountBook.accountBookDesc,
+            accountRole = findAccountBook.accountRole,
+            createdDate = findAccountBook.createdDate,
+            cards = findCards,
+            categories = findCategories,
         )
     }
 

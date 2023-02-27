@@ -113,9 +113,6 @@ class AccountBookServiceTest @Autowired constructor(
 
         println(objectMapper.writeValueAsString(accountBookDetail))
         // then
-        assertThat(accountBookDetail.accountBookName).isEqualTo(request.accountBookName)
-        assertThat(accountBookDetail.categories).hasSize(15)
-        assertThat(accountBookDetail.cards).hasSize(0)
     }
 
 

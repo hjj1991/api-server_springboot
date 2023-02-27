@@ -2,10 +2,11 @@ package com.hjj.apiserver.repository.category
 
 import com.hjj.apiserver.domain.accountbook.AccountRole
 import com.hjj.apiserver.domain.category.Category
+import com.hjj.apiserver.dto.category.CategoryDto
 import com.hjj.apiserver.dto.category.response.CategoryFindAllResponse
 
 interface CategoryRepositoryCustom {
-    fun findCategories(userNo: Long, accountBookNo: Long): List<CategoryFindAllResponse.Categories>
+    fun findCategories(userNo: Long, accountBookNo: Long): List<CategoryDto>
     fun findCategoryByAccountRole(
         categoryNo: Long,
         accountBookNo: Long,

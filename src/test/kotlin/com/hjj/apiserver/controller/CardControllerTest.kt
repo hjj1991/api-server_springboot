@@ -9,8 +9,11 @@ import com.hjj.apiserver.common.JwtTokenProvider
 import com.hjj.apiserver.domain.card.CardType
 import com.hjj.apiserver.domain.user.Role
 import com.hjj.apiserver.dto.card.reqeust.CardAddRequest
+import com.hjj.apiserver.dto.card.reqeust.CardModifyRequest
 import com.hjj.apiserver.dto.card.response.CardAddResponse
 import com.hjj.apiserver.dto.card.response.CardFindAllResponse
+import com.hjj.apiserver.dto.card.response.CardFindResponse
+import com.hjj.apiserver.dto.card.response.CardModifyResponse
 import com.hjj.apiserver.dto.user.CurrentUserInfo
 import com.hjj.apiserver.service.CardService
 import com.hjj.apiserver.utils.ApiDocumentUtil
@@ -56,242 +59,331 @@ class CardControllerTest {
     private lateinit var cardService: CardService
 
 
-    @DisplayName("GET /card API는")
+    @DisplayName("GET /cards API 성공 200")
     @Nested
-    inner class Cards_get_test {
+    inner class Cards_get_success {
+        @DisplayName("개인의 카드 전체 목록을 가져온다.")
+        @Test
+        fun cardsFindTest_success() {
+            val cardFindAllResponses = listOf(
+                CardFindAllResponse(
+                    cardNo = 1L,
+                    cardName = "카드이름",
+                    cardType = CardType.CREDIT_CARD,
+                    cardDesc = "카드설명"
+                )
+            )
+            //Given
+            given(cardService.findCards(anyLong()))
+                .willReturn(cardFindAllResponses)
+            val userInfo = getUserInfo()
 
-        @DisplayName("성공 200")
-        @Nested
-        inner class Cards_get_success {
-            @DisplayName("개인의 카드 전체 목록을 가져온다.")
-            @Test
-            fun cardsFindTest_success() {
-                val cardFindAllResponses = listOf(
-                    CardFindAllResponse(
-                        cardNo = 1L,
-                        cardName = "카드이름",
-                        cardType = CardType.CREDIT_CARD,
-                        cardDesc = "카드설명"
+            //When && Then
+
+            mockMvc.perform(
+                get("/cards")
+                    .header(HttpHeaders.AUTHORIZATION, JwtTokenProvider.BEARER_PREFIX + "dXNlcjpzZWNyZXQ=")
+                    .contentType(APPLICATION_JSON)
+                    .with(
+                        SecurityMockMvcRequestPostProcessors.user(userInfo)
+                    )
+            )
+                .andExpect(status().isOk)
+                .andDo(
+                    MockMvcRestDocumentationWrapper.document(
+                        "카드 조회 성공",
+                        ApiDocumentUtil.getDocumentResponse(),
+                        resource(
+                            ResourceSnippetParameters.builder()
+                                .description("사용자의 카드 목록을 조회합니다.")
+                                .tag(CARD_TAG)
+                                .responseFields(
+                                    fieldWithPath("[].cardNo").description("카드번호"),
+                                    fieldWithPath("[].cardName").description("카드이름"),
+                                    fieldWithPath("[].cardType").description("카드타입"),
+                                    fieldWithPath("[].cardDesc").description("카드설명")
+                                )
+                                .requestHeaders(
+                                    headerWithName(HttpHeaders.AUTHORIZATION).description(
+                                        JwtTokenProvider.BEARER_PREFIX + "JWT토큰값"
+                                    )
+                                )
+                                .build()
+                        ),
+                        HeaderDocumentation.requestHeaders(
+                            HeaderDocumentation.headerWithName(HttpHeaders.AUTHORIZATION)
+                                .description(JwtTokenProvider.BEARER_PREFIX + "JWT토큰값")
+                        ),
                     )
                 )
-                //Given
-                given(cardService.findCards(anyLong()))
-                    .willReturn(cardFindAllResponses)
-                val userInfo = getUserInfo()
 
-                //When && Then
-
-                mockMvc.perform(
-                    get("/card")
-                        .header(HttpHeaders.AUTHORIZATION, JwtTokenProvider.BEARER_PREFIX + "dXNlcjpzZWNyZXQ=")
-                        .contentType(APPLICATION_JSON)
-                        .with(
-                            SecurityMockMvcRequestPostProcessors.user(userInfo)
-                        )
-                )
-                    .andExpect(status().isOk)
-                    .andDo(
-                        MockMvcRestDocumentationWrapper.document(
-                            "카드 조회 성공",
-                            ApiDocumentUtil.getDocumentResponse(),
-                            resource(
-                                ResourceSnippetParameters.builder()
-                                    .description("사용자의 카드 목록을 조회합니다.")
-                                    .tag(CARD_TAG)
-                                    .responseFields(
-                                        fieldWithPath("[].cardNo").description("카드번호"),
-                                        fieldWithPath("[].cardName").description("카드이름"),
-                                        fieldWithPath("[].cardType").description("카드타입"),
-                                        fieldWithPath("[].cardDesc").description("카드설명")
-                                    )
-                                    .requestHeaders(
-                                        headerWithName(HttpHeaders.AUTHORIZATION).description(
-                                            JwtTokenProvider.BEARER_PREFIX + "JWT토큰값"
-                                        )
-                                    )
-                                    .build()
-                            ),
-                            HeaderDocumentation.requestHeaders(
-                                HeaderDocumentation.headerWithName(HttpHeaders.AUTHORIZATION)
-                                    .description(JwtTokenProvider.BEARER_PREFIX + "JWT토큰값")
-                            ),
-                        )
-                    )
-
-            }
         }
-
     }
 
 
-    @DisplayName("POST /card API는")
+    @DisplayName("POST /cards API 성공 201")
     @Nested
-    inner class Cards_post_test {
+    inner class Cards_post_success {
+        @DisplayName("개인의 카드를 등록한다.")
+        @Test
+        fun cardsAddTest_success() {
 
-        @DisplayName("성공 201")
-        @Nested
-        inner class Cards_post_success {
-            @DisplayName("개인의 카드를 등록한다.")
-            @Test
-            fun cardsAddTest_success() {
+            //Given
+            val cardAddRequest = CardAddRequest(
+                cardName = "카카오카드",
+                cardType = CardType.CREDIT_CARD,
+                cardDesc = "카카오카드 설명"
+            )
 
-                //Given
-                val cardAddRequest = CardAddRequest(
-                    cardName = "카카오카드",
-                    cardType = CardType.CREDIT_CARD,
-                    cardDesc = "카카오카드 설명"
-                )
+            val cardAddResponse = CardAddResponse(
+                cardNo = 1,
+                cardName = cardAddRequest.cardName,
+                cardType = cardAddRequest.cardType,
+                cardDesc = cardAddRequest.cardDesc
+            )
 
-                val cardAddResponse = CardAddResponse(
-                    cardNo = 1,
-                    cardName = cardAddRequest.cardName,
-                    cardType = cardAddRequest.cardType,
-                    cardDesc = cardAddRequest.cardDesc
-                )
-
-                val userInfo = getUserInfo()
+            val userInfo = getUserInfo()
 
 
-                given(cardService.addCard(userInfo.userNo, cardAddRequest))
-                    .willReturn(cardAddResponse)
+            given(cardService.addCard(userInfo.userNo, cardAddRequest))
+                .willReturn(cardAddResponse)
 
 
-                //When && Then
+            //When && Then
 
-                mockMvc.perform(
-                    post("/card")
-                        .header(HttpHeaders.AUTHORIZATION, JwtTokenProvider.BEARER_PREFIX + "dXNlcjpzZWNyZXQ=")
-                        .contentType(APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsBytes(cardAddRequest))
-                        .with(
-                            SecurityMockMvcRequestPostProcessors.user(userInfo),
-                        ).with(
-                            SecurityMockMvcRequestPostProcessors.csrf(),
-                        )
-                )
-                    .andExpect(status().isCreated)
-                    .andDo(
-                        MockMvcRestDocumentationWrapper.document(
-                            "카드 등록 성공",
-                            ApiDocumentUtil.getDocumentRequest(),
-                            ApiDocumentUtil.getDocumentResponse(),
-                            resource(
-                                ResourceSnippetParameters.builder()
-                                    .description("사용자의 카드가 정상 등록됩니다.")
-                                    .tag(CARD_TAG)
-                                    .responseFields(
-                                        fieldWithPath("cardNo").description("카드번호"),
-                                        fieldWithPath("cardName").description("카드이름"),
-                                        fieldWithPath("cardType").description("카드타입"),
-                                        fieldWithPath("cardDesc").description("카드설명")
-                                    )
-                                    .requestHeaders(
-                                        headerWithName(HttpHeaders.AUTHORIZATION).description(
-                                            JwtTokenProvider.BEARER_PREFIX + "JWT토큰값"
-                                        )
-                                    )
-                                    .build()
-                            ),
-                            HeaderDocumentation.requestHeaders(
-                                HeaderDocumentation.headerWithName(HttpHeaders.AUTHORIZATION)
-                                    .description(JwtTokenProvider.BEARER_PREFIX + "JWT토큰값")
-                            ),
-                        )
+            mockMvc.perform(
+                post("/cards")
+                    .header(HttpHeaders.AUTHORIZATION, JwtTokenProvider.BEARER_PREFIX + "dXNlcjpzZWNyZXQ=")
+                    .contentType(APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsBytes(cardAddRequest))
+                    .with(
+                        SecurityMockMvcRequestPostProcessors.user(userInfo),
+                    ).with(
+                        SecurityMockMvcRequestPostProcessors.csrf(),
                     )
-            }
-        }
-
-        @DisplayName("실패 400")
-        @Nested
-        inner class Cards_post_fail {
-            @DisplayName("개인의 카드를 등록이 실패한다.")
-            @Test
-            fun cardsAddTest_fail_notInvalidData() {
-
-                //Given
-                val cardAddRequest = CardAddRequest(
-                    cardName = "",
-                    cardType = CardType.CREDIT_CARD,
-                    cardDesc = "카카오카드 설명"
-                )
-
-                val cardAddResponse = CardAddResponse(
-                    cardNo = 1,
-                    cardName = cardAddRequest.cardName,
-                    cardType = cardAddRequest.cardType,
-                    cardDesc = cardAddRequest.cardDesc
-                )
-
-                val userInfo = getUserInfo()
-
-
-                given(cardService.addCard(userInfo.userNo, cardAddRequest))
-                    .willReturn(cardAddResponse)
-
-
-                //When && Then
-
-                mockMvc.perform(
-                    post("/card")
-                        .header(HttpHeaders.AUTHORIZATION, JwtTokenProvider.BEARER_PREFIX + "dXNlcjpzZWNyZXQ=")
-                        .contentType(APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsBytes(cardAddRequest))
-                        .with(
-                            SecurityMockMvcRequestPostProcessors.user(userInfo),
-                        ).with(
-                            SecurityMockMvcRequestPostProcessors.csrf(),
-                        )
-                )
-                    .andExpect(status().is4xxClientError)
-                    .andDo(
-                        MockMvcRestDocumentationWrapper.document(
-                            "카드 등록 실패",
-                            ApiDocumentUtil.getDocumentRequest(),
-                            ApiDocumentUtil.getDocumentResponse(),
-                            resource(
-                                ResourceSnippetParameters.builder()
-                                    .description("사용자의 카드가 등록 실패됩니다.")
-                                    .tag(CARD_TAG)
-                                    .responseFields(
-                                        fieldWithPath("success").description("성공 여부"),
-                                        fieldWithPath("apiError").description("에러"),
-                                        fieldWithPath("apiError.message").description("에러메시지"),
+            )
+                .andExpect(status().isCreated)
+                .andDo(
+                    MockMvcRestDocumentationWrapper.document(
+                        "카드 등록 성공",
+                        ApiDocumentUtil.getDocumentRequest(),
+                        ApiDocumentUtil.getDocumentResponse(),
+                        resource(
+                            ResourceSnippetParameters.builder()
+                                .description("사용자의 카드가 정상 등록됩니다.")
+                                .tag(CARD_TAG)
+                                .responseFields(
+                                    fieldWithPath("cardNo").description("카드번호"),
+                                    fieldWithPath("cardName").description("카드이름"),
+                                    fieldWithPath("cardType").description("카드타입"),
+                                    fieldWithPath("cardDesc").description("카드설명")
+                                )
+                                .requestHeaders(
+                                    headerWithName(HttpHeaders.AUTHORIZATION).description(
+                                        JwtTokenProvider.BEARER_PREFIX + "JWT토큰값"
                                     )
-                                    .requestHeaders(
-                                        headerWithName(HttpHeaders.AUTHORIZATION).description(
-                                            JwtTokenProvider.BEARER_PREFIX + "JWT토큰값"
-                                        )
-                                    )
-                                    .build()
-                            ),
-                            HeaderDocumentation.requestHeaders(
-                                HeaderDocumentation.headerWithName(HttpHeaders.AUTHORIZATION)
-                                    .description(JwtTokenProvider.BEARER_PREFIX + "JWT토큰값")
-                            ),
-                        )
+                                )
+                                .build()
+                        ),
+                        HeaderDocumentation.requestHeaders(
+                            HeaderDocumentation.headerWithName(HttpHeaders.AUTHORIZATION)
+                                .description(JwtTokenProvider.BEARER_PREFIX + "JWT토큰값")
+                        ),
                     )
-            }
+                )
         }
-
     }
 
 
-    @DisplayName("개인의 카드 등록")
-    @Test
-    fun cardAddTest() {
-        // Given
-        val cardAddRequest = CardAddRequest(
-            cardName = "카드명",
-            cardType = CardType.CREDIT_CARD,
-            cardDesc = "카드 설명"
-        )
-        val userInfo = getUserInfo()
+    @DisplayName("GET /cards/{cardNo} API 성공 200")
+    @Nested
+    inner class Cards_detail_get_success {
+        @DisplayName("개인의 카드를 상세조회한다.")
+        @Test
+        fun cardsDetail_Test_success() {
+
+            //Given
+            val userInfo = getUserInfo()
+            val cardNo = 1L
+
+            val cardFindResponse = CardFindResponse(
+                cardNo = cardNo,
+                cardName = "현대카드",
+                cardType = CardType.CREDIT_CARD,
+                cardDesc = "카드 설명입니다."
+            )
 
 
-        // When && Then
+            given(cardService.findCardDetail(userInfo.userNo, cardNo))
+                .willReturn(cardFindResponse)
 
+
+            //When && Then
+
+            mockMvc.perform(
+                get("/cards/{cardNo}", cardNo)
+                    .header(HttpHeaders.AUTHORIZATION, JwtTokenProvider.BEARER_PREFIX + "dXNlcjpzZWNyZXQ=")
+                    .contentType(APPLICATION_JSON)
+                    .with(
+                        SecurityMockMvcRequestPostProcessors.user(userInfo),
+                    ).with(
+                        SecurityMockMvcRequestPostProcessors.csrf(),
+                    )
+            )
+                .andExpect(status().isOk)
+                .andDo(
+                    MockMvcRestDocumentationWrapper.document(
+                        "카드 조회 성공",
+                        ApiDocumentUtil.getDocumentRequest(),
+                        ApiDocumentUtil.getDocumentResponse(),
+                        resource(
+                            ResourceSnippetParameters.builder()
+                                .description("사용자의 카드가 정상 조회됩니다.")
+                                .tag(CARD_TAG)
+                                .responseFields(
+                                    fieldWithPath("cardNo").description("카드번호"),
+                                    fieldWithPath("cardName").description("카드이름"),
+                                    fieldWithPath("cardType").description("카드타입"),
+                                    fieldWithPath("cardDesc").description("카드설명")
+                                )
+                                .requestHeaders(
+                                    headerWithName(HttpHeaders.AUTHORIZATION).description(
+                                        JwtTokenProvider.BEARER_PREFIX + "JWT토큰값"
+                                    )
+                                )
+                                .build()
+                        ),
+                        HeaderDocumentation.requestHeaders(
+                            HeaderDocumentation.headerWithName(HttpHeaders.AUTHORIZATION)
+                                .description(JwtTokenProvider.BEARER_PREFIX + "JWT토큰값")
+                        ),
+                    )
+                )
+        }
     }
 
+
+    @DisplayName("DELETE /cards/{cardNo} API 성공 200")
+    @Nested
+    inner class Cards_delete_success {
+        @DisplayName("개인의 카드를 삭제한다.")
+        @Test
+        fun cards_delete_Test_success() {
+
+            //Given
+            val userInfo = getUserInfo()
+            val cardNo = 1L
+
+            //When && Then
+
+            mockMvc.perform(
+                delete("/cards/{cardNo}", cardNo)
+                    .header(HttpHeaders.AUTHORIZATION, JwtTokenProvider.BEARER_PREFIX + "dXNlcjpzZWNyZXQ=")
+                    .contentType(APPLICATION_JSON)
+                    .with(
+                        SecurityMockMvcRequestPostProcessors.user(userInfo),
+                    ).with(
+                        SecurityMockMvcRequestPostProcessors.csrf(),
+                    )
+            )
+                .andExpect(status().isNoContent)
+                .andDo(
+                    MockMvcRestDocumentationWrapper.document(
+                        "카드 삭제 성공",
+                        ApiDocumentUtil.getDocumentRequest(),
+                        ApiDocumentUtil.getDocumentResponse(),
+                        resource(
+                            ResourceSnippetParameters.builder()
+                                .description("사용자의 카드가 정상 삭제됩니다.")
+                                .tag(CARD_TAG)
+                                .requestHeaders(
+                                    headerWithName(HttpHeaders.AUTHORIZATION).description(
+                                        JwtTokenProvider.BEARER_PREFIX + "JWT토큰값"
+                                    )
+                                )
+                                .build()
+                        ),
+                        HeaderDocumentation.requestHeaders(
+                            HeaderDocumentation.headerWithName(HttpHeaders.AUTHORIZATION)
+                                .description(JwtTokenProvider.BEARER_PREFIX + "JWT토큰값")
+                        ),
+                    )
+                )
+        }
+    }
+
+    @DisplayName("PUT /cards/{cardNo} API 성공 200")
+    @Nested
+    inner class Cards_put_success {
+        @DisplayName("개인의 카드를 수정한다.")
+        @Test
+        fun cardsPutTest_success() {
+
+            //Given
+            val cardModifyRequest = CardModifyRequest(
+                cardName = "카카오카드",
+                cardType = CardType.CREDIT_CARD,
+                cardDesc = "카카오카드 설명"
+            )
+
+            val cardModifyResponse = CardModifyResponse(
+                cardNo = 1,
+                cardName = cardModifyRequest.cardName,
+                cardType = cardModifyRequest.cardType,
+                cardDesc = cardModifyRequest.cardDesc
+            )
+
+            val userInfo = getUserInfo()
+
+
+            given(cardService.modifyCard(userInfo.userNo, 1L, cardModifyRequest))
+                .willReturn(cardModifyResponse)
+
+
+            //When && Then
+
+            mockMvc.perform(
+                put("/cards/{cardNo}", 1L)
+                    .header(HttpHeaders.AUTHORIZATION, JwtTokenProvider.BEARER_PREFIX + "dXNlcjpzZWNyZXQ=")
+                    .contentType(APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsBytes(cardModifyRequest))
+                    .with(
+                        SecurityMockMvcRequestPostProcessors.user(userInfo),
+                    ).with(
+                        SecurityMockMvcRequestPostProcessors.csrf(),
+                    )
+            )
+                .andExpect(status().isOk)
+                .andDo(
+                    MockMvcRestDocumentationWrapper.document(
+                        "카드 수정 성공",
+                        ApiDocumentUtil.getDocumentRequest(),
+                        ApiDocumentUtil.getDocumentResponse(),
+                        resource(
+                            ResourceSnippetParameters.builder()
+                                .description("사용자의 카드가 정상 수정됩니다.")
+                                .tag(CARD_TAG)
+                                .responseFields(
+                                    fieldWithPath("cardNo").description("카드번호"),
+                                    fieldWithPath("cardName").description("카드이름"),
+                                    fieldWithPath("cardType").description("카드타입"),
+                                    fieldWithPath("cardDesc").description("카드설명")
+                                )
+                                .requestHeaders(
+                                    headerWithName(HttpHeaders.AUTHORIZATION).description(
+                                        JwtTokenProvider.BEARER_PREFIX + "JWT토큰값"
+                                    )
+                                )
+                                .build()
+                        ),
+                        HeaderDocumentation.requestHeaders(
+                            HeaderDocumentation.headerWithName(HttpHeaders.AUTHORIZATION)
+                                .description(JwtTokenProvider.BEARER_PREFIX + "JWT토큰값")
+                        ),
+                    )
+                )
+        }
+    }
 
     private fun getUserInfo(): CurrentUserInfo {
         return CurrentUserInfo("test", "닉네임", 1L, Role.USER)

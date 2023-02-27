@@ -2,11 +2,9 @@ package com.hjj.apiserver.controller
 
 import com.hjj.apiserver.dto.accountbook.request.AccountBookAddRequest
 import com.hjj.apiserver.dto.accountbook.response.AccountBookAddResponse
-import com.hjj.apiserver.dto.accountbook.response.AccountBookDetailResponse
 import com.hjj.apiserver.dto.accountbook.response.AccountBookFindAllResponse
 import com.hjj.apiserver.dto.user.CurrentUserInfo
 import com.hjj.apiserver.service.AccountBookService
-import com.hjj.apiserver.util.ApiUtils
 import com.hjj.apiserver.util.CurrentUser
 import io.swagger.annotations.*
 import jakarta.validation.Valid
@@ -38,8 +36,8 @@ class AccountBookController(
     )
     @ApiOperation(value = "개인가계부 목록을 조회.", notes = "개인가계부를 조회 한다.")
     @GetMapping("/account-book")
-    fun accountBooksFind(@CurrentUser user: CurrentUserInfo): ApiResponse<List<AccountBookFindAllResponse>> {
-        return ApiUtils.success(accountBookService.findAllAccountBook(user.userNo))
+    fun accountBooksFind(@CurrentUser user: CurrentUserInfo): List<AccountBookFindAllResponse> {
+        return accountBookService.findAllAccountBook(user.userNo)
     }
 
 
@@ -58,8 +56,8 @@ class AccountBookController(
     fun accountBookDetail(
         @CurrentUser user: CurrentUserInfo,
         @PathVariable accountBookNo: Long
-    ): ApiResponse<AccountBookDetailResponse> {
-        return ApiUtils.success(accountBookService.findAccountBookDetail(accountBookNo, user.userNo))
+    ) {
+        accountBookService.findAccountBookDetail(accountBookNo, user.userNo)
     }
 
 

@@ -83,13 +83,6 @@ class Purchase(
         user.purchaseList.add(this)
     }
 
-    /* 연관관계 편의 메서드 */
-    fun changeAccountBook(accountBook: AccountBook){
-        this.accountBook.purchaseList.remove(this)
-
-        this.accountBook = accountBook
-        accountBook.purchaseList.add(this)
-    }
 
     fun updatePurchase(request: PurchaseModifyRequest, card: Card?, category: Category?): Purchase{
         var updateCard = card

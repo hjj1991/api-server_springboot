@@ -96,16 +96,15 @@ class CategoryService(
         val accountBook = accountBookRepository.findAccountBook(
             userNo = userNo,
             accountBookNo = request.accountBookNo,
-            listOf(AccountRole.OWNER)
         ) ?: throw IllegalArgumentException()
 
-        categoryRepository.save(Category(
-            categoryName = request.categoryName,
-            categoryDesc = request.categoryDesc,
-            categoryIcon = request.categoryIcon,
-            accountBook = accountBook,
-            parentCategory = request.parentCategoryNo?.let { categoryRepository.getById(it) }
-        ))
+//        categoryRepository.save(Category(
+//            categoryName = request.categoryName,
+//            categoryDesc = request.categoryDesc,
+//            categoryIcon = request.categoryIcon,
+//            accountBook = accountBook,
+//            parentCategory = request.parentCategoryNo?.let { categoryRepository.getById(it) }
+//        ))
     }
 
     fun findAllCategories(userNo: Long, accountBookNo: Long): CategoryFindAllResponse {

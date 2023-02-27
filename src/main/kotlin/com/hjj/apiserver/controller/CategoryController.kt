@@ -7,7 +7,6 @@ import com.hjj.apiserver.dto.category.response.CategoryDetailResponse
 import com.hjj.apiserver.dto.category.response.CategoryFindAllResponse
 import com.hjj.apiserver.dto.user.CurrentUserInfo
 import com.hjj.apiserver.service.CategoryService
-import com.hjj.apiserver.util.ApiUtils
 import com.hjj.apiserver.util.CurrentUser
 import io.swagger.annotations.*
 import org.springframework.web.bind.annotation.*
@@ -34,9 +33,8 @@ class CategoryController(
     fun categoryAdd(
         @CurrentUser currentUserInfo: CurrentUserInfo,
         @RequestBody request: CategoryAddRequest
-    ): ApiResponse<*> {
+    ): Unit {
         categoryService.addCategory(currentUserInfo.userNo, request)
-        return ApiUtils.success()
     }
 
 
@@ -55,8 +53,8 @@ class CategoryController(
     fun categoriesFind(
         @CurrentUser currentUserInfo: CurrentUserInfo,
         @RequestParam accountBookNo: Long
-    ): ApiResponse<CategoryFindAllResponse> {
-        return ApiUtils.success(categoryService.findAllCategories(currentUserInfo.userNo, accountBookNo))
+    ): CategoryFindAllResponse {
+        return categoryService.findAllCategories(currentUserInfo.userNo, accountBookNo)
     }
 
     @ApiImplicitParams(
@@ -74,8 +72,8 @@ class CategoryController(
     fun categoryDetail(
         @CurrentUser currentUserInfo: CurrentUserInfo,
         @ApiParam(value = "categoryNo", required = true) @PathVariable("categoryNo") categoryNo: Long
-    ): ApiResponse<CategoryDetailResponse> {
-        return ApiUtils.success(categoryService.findCategory(categoryNo))
+    ): CategoryDetailResponse {
+        return categoryService.findCategory(categoryNo)
     }
 
     @ApiImplicitParams(
@@ -94,9 +92,8 @@ class CategoryController(
         @CurrentUser currentUserInfo: CurrentUserInfo,
         @ApiParam(value = "categoryNo", required = true) @PathVariable("categoryNo") categoryNo: Long,
         @Valid @RequestBody request: CategoryModifyRequest
-    ): ApiResponse<*> {
+    ) {
         categoryService.modifyCategory(currentUserInfo.userNo, categoryNo, request)
-        return ApiUtils.success()
     }
 
 
@@ -116,13 +113,12 @@ class CategoryController(
         @CurrentUser currentUserInfo: CurrentUserInfo,
         @ApiParam(value = "categoryNo", required = true) @PathVariable("categoryNo") categoryNo: Long,
         @RequestBody request: CategoryRemoveRequest
-    ): ApiResponse<*> {
+    ) {
         categoryService.deleteCategory(
             categoryNo,
             request.accountBookNo,
             currentUserInfo.userNo
         )
-        return ApiUtils.success()
     }
 
 }

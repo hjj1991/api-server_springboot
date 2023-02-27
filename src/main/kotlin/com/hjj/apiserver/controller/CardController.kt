@@ -19,12 +19,12 @@ class CardController(
     private val cardService: CardService,
 ) {
 
-    @GetMapping("/card")
+    @GetMapping("/cards")
     fun cardsFind(@CurrentUser currentUserInfo: CurrentUserInfo): List<CardFindAllResponse> {
         return cardService.findCards(currentUserInfo.userNo)
     }
 
-    @PostMapping("/card")
+    @PostMapping("/cards")
     @ResponseStatus(HttpStatus.CREATED)
     fun cardAdd(
         @CurrentUser currentUserInfo: CurrentUserInfo,
@@ -33,7 +33,7 @@ class CardController(
         return cardService.addCard(currentUserInfo.userNo, request)
     }
 
-    @DeleteMapping("/card/{cardNo}")
+    @DeleteMapping("/cards/{cardNo}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun cardRemove(
         @CurrentUser currentUserInfo: CurrentUserInfo, @PathVariable("cardNo") cardNo: Long
@@ -41,7 +41,7 @@ class CardController(
         cardService.removeCard(currentUserInfo.userNo, cardNo)
     }
 
-    @PutMapping("/card/{cardNo}")
+    @PutMapping("/cards/{cardNo}")
     fun cardModify(
         @CurrentUser currentUserInfo: CurrentUserInfo,
         @PathVariable("cardNo") cardNo: Long,
@@ -50,7 +50,7 @@ class CardController(
         return cardService.modifyCard(currentUserInfo.userNo, cardNo, request)
     }
 
-    @GetMapping("/card/{cardNo}")
+    @GetMapping("/cards/{cardNo}")
     fun cardDetail(
         @CurrentUser currentUserInfo: CurrentUserInfo,
         @PathVariable("cardNo") cardNo: Long

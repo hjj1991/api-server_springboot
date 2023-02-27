@@ -34,7 +34,6 @@ class PurchaseService(
         val accountBook = accountBookRepository.findAccountBook(
             userNo = userNo,
             accountBookNo = request.accountBookNo,
-            accountRoles = listOf(AccountRole.MEMBER, AccountRole.OWNER)
         ) ?: throw IllegalArgumentException()
 
         request.validRequest()
@@ -57,8 +56,8 @@ class PurchaseService(
                         setOf(AccountRole.OWNER, AccountRole.MEMBER)
                     ) ?: throw IllegalArgumentException()
                 },
-                user = userRepository.getById(userNo),
-                accountBook = accountBook,
+                user = userRepository.getReferenceById(userNo),
+                accountBook = accountBookRepository.getReferenceById(accountBook.accountBookNo),
             )
         )
     }

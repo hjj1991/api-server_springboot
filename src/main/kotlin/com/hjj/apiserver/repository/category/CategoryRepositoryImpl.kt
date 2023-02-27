@@ -5,7 +5,7 @@ import com.hjj.apiserver.domain.accountbook.QAccountBookUser.Companion.accountBo
 import com.hjj.apiserver.domain.category.Category
 import com.hjj.apiserver.domain.category.QCategory
 import com.hjj.apiserver.domain.category.QCategory.Companion.category
-import com.hjj.apiserver.dto.category.response.CategoryFindAllResponse
+import com.hjj.apiserver.dto.category.CategoryDto
 import com.querydsl.core.group.GroupBy.groupBy
 import com.querydsl.core.group.GroupBy.list
 import com.querydsl.core.types.Projections
@@ -15,7 +15,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory
 class CategoryRepositoryImpl(
     private val jpaQueryFactory: JPAQueryFactory,
 ) : CategoryRepositoryCustom {
-    override fun findCategories(userNo: Long, accountBookNo: Long): List<CategoryFindAllResponse.Categories> {
+    override fun findCategories(userNo: Long, accountBookNo: Long): List<CategoryDto> {
         val childCategory = QCategory("childrenCategory")
         return jpaQueryFactory
             .selectFrom(category)
@@ -44,7 +44,7 @@ class CategoryRepositoryImpl(
                     category.accountBook.accountBookNo,
                 ).list(
                     Projections.constructor(
-                        CategoryFindAllResponse.Categories::class.java,
+                        CategoryDto::class.java,
                         category.categoryNo,
                         category.categoryName,
                         category.categoryDesc,
@@ -52,7 +52,7 @@ class CategoryRepositoryImpl(
                         category.accountBook.accountBookNo,
                         list(
                             Projections.constructor(
-                                CategoryFindAllResponse.ChildCategory::class.java,
+                                CategoryDto.ChildCategory::class.java,
                                 childCategory.categoryNo,
                                 childCategory.categoryName,
                                 childCategory.categoryDesc,
@@ -66,7 +66,12 @@ class CategoryRepositoryImpl(
             )
     }
 
-    override fun findCategoryByAccountRole(categoryNo: Long, accountBookNo: Long, userNo: Long, accountRoles: Set<AccountRole>): Category? {
+    override fun findCategoryByAccountRole(
+        categoryNo: Long,
+        accountBookNo: Long,
+        userNo: Long,
+        accountRoles: Set<AccountRole>
+    ): Category? {
         val parentCategory = QCategory("parentCategory")
         return jpaQueryFactory.select(category)
             .from(category)

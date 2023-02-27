@@ -1,11 +1,8 @@
 package com.hjj.apiserver.common.advisor
 
+import com.hjj.apiserver.common.ApiError
 import com.hjj.apiserver.common.ErrCode
-import com.hjj.apiserver.util.ApiUtils
 import org.aspectj.lang.ProceedingJoinPoint
-import org.aspectj.lang.annotation.Around
-import org.aspectj.lang.annotation.Aspect
-import org.aspectj.lang.reflect.MethodSignature
 import org.slf4j.LoggerFactory
 
 //@Aspect
@@ -18,7 +15,7 @@ class ControllerExceptionLogTrace {
             return joinPoint.proceed()
         } catch (e: Exception) {
             log.error("[${joinPoint.signature.declaringType.simpleName}] Error request={}, Exception={}", joinPoint.args.toString(), e.stackTrace)
-            return ApiUtils.error(ErrCode.ERR_CODE9999)
+            return ApiError(ErrCode.ERR_CODE9999)
         }
     }
 }

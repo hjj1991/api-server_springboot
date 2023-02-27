@@ -13,7 +13,6 @@ import com.hjj.apiserver.dto.user.response.UserReIssueTokenResponse
 import com.hjj.apiserver.dto.user.response.UserSignInResponse
 import com.hjj.apiserver.service.FireBaseService
 import com.hjj.apiserver.service.UserService
-import com.hjj.apiserver.util.ApiUtils
 import com.hjj.apiserver.util.CurrentUser
 import com.hjj.apiserver.util.logger
 import io.swagger.annotations.*
@@ -36,18 +35,14 @@ class UserController(
 
     @ApiOperation(value = "유저닉네임 중복 조회", notes = "유저닉네임의 중복여부를 확인한다.")
     @GetMapping("/user/{nickName}/exists-nickname")
-    fun checkUserNickNameDuplicate(@CurrentUser currentUserInfo: CurrentUserInfo?, @PathVariable nickName: String): ApiResponse<Boolean> {
-        return ApiUtils.success(userService.existsNickName(currentUserInfo, nickName))
+    fun checkUserNickNameDuplicate(@CurrentUser currentUserInfo: CurrentUserInfo?, @PathVariable nickName: String): Boolean {
+        return userService.existsNickName(currentUserInfo, nickName)
     }
 
     @ApiOperation(value = "유저Id 중복 조회", notes = "유저id의 중복여부를 확인한다.")
     @GetMapping("/user/{userId}/exists-id")
-    fun checkUserIdDuplicate(@PathVariable userId: String): ApiResponse<*> {
-        return if (userService.existsUserId(userId)) {
-            ApiUtils.error(ErrCode.ERR_CODE0002)
-        } else {
-            ApiUtils.success(false)
-        }
+    fun checkUserIdDuplicate(@PathVariable userId: String) {
+        userService.existsUserId(userId)
     }
 
     @ApiOperation(value = "유저 회원가입", notes = "유저 회원가입을 한다.")
@@ -57,16 +52,15 @@ class UserController(
             value = "회원 한 명의 정보를 갖는 객체",
             required = true
         ) request: UserSignUpRequest
-    ): ApiResponse<*> {
+    ){
         userService.signUp(request)
-        return ApiUtils.success()
 
     }
 
     @ApiOperation(value = "유저 로그인", notes = "유저 로그인을 한다.")
     @PostMapping("/user/signin")
-    fun signIn(@RequestBody request: UserSignInRequest): ApiResponse<UserSignInResponse> {
-        return ApiUtils.success(userService.signIn(request))
+    fun signIn(@RequestBody request: UserSignInRequest): UserSignInResponse {
+        return userService.signIn(request)
     }
 
 
@@ -85,18 +79,14 @@ class UserController(
     fun socialMapping(
         @CurrentUser currentUserInfo: CurrentUserInfo,
         @RequestBody request: HashMap<String, String>
-    ): ApiResponse<*> {
-        if (!Provider.isExist(request["provider"])) {
-            return ApiUtils.error(ErrCode.ERR_CODE0009)
-        }
-//        userService.socialMapping(currentUserInfo.userNo, request)
-        return ApiUtils.success()
+    ){
+
     }
 
     @ApiOperation(value = "AcessToken 재발급", notes = "AcessToken을 재발급한다.")
     @PostMapping("/user/oauth/token")
-    fun reIssueToken(@RequestBody request: ReIssueTokenRequest): ApiResponse<UserReIssueTokenResponse> {
-        return ApiUtils.success(userService.reIssueToken(request.refreshToken))
+    fun reIssueToken(@RequestBody request: ReIssueTokenRequest):UserReIssueTokenResponse {
+        return userService.reIssueToken(request.refreshToken)
 
     }
 
@@ -112,8 +102,8 @@ class UserController(
     )
     @ApiOperation(value = "유저정보 상세조회", notes = "유저 정보를 상세 조회한다.")
     @GetMapping("/user")
-    fun userDetail(@CurrentUser currentUserInfo: CurrentUserInfo): ApiResponse<UserDetailResponse?> {
-        return ApiUtils.success(userService.findUser(currentUserInfo.userNo))
+    fun userDetail(@CurrentUser currentUserInfo: CurrentUserInfo): UserDetailResponse? {
+        return userService.findUser(currentUserInfo.userNo)
     }
 
     @ApiImplicitParams(
@@ -131,8 +121,8 @@ class UserController(
     fun userModify(
         @CurrentUser currentUserInfo: CurrentUserInfo,
         @RequestBody @Valid request: UserModifyRequest
-    ): ApiResponse<UserSignInResponse> {
-        return ApiUtils.success(userService.modifyUser(currentUserInfo.userNo, request))
+    ): UserSignInResponse{
+        return userService.modifyUser(currentUserInfo.userNo, request)
     }
 
     @ApiImplicitParams(
@@ -150,11 +140,8 @@ class UserController(
     fun userProfileImgModify(
         @CurrentUser currentUserInfo: CurrentUserInfo,
         pictureFile: MultipartFile
-    ): ApiResponse<*> {
-
+    ){
         userService.modifyUserPicture(currentUserInfo.userNo, pictureFile)
-        return ApiUtils.success()
-
     }
 
     @GetMapping(value = ["/user/profile"], produces = [MediaType.IMAGE_JPEG_VALUE])

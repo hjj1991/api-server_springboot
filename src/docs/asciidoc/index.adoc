@@ -92,4 +92,7 @@
 
 `GET` 요청을 사용하여 인덱스에 접근할 수 있다.
 
-operation::card[snippets='request-headers,response-body,http-response,links']
+operation::카드 조회 성공[snippets='request-headers,response-body,http-response,links']
+operation::카드 등록 성공[snippets='request-headers,response-body,http-response,links']
+operation::카드 수정 성공[snippets='request-headers,response-body,http-response,links']
+operation::카드 삭제 성공[snippets='request-headers,response-body,http-response,links']

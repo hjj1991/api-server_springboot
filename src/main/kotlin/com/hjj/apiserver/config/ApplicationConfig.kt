@@ -6,6 +6,7 @@ import com.google.firebase.FirebaseOptions
 import com.hjj.apiserver.common.advisor.ControllerExceptionLogTrace
 import com.hjj.apiserver.dto.user.CurrentUserInfo
 import com.hjj.apiserver.util.logger
+import com.querydsl.jpa.JPQLTemplates
 import com.querydsl.jpa.impl.JPAQueryFactory
 import org.modelmapper.ModelMapper
 import org.modelmapper.convention.MatchingStrategies
@@ -65,7 +66,7 @@ class ApplicationConfig(
 
     @Bean
     fun jpaQueryFactory(em: EntityManager): JPAQueryFactory {
-        return JPAQueryFactory(em)
+        return JPAQueryFactory(JPQLTemplates.DEFAULT, em)
     }
 
     @Bean
