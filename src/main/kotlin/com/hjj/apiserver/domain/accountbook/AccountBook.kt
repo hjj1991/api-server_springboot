@@ -11,12 +11,13 @@ import jakarta.persistence.*
 @DynamicUpdate
 @Table(name = "tb_account_book")
 class AccountBook(
+    accountBookNo: Long? = null,
     accountBookName: String,
     accountBookDesc: String,
 ): BaseEntity() {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val accountBookNo: Long? = null
+    val accountBookNo: Long? = accountBookNo
 
     @Column(length = 100, nullable = false)
     var accountBookName: String = accountBookName

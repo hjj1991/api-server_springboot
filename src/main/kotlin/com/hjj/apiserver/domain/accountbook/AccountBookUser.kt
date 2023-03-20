@@ -11,6 +11,7 @@ import jakarta.persistence.*
         UniqueConstraint(columnNames = ["accountBookNo", "userNo"])
     ])
 class AccountBookUser(
+    accountBookUserNo: Long? = null,
     accountBook: AccountBook,
     user: User,
     accountRole: AccountRole,
@@ -20,7 +21,7 @@ class AccountBookUser(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val accountBookUserNo: Long? = null
+    val accountBookUserNo: Long? = accountBookUserNo
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
     @JoinColumn(name = "accountBookNo")

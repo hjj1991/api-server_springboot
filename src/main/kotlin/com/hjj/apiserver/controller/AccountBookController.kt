@@ -23,35 +23,12 @@ class AccountBookController(
         return accountBookService.addAccountBook(currentUserInfo.userNo, request)
     }
 
-
-    @ApiImplicitParams(
-        ApiImplicitParam(
-            name = "Authorization",
-            value = "로그인 성공 후 access_token",
-            required = true,
-            dataType = "String",
-            dataTypeClass = String::class,
-            paramType = "header"
-        )
-    )
-    @ApiOperation(value = "개인가계부 목록을 조회.", notes = "개인가계부를 조회 한다.")
     @GetMapping("/account-book")
     fun accountBooksFind(@CurrentUser user: CurrentUserInfo): List<AccountBookFindAllResponse> {
         return accountBookService.findAllAccountBook(user.userNo)
     }
 
 
-    @ApiImplicitParams(
-        ApiImplicitParam(
-            name = "Authorization",
-            value = "로그인 성공 후 access_token",
-            required = true,
-            dataType = "String",
-            dataTypeClass = String::class,
-            paramType = "header"
-        )
-    )
-    @ApiOperation(value = "개인가계부 상세 조회.", notes = "개인가계부를 상세 조회 한다.")
     @GetMapping("/account-book/{accountBookNo}")
     fun accountBookDetail(
         @CurrentUser user: CurrentUserInfo,

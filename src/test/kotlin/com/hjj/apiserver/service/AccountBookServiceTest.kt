@@ -1,54 +1,50 @@
 package com.hjj.apiserver.service
 
-import com.fasterxml.jackson.databind.ObjectMapper
+import com.hjj.apiserver.domain.accountbook.AccountBook
+import com.hjj.apiserver.domain.accountbook.AccountBookUser
 import com.hjj.apiserver.domain.accountbook.AccountRole
 import com.hjj.apiserver.domain.user.User
 import com.hjj.apiserver.dto.accountbook.request.AccountBookAddRequest
-import com.hjj.apiserver.dto.category.request.CategoryAddRequest
 import com.hjj.apiserver.repository.accountbook.AccountBookRepository
 import com.hjj.apiserver.repository.accountbook.AccountBookUserRepository
+import com.hjj.apiserver.repository.card.CardRepository
 import com.hjj.apiserver.repository.category.CategoryRepository
 import com.hjj.apiserver.repository.user.UserRepository
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.data.repository.findByIdOrNull
-import org.springframework.transaction.annotation.Transactional
-import jakarta.persistence.EntityManager
+import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.InjectMocks
+import org.mockito.Mock
+import org.mockito.Mockito
+import org.mockito.junit.jupiter.MockitoExtension
 
-@SpringBootTest
-@Transactional
-class AccountBookServiceTest @Autowired constructor(
-    private val accountBookService: AccountBookService,
-    private val userRepository: UserRepository,
-    private val accountBookUserRepository: AccountBookUserRepository,
-    private val accountBookRepository: AccountBookRepository,
-    private val categoryRepository: CategoryRepository,
-    private val objectMapper: ObjectMapper,
-    private val categoryService: CategoryService,
-    private val entityManager: EntityManager,
-) {
 
-    @BeforeEach
-    fun clean(){
-        entityManager.createNativeQuery("SET REFERENTIAL_INTEGRITY FALSE; " +
-                "TRUNCATE TABLE tb_category; " +
-                "TRUNCATE TABLE tb_account_book_user; " +
-                "TRUNCATE TABLE tb_account_book; " +
-                "TRUNCATE TABLE tb_purchase; " +
-                "TRUNCATE TABLE tb_user; " +
-                "TRUNCATE TABLE tb_card; " +
-                "SET REFERENTIAL_INTEGRITY TRUE; ")
-            .executeUpdate()
-    }
+@ExtendWith(MockitoExtension::class)
+class AccountBookServiceTest {
+
+    @InjectMocks
+    lateinit var accountBookService: AccountBookService
+
+    @Mock
+    lateinit var accountBookRepository: AccountBookRepository
+
+    @Mock
+    lateinit var userRepository: UserRepository
+
+    @Mock
+    lateinit var accountBookUserRepository: AccountBookUserRepository
+
+    @Mock
+    lateinit var categoryRepository: CategoryRepository
+
+    @Mock
+    lateinit var cardRepository: CardRepository
 
 
     @Test
     @DisplayName("가계부가 정상 생성된다.")
-    fun addAccountBookTest() {
+    fun addAccountBook_Success() {
         // given
         val request = AccountBookAddRequest(
             accountBookName = "가계부명",
@@ -56,63 +52,46 @@ class AccountBookServiceTest @Autowired constructor(
             backGroundColor = "#ffffff",
             color = "#000000",
         )
-        val savedUser = userRepository.save(User(
+        val savedUser = User(
+            userNo = 1L,
             userId = "testUser",
             nickName = "닉네임",
             userEmail = "tester@test.co.kr"
-        ))
-
-        // when
-        accountBookService.addAccountBook(savedUser.userNo!!, request)
-
-        // then
-        val accountBookUser = accountBookUserRepository.findFirstByUser_UserNo(savedUser.userNo!!)
-        val accountBook = accountBookRepository.findByIdOrNull(accountBookUser.accountBook.accountBookNo)?:throw IllegalStateException()
-        assertThat(accountBookUser.color).isEqualTo(request.color)
-        assertThat(accountBookUser.backGroundColor).isEqualTo(request.backGroundColor)
-        assertThat(accountBookUser.accountRole).isEqualTo(AccountRole.OWNER)
-        assertThat(accountBook.accountBookName).isEqualTo(request.accountBookName)
-        assertThat(accountBook.accountBookDesc).isEqualTo(request.accountBookDesc)
-    }
-
-    @Test
-    @DisplayName("가계부가 상세 조회 된다.")
-    fun findAccountBookDetailTest(){
-        // given
-        val request = AccountBookAddRequest(
-            accountBookName = "가계부명",
-            accountBookDesc = "가계부설명",
-            backGroundColor = "#ffffff",
-            color = "#000000",
         )
-        val savedUser = userRepository.save(User(
-            userId = "testUser",
-            nickName = "닉네임",
-            userEmail = "tester@test.co.kr"
-        ))
-        val savedAccountBook = accountBookService.addAccountBook(savedUser.userNo!!, request)
-        val accountBookUser = accountBookUserRepository.findFirstByUser_UserNo(savedUser.userNo!!)
-        categoryService.addCategory(savedUser.userNo!!, CategoryAddRequest(
-            accountBookNo = savedAccountBook.accountBookNo!!,
-            parentCategoryNo = 1,
-            categoryName = "테스트카테고리입니다.",
-            categoryDesc = "테스터야",
-            categoryIcon = "테스트아이콘",
-        ))
-        categoryService.addCategory(savedUser.userNo!!, CategoryAddRequest(
-            accountBookNo = savedAccountBook.accountBookNo!!,
-            parentCategoryNo = 1,
-            categoryName = "22테스트카테고리입니다.",
-            categoryDesc = "22테스터야",
-            categoryIcon = "22테스트아이콘",
-        ))
-        entityManager.clear()
+
+        val newAccountBook = AccountBook(
+            accountBookNo = 1L,
+            accountBookName = request.accountBookName,
+            accountBookDesc = request.accountBookDesc
+        )
+
+        val newAccountBookUser = AccountBookUser(
+            accountBookUserNo = 1L,
+            accountBook = newAccountBook,
+            user = savedUser,
+            accountRole = AccountRole.OWNER,
+            backGroundColor = request.backGroundColor,
+            color = request.color
+        )
+
+        Mockito.`when`(accountBookRepository.save(Mockito.any())).thenReturn(newAccountBook)
+
+        Mockito.`when`(userRepository.getReferenceById(1L))
+            .thenReturn(savedUser)
+
+        Mockito.`when`(accountBookUserRepository.save(Mockito.any()))
+            .thenReturn(newAccountBookUser)
 
         // when
-        val accountBookDetail = accountBookService.findAccountBookDetail(accountBookUser.accountBook.accountBookNo!!, savedUser.userNo!!)?: throw IllegalStateException()
+        val addAccountBookResponse = accountBookService.addAccountBook(1L, request)
 
-        println(objectMapper.writeValueAsString(accountBookDetail))
         // then
+        assertThat(addAccountBookResponse.accountBookNo).isEqualTo(1L)
+        assertThat(addAccountBookResponse.accountBookName).isEqualTo(request.accountBookName)
+        assertThat(addAccountBookResponse.accountBookDesc).isEqualTo(request.accountBookDesc)
+        assertThat(addAccountBookResponse.accountRole).isEqualTo(AccountRole.OWNER)
+        assertThat(addAccountBookResponse.color).isEqualTo(request.color)
+        assertThat(addAccountBookResponse.backGroundColor).isEqualTo(request.backGroundColor)
     }
 
 

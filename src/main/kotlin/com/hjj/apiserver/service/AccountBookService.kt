@@ -13,6 +13,7 @@ import com.hjj.apiserver.repository.accountbook.AccountBookUserRepository
 import com.hjj.apiserver.repository.card.CardRepository
 import com.hjj.apiserver.repository.category.CategoryRepository
 import com.hjj.apiserver.repository.user.UserRepository
+import com.hjj.apiserver.util.CommonUtils
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -21,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional
 class AccountBookService(
     private val accountBookUserRepository: AccountBookUserRepository,
     private val accountBookRepository: AccountBookRepository,
-    private val categoryService: CategoryService,
     private val categoryRepository: CategoryRepository,
     private val cardRepository: CardRepository,
     private val userRepository: UserRepository,
@@ -29,11 +29,10 @@ class AccountBookService(
 
     @Transactional(readOnly = false)
     fun addAccountBook(userNo: Long, request: AccountBookAddRequest): AccountBookAddResponse {
-        val newAccountBook = AccountBook(
+        val newAccountBook = accountBookRepository.save(AccountBook(
             accountBookName = request.accountBookName,
             accountBookDesc = request.accountBookDesc,
-        )
-        accountBookRepository.save(newAccountBook)
+        ))
 
         val savedAccountBookUser = accountBookUserRepository.save(
             AccountBookUser(
@@ -44,12 +43,14 @@ class AccountBookService(
                 color = request.color,
             )
         )
-        categoryService.addBasicCategory(newAccountBook)
+        val createBasicCategories = CommonUtils.createBasicCategories(newAccountBook)
+        categoryRepository.saveAll(createBasicCategories)
         return AccountBookAddResponse.of(savedAccountBookUser)
     }
 
     fun findAccountBookDetail(accountBookNo: Long, userNo: Long): Any? {
-        val findAccountBook = accountBookRepository.findAccountBook(accountBookNo, userNo)?: throw AccountBookNotFoundException()
+        val findAccountBook =
+            accountBookRepository.findAccountBook(accountBookNo, userNo) ?: throw AccountBookNotFoundException()
         val findCards = cardRepository.findByUser_UserNo(userNo).map {
             AccountBookDetailResponse.CardDetail(
                 cardNo = it.cardNo!!,
