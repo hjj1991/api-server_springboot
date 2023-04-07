@@ -1,6 +1,7 @@
 package com.hjj.apiserver.dto.accountbook.response
 
 import com.hjj.apiserver.domain.accountbook.AccountRole
+import com.hjj.apiserver.domain.card.Card
 import com.hjj.apiserver.domain.card.CardType
 import com.hjj.apiserver.dto.category.CategoryDto
 import java.time.LocalDateTime
@@ -18,7 +19,20 @@ data class AccountBookDetailResponse(
         var cardNo: Long,
         var cardName: String,
         var cardType: CardType,
-    )
+        var cardDesc: String,
+    ){
+
+        companion object {
+            fun of(card: Card): CardDetail{
+                return CardDetail(
+                    cardNo = card.cardNo!!,
+                    cardName = card.cardName,
+                    cardType = card.cardType,
+                    cardDesc = card.cardDesc,
+                )
+            }
+        }
+    }
 
     class ChildrenCategory(
         var categoryNo: Long?,
@@ -26,4 +40,6 @@ data class AccountBookDetailResponse(
         var categoryIcon: String?,
         var parentCategoryNo: Long?,
     )
+
+
 }

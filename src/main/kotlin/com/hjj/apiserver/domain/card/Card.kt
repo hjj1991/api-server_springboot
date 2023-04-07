@@ -9,6 +9,7 @@ import jakarta.persistence.*
 @DynamicUpdate
 @Table(name = "tb_card")
 class Card(
+    cardNo: Long? = null,
     cardName: String,
     cardType: CardType,
     cardDesc: String = "",
@@ -18,7 +19,7 @@ class Card(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val cardNo: Long? = null
+    var cardNo: Long? = cardNo
 
     @Column(nullable = false, length = 100)
     var cardName: String = cardName

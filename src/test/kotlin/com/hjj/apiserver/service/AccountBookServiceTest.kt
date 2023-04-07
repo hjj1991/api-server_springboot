@@ -1,16 +1,24 @@
 package com.hjj.apiserver.service
 
+import com.hjj.apiserver.common.exception.AccountBookNotFoundException
 import com.hjj.apiserver.domain.accountbook.AccountBook
 import com.hjj.apiserver.domain.accountbook.AccountBookUser
 import com.hjj.apiserver.domain.accountbook.AccountRole
+import com.hjj.apiserver.domain.card.Card
+import com.hjj.apiserver.domain.card.CardType
 import com.hjj.apiserver.domain.user.User
+import com.hjj.apiserver.dto.accountbook.AccountBookDto
 import com.hjj.apiserver.dto.accountbook.request.AccountBookAddRequest
+import com.hjj.apiserver.dto.accountbook.response.AccountBookDetailResponse
+import com.hjj.apiserver.dto.accountbook.response.AccountBookFindAllResponse
+import com.hjj.apiserver.dto.category.CategoryDto
 import com.hjj.apiserver.repository.accountbook.AccountBookRepository
 import com.hjj.apiserver.repository.accountbook.AccountBookUserRepository
 import com.hjj.apiserver.repository.card.CardRepository
 import com.hjj.apiserver.repository.category.CategoryRepository
 import com.hjj.apiserver.repository.user.UserRepository
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -18,6 +26,7 @@ import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.junit.jupiter.MockitoExtension
+import java.time.LocalDateTime
 
 
 @ExtendWith(MockitoExtension::class)
@@ -94,5 +103,132 @@ class AccountBookServiceTest {
         assertThat(addAccountBookResponse.backGroundColor).isEqualTo(request.backGroundColor)
     }
 
+
+
+    @Test
+    @DisplayName("가계부가 정상 조회된다.")
+    fun findAccountBookDetail_Success() {
+        // given
+        val accountBookNo = 1L
+        val userNo = 1L
+        val user = User(
+            userNo = userNo,
+            userId = "테스트아이디",
+            nickName = "닉네임",
+        )
+        val accountBookDto = AccountBookDto(
+            accountBookNo = 1L,
+            accountBookName = "테스트가계부",
+            accountBookDesc = "설명",
+            backgroundColor = "#fadvs",
+            color = "#fadvs",
+            accountRole = AccountRole.OWNER,
+            createdDate = LocalDateTime.now(),
+        )
+
+        val cards = mutableListOf(
+            Card(
+                cardNo = 1L,
+                cardName = "카드",
+                cardType = CardType.CREDIT_CARD,
+                cardDesc = "카드설명",
+                user = user
+            )
+        )
+
+        val categories = listOf(
+            CategoryDto(
+                categoryNo = 1L,
+                categoryName = "카테고리",
+                categoryDesc = "카테고리 설명",
+                categoryIcon = "아이콘",
+                accountBookNo = accountBookNo,
+                childCategories = mutableListOf()
+            )
+        )
+
+        val accountBookDetailResponse = AccountBookDetailResponse(
+            accountBookNo = accountBookDto.accountBookNo,
+            accountBookName = accountBookDto.accountBookName,
+            accountBookDesc = accountBookDto.accountBookDesc,
+            accountRole = accountBookDto.accountRole,
+            createdDate = accountBookDto.createdDate,
+            cards = cards.map(AccountBookDetailResponse.CardDetail::of),
+            categories = categories
+        )
+
+
+
+        Mockito.`when`(accountBookRepository.findAccountBook(userNo, accountBookNo))
+            .thenReturn(accountBookDto)
+
+        Mockito.`when`(cardRepository.findByUser_UserNo(userNo))
+            .thenReturn(cards)
+
+        Mockito.`when`(categoryRepository.findCategories(userNo, accountBookNo))
+            .thenReturn(categories)
+
+        // when
+        val findAccountBookDetail = accountBookService.findAccountBookDetail(accountBookNo, userNo)
+
+        // then
+        assertThat(findAccountBookDetail.accountBookNo).isEqualTo(accountBookDetailResponse.accountBookNo)
+        assertThat(findAccountBookDetail.accountBookName).isEqualTo(accountBookDetailResponse.accountBookName)
+        assertThat(findAccountBookDetail.accountBookDesc).isEqualTo(accountBookDetailResponse.accountBookDesc)
+        assertThat(findAccountBookDetail.accountRole).isEqualTo(accountBookDetailResponse.accountRole)
+        assertThat(findAccountBookDetail.createdDate).isEqualTo(accountBookDetailResponse.createdDate)
+        assertThat(findAccountBookDetail.cards[0].cardNo).isEqualTo(accountBookDetailResponse.cards[0].cardNo)
+        assertThat(findAccountBookDetail.categories).isEqualTo(accountBookDetailResponse.categories)
+    }
+
+    @Test
+    @DisplayName("가계부가 없는 경우 AccountBook Not Found Exception 발생.")
+    fun findAccountBookDetail_fail_throw_accountBookNotFoundException() {
+        // given
+        val accountBookNo = 1L
+        val userNo = 1L
+
+        Mockito.`when`(accountBookRepository.findAccountBook(userNo, accountBookNo))
+            .thenReturn(null)
+
+
+        // when && then
+        assertThatThrownBy { accountBookService.findAccountBookDetail(accountBookNo, userNo) }
+            .isInstanceOf(AccountBookNotFoundException::class.java)
+    }
+
+
+    @Test
+    @DisplayName("가계부가 전체 조회 된다.")
+    fun findAllAccountBook_success(){
+        // given
+        val userNo = 1L
+
+        val accountBookFindAllResponses = listOf(
+            AccountBookFindAllResponse(
+                accountBookNo = 1L,
+                accountBookName = "가계부",
+                accountBookDesc = "설명",
+                backGroundColor = "#00000",
+                color = "#00000",
+                accountRole = AccountRole.OWNER,
+            )
+        )
+
+        Mockito.`when`(accountBookUserRepository.findAllAccountBookByUserNo(userNo))
+            .thenReturn(accountBookFindAllResponses)
+        // when
+        val findAllAccountBook = accountBookService.findAllAccountBook(userNo)
+
+        // then
+        assertThat(findAllAccountBook).isEqualTo(findAllAccountBook)
+        assertThat(findAllAccountBook.size).isEqualTo(1)
+    }
+
+    // add
+    private fun <T> any(): T {
+        Mockito.any<T>()
+        return null as T
+    }
 
 }
