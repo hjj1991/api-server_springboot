@@ -7,7 +7,7 @@ buildscript {
 }
 
 plugins {
-    id 'org.springframework.boot' version '3.0.2'
+    id 'org.springframework.boot' version '3.0.5'
     id 'io.spring.dependency-management' version '1.1.0'
     id 'com.ewerk.gradle.plugins.querydsl' version '1.0.10'
     id 'org.jetbrains.kotlin.jvm' version '1.8.0'
@@ -53,8 +53,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-cache'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
-    implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.8.1'
-    implementation 'org.modelmapper:modelmapper:3.1.0'
+    implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.9.0'
+    implementation 'org.modelmapper:modelmapper:3.1.1'
     implementation 'io.jsonwebtoken:jjwt:0.9.1'
     implementation 'io.springfox:springfox-boot-starter:3.0.0'
     implementation 'org.imgscalr:imgscalr-lib:4.2'
