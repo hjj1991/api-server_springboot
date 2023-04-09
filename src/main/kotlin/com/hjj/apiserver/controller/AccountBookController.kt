@@ -15,7 +15,7 @@ class AccountBookController(
     private val accountBookService: AccountBookService,
 ) {
 
-    @PostMapping("/account-book")
+    @PostMapping("/account-books")
     fun accountBookAdd(
         @CurrentUser currentUserInfo: CurrentUserInfo,
         @Valid @RequestBody request: AccountBookAddRequest
@@ -23,13 +23,13 @@ class AccountBookController(
         return accountBookService.addAccountBook(currentUserInfo.userNo, request)
     }
 
-    @GetMapping("/account-book")
+    @GetMapping("/account-books")
     fun accountBooksFind(@CurrentUser user: CurrentUserInfo): List<AccountBookFindAllResponse> {
         return accountBookService.findAllAccountBook(user.userNo)
     }
 
 
-    @GetMapping("/account-book/{accountBookNo}")
+    @GetMapping("/account-books/{accountBookNo}")
     fun accountBookDetail(
         @CurrentUser user: CurrentUserInfo,
         @PathVariable accountBookNo: Long

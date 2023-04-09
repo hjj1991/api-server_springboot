@@ -2,7 +2,7 @@ package com.hjj.apiserver.dto.accountbook.response
 
 import com.hjj.apiserver.domain.accountbook.AccountRole
 
-class AccountBookFindAllResponse(
+data class AccountBookFindAllResponse(
     val accountBookNo: Long?,
     val accountBookName: String?,
     val accountBookDesc: String?,
@@ -12,7 +12,7 @@ class AccountBookFindAllResponse(
     val joinedUsers: List<JoinedUser> = listOf()
 ) {
 
-    class JoinedUser(
+    data class JoinedUser(
         val userNo: Long,
         val nickName: String?,
         val picture: String?,

@@ -27,7 +27,9 @@ import java.util.*
 import java.util.function.Consumer
 import jakarta.annotation.PostConstruct
 import jakarta.persistence.EntityManager
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing
 
+@EnableJpaAuditing
 @Configuration
 class ApplicationConfig(
         @Value("\${app.firebase-configuration-file}")
