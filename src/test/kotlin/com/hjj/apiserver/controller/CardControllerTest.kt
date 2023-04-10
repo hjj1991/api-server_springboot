@@ -42,7 +42,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 @DisplayName("카드 관리 API 테스트")
 @AutoConfigureRestDocs
 @WebMvcTest(CardController::class)
-@MockBean(JpaMetamodelMappingContext::class)
 @ImportAutoConfiguration(
     exclude = [OAuth2ClientAutoConfiguration::class]
 )

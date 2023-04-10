@@ -1,5 +1,6 @@
 package com.hjj.apiserver.dto.accountbook.response
 
+import com.fasterxml.jackson.annotation.JsonFormat
 import com.hjj.apiserver.domain.accountbook.AccountRole
 import com.hjj.apiserver.domain.card.Card
 import com.hjj.apiserver.domain.card.CardType
@@ -11,11 +12,12 @@ data class AccountBookDetailResponse(
     var accountBookName: String,
     var accountBookDesc: String,
     var accountRole: AccountRole = AccountRole.GUEST,
+    @field:JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     var createdDate: LocalDateTime,
     var cards: List<CardDetail> = listOf(),
     var categories: List<CategoryDto> = listOf(),
 ) {
-    class CardDetail(
+    data class CardDetail(
         var cardNo: Long,
         var cardName: String,
         var cardType: CardType,

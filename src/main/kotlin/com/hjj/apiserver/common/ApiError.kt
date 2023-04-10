@@ -1,7 +1,7 @@
 package com.hjj.apiserver.common
 
 data class ApiError(
-    private val errCode: ErrCode,
-    private val message: String = errCode.msg
+    val errCode: ErrCode,
+    val message: String = errCode.msg
 ) {
 }

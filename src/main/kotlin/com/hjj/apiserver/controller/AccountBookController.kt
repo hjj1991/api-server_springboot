@@ -2,12 +2,14 @@ package com.hjj.apiserver.controller
 
 import com.hjj.apiserver.dto.accountbook.request.AccountBookAddRequest
 import com.hjj.apiserver.dto.accountbook.response.AccountBookAddResponse
+import com.hjj.apiserver.dto.accountbook.response.AccountBookDetailResponse
 import com.hjj.apiserver.dto.accountbook.response.AccountBookFindAllResponse
 import com.hjj.apiserver.dto.user.CurrentUserInfo
 import com.hjj.apiserver.service.AccountBookService
 import com.hjj.apiserver.util.CurrentUser
 import io.swagger.annotations.*
 import jakarta.validation.Valid
+import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 
 @RestController
@@ -16,6 +18,7 @@ class AccountBookController(
 ) {
 
     @PostMapping("/account-books")
+    @ResponseStatus(HttpStatus.CREATED)
     fun accountBookAdd(
         @CurrentUser currentUserInfo: CurrentUserInfo,
         @Valid @RequestBody request: AccountBookAddRequest
@@ -33,8 +36,9 @@ class AccountBookController(
     fun accountBookDetail(
         @CurrentUser user: CurrentUserInfo,
         @PathVariable accountBookNo: Long
-    ) {
-        accountBookService.findAccountBookDetail(accountBookNo, user.userNo)
+    ): AccountBookDetailResponse {
+        val findAccountBookDetail = accountBookService.findAccountBookDetail(accountBookNo, user.userNo)
+        return findAccountBookDetail
     }
 
 

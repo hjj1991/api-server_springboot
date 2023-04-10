@@ -2,6 +2,7 @@ package com.hjj.apiserver.controller
 
 import com.hjj.apiserver.common.ApiError
 import com.hjj.apiserver.common.ErrCode
+import com.hjj.apiserver.common.exception.AccountBookNotFoundException
 import com.hjj.apiserver.common.exception.AlreadyExistedUserException
 import com.hjj.apiserver.common.exception.ExistedSocialUserException
 import com.hjj.apiserver.common.exception.UserNotFoundException
@@ -24,29 +25,35 @@ class ExceptionControllerAdvice{
 
 
     @ExceptionHandler(UserNotFoundException::class)
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     protected fun userNotFoundException(request: HttpServletRequest): ApiError{
         return ApiError(ErrCode.ERR_CODE0001)
     }
 
     /* 소셜 로그인 계정이 있는데 일반계정 로그인 시도시 */
     @ExceptionHandler(ExistedSocialUserException::class)
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     protected fun existedSocialUserException(request: HttpServletRequest): ApiError{
         return ApiError(ErrCode.ERR_CODE0007)
     }
 
     /* 패스워드가 일치하지 않은 경우 */
     @ExceptionHandler(BadCredentialsException::class)
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     protected fun badCredentialsException(request: HttpServletRequest): ApiError{
         return ApiError(ErrCode.ERR_CODE0008)
     }
 
     @ExceptionHandler(AlreadyExistedUserException::class)
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     protected fun alreadyExistedUserException(request: HttpServletRequest): ApiError{
         return ApiError(ErrCode.ERR_CODE0006)
+    }
+
+    @ExceptionHandler(AccountBookNotFoundException::class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    protected fun accountBookNotFoundException(request: HttpServletRequest): ApiError{
+        return ApiError(ErrCode.ERR_CODE0010)
     }
 
     @ExceptionHandler(MethodArgumentNotValidException::class)
