@@ -13,7 +13,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory
 
 class AccountBookUserRepositoryImpl(
     private val jpaQueryFactory: JPAQueryFactory,
-): AccountBookUserRepositoryCustom {
+) : AccountBookUserRepositoryCustom {
     override fun findAllAccountBookByUserNo(userNo: Long): List<AccountBookFindAllResponse> {
         val subABU = QAccountBookUser("subABU")
         return jpaQueryFactory
@@ -23,15 +23,10 @@ class AccountBookUserRepositoryImpl(
             .on(accountBookUser.accountBook.accountBookNo.eq(subABU.accountBook.accountBookNo))
             .innerJoin(subABU.user, user)
             .where(accountBookUser.user.userNo.eq(userNo))
-            .distinct()
-            .transform(groupBy(
-                accountBook.accountBookNo,
-                accountBook.accountBookName,
-                accountBook.accountBookDesc,
-                accountBookUser.backGroundColor,
-                accountBookUser.color,
-                accountBookUser.accountRole,
-            ).list(
+            .transform(
+                groupBy(
+                    accountBook.accountBookNo,
+                ).list(
                     Projections.constructor(
                         AccountBookFindAllResponse::class.java,
                         accountBook.accountBookNo,
@@ -56,7 +51,8 @@ class AccountBookUserRepositoryImpl(
     override fun findAccountRole(userNo: Long, accountBookNo: Long): AccountRole? {
         return jpaQueryFactory.select(accountBookUser.accountRole)
             .from(accountBookUser)
-            .where(accountBookUser.user.userNo.eq(userNo),
+            .where(
+                accountBookUser.user.userNo.eq(userNo),
                 accountBookUser.accountBook.accountBookNo.eq(accountBookNo)
             ).fetchOne()
     }

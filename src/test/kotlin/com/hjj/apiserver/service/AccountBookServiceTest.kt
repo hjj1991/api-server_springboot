@@ -123,7 +123,7 @@ class AccountBookServiceTest {
             backgroundColor = "#fadvs",
             color = "#fadvs",
             accountRole = AccountRole.OWNER,
-            createdDate = LocalDateTime.now(),
+            createdAt = LocalDateTime.now(),
         )
 
         val cards = mutableListOf(
@@ -152,7 +152,7 @@ class AccountBookServiceTest {
             accountBookName = accountBookDto.accountBookName,
             accountBookDesc = accountBookDto.accountBookDesc,
             accountRole = accountBookDto.accountRole,
-            createdDate = accountBookDto.createdDate,
+            createdDate = accountBookDto.createdAt,
             cards = cards.map(AccountBookDetailResponse.CardDetail::of),
             categories = categories
         )

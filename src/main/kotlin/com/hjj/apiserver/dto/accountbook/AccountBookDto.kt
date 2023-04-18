@@ -1,5 +1,6 @@
 package com.hjj.apiserver.dto.accountbook
 
+import com.fasterxml.jackson.annotation.JsonFormat
 import com.hjj.apiserver.domain.accountbook.AccountRole
 import java.time.LocalDateTime
 
@@ -10,6 +11,7 @@ data class AccountBookDto(
     val backgroundColor: String,
     val color: String,
     val accountRole: AccountRole,
-    val createdDate: LocalDateTime,
+    @field:JsonFormat(pattern = "YYYY-MM-dd HH:mm:ss")
+    val createdAt: LocalDateTime,
 ) {
 }

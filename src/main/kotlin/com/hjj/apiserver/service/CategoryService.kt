@@ -1,8 +1,6 @@
 package com.hjj.apiserver.service
 
-import com.hjj.apiserver.domain.accountbook.AccountBook
 import com.hjj.apiserver.domain.accountbook.AccountRole
-import com.hjj.apiserver.domain.category.Category
 import com.hjj.apiserver.dto.category.request.CategoryAddRequest
 import com.hjj.apiserver.dto.category.request.CategoryModifyRequest
 import com.hjj.apiserver.dto.category.response.CategoryDetailResponse
@@ -10,7 +8,6 @@ import com.hjj.apiserver.dto.category.response.CategoryFindAllResponse
 import com.hjj.apiserver.repository.accountbook.AccountBookRepository
 import com.hjj.apiserver.repository.accountbook.AccountBookUserRepository
 import com.hjj.apiserver.repository.category.CategoryRepository
-import com.hjj.apiserver.util.CommonUtils
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -62,8 +59,8 @@ class CategoryService(
                         categoryName = it.categoryName,
                         categoryDesc = it.categoryDesc,
                         categoryIcon = it.categoryIcon,
-                        createdDate = it.createdDate,
-                        lastModifiedDate = it.lastModifiedDate
+                        createdDate = it.createdAt,
+                        lastModifiedDate = it.modifiedAt
                     )
                 }
             )

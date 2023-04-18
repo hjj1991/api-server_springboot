@@ -1,11 +1,8 @@
 package com.hjj.apiserver.domain.accountbook
 
 import com.hjj.apiserver.domain.BaseEntity
-import com.hjj.apiserver.domain.category.Category
-import com.hjj.apiserver.domain.purchase.Purchase
-import org.hibernate.annotations.BatchSize
-import org.hibernate.annotations.DynamicUpdate
 import jakarta.persistence.*
+import org.hibernate.annotations.DynamicUpdate
 
 @Entity
 @DynamicUpdate
@@ -14,7 +11,7 @@ class AccountBook(
     accountBookNo: Long? = null,
     accountBookName: String,
     accountBookDesc: String,
-): BaseEntity() {
+) : BaseEntity() {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val accountBookNo: Long? = accountBookNo

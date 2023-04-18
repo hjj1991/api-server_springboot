@@ -116,7 +116,7 @@ class UserService(
             user.provider,
             accessToken,
             refreshToken,
-            user.createdDate,
+            user.createdAt,
             LocalDateTime.now()
         )
 
@@ -163,7 +163,7 @@ class UserService(
             user.provider,
             accessToken,
             refreshToken,
-            user.createdDate
+            user.createdAt
         )
     }
 
@@ -244,7 +244,7 @@ class UserService(
                 user.provider,
                 accessToken,
                 refreshToken,
-                user.createdDate,
+                user.createdAt,
                 LocalDateTime.now()
             )
         } ?: throw UserNotFoundException()

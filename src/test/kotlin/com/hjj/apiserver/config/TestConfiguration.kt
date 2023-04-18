@@ -1,5 +1,6 @@
 package com.hjj.apiserver.config
 
+import com.querydsl.jpa.JPQLTemplates
 import com.querydsl.jpa.impl.JPAQueryFactory
 import jakarta.persistence.EntityManager
 import jakarta.persistence.PersistenceContext
@@ -16,7 +17,7 @@ class TestConfiguration {
 
     @Bean
     fun jpaQueryFactory(): JPAQueryFactory {
-        return JPAQueryFactory(entityManager)
+        return JPAQueryFactory(JPQLTemplates.DEFAULT, entityManager)
     }
 
     @Bean

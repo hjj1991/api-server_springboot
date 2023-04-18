@@ -20,7 +20,7 @@ class AccountBookRepositoryImpl(
                 accountBookUser.backGroundColor,
                 accountBookUser.color,
                 accountBookUser.accountRole,
-                accountBook.createdDate,
+                accountBook.createdAt,
             )
         ).from(accountBook)
             .join(accountBookUser).on(accountBook.accountBookNo.eq(accountBookUser.accountBook.accountBookNo))

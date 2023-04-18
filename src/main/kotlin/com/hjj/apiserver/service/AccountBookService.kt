@@ -60,7 +60,7 @@ class AccountBookService(
             accountBookName = findAccountBook.accountBookName,
             accountBookDesc = findAccountBook.accountBookDesc,
             accountRole = findAccountBook.accountRole,
-            createdDate = findAccountBook.createdDate,
+            createdDate = findAccountBook.createdAt,
             cards = findCards,
             categories = findCategories,
         )
