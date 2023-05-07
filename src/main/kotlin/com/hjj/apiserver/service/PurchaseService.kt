@@ -116,7 +116,7 @@ class PurchaseService(
 
         purchase.updatePurchase(
             request = request,
-            card = cardRepository.findByCardNoAndUser_UserNo(request.cardNo ?: 0, userNo),
+            card = cardRepository.findByCardNoAndUser_UserNoAndDeleteIsFalse(request.cardNo ?: 0, userNo),
             category = categoryRepository.findCategoryByAccountRole(
                 categoryNo = request.categoryNo ?: 0,
                 accountBookNo = request.accountBookNo,

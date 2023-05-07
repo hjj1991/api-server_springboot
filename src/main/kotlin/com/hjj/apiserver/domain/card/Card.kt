@@ -45,7 +45,4 @@ class Card(
         this.cardDesc = cardDesc
     }
 
-    fun delete() {
-        this.deleteYn = 'Y'
-    }
 }

@@ -22,20 +22,22 @@ class CardService(
     @Transactional(readOnly = false)
     fun addCard(userNo: Long, request: CardAddRequest): CardAddResponse {
         val userByLazy = userRepository.getReferenceById(userNo)
-        val card = request.toEntity(userByLazy)
-        cardRepository.save(card)
-        return CardAddResponse.of(card)
+        val savedCard = cardRepository.save(request.toEntity(userByLazy))
+        return CardAddResponse.of(savedCard)
     }
 
     @Transactional(readOnly = false)
     fun removeCard(userNo: Long, cardNo: Long) {
-        cardRepository.findByCardNoAndUser_UserNo(cardNo, userNo)?.delete() ?: throw CardNotFoundException()
+        val card =
+            cardRepository.findByCardNoAndUser_UserNoAndDeleteIsFalse(cardNo, userNo) ?: throw CardNotFoundException()
+        card.delete()
     }
 
     @Transactional(readOnly = false)
     fun modifyCard(userNo: Long, cardNo: Long, request: CardModifyRequest): CardModifyResponse {
         val foundCard =
-            cardRepository.findByCardNoAndUser_UserNo(cardNo = cardNo, userNo = userNo) ?: throw CardNotFoundException()
+            cardRepository.findByCardNoAndUser_UserNoAndDeleteIsFalse(cardNo = cardNo, userNo = userNo)
+                ?: throw CardNotFoundException()
 
         foundCard.updateCard(request.cardName, request.cardType, request.cardDesc)
 
@@ -43,12 +45,12 @@ class CardService(
     }
 
     fun findCards(userNo: Long): List<CardFindAllResponse> {
-        return cardRepository.findByUser_UserNoAndDeleteYn(userNo)
-            .map { CardFindAllResponse(it.cardNo!!, it.cardName, it.cardType, it.cardDesc) }
+        return cardRepository.findByUser_UserNoAndDeleteIsFalse(userNo).map(CardFindAllResponse::of)
     }
 
     fun findCardDetail(userNo: Long, cardNo: Long): CardFindResponse {
-        val foundCard = cardRepository.findByCardNoAndUser_UserNo(cardNo, userNo) ?: throw CardNotFoundException()
+        val foundCard = cardRepository.findByCardNoAndUser_UserNoAndDeleteIsFalse(cardNo, userNo)
+            ?: throw CardNotFoundException()
         return CardFindResponse.of(foundCard)
     }
 }

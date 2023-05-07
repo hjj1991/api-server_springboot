@@ -8,8 +8,6 @@ import jakarta.persistence.MappedSuperclass
 
 @MappedSuperclass
 abstract class BaseTimeEntity {
-
-
     @CreatedDate
     @Column(nullable = false, updatable = false)
     var createdAt: LocalDateTime = LocalDateTime.now()

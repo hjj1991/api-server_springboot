@@ -1,194 +1,269 @@
 package com.hjj.apiserver.service
 
+import com.hjj.apiserver.common.exception.CardNotFoundException
 import com.hjj.apiserver.domain.card.Card
 import com.hjj.apiserver.domain.card.CardType
 import com.hjj.apiserver.domain.user.User
 import com.hjj.apiserver.dto.card.reqeust.CardAddRequest
 import com.hjj.apiserver.dto.card.reqeust.CardModifyRequest
+import com.hjj.apiserver.dto.card.response.CardFindAllResponse
 import com.hjj.apiserver.repository.card.CardRepository
 import com.hjj.apiserver.repository.user.UserRepository
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.BeforeEach
+import org.assertj.core.api.Assertions.assertThatThrownBy
+import org.assertj.core.groups.Tuple
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.data.repository.findByIdOrNull
-import org.springframework.transaction.annotation.Transactional
-import jakarta.persistence.EntityManager
+import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.InjectMocks
+import org.mockito.Mock
+import org.mockito.Mockito
+import org.mockito.junit.jupiter.MockitoExtension
 
-@SpringBootTest
-@Transactional
-internal class CardServiceTest @Autowired constructor(
-    private val cardService: CardService,
-    private val userRepository: UserRepository,
-    private val cardRepository: CardRepository,
-    private val entityManager: EntityManager,
-) {
+@ExtendWith(MockitoExtension::class)
+class CardServiceTest {
 
-    @BeforeEach
-    fun clean(){
-        entityManager.createNativeQuery("SET REFERENTIAL_INTEGRITY FALSE; " +
-                "TRUNCATE TABLE tb_category; " +
-                "TRUNCATE TABLE tb_account_book_user; " +
-                "TRUNCATE TABLE tb_account_book; " +
-                "TRUNCATE TABLE tb_purchase; " +
-                "TRUNCATE TABLE tb_user; " +
-                "TRUNCATE TABLE tb_card; " +
-                "SET REFERENTIAL_INTEGRITY TRUE; ").executeUpdate()
+    @InjectMocks
+    lateinit var cardService: CardService
+
+    @Mock
+    lateinit var cardRepository: CardRepository
+
+    @Mock
+    lateinit var userRepository: UserRepository
+
+
+    @DisplayName("카드가 정상 생성된다.")
+    @Test
+    fun addCard_success() {
+        // Given
+        val cardAddRequest = CardAddRequest(
+            cardName = "신한카드",
+            cardType = CardType.CREDIT_CARD,
+            cardDesc = "신한 신용카드"
+        )
+        val savedUser = User(
+            userNo = 1L,
+            userId = "testUser",
+            nickName = "닉네임",
+            userEmail = "tester@test.co.kr"
+        )
+        val newCard = Card(
+            cardNo = 1L,
+            cardName = cardAddRequest.cardName,
+            cardType = cardAddRequest.cardType,
+            cardDesc = cardAddRequest.cardDesc,
+            user = savedUser
+        )
+
+        Mockito.`when`(cardRepository.save(Mockito.any()))
+            .thenReturn(newCard)
+
+        Mockito.`when`(userRepository.getReferenceById(1L))
+            .thenReturn(savedUser)
+
+        // When
+        val cardAddResponse = cardService.addCard(savedUser.userNo!!, cardAddRequest)
+
+
+        // Then
+        assertThat(cardAddResponse.cardNo).isEqualTo(newCard.cardNo)
+        assertThat(cardAddResponse.cardDesc).isEqualTo(cardAddRequest.cardDesc)
+        assertThat(cardAddResponse.cardName).isEqualTo(cardAddRequest.cardName)
+        assertThat(cardAddResponse.cardType).isEqualTo(cardAddRequest.cardType)
     }
 
+    @DisplayName("카드가 정상 삭제된다.")
     @Test
-    @DisplayName("카드가 정상적으로 추가된다.")
-    fun insertCardTest() {
-        // given
-        val savedUser = userRepository.save(
-            User(
-                userId = "testUser",
-                nickName = "닉네임",
-                userEmail = "tester@test.co.kr"
-            )
+    fun removeCard_success() {
+        // Given
+        val savedUser = User(
+            userNo = 1L,
+            userId = "testUser",
+            nickName = "닉네임",
+            userEmail = "tester@test.co.kr"
         )
-        val cardAddRequest = CardAddRequest(
-            cardName = "테스트카드",
-            cardType = CardType.CHECK_CARD,
-            cardDesc = "카드설명",
+        val newCard = Card(
+            cardNo = 1L,
+            cardName = "신한카드",
+            cardType = CardType.CREDIT_CARD,
+            cardDesc = "신한 신용카드",
+            user = savedUser
         )
 
+        Mockito.`when`(cardRepository.findByCardNoAndUser_UserNoAndDeleteIsFalse(newCard.cardNo!!, savedUser.userNo!!))
+            .thenReturn(newCard)
 
-        // when
-        val insertCard = cardService.addCard(savedUser.userNo!!, cardAddRequest)
 
-        // then
-        assertThat(insertCard.cardName).isEqualTo("테스트카드")
-        assertThat(insertCard.cardDesc).isEqualTo("카드설명")
-        assertThat(insertCard.cardType).isEqualTo(CardType.CHECK_CARD)
+        // When
+        cardService.removeCard(savedUser.userNo!!, newCard.cardNo!!)
 
+        // Then
+        assertThat(newCard.isDelete).isTrue()
     }
 
+    @DisplayName("카드 삭제시 카드가 존재하지 않으면 CardNotFoundException가 발생한다.")
     @Test
-    @DisplayName("카드가 정상적으로 삭제된다.")
-    fun deleteCardTest() {
-        // given
-        val savedUser = userRepository.save(
-            User(
-                userId = "testUser",
-                nickName = "닉네임",
-                userEmail = "tester@test.co.kr"
-            )
-        )
-        val cardAddRequest = CardAddRequest(
-            cardName = "테스트카드",
-            cardType = CardType.CHECK_CARD,
-            cardDesc = "카드설명",
-        )
-        val insertCard = cardService.addCard(savedUser.userNo!!, cardAddRequest)
+    fun removeCard_fail_notExistsCard_raise_CardNotFoundException() {
+        // Given
+        val cardNo = 1L
+        val userNo = 1L
 
-        // when
-        cardService.removeCard(savedUser.userNo!!, insertCard.cardNo!!)
+        Mockito.`when`(cardRepository.findByCardNoAndUser_UserNoAndDeleteIsFalse(cardNo, userNo))
+            .thenReturn(null)
 
-        // then
-        val card = cardRepository.findByIdOrNull(insertCard.cardNo) ?: throw IllegalStateException()
-        assertThat(card.deleteYn).isEqualTo('Y')
-
+        // When && Then
+        assertThatThrownBy { cardService.removeCard(userNo, cardNo) }
+            .isInstanceOf(CardNotFoundException::class.java)
     }
 
+    @DisplayName("카드정보가 정상 수정된다.")
     @Test
-    @DisplayName("카드가 정상적으로 수정된다.")
-    fun updateCardTest() {
-        // given
-        val savedUser = userRepository.save(
-            User(
-                userId = "testUser",
-                nickName = "닉네임",
-                userEmail = "tester@test.co.kr"
-            )
+    fun modifyCard_success() {
+        // Given
+        val savedUser = User(
+            userNo = 1L,
+            userId = "testUser",
+            nickName = "닉네임",
+            userEmail = "tester@test.co.kr"
         )
-        val cardAddRequest = CardAddRequest(
-            cardName = "테스트카드",
-            cardType = CardType.CHECK_CARD,
-            cardDesc = "카드설명",
+        val savedCard = Card(
+            cardNo = 1L,
+            cardName = "신한카드",
+            cardType = CardType.CREDIT_CARD,
+            cardDesc = "신한 신용카드",
+            user = savedUser
         )
-        val insertCard = cardService.addCard(savedUser.userNo!!, cardAddRequest)
 
         val cardModifyRequest = CardModifyRequest(
-            cardName = "변경한카드명",
-            cardType = CardType.CREDIT_CARD,
-            cardDesc = "변경한설명",
-        )
-
-        // when
-        cardService.modifyCard(savedUser.userNo!!, insertCard.cardNo!!, cardModifyRequest)
-
-        // then
-        val card = cardRepository.findByIdOrNull(insertCard.cardNo) ?: throw IllegalStateException()
-        assertThat(card.cardName).isEqualTo("변경한카드명")
-        assertThat(card.cardType).isEqualTo(CardType.CREDIT_CARD)
-        assertThat(card.cardDesc).isEqualTo("변경한설명")
-    }
-
-    @Test
-    @DisplayName("카드목록이 한번에 정상적으로 조회된다.")
-    fun selectCardsTest() {
-        // given
-        val savedUser = userRepository.save(
-            User(
-                userId = "testUser",
-                nickName = "닉네임",
-                userEmail = "tester@test.co.kr"
-            )
-        )
-        val cards = mutableListOf<Card>()
-        for (i in 0..10) {
-            cards.add(
-                Card(
-                    cardName = "테스트카드${i}",
-                    cardType = CardType.CHECK_CARD,
-                    cardDesc = "카드설명${i}",
-                    user = savedUser,
-                )
-            )
-        }
-
-        cardRepository.saveAll(cards)
-        // when
-        val selectCards = cardService.findCards(savedUser.userNo!!)
-
-        // then
-        assertThat(selectCards).hasSize(11)
-        assertThat(selectCards).extracting("cardName")
-            .contains("테스트카드0", "테스트카드1", "테스트카드10")
-        assertThat(selectCards).extracting("cardDesc")
-            .contains("카드설명0", "카드설명10")
-
-
-    }
-
-    @Test
-    @DisplayName("카드의 상세정보가 조회된다.")
-    fun selectCard() {
-        // given
-        val savedUser = userRepository.save(
-            User(
-                userId = "testUser",
-                nickName = "닉네임",
-                userEmail = "tester@test.co.kr"
-            )
-        )
-        val cardAddRequest = CardAddRequest(
-            cardName = "테스트카드",
+            cardName = "KB카드",
             cardType = CardType.CHECK_CARD,
-            cardDesc = "카드설명",
+            cardDesc = "KB 체크카드"
         )
-        val insertCard = cardService.addCard(savedUser.userNo!!, cardAddRequest)
 
-        // when
-        val selectCard = cardService.findCardDetail(savedUser.userNo!!, insertCard.cardNo!!)
+        Mockito.`when`(
+            cardRepository.findByCardNoAndUser_UserNoAndDeleteIsFalse(
+                savedCard.cardNo!!,
+                savedUser.userNo!!
+            )
+        )
+            .thenReturn(savedCard)
 
-        // then
+        // When
+        val cardModifyResponse = cardService.modifyCard(savedUser.userNo!!, savedCard.cardNo!!, cardModifyRequest)
 
-        assertThat(selectCard.cardName).isEqualTo("테스트카드")
-        assertThat(selectCard.cardType).isEqualTo(CardType.CHECK_CARD)
-        assertThat(selectCard.cardDesc).isEqualTo("카드설명")
+        // Then
+        assertThat(cardModifyResponse.cardNo).isEqualTo(savedCard.cardNo)
+        assertThat(cardModifyResponse.cardName).isEqualTo(cardModifyRequest.cardName)
+        assertThat(cardModifyResponse.cardType).isEqualTo(cardModifyRequest.cardType)
+        assertThat(cardModifyResponse.cardDesc).isEqualTo(cardModifyRequest.cardDesc)
+    }
+
+    @DisplayName("카드 수정시 카드가 존재하지 않으면 CardNotFoundException가 발생한다.")
+    @Test
+    fun modifyCard_fail_notExistsCard_raise_CardNotFoundException() {
+        // Given
+        val cardNo = 1L
+        val userNo = 1L
+        val cardModifyRequest = CardModifyRequest(
+            cardName = "KB카드",
+            cardType = CardType.CHECK_CARD,
+            cardDesc = "KB 체크카드"
+        )
+
+
+        Mockito.`when`(cardRepository.findByCardNoAndUser_UserNoAndDeleteIsFalse(cardNo, userNo))
+            .thenReturn(null)
+
+        // When && Then
+        assertThatThrownBy { cardService.modifyCard(userNo, cardNo, cardModifyRequest) }
+            .isInstanceOf(CardNotFoundException::class.java)
+    }
+
+
+    @DisplayName("사용자 카드 전체 조회가 성공한다.")
+    @Test
+    fun findCards_success() {
+        // Given
+        val savedUser = User(
+            userNo = 1L,
+            userId = "testUser",
+            nickName = "닉네임",
+            userEmail = "tester@test.co.kr"
+        )
+        val cards = listOf(
+            Card(1L, "국민카드", CardType.CHECK_CARD, "KB카드 설명", savedUser),
+            Card(2L, "신한카드", CardType.CREDIT_CARD, "신한카드 설명", savedUser)
+        )
+
+        Mockito.`when`(cardRepository.findByUser_UserNoAndDeleteIsFalse(savedUser.userNo!!))
+            .thenReturn(cards.toMutableList())
+
+        // When
+        val cardFindAllResponses = cardService.findCards(savedUser.userNo!!)
+
+        // Then
+        assertThat(cardFindAllResponses.size).isEqualTo(2)
+        assertThat(cardFindAllResponses)
+            .map(
+                CardFindAllResponse::cardNo,
+                CardFindAllResponse::cardName,
+                CardFindAllResponse::cardType,
+                CardFindAllResponse::cardDesc
+            )
+            .contains(
+                Tuple.tuple(cards[0].cardNo, cards[0].cardName, cards[0].cardType, cards[0].cardDesc),
+                Tuple.tuple(cards[1].cardNo, cards[1].cardName, cards[1].cardType, cards[1].cardDesc),
+            )
+    }
+
+    @DisplayName("카드 상세조회가 정상 조회된다.")
+    @Test
+    fun findCardDetail_success() {
+        // Given
+        val savedUser = User(
+            userNo = 1L,
+            userId = "testUser",
+            nickName = "닉네임",
+            userEmail = "tester@test.co.kr"
+        )
+        val savedCard = Card(
+            cardNo = 1L,
+            cardName = "신한카드",
+            cardType = CardType.CREDIT_CARD,
+            cardDesc = "신한 신용카드",
+            user = savedUser
+        )
+
+        Mockito.`when`(
+            cardRepository.findByCardNoAndUser_UserNoAndDeleteIsFalse(
+                savedCard.cardNo!!,
+                savedUser.userNo!!
+            )
+        ).thenReturn(savedCard)
+
+        // When
+        val findCardDetail = cardService.findCardDetail(savedUser.userNo!!, savedCard.cardNo!!)
+
+        // Then
+        assertThat(findCardDetail.cardNo).isEqualTo(savedCard.cardNo)
+        assertThat(findCardDetail.cardName).isEqualTo(savedCard.cardName)
+        assertThat(findCardDetail.cardDesc).isEqualTo(savedCard.cardDesc)
+        assertThat(findCardDetail.cardType).isEqualTo(savedCard.cardType)
+    }
+
+    @DisplayName("카드 상세조회시 카드가 존재하지 않으면 CardNotFoundException가 발생한다.")
+    @Test
+    fun findCardDetail_fail_when_cardNotExists_raise_cardNotFoundException(){
+        //Given
+        val userNo = 1L
+        val cardNo = 1L
+
+        Mockito.`when`(cardRepository.findByCardNoAndUser_UserNoAndDeleteIsFalse(cardNo, userNo))
+            .thenReturn(null)
+
+        // When && Then
+        assertThatThrownBy { cardService.findCardDetail(userNo, cardNo) }
+            .isInstanceOf(CardNotFoundException::class.java)
     }
 }

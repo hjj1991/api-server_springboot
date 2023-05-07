@@ -6,6 +6,7 @@ import com.epages.restdocs.apispec.ResourceDocumentation.resource
 import com.epages.restdocs.apispec.ResourceSnippetParameters
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.hjj.apiserver.common.JwtTokenProvider
+import com.hjj.apiserver.config.TestConfiguration
 import com.hjj.apiserver.domain.card.CardType
 import com.hjj.apiserver.domain.user.Role
 import com.hjj.apiserver.dto.card.reqeust.CardAddRequest
@@ -28,6 +29,7 @@ import org.springframework.boot.autoconfigure.security.oauth2.client.servlet.OAu
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.mock.mockito.MockBean
+import org.springframework.context.annotation.Import
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext
 import org.springframework.http.MediaType.*
 import org.springframework.restdocs.headers.HeaderDocumentation
@@ -43,7 +45,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 @AutoConfigureRestDocs
 @WebMvcTest(CardController::class)
 @ImportAutoConfiguration(
-    exclude = [OAuth2ClientAutoConfiguration::class]
+    exclude = [OAuth2ClientAutoConfiguration::class],
 )
 class CardControllerTest {
 
@@ -52,7 +54,8 @@ class CardControllerTest {
     @Autowired
     private lateinit var mockMvc: MockMvc
 
-    private val objectMapper = ObjectMapper()
+    @Autowired
+    private lateinit var objectMapper: ObjectMapper
 
     @MockBean
     private lateinit var cardService: CardService

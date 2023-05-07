@@ -1,6 +1,6 @@
 package com.hjj.apiserver.config
 
-import com.querydsl.jpa.JPQLTemplates
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.querydsl.jpa.impl.JPAQueryFactory
 import jakarta.persistence.EntityManager
 import jakarta.persistence.PersistenceContext
@@ -17,7 +17,7 @@ class TestConfiguration {
 
     @Bean
     fun jpaQueryFactory(): JPAQueryFactory {
-        return JPAQueryFactory(JPQLTemplates.DEFAULT, entityManager)
+        return JPAQueryFactory(CustomJPQLTemplates(), entityManager)
     }
 
     @Bean
@@ -25,6 +25,11 @@ class TestConfiguration {
         val modelMapper = ModelMapper()
         modelMapper.configuration.matchingStrategy = MatchingStrategies.STRICT
         return modelMapper
+    }
+
+    @Bean
+    fun objectMapper(): ObjectMapper {
+        return ObjectMapper()
     }
 
 }

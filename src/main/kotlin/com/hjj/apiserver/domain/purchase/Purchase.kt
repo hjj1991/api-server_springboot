@@ -101,9 +101,4 @@ class Purchase(
 
         return this
     }
-
-    fun delete() {
-        deleteYn = 'Y'
-    }
-
 }

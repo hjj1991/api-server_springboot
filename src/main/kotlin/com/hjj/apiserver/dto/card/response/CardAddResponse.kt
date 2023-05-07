@@ -4,7 +4,7 @@ import com.hjj.apiserver.domain.card.Card
 import com.hjj.apiserver.domain.card.CardType
 
 data class CardAddResponse(
-    var cardNo: Long,
+    val cardNo: Long,
     val cardName: String,
     val cardType: CardType,
     val cardDesc: String,

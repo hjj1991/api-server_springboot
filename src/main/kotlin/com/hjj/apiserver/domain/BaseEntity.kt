@@ -10,8 +10,8 @@ import jakarta.persistence.MappedSuperclass
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener::class)
 abstract class BaseEntity(
-    @Column(columnDefinition = "char(1) default 'N'", nullable = false, insertable = false)
-    var deleteYn: Char = 'N',
+    @Column(columnDefinition = "boolean default false", nullable = false, insertable = false)
+    var isDelete: Boolean = false,
 
     @CreatedBy
     @Column(updatable = false)
@@ -22,7 +22,9 @@ abstract class BaseEntity(
     var lastModifiedBy: Long? = null,
 ): BaseTimeEntity() {
 
-
+    fun delete(){
+        isDelete = true
+    }
 
 
 }

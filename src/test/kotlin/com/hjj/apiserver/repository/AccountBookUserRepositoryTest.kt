@@ -3,13 +3,14 @@ package com.hjj.apiserver.repository
 import com.hjj.apiserver.domain.accountbook.AccountBook
 import com.hjj.apiserver.domain.accountbook.AccountBookUser
 import com.hjj.apiserver.domain.accountbook.AccountRole
+import com.hjj.apiserver.dto.accountbook.response.AccountBookFindAllResponse
 import com.hjj.apiserver.repository.accountbook.AccountBookRepository
 import com.hjj.apiserver.repository.accountbook.AccountBookUserRepository
 import org.assertj.core.api.Assertions
+import org.assertj.core.groups.Tuple
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.transaction.support.TransactionSynchronizationManager
 
 class AccountBookUserRepositoryTest : BaseRepositoryTest() {
 
@@ -22,8 +23,6 @@ class AccountBookUserRepositoryTest : BaseRepositoryTest() {
     @Test
     @DisplayName("사용자가 속한 모든 가계부를 조회 성공한다.")
     fun findAllAccountBookByUserNoTest_success() {
-
-        println(TransactionSynchronizationManager.getCurrentTransactionName() )
         // given
         val tester1 = createUser("tester1", "테스터1")
         val tester2 = createUser("tester2", "테스터2")
@@ -67,6 +66,7 @@ class AccountBookUserRepositoryTest : BaseRepositoryTest() {
             )
         )
 
+
         // when
         val findAllAccountBookByUserNo = accountBookUserRepository.findAllAccountBookByUserNo(tester1.userNo!!)
 
@@ -80,15 +80,13 @@ class AccountBookUserRepositoryTest : BaseRepositoryTest() {
         Assertions.assertThat(findAllAccountBookByUserNo[0].backGroundColor).isEqualTo(accountBookUser1.backGroundColor)
         Assertions.assertThat(findAllAccountBookByUserNo[0].color).isEqualTo(accountBookUser1.color)
         Assertions.assertThat(findAllAccountBookByUserNo[0].joinedUsers.size).isEqualTo(3)
-        Assertions.assertThat(findAllAccountBookByUserNo[0].joinedUsers[0].userNo).isEqualTo(tester1.userNo)
-        Assertions.assertThat(findAllAccountBookByUserNo[0].joinedUsers[0].nickName).isEqualTo(tester1.nickName)
-        Assertions.assertThat(findAllAccountBookByUserNo[0].joinedUsers[0].picture).isEqualTo(tester1.picture)
-        Assertions.assertThat(findAllAccountBookByUserNo[0].joinedUsers[1].userNo).isEqualTo(tester2.userNo)
-        Assertions.assertThat(findAllAccountBookByUserNo[0].joinedUsers[1].nickName).isEqualTo(tester2.nickName)
-        Assertions.assertThat(findAllAccountBookByUserNo[0].joinedUsers[1].picture).isEqualTo(tester2.picture)
-        Assertions.assertThat(findAllAccountBookByUserNo[0].joinedUsers[2].userNo).isEqualTo(tester3.userNo)
-        Assertions.assertThat(findAllAccountBookByUserNo[0].joinedUsers[2].nickName).isEqualTo(tester3.nickName)
-        Assertions.assertThat(findAllAccountBookByUserNo[0].joinedUsers[2].picture).isEqualTo(tester3.picture)
+        Assertions.assertThat(findAllAccountBookByUserNo[0].joinedUsers)
+            .extracting(AccountBookFindAllResponse.JoinedUser::userNo, AccountBookFindAllResponse.JoinedUser::nickName)
+            .contains(
+                Tuple.tuple(tester1.userNo, tester1.nickName),
+                Tuple.tuple(tester2.userNo, tester2.nickName),
+                Tuple.tuple(tester3.userNo, tester3.nickName)
+            )
         Assertions.assertThat(findAllAccountBookByUserNo[1].accountBookNo).isEqualTo(accountBook2.accountBookNo)
         Assertions.assertThat(findAllAccountBookByUserNo[1].accountBookName).isEqualTo(accountBook2.accountBookName)
         Assertions.assertThat(findAllAccountBookByUserNo[1].accountBookDesc).isEqualTo(accountBook2.accountBookDesc)

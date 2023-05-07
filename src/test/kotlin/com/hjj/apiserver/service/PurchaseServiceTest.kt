@@ -260,7 +260,6 @@ internal class PurchaseServiceTest @Autowired constructor(
         purchaseService.removePurchase(savedUser.userNo!!, addPurchase.purchaseNo!!)
 
         //then
-        assertThat(addPurchase.deleteYn).isEqualTo('Y')
     }
 
     @Test

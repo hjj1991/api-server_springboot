@@ -15,7 +15,6 @@ spring:
           batch_size: 100
         format_sql: true
         default_batch_fetch_size: 100
-        dialect: org.hibernate.dialect.MariaDB103Dialect
         show_sql: true
   jwt:
     secret: testToken

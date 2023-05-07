@@ -23,15 +23,21 @@ class AccountBookUserRepositoryImpl(
             .on(accountBookUser.accountBook.accountBookNo.eq(subABU.accountBook.accountBookNo))
             .innerJoin(subABU.user, user)
             .where(accountBookUser.user.userNo.eq(userNo))
+            .orderBy(accountBookUser.accountBook.accountBookNo.asc())
             .transform(
                 groupBy(
-                    accountBook.accountBookNo,
+                    accountBookUser.accountBook.accountBookNo,
+                    accountBookUser.accountBook.accountBookName,
+                    accountBookUser.accountBook.accountBookDesc,
+                    accountBookUser.backGroundColor,
+                    accountBookUser.color,
+                    accountBookUser.accountRole,
                 ).list(
                     Projections.constructor(
                         AccountBookFindAllResponse::class.java,
-                        accountBook.accountBookNo,
-                        accountBook.accountBookName,
-                        accountBook.accountBookDesc,
+                        accountBookUser.accountBook.accountBookNo,
+                        accountBookUser.accountBook.accountBookName,
+                        accountBookUser.accountBook.accountBookDesc,
                         accountBookUser.backGroundColor,
                         accountBookUser.color,
                         accountBookUser.accountRole,

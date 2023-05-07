@@ -41,7 +41,7 @@ class User(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var userNo: Long? = null
+    var userNo: Long? = userNo
 
     @Column(length = 100, unique = true)
     val userId: String? = userId
