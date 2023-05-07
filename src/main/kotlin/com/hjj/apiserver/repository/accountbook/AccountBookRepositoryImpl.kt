@@ -24,7 +24,7 @@ class AccountBookRepositoryImpl(
             )
         ).from(accountBook)
             .join(accountBookUser).on(accountBook.accountBookNo.eq(accountBookUser.accountBook.accountBookNo))
-            .where(accountBook.accountBookNo.eq(accountBookNo))
+            .where(accountBook.accountBookNo.eq(accountBookNo), accountBook.isDelete.isFalse)
             .fetchOne()
     }
 

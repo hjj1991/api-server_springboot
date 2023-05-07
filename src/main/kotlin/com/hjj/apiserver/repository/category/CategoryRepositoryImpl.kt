@@ -1,10 +1,13 @@
 package com.hjj.apiserver.repository.category
 
 import com.hjj.apiserver.domain.accountbook.AccountRole
+import com.hjj.apiserver.domain.accountbook.QAccountBookUser
 import com.hjj.apiserver.domain.accountbook.QAccountBookUser.Companion.accountBookUser
 import com.hjj.apiserver.domain.category.Category
 import com.hjj.apiserver.domain.category.QCategory
 import com.hjj.apiserver.domain.category.QCategory.Companion.category
+import com.hjj.apiserver.domain.user.QUser
+import com.hjj.apiserver.domain.user.QUser.Companion.user
 import com.hjj.apiserver.dto.category.CategoryDto
 import com.querydsl.core.group.GroupBy.groupBy
 import com.querydsl.core.group.GroupBy.list
@@ -33,8 +36,11 @@ class CategoryRepositoryImpl(
                                 )
                         )
                     )
+                    .and(category.isDelete.isFalse)
+                    .and(childCategory.isDelete.isFalse)
             )
             .distinct()
+            .orderBy(category.categoryNo.asc())
             .transform(
                 groupBy(
                     category.categoryNo,
@@ -88,10 +94,24 @@ class CategoryRepositoryImpl(
                                         .and(accountBookUser.accountRole.`in`(accountRoles))
                                 )
                         )
-                    )
+                    ).and(category.isDelete.isFalse)
 
             ).fetchOne()
     }
 
+    override fun findCategoryByCategoryNo(categoryNo: Long, userNo:Long):Category?{
+        val childCategory = QCategory("childrenCategory")
+        return jpaQueryFactory
+            .select(category)
+            .from(category)
+            .leftJoin(category.childCategories, childCategory)
+            .join(category.accountBook, accountBookUser.accountBook)
+            .where(
+                accountBookUser.user.userNo.eq(userNo),
+                category.accountBook.isDelete.isFalse,
+                category.isDelete.isFalse,
+                category.categoryNo.eq(categoryNo)
+            ).fetchOne()
+    }
 
 }

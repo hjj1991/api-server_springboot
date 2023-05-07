@@ -13,7 +13,7 @@ data class AccountBookDetailResponse(
     var accountBookDesc: String,
     var accountRole: AccountRole = AccountRole.GUEST,
     @field:JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    var createdDate: LocalDateTime,
+    var createdAt: LocalDateTime,
     var cards: List<CardDetail> = listOf(),
     var categories: List<CategoryDto> = listOf(),
 ) {

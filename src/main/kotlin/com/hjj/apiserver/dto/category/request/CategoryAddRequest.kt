@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotEmpty
 data class CategoryAddRequest(
     val accountBookNo: Long,
     val parentCategoryNo: Long? = null,
-    @NotEmpty
+    @field:NotEmpty
     val categoryName: String,
     val categoryDesc: String,
     val categoryIcon: String,

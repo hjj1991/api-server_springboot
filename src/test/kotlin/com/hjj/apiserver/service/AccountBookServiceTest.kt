@@ -152,7 +152,7 @@ class AccountBookServiceTest {
             accountBookName = accountBookDto.accountBookName,
             accountBookDesc = accountBookDto.accountBookDesc,
             accountRole = accountBookDto.accountRole,
-            createdDate = accountBookDto.createdAt,
+            createdAt = accountBookDto.createdAt,
             cards = cards.map(AccountBookDetailResponse.CardDetail::of),
             categories = categories
         )
@@ -176,7 +176,7 @@ class AccountBookServiceTest {
         assertThat(findAccountBookDetail.accountBookName).isEqualTo(accountBookDetailResponse.accountBookName)
         assertThat(findAccountBookDetail.accountBookDesc).isEqualTo(accountBookDetailResponse.accountBookDesc)
         assertThat(findAccountBookDetail.accountRole).isEqualTo(accountBookDetailResponse.accountRole)
-        assertThat(findAccountBookDetail.createdDate).isEqualTo(accountBookDetailResponse.createdDate)
+        assertThat(findAccountBookDetail.createdAt).isEqualTo(accountBookDetailResponse.createdAt)
         assertThat(findAccountBookDetail.cards[0].cardNo).isEqualTo(accountBookDetailResponse.cards[0].cardNo)
         assertThat(findAccountBookDetail.categories).isEqualTo(accountBookDetailResponse.categories)
     }

@@ -260,7 +260,7 @@ class AccountBookControllerTest {
                 accountBookName = "가계부1",
                 accountBookDesc = "설명1",
                 accountRole = AccountRole.OWNER,
-                createdDate = createAt,
+                createdAt = createAt,
                 cards = cards,
                 categories = categories
             )
@@ -293,7 +293,7 @@ class AccountBookControllerTest {
                                     PayloadDocumentation.fieldWithPath("accountBookName").description("가계부명"),
                                     PayloadDocumentation.fieldWithPath("accountBookDesc").description("가계부 설명"),
                                     PayloadDocumentation.fieldWithPath("accountRole").description("해당 가계부 사용자권한"),
-                                    PayloadDocumentation.fieldWithPath("createdDate").description("생성일자"),
+                                    PayloadDocumentation.fieldWithPath("createdAt").description("생성일자"),
                                     PayloadDocumentation.fieldWithPath("cards[].cardNo").description("카드 No"),
                                     PayloadDocumentation.fieldWithPath("cards[].cardName").description("카드명"),
                                     PayloadDocumentation.fieldWithPath("cards[].cardType").description("카드타입"),

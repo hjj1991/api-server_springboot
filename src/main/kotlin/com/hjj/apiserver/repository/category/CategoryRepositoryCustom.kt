@@ -13,4 +13,5 @@ interface CategoryRepositoryCustom {
         userNo: Long,
         accountRoles: Set<AccountRole> = setOf(AccountRole.OWNER, AccountRole.MEMBER)
     ): Category?
+    fun findCategoryByCategoryNo(userNo:Long, categoryNo: Long):Category?
 }

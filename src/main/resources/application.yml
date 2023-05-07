@@ -9,7 +9,6 @@ spring:
       hibernate:
         jdbc:
           batch_size: 100
-        dialect: org.hibernate.dialect.MySQL5Dialect
         format_sql: true
         default_batch_fetch_size: 100
 #    show-sql: true
@@ -38,7 +37,7 @@ spring:
     activate:
       on-profile: local
   datasource:
-    url: jdbc:mysql://localhost:3306/api_server?serverTimezone=Asia/Seoul&useUnicode=true&characterEncoding=utf-8
+    url: jdbc:mariadb://localhost:3306/api_server?serverTimezone=Asia/Seoul&useUnicode=true&characterEncoding=utf-8
     username: root
     password: 1234567
 decorator:

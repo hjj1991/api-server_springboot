@@ -43,7 +43,7 @@ class PurchaseRepositoryImpl(
             .where(
                 purchase.purchaseDate.between(searchStartDate, searchEndDate)
                     .and(purchase.accountBook.accountBookNo.eq(accountBookNo))
-                    .and(purchase.deleteYn.eq('N'))
+                    .and(purchase.isDelete.isFalse)
             )
             .offset(pageable.offset)
             .limit(pageable.pageSize + 1L)
