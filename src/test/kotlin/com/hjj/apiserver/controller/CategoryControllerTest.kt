@@ -11,6 +11,7 @@ import com.hjj.apiserver.domain.user.User
 import com.hjj.apiserver.dto.category.CategoryDto
 import com.hjj.apiserver.dto.category.request.CategoryAddRequest
 import com.hjj.apiserver.dto.category.request.CategoryModifyRequest
+import com.hjj.apiserver.dto.category.request.CategoryRemoveRequest
 import com.hjj.apiserver.dto.category.response.CategoryAddResponse
 import com.hjj.apiserver.dto.category.response.CategoryDetailResponse
 import com.hjj.apiserver.dto.category.response.CategoryFindAllResponse
@@ -394,7 +395,7 @@ class CategoryControllerTest {
                         SecurityMockMvcRequestPostProcessors.csrf(),
                     )
             )
-                .andExpect(MockMvcResultMatchers.status().isOk)
+                .andExpect(MockMvcResultMatchers.status().isNoContent)
                 .andDo(
                     MockMvcRestDocumentationWrapper.document(
                         "카테고리 수정 성공",
@@ -402,6 +403,61 @@ class CategoryControllerTest {
                         ResourceDocumentation.resource(
                             ResourceSnippetParameters.builder()
                                 .description("카테고리를 수정합니다.")
+                                .tag(CATEGORY_TAG)
+                                .requestHeaders(
+                                    ResourceDocumentation.headerWithName(HttpHeaders.AUTHORIZATION).description(
+                                        JwtTokenProvider.BEARER_PREFIX + "JWT토큰값"
+                                    )
+                                )
+                                .build()
+                        ),
+                        HeaderDocumentation.requestHeaders(
+                            HeaderDocumentation.headerWithName(HttpHeaders.AUTHORIZATION)
+                                .description(JwtTokenProvider.BEARER_PREFIX + "JWT토큰값")
+                        ),
+                    )
+                )
+
+        }
+    }
+
+
+    @DisplayName("DELETE /categories API 성공 200")
+    @Nested
+    inner class Categories_delete_success {
+        @DisplayName("카테고리를 삭제한다.")
+        @Test
+        fun categoryRemoveTest_success() {
+            //Given
+            val categoryRemoveRequest = CategoryRemoveRequest(
+                accountBookNo = 1L,
+            )
+
+            val userInfo = createUserInfo()
+
+
+            Mockito.doNothing().`when`(categoryService).deleteCategory(1L, categoryRemoveRequest.accountBookNo, userInfo.userNo)
+
+            //When && Then
+            mockMvc.perform(
+                RestDocumentationRequestBuilders.delete("/categories/{categoryNo}", 1L)
+                    .header(HttpHeaders.AUTHORIZATION, JwtTokenProvider.BEARER_PREFIX + "dXNlcjpzZWNyZXQ=")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsBytes(categoryRemoveRequest))
+                    .with(
+                        SecurityMockMvcRequestPostProcessors.user(userInfo)
+                    ).with(
+                        SecurityMockMvcRequestPostProcessors.csrf(),
+                    )
+            )
+                .andExpect(MockMvcResultMatchers.status().isNoContent)
+                .andDo(
+                    MockMvcRestDocumentationWrapper.document(
+                        "카테고리 삭제 성공",
+                        ApiDocumentUtil.getDocumentResponse(),
+                        ResourceDocumentation.resource(
+                            ResourceSnippetParameters.builder()
+                                .description("카테고리를 삭제합니다.")
                                 .tag(CATEGORY_TAG)
                                 .requestHeaders(
                                     ResourceDocumentation.headerWithName(HttpHeaders.AUTHORIZATION).description(

@@ -45,6 +45,7 @@ class CategoryController(
     }
 
     @PatchMapping("/categories/{categoryNo}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     fun categoryModify(
         @CurrentUser currentUserInfo: CurrentUserInfo,
         @PathVariable("categoryNo") categoryNo: Long,
@@ -54,10 +55,11 @@ class CategoryController(
     }
 
 
-    @DeleteMapping("/category/{categoryNo}")
+    @DeleteMapping("/categories/{categoryNo}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     fun categoryRemove(
         @CurrentUser currentUserInfo: CurrentUserInfo,
-        @ApiParam(value = "categoryNo", required = true) @PathVariable("categoryNo") categoryNo: Long,
+        @PathVariable("categoryNo") categoryNo: Long,
         @RequestBody request: CategoryRemoveRequest
     ) {
         categoryService.deleteCategory(

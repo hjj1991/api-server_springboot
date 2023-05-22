@@ -35,12 +35,9 @@ class CategoryService(
         val parentCategory = getParentCategory(request.parentCategoryNo, accountBook.accountBookNo)
 
         val savedCategory = categoryRepository.save(
-            Category(
-                categoryName = request.categoryName,
-                categoryDesc = request.categoryDesc,
-                categoryIcon = request.categoryIcon,
-                accountBook = accountBookRepository.getReferenceById(accountBook.accountBookNo),
-                parentCategory = parentCategory
+            request.toEntity(
+                accountBookRepository.getReferenceById(accountBook.accountBookNo),
+                parentCategory
             )
         )
 
@@ -89,7 +86,7 @@ class CategoryService(
             accountBookNo,
             userNo,
             setOf(AccountRole.OWNER)
-        ) ?: throw NoSuchElementException()
+        ) ?: throw CategoryNotFoundException()
 
         categoryRepository.delete(category)
     }
@@ -105,7 +102,7 @@ class CategoryService(
         ) ?: throw CategoryNotFoundException(ErrCode.ERR_CODE0011.msg)
     }
 
-    private fun modifyValidate(category: Category, request: CategoryModifyRequest){
+    private fun modifyValidate(category: Category, request: CategoryModifyRequest) {
         /* 최상위 카테고리의 경우 자식카테고리가 될 수 없다. 자기자신을 부모 카테고리로 설정 할시 에러 */
         if ((category.parentCategory == null && request.parentCategoryNo != null) || category.categoryNo == request.parentCategoryNo) {
             throw IllegalArgumentException()

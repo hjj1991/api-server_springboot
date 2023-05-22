@@ -3,7 +3,6 @@ package com.hjj.apiserver.repository.category
 import com.hjj.apiserver.domain.accountbook.AccountRole
 import com.hjj.apiserver.domain.category.Category
 import com.hjj.apiserver.dto.category.CategoryDto
-import com.hjj.apiserver.dto.category.response.CategoryFindAllResponse
 
 interface CategoryRepositoryCustom {
     fun findCategories(userNo: Long, accountBookNo: Long): List<CategoryDto>
@@ -13,5 +12,6 @@ interface CategoryRepositoryCustom {
         userNo: Long,
         accountRoles: Set<AccountRole> = setOf(AccountRole.OWNER, AccountRole.MEMBER)
     ): Category?
-    fun findCategoryByCategoryNo(userNo:Long, categoryNo: Long):Category?
+
+    fun findCategoryByCategoryNo(userNo: Long, categoryNo: Long): Category?
 }
