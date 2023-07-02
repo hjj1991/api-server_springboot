@@ -11,7 +11,7 @@ data class CategoryDetailResponse(
     val categoryName: String,
     val categoryDesc: String,
     val categoryIcon: String,
-    val childCategories: List<ChildCategory>
+    val childCategories: List<ChildCategory> = listOf()
 ) {
 
     companion object {
@@ -33,7 +33,8 @@ data class CategoryDetailResponse(
                         createdAt = it.createdAt,
                         modifiedAt = it.modifiedAt
                     )
-                }
+                },
+                parentCategoryNo = category.parentCategory?.categoryNo
             )
         }
     }

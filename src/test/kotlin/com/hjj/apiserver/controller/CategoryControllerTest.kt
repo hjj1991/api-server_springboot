@@ -381,7 +381,8 @@ class CategoryControllerTest {
             val userInfo = createUserInfo()
 
 
-            Mockito.doNothing().`when`(categoryService).modifyCategory(userInfo.userNo, 1L, categoryModifyRequest)
+            Mockito.`when`(categoryService.modifyCategory(userInfo.userNo, 1L, categoryModifyRequest))
+                .thenReturn(null)
 
             //When && Then
             mockMvc.perform(

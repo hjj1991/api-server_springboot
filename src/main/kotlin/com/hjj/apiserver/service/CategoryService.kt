@@ -31,22 +31,19 @@ class CategoryService(
             userNo = userNo,
             accountBookNo = request.accountBookNo,
         ) ?: throw AccountBookNotFoundException()
-
         val parentCategory = getParentCategory(request.parentCategoryNo, accountBook.accountBookNo)
-
         val savedCategory = categoryRepository.save(
             request.toEntity(
                 accountBookRepository.getReferenceById(accountBook.accountBookNo),
                 parentCategory
             )
         )
-
         return CategoryAddResponse.of(savedCategory)
     }
 
     fun findAllCategories(userNo: Long, accountBookNo: Long): CategoryFindAllResponse {
         val findAccountRole = accountBookUserRepository.findAccountRole(userNo, accountBookNo)
-            ?: throw AccountBookAccessDeniedException()
+        validateAccountBookRole(findAccountRole)
         val findCategories = categoryRepository.findCategories(userNo, accountBookNo)
         return CategoryFindAllResponse.of(findCategories, findAccountRole)
     }
@@ -54,11 +51,13 @@ class CategoryService(
     fun findCategory(userNo: Long, categoryNo: Long): CategoryDetailResponse {
         val findCategory = categoryRepository.findCategoryByCategoryNo(userNo, categoryNo)
             ?: throw CategoryNotFoundException()
+        val findAccountRole = accountBookUserRepository.findAccountRole(userNo, findCategory.accountBook.accountBookNo!!)
+        validateAccountBookRole(findAccountRole)
         return CategoryDetailResponse.of(findCategory)
     }
 
     @Transactional(readOnly = false)
-    fun modifyCategory(userNo: Long, categoryNo: Long, request: CategoryModifyRequest) {
+    fun modifyCategory(userNo: Long, categoryNo: Long, request: CategoryModifyRequest): Category {
         val category = categoryRepository.findCategoryByAccountRole(
             categoryNo,
             request.accountBookNo,
@@ -69,18 +68,16 @@ class CategoryService(
         modifyValidate(category, request)
         val parentCategory = getParentCategory(request.parentCategoryNo, request.accountBookNo)
 
-        category.updateCategory(
+        return category.updateCategory(
             categoryName = request.categoryName,
             categoryDesc = request.categoryDesc,
             categoryIcon = request.categoryIcon,
             parentCategory = parentCategory,
         )
-
     }
 
     @Transactional(readOnly = false)
     fun deleteCategory(categoryNo: Long, accountBookNo: Long, userNo: Long) {
-
         val category = categoryRepository.findCategoryByAccountRole(
             categoryNo,
             accountBookNo,
@@ -88,7 +85,7 @@ class CategoryService(
             setOf(AccountRole.OWNER)
         ) ?: throw CategoryNotFoundException()
 
-        categoryRepository.delete(category)
+        category.delete()
     }
 
     private fun getParentCategory(parentCategoryNo: Long?, accountBookNo: Long): Category? {
@@ -96,7 +93,7 @@ class CategoryService(
             return null
         }
 
-        return categoryRepository.findCategoryByCategoryNoAndAccountBook_AccountBookNoAndDeleteIsFalse(
+        return categoryRepository.findCategoryByCategoryNoAndAccountBook_AccountBookNoAndIsDeleteIsFalse(
             parentCategoryNo,
             accountBookNo
         ) ?: throw CategoryNotFoundException(ErrCode.ERR_CODE0011.msg)
@@ -107,5 +104,10 @@ class CategoryService(
         if ((category.parentCategory == null && request.parentCategoryNo != null) || category.categoryNo == request.parentCategoryNo) {
             throw IllegalArgumentException()
         }
+    }
+
+    private fun validateAccountBookRole(accountRole: AccountRole?) {
+        if(accountRole == null || !accountRole.hasReadPermission())
+            throw AccountBookAccessDeniedException()
     }
 }

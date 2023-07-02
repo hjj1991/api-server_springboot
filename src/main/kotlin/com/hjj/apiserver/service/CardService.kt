@@ -29,14 +29,14 @@ class CardService(
     @Transactional(readOnly = false)
     fun removeCard(userNo: Long, cardNo: Long) {
         val card =
-            cardRepository.findByCardNoAndUser_UserNoAndDeleteIsFalse(cardNo, userNo) ?: throw CardNotFoundException()
+            cardRepository.findByCardNoAndUser_UserNoAndIsDeleteIsFalse(cardNo, userNo) ?: throw CardNotFoundException()
         card.delete()
     }
 
     @Transactional(readOnly = false)
     fun modifyCard(userNo: Long, cardNo: Long, request: CardModifyRequest): CardModifyResponse {
         val foundCard =
-            cardRepository.findByCardNoAndUser_UserNoAndDeleteIsFalse(cardNo = cardNo, userNo = userNo)
+            cardRepository.findByCardNoAndUser_UserNoAndIsDeleteIsFalse(cardNo = cardNo, userNo = userNo)
                 ?: throw CardNotFoundException()
 
         foundCard.updateCard(request.cardName, request.cardType, request.cardDesc)
@@ -45,11 +45,11 @@ class CardService(
     }
 
     fun findCards(userNo: Long): List<CardFindAllResponse> {
-        return cardRepository.findByUser_UserNoAndDeleteIsFalse(userNo).map(CardFindAllResponse::of)
+        return cardRepository.findByUser_UserNoAndIsDeleteIsFalse(userNo).map(CardFindAllResponse::of)
     }
 
     fun findCardDetail(userNo: Long, cardNo: Long): CardFindResponse {
-        val foundCard = cardRepository.findByCardNoAndUser_UserNoAndDeleteIsFalse(cardNo, userNo)
+        val foundCard = cardRepository.findByCardNoAndUser_UserNoAndIsDeleteIsFalse(cardNo, userNo)
             ?: throw CardNotFoundException()
         return CardFindResponse.of(foundCard)
     }

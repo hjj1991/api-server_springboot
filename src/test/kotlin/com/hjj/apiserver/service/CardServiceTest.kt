@@ -91,7 +91,7 @@ class CardServiceTest {
             user = savedUser
         )
 
-        Mockito.`when`(cardRepository.findByCardNoAndUser_UserNoAndDeleteIsFalse(newCard.cardNo!!, savedUser.userNo!!))
+        Mockito.`when`(cardRepository.findByCardNoAndUser_UserNoAndIsDeleteIsFalse(newCard.cardNo!!, savedUser.userNo!!))
             .thenReturn(newCard)
 
 
@@ -109,7 +109,7 @@ class CardServiceTest {
         val cardNo = 1L
         val userNo = 1L
 
-        Mockito.`when`(cardRepository.findByCardNoAndUser_UserNoAndDeleteIsFalse(cardNo, userNo))
+        Mockito.`when`(cardRepository.findByCardNoAndUser_UserNoAndIsDeleteIsFalse(cardNo, userNo))
             .thenReturn(null)
 
         // When && Then
@@ -142,7 +142,7 @@ class CardServiceTest {
         )
 
         Mockito.`when`(
-            cardRepository.findByCardNoAndUser_UserNoAndDeleteIsFalse(
+            cardRepository.findByCardNoAndUser_UserNoAndIsDeleteIsFalse(
                 savedCard.cardNo!!,
                 savedUser.userNo!!
             )
@@ -172,7 +172,7 @@ class CardServiceTest {
         )
 
 
-        Mockito.`when`(cardRepository.findByCardNoAndUser_UserNoAndDeleteIsFalse(cardNo, userNo))
+        Mockito.`when`(cardRepository.findByCardNoAndUser_UserNoAndIsDeleteIsFalse(cardNo, userNo))
             .thenReturn(null)
 
         // When && Then
@@ -196,7 +196,7 @@ class CardServiceTest {
             Card(2L, "신한카드", CardType.CREDIT_CARD, "신한카드 설명", savedUser)
         )
 
-        Mockito.`when`(cardRepository.findByUser_UserNoAndDeleteIsFalse(savedUser.userNo!!))
+        Mockito.`when`(cardRepository.findByUser_UserNoAndIsDeleteIsFalse(savedUser.userNo!!))
             .thenReturn(cards.toMutableList())
 
         // When
@@ -236,7 +236,7 @@ class CardServiceTest {
         )
 
         Mockito.`when`(
-            cardRepository.findByCardNoAndUser_UserNoAndDeleteIsFalse(
+            cardRepository.findByCardNoAndUser_UserNoAndIsDeleteIsFalse(
                 savedCard.cardNo!!,
                 savedUser.userNo!!
             )
@@ -259,7 +259,7 @@ class CardServiceTest {
         val userNo = 1L
         val cardNo = 1L
 
-        Mockito.`when`(cardRepository.findByCardNoAndUser_UserNoAndDeleteIsFalse(cardNo, userNo))
+        Mockito.`when`(cardRepository.findByCardNoAndUser_UserNoAndIsDeleteIsFalse(cardNo, userNo))
             .thenReturn(null)
 
         // When && Then

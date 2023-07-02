@@ -103,20 +103,20 @@ class PurchaseService(
 
     @Transactional(readOnly = false, rollbackFor = [Exception::class])
     fun removePurchase(userNo: Long, purchaseNo: Long) {
-        purchaseRepository.findEntityGraphByUser_UserNoAndPurchaseNoAndDeleteYn(userNo, purchaseNo)?.delete()
+        purchaseRepository.findEntityGraphByUser_UserNoAndPurchaseNoAndIsDeleteIsFalse(userNo, purchaseNo)?.delete()
             ?: throw IllegalArgumentException()
     }
 
     @Transactional(readOnly = false, rollbackFor = [Exception::class])
     fun modifyPurchase(userNo: Long, purchaseNo: Long, request: PurchaseModifyRequest) {
-        val purchase = purchaseRepository.findEntityGraphByUser_UserNoAndPurchaseNoAndDeleteYn(userNo, purchaseNo)
+        val purchase = purchaseRepository.findEntityGraphByUser_UserNoAndPurchaseNoAndIsDeleteIsFalse(userNo, purchaseNo)
             ?: throw IllegalArgumentException()
 
         request.validRequest()
 
         purchase.updatePurchase(
             request = request,
-            card = cardRepository.findByCardNoAndUser_UserNoAndDeleteIsFalse(request.cardNo ?: 0, userNo),
+            card = cardRepository.findByCardNoAndUser_UserNoAndIsDeleteIsFalse(request.cardNo ?: 0, userNo),
             category = categoryRepository.findCategoryByAccountRole(
                 categoryNo = request.categoryNo ?: 0,
                 accountBookNo = request.accountBookNo,
