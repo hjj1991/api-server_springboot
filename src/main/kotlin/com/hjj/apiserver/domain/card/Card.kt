@@ -9,17 +9,13 @@ import jakarta.persistence.*
 @DynamicUpdate
 @Table(name = "tb_card")
 class Card(
-    cardNo: Long? = null,
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    var cardNo: Long? = null,
     cardName: String,
     cardType: CardType,
     cardDesc: String = "",
     user: User,
 ): BaseEntity(){
-
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var cardNo: Long? = cardNo
 
     @Column(nullable = false, length = 100)
     var cardName: String = cardName

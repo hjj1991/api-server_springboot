@@ -19,19 +19,9 @@ class PurchaseController(
     private val purchaseService: PurchaseService,
 ) {
 
-    @ApiImplicitParams(
-        ApiImplicitParam(
-            name = "Authorization",
-            value = "로그인 성공 후 access_token",
-            required = true,
-            dataType = "String",
-            dataTypeClass = String::class,
-            paramType = "header"
-        )
-    )
-    @ApiOperation(value = "지출,수입 등록", notes = "지출, 수입을 등록한다.")
     @PostMapping("/purchase")
     fun purchaseAdd(@CurrentUser currentUserInfo: CurrentUserInfo, @RequestBody request: PurchaseAddRequest) {
+        request.validRequest()
         purchaseService.addPurchase(currentUserInfo.userNo, request)
     }
 

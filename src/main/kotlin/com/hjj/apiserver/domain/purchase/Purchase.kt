@@ -14,6 +14,8 @@ import jakarta.persistence.*
 @DynamicUpdate
 @Table(name = "tb_purchase")
 class Purchase(
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    val purchaseNo: Long? = null,
     purchaseType: PurchaseType,
     price: Int,
     reason: String,
@@ -23,10 +25,6 @@ class Purchase(
     user: User,
     accountBook: AccountBook,
 ): BaseEntity() {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val purchaseNo: Long? = null
 
     @Column
     @Enumerated(EnumType.STRING)

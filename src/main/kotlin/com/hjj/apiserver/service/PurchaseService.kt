@@ -1,10 +1,13 @@
 package com.hjj.apiserver.service
 
+import com.hjj.apiserver.common.exception.AccountBookNotFoundException
+import com.hjj.apiserver.common.exception.CardNotFoundException
+import com.hjj.apiserver.common.exception.CategoryNotFoundException
 import com.hjj.apiserver.domain.accountbook.AccountRole
-import com.hjj.apiserver.domain.purchase.Purchase
 import com.hjj.apiserver.dto.purchase.request.PurchaseAddRequest
 import com.hjj.apiserver.dto.purchase.request.PurchaseFindOfPageRequest
 import com.hjj.apiserver.dto.purchase.request.PurchaseModifyRequest
+import com.hjj.apiserver.dto.purchase.response.PurchaseAddResponse
 import com.hjj.apiserver.dto.purchase.response.PurchaseDetailResponse
 import com.hjj.apiserver.dto.purchase.response.PurchaseFindOfPageResponse
 import com.hjj.apiserver.repository.accountbook.AccountBookRepository
@@ -16,6 +19,7 @@ import com.hjj.apiserver.util.CommonUtils
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Slice
 import org.springframework.data.domain.SliceImpl
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -29,37 +33,27 @@ class PurchaseService(
     private val cardRepository: CardRepository,
 ) {
 
-    @Transactional(readOnly = false, rollbackFor = [Exception::class])
-    fun addPurchase(userNo: Long, request: PurchaseAddRequest): Purchase {
+    @Transactional(readOnly = false)
+    fun addPurchase(userNo: Long, request: PurchaseAddRequest): PurchaseAddResponse {
         val accountBook = accountBookRepository.findAccountBook(
             userNo = userNo,
             accountBookNo = request.accountBookNo,
-        ) ?: throw IllegalArgumentException()
+        ) ?: throw AccountBookNotFoundException()
 
-        request.validRequest()
+        val card = request.cardNo?.let { cardRepository.findByIdOrNull(it) ?: throw CardNotFoundException() }
+        val category = request.categoryNo?.let {
+            categoryRepository.findCategoryByAccountRole(
+                categoryNo = it,
+                accountBookNo = request.accountBookNo,
+                userNo = userNo,
+            ) ?: throw CategoryNotFoundException()
+        }
+        val purchase = request.toEntity(
+            card, category, userRepository.getReferenceById(userNo),
+            accountBookRepository.getReferenceById(accountBook.accountBookNo))
+        val savedPurchase = purchaseRepository.save(purchase)
 
-
-        return purchaseRepository.save(
-            Purchase(
-                purchaseType = request.purchaseType,
-                price = request.price,
-                reason = request.reason,
-                purchaseDate = request.purchaseDate,
-                card = request.cardNo?.let {
-                    cardRepository.getById(it) ?: throw IllegalArgumentException()
-                },
-                category = request.categoryNo?.let {
-                    categoryRepository.findCategoryByAccountRole(
-                        request.categoryNo,
-                        request.accountBookNo,
-                        userNo,
-                        setOf(AccountRole.OWNER, AccountRole.MEMBER)
-                    ) ?: throw IllegalArgumentException()
-                },
-                user = userRepository.getReferenceById(userNo),
-                accountBook = accountBookRepository.getReferenceById(accountBook.accountBookNo),
-            )
-        )
+        return PurchaseAddResponse.of(savedPurchase)
     }
 
     fun findPurchasesOfPage(request: PurchaseFindOfPageRequest, pageable: Pageable): Slice<PurchaseFindOfPageResponse> {

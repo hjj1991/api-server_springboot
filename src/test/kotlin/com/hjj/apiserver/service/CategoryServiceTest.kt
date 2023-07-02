@@ -580,11 +580,6 @@ class CategoryServiceTest {
     @Test
     fun deleteCategory_fail_when_categoryNotExists_throw_categoryNotFoundException() {
         // Given
-        val accountBook = AccountBook(
-            13L,
-            "가계부이름",
-            "가계부 설명"
-        )
 
         val savedUser = createUser()
 

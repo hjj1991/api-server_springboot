@@ -7,7 +7,6 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.hjj.apiserver.common.JwtTokenProvider
 import com.hjj.apiserver.domain.accountbook.AccountRole
 import com.hjj.apiserver.domain.user.Role
-import com.hjj.apiserver.domain.user.User
 import com.hjj.apiserver.dto.category.CategoryDto
 import com.hjj.apiserver.dto.category.request.CategoryAddRequest
 import com.hjj.apiserver.dto.category.request.CategoryModifyRequest
@@ -479,14 +478,5 @@ class CategoryControllerTest {
 
     private fun createUserInfo(): CurrentUserInfo {
         return CurrentUserInfo("test", "닉네임", 1L, Role.USER)
-    }
-
-    private fun getUser(currentUserInfo: CurrentUserInfo): User {
-        return User(
-            userNo = currentUserInfo.userNo,
-            userId = currentUserInfo.userId,
-            nickName = currentUserInfo.nickName,
-            role = currentUserInfo.role
-        )
     }
 }

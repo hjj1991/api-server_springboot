@@ -12,17 +12,14 @@ import jakarta.persistence.*
     ]
 )
 class AccountBookUser(
-    accountBookUserNo: Long? = null,
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    var accountBookUserNo: Long? = null,
     accountBook: AccountBook,
     user: User,
     accountRole: AccountRole,
     backGroundColor: String,
     color: String,
 ) : BaseEntity() {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val accountBookUserNo: Long? = accountBookUserNo
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
     @JoinColumn(name = "accountBookNo")

@@ -4,6 +4,7 @@ import com.hjj.apiserver.domain.user.Role
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
+import java.io.Serial
 
 class CurrentUserInfo(
     val userId: String? = null,
@@ -26,4 +27,9 @@ class CurrentUserInfo(
     override fun isCredentialsNonExpired(): Boolean = true
 
     override fun isEnabled(): Boolean = true
+
+    companion object {
+        @Serial
+        private const val serialVersionUID: Long = 341834540654704414L
+    }
 }

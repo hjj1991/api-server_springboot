@@ -14,7 +14,8 @@ import jakarta.persistence.*
         UniqueConstraint(columnNames = ["accountBookNo", "categoryName"])]
     )
 class Category(
-    categoryNo: Long? = null,
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    var categoryNo: Long? = null,
     categoryName: String,
     categoryDesc: String = "",
     categoryIcon: String,
@@ -23,10 +24,6 @@ class Category(
     parentCategory: Category? = null,
     childCategories: MutableList<Category> = mutableListOf()
 ): BaseEntity() {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val categoryNo: Long? = categoryNo
 
     @Column(nullable = false)
     var categoryName: String = categoryName
