@@ -6,7 +6,6 @@ import com.hjj.apiserver.domain.accountbook.AccountRole
 import com.hjj.apiserver.repository.accountbook.AccountBookRepository
 import com.hjj.apiserver.repository.accountbook.AccountBookUserRepository
 import com.hjj.apiserver.repository.category.CategoryRepository
-import com.hjj.apiserver.repository.user.UserRepository
 import com.hjj.apiserver.util.CommonUtils
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.DisplayName
@@ -17,7 +16,6 @@ import java.time.format.DateTimeFormatter
 
 class AccountBookRepositoryTest : BaseRepositoryTest() {
 
-
     @Autowired
     private lateinit var accountBookRepository: AccountBookRepository
 
@@ -26,7 +24,6 @@ class AccountBookRepositoryTest : BaseRepositoryTest() {
 
     @Autowired
     private lateinit var categoryRepository: CategoryRepository
-
 
     @Test
     @DisplayName("사용자의 가계부가 정상 조회된다.")

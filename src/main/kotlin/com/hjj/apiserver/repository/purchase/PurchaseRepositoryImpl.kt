@@ -18,6 +18,7 @@ class PurchaseRepositoryImpl(
             .select(
                 Projections.constructor(
                     PurchaseDetailResponse::class.java,
+                    purchase.purchaseNo,
                     purchase.accountBook.accountBookNo,
                     purchase.card.cardNo,
                     category.categoryNo,

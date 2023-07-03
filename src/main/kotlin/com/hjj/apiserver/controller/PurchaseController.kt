@@ -94,6 +94,7 @@ class PurchaseController(
         @ApiParam(value = "purchaseNo", required = true) @PathVariable("purchaseNo") purchaseNo: Long,
         @RequestBody request: PurchaseModifyRequest
     ){
+        request.validRequest()
         purchaseService.modifyPurchase(currentUserInfo.userNo, purchaseNo, request)
     }
 }

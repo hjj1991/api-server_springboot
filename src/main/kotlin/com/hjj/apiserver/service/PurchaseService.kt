@@ -3,6 +3,7 @@ package com.hjj.apiserver.service
 import com.hjj.apiserver.common.exception.AccountBookNotFoundException
 import com.hjj.apiserver.common.exception.CardNotFoundException
 import com.hjj.apiserver.common.exception.CategoryNotFoundException
+import com.hjj.apiserver.common.exception.PurchaseNotFoundException
 import com.hjj.apiserver.domain.accountbook.AccountRole
 import com.hjj.apiserver.dto.purchase.request.PurchaseAddRequest
 import com.hjj.apiserver.dto.purchase.request.PurchaseFindOfPageRequest
@@ -50,7 +51,8 @@ class PurchaseService(
         }
         val purchase = request.toEntity(
             card, category, userRepository.getReferenceById(userNo),
-            accountBookRepository.getReferenceById(accountBook.accountBookNo))
+            accountBookRepository.getReferenceById(accountBook.accountBookNo)
+        )
         val savedPurchase = purchaseRepository.save(purchase)
 
         return PurchaseAddResponse.of(savedPurchase)
@@ -63,31 +65,9 @@ class PurchaseService(
             request.accountBookNo,
             pageable
         )
-
-        val purchaseFindOfPageResponseList = purchases.map { purchase ->
-            PurchaseFindOfPageResponse(
-                purchaseNo = purchase.purchaseNo!!,
-                userNo = purchase.user.userNo!!,
-                cardNo = purchase.card?.cardNo,
-                accountBookNo = purchase.accountBook.accountBookNo!!,
-                purchaseType = purchase.purchaseType,
-                price = purchase.price,
-                reason = purchase.reason,
-                purchaseDate = purchase.purchaseDate,
-                categoryInfo = purchase.category?.let {
-                    PurchaseFindOfPageResponse.PurchaseCategoryInfo(
-                        parentCategoryNo = it.parentCategory?.categoryNo,
-                        categoryNo = it.categoryNo!!,
-                        parentCategoryName = it.parentCategory?.categoryName,
-                        categoryName = it.categoryName,
-                        categoryDesc = it.categoryDesc,
-                        categoryIcon = it.categoryIcon,
-                    )
-                }
-            )
-        }.toMutableList()
-
+        val purchaseFindOfPageResponseList = purchases.map(PurchaseFindOfPageResponse::of).toMutableList()
         val hasNext = purchaseFindOfPageResponseList.size > pageable.pageSize
+
         return SliceImpl(
             CommonUtils.getSlicePageResult(purchaseFindOfPageResponseList, pageable.pageSize),
             pageable,
@@ -95,33 +75,38 @@ class PurchaseService(
         )
     }
 
-    @Transactional(readOnly = false, rollbackFor = [Exception::class])
+    @Transactional(readOnly = false)
     fun removePurchase(userNo: Long, purchaseNo: Long) {
         purchaseRepository.findEntityGraphByUser_UserNoAndPurchaseNoAndIsDeleteIsFalse(userNo, purchaseNo)?.delete()
-            ?: throw IllegalArgumentException()
+            ?: throw PurchaseNotFoundException()
     }
 
-    @Transactional(readOnly = false, rollbackFor = [Exception::class])
+    @Transactional(readOnly = false)
     fun modifyPurchase(userNo: Long, purchaseNo: Long, request: PurchaseModifyRequest) {
-        val purchase = purchaseRepository.findEntityGraphByUser_UserNoAndPurchaseNoAndIsDeleteIsFalse(userNo, purchaseNo)
-            ?: throw IllegalArgumentException()
+        val purchase =
+            purchaseRepository.findEntityGraphByUser_UserNoAndPurchaseNoAndIsDeleteIsFalse(userNo, purchaseNo)
+                ?: throw PurchaseNotFoundException()
 
-        request.validRequest()
+        val card = request.cardNo?.let {
+            cardRepository.findByCardNoAndUser_UserNoAndIsDeleteIsFalse(it, userNo) ?: throw CardNotFoundException()
+        }
+        val category = request.categoryNo?.let {
+            categoryRepository.findCategoryByAccountRole(
+                categoryNo = it,
+                accountBookNo = request.accountBookNo,
+                userNo = userNo,
+            ) ?: throw CategoryNotFoundException()
+        }
 
         purchase.updatePurchase(
             request = request,
-            card = cardRepository.findByCardNoAndUser_UserNoAndIsDeleteIsFalse(request.cardNo ?: 0, userNo),
-            category = categoryRepository.findCategoryByAccountRole(
-                categoryNo = request.categoryNo ?: 0,
-                accountBookNo = request.accountBookNo,
-                userNo = userNo,
-                accountRoles = setOf(AccountRole.MEMBER, AccountRole.OWNER)
-            ),
+            card = card,
+            category = category
         )
     }
 
     fun findPurchase(userNo: Long, purchaseNo: Long): PurchaseDetailResponse {
-        return purchaseRepository.findPurchase(userNo, purchaseNo) ?: throw IllegalArgumentException()
+        return purchaseRepository.findPurchase(userNo, purchaseNo) ?: throw PurchaseNotFoundException()
     }
 
 }

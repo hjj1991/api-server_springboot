@@ -37,9 +37,8 @@ class CategoryRepositoryImpl(
                         )
                     )
                     .and(category.isDelete.isFalse)
-                    .and(childCategory.isDelete.isFalse)
+                    .and(childCategory.isNull.or(childCategory.isDelete.isFalse))
             )
-            .distinct()
             .orderBy(category.categoryNo.asc())
             .transform(
                 groupBy(
@@ -99,7 +98,7 @@ class CategoryRepositoryImpl(
             ).fetchOne()
     }
 
-    override fun findCategoryByCategoryNo(categoryNo: Long, userNo:Long):Category?{
+    override fun findCategoryByCategoryNo(userNo:Long, categoryNo: Long):Category?{
         val childCategory = QCategory("childrenCategory")
         return jpaQueryFactory
             .select(category)

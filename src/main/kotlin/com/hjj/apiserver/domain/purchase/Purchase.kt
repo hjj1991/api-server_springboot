@@ -92,10 +92,10 @@ class Purchase(
 
         this.category = updateCategory
         this.card = updateCard
-        purchaseType = request.purchaseType
-        price = request.price
-        reason = request.reason
-        purchaseDate = request.purchaseDate
+        this.purchaseType = request.purchaseType
+        this.price = request.price
+        this.reason = request.reason
+        this.purchaseDate = request.purchaseDate
 
         return this
     }
