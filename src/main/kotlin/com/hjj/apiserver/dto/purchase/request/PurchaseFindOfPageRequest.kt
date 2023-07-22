@@ -1,5 +1,7 @@
 package com.hjj.apiserver.dto.purchase.request
 
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Pageable
 import org.springframework.format.annotation.DateTimeFormat
 import java.time.LocalDate
 
@@ -14,5 +16,9 @@ data class PurchaseFindOfPageRequest(
 ) {
     companion object {
         const val PURCHASE_DEFAULT_SIZE = 100
+    }
+
+    fun getPageRequest(): Pageable{
+        return PageRequest.of(page, size)
     }
 }

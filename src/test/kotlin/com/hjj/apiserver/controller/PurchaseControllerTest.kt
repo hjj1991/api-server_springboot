@@ -5,34 +5,30 @@ import com.epages.restdocs.apispec.ResourceDocumentation
 import com.epages.restdocs.apispec.ResourceSnippetParameters
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.hjj.apiserver.common.JwtTokenProvider
-import com.hjj.apiserver.domain.accountbook.AccountRole
 import com.hjj.apiserver.domain.purchase.PurchaseType
 import com.hjj.apiserver.domain.user.Role
-import com.hjj.apiserver.dto.category.CategoryDto
-import com.hjj.apiserver.dto.category.request.CategoryAddRequest
-import com.hjj.apiserver.dto.category.request.CategoryModifyRequest
-import com.hjj.apiserver.dto.category.request.CategoryRemoveRequest
-import com.hjj.apiserver.dto.category.response.CategoryAddResponse
-import com.hjj.apiserver.dto.category.response.CategoryDetailResponse
-import com.hjj.apiserver.dto.category.response.CategoryFindAllResponse
 import com.hjj.apiserver.dto.purchase.request.PurchaseAddRequest
+import com.hjj.apiserver.dto.purchase.request.PurchaseFindOfPageRequest
+import com.hjj.apiserver.dto.purchase.request.PurchaseModifyRequest
 import com.hjj.apiserver.dto.purchase.response.PurchaseAddResponse
+import com.hjj.apiserver.dto.purchase.response.PurchaseDetailResponse
+import com.hjj.apiserver.dto.purchase.response.PurchaseFindOfPageResponse
 import com.hjj.apiserver.dto.user.CurrentUserInfo
-import com.hjj.apiserver.service.CategoryService
 import com.hjj.apiserver.service.PurchaseService
+import com.hjj.apiserver.util.CommonUtils
 import com.hjj.apiserver.utils.ApiDocumentUtil
 import org.apache.http.HttpHeaders
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.mockito.BDDMockito
-import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration
 import org.springframework.boot.autoconfigure.security.oauth2.client.servlet.OAuth2ClientAutoConfiguration
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.mock.mockito.MockBean
+import org.springframework.data.domain.SliceImpl
 import org.springframework.http.MediaType
 import org.springframework.restdocs.headers.HeaderDocumentation
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders
@@ -43,7 +39,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.util.MultiValueMap
 import java.time.LocalDate
-import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 @DisplayName("지출 관리 API 테스트")
 @AutoConfigureRestDocs
@@ -119,12 +115,14 @@ class PurchaseControllerTest {
                                 .description("지출내역을 등록합니다.")
                                 .tag(PURCHASE_TAG)
                                 .responseFields(
+                                    PayloadDocumentation.fieldWithPath("purchaseNo").description("지출 내역 고유번호"),
                                     PayloadDocumentation.fieldWithPath("accountBookNo").description("가계부 고유번호"),
                                     PayloadDocumentation.fieldWithPath("categoryNo").description("카테고리 고유번호"),
-                                    PayloadDocumentation.fieldWithPath("categoryName").description("카테고리 이름"),
-                                    PayloadDocumentation.fieldWithPath("categoryDesc").description("카테고리 설명"),
-                                    PayloadDocumentation.fieldWithPath("categoryIcon").description("카테고리 아이콘"),
-                                    PayloadDocumentation.fieldWithPath("parentCategoryNo").description("상위 카테고리 고유번호"),
+                                    PayloadDocumentation.fieldWithPath("cardNo").description("카드 고유번호"),
+                                    PayloadDocumentation.fieldWithPath("purchaseType").description("지출 유형"),
+                                    PayloadDocumentation.fieldWithPath("price").description("금액"),
+                                    PayloadDocumentation.fieldWithPath("reason").description("사유"),
+                                    PayloadDocumentation.fieldWithPath("purchaseDate").description("지출 또는 수입 일자"),
                                 )
                                 .requestHeaders(
                                     ResourceDocumentation.headerWithName(HttpHeaders.AUTHORIZATION).description(
@@ -143,63 +141,74 @@ class PurchaseControllerTest {
         }
     }
 
-    @DisplayName("GET /categories API 성공 200")
+    @DisplayName("GET /purchase API 성공 200")
     @Nested
-    inner class Categories_get_success {
-        @DisplayName("가계부에 속한 전체 카테고리가 조회된다.")
+    inner class Purchase_get_success {
+        @DisplayName("가계부에 속한 지출 내역이 조회된다.")
         @Test
-        fun categoriesFindTest_success() {
+        fun purchasesFindTest_success() {
             //Given
-            val categoryFindAllResponse = CategoryFindAllResponse(
-                listOf(
-                    CategoryDto(
-                        accountBookNo = 1L,
-                        categoryNo = 1L,
-                        categoryName = "식비",
-                        categoryDesc = "식비내역카테고리입니다.",
-                        categoryIcon = "food.png",
-                        childCategories = listOf(
-                            CategoryDto.ChildCategory(
-                                accountBookNo = 1L,
-                                categoryNo = 10L,
-                                categoryName = "일식",
-                                categoryDesc = "일식내역 카테고리입니다.",
-                                categoryIcon = "japan.png",
-                                parentCategoryNo = 1L
-                            ),
-                            CategoryDto.ChildCategory(
-                                accountBookNo = 2L,
-                                categoryNo = 11L,
-                                categoryName = "한식",
-                                categoryDesc = "한식내역 카테고리입니다.",
-                                categoryIcon = "korea.png",
-                                parentCategoryNo = 1L
-                            ),
-                        ).toMutableList()
-                    ),
-                    CategoryDto(
-                        accountBookNo = 1L,
-                        categoryNo = 2L,
-                        categoryName = "의료비",
-                        categoryDesc = "의료내역 카테고리입니다.",
-                        categoryIcon = "hospital.png",
-                        childCategories = mutableListOf()
-                    )
-                ),
-                AccountRole.OWNER
+            val purchaseFindOfPageRequest = PurchaseFindOfPageRequest(
+                accountBookNo = 1L,
+                startDate = LocalDate.of(2023, 7, 21),
+                endDate = LocalDate.of(2023, 7, 30)
             )
 
             val userInfo = createUserInfo()
 
-            BDDMockito.given(categoryService.findAllCategories(userInfo.userNo, 1L))
-                .willReturn(categoryFindAllResponse)
+            val purchaseByOutGoing = PurchaseFindOfPageResponse(
+                purchaseNo = 1L,
+                userNo = userInfo.userNo,
+                cardNo = 1L,
+                accountBookNo = purchaseFindOfPageRequest.accountBookNo,
+                purchaseType = PurchaseType.OUTGOING,
+                price = 10000,
+                reason = "호호식당 음식값",
+                purchaseDate = LocalDate.of(2023, 7, 22),
+                categoryInfo = PurchaseFindOfPageResponse.PurchaseCategoryInfo(
+                    categoryNo = 1L,
+                    categoryName = "식비",
+                    categoryIcon = "124.png",
+                    categoryDesc = "평소 식사비"
+                )
+            )
+
+            val purchaseByInCome = PurchaseFindOfPageResponse(
+                purchaseNo = 2L,
+                userNo = userInfo.userNo,
+                accountBookNo = purchaseFindOfPageRequest.accountBookNo,
+                purchaseType = PurchaseType.INCOME,
+                price = 1000000,
+                reason = "급여",
+                purchaseDate = LocalDate.of(2023, 7, 23),
+            )
+
+            val pageRequest = purchaseFindOfPageRequest.getPageRequest()
+
+            val purchaseFindOfPageResponse = SliceImpl(
+                CommonUtils.getSlicePageResult(listOf(purchaseByOutGoing, purchaseByInCome), pageRequest.pageSize),
+                pageRequest,
+                false
+            )
+
+            BDDMockito.given(
+                purchaseService.findPurchasesOfPage(
+                    purchaseFindOfPageRequest,
+                    purchaseFindOfPageRequest.getPageRequest()
+                )
+            )
+                .willReturn(purchaseFindOfPageResponse)
 
             val map: MultiValueMap<String, String> = LinkedMultiValueMap()
-            map.add("accountBookNo", "1")
+            map.add("accountBookNo", purchaseFindOfPageRequest.accountBookNo.toString())
+            map.add("startDate", purchaseFindOfPageRequest.startDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
+            map.add("endDate", purchaseFindOfPageRequest.endDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
+            map.add("size", purchaseFindOfPageRequest.size.toString())
+            map.add("page", purchaseFindOfPageRequest.page.toString())
 
             //When && Then
             mockMvc.perform(
-                RestDocumentationRequestBuilders.get("/categories")
+                RestDocumentationRequestBuilders.get("/purchase")
                     .queryParams(map)
                     .header(HttpHeaders.AUTHORIZATION, JwtTokenProvider.BEARER_PREFIX + "dXNlcjpzZWNyZXQ=")
                     .contentType(MediaType.APPLICATION_JSON)
@@ -210,41 +219,85 @@ class PurchaseControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isOk)
                 .andDo(
                     MockMvcRestDocumentationWrapper.document(
-                        "카테고리 전체 목록 조회 성공",
+                        "지출 내역목록 페이징 조회 성공",
                         ApiDocumentUtil.getDocumentResponse(),
                         ResourceDocumentation.resource(
                             ResourceSnippetParameters.builder()
-                                .description("카테고리를 전체 조회합니다.")
-                                .tag(CATEGORY_TAG)
+                                .description("지출 내역목록 페이징 조회합니다.")
+                                .tag(PURCHASE_TAG)
                                 .responseFields(
-                                    PayloadDocumentation.fieldWithPath("categories")
-                                        .description("카테고리 정보"),
-                                    PayloadDocumentation.fieldWithPath("categories[].accountBookNo")
+                                    PayloadDocumentation.fieldWithPath("content")
+                                        .description("지출 목록"),
+                                    PayloadDocumentation.fieldWithPath("content[].purchaseNo")
+                                        .description("지출 고유번호"),
+                                    PayloadDocumentation.fieldWithPath("content[].userNo")
+                                        .description("사용자 고유번호"),
+                                    PayloadDocumentation.fieldWithPath("content[].cardNo").optional()
+                                        .description("카드 고유번호"),
+                                    PayloadDocumentation.fieldWithPath("content[].accountBookNo")
                                         .description("가계부 고유번호"),
-                                    PayloadDocumentation.fieldWithPath("categories[].categoryNo")
-                                        .description("카테고리 고유번호"),
-                                    PayloadDocumentation.fieldWithPath("categories[].categoryName")
-                                        .description("카테고리 이름"),
-                                    PayloadDocumentation.fieldWithPath("categories[].categoryDesc")
-                                        .description("카테고리 설명"),
-                                    PayloadDocumentation.fieldWithPath("categories[].categoryIcon")
-                                        .description("카테고리 아이콘"),
-                                    PayloadDocumentation.fieldWithPath("categories[].childCategories")
-                                        .description("하위 카테고리정보"),
-                                    PayloadDocumentation.fieldWithPath("categories[].childCategories[].categoryNo")
+                                    PayloadDocumentation.fieldWithPath("content[].purchaseType")
+                                        .description("지출 형태"),
+                                    PayloadDocumentation.fieldWithPath("content[].price")
+                                        .description("금액"),
+                                    PayloadDocumentation.fieldWithPath("content[].reason")
+                                        .description("사유"),
+                                    PayloadDocumentation.fieldWithPath("content[].purchaseDate")
+                                        .description("지출 일자"),
+                                    PayloadDocumentation.fieldWithPath("content[].categoryInfo").optional()
+                                        .description("하위 카테고리 정보"),
+                                    PayloadDocumentation.fieldWithPath("content[].categoryInfo.categoryNo")
                                         .description("하위 카테고리 고유번호"),
-                                    PayloadDocumentation.fieldWithPath("categories[].childCategories[].categoryName")
+                                    PayloadDocumentation.fieldWithPath("content[].categoryInfo.categoryName")
                                         .description("하위 카테고리 이름"),
-                                    PayloadDocumentation.fieldWithPath("categories[].childCategories[].categoryDesc")
+                                    PayloadDocumentation.fieldWithPath("content[].categoryInfo.categoryDesc")
                                         .description("하위 카테고리 설명"),
-                                    PayloadDocumentation.fieldWithPath("categories[].childCategories[].categoryIcon")
+                                    PayloadDocumentation.fieldWithPath("content[].categoryInfo.categoryIcon")
                                         .description("하위 카테고리 아이콘"),
-                                    PayloadDocumentation.fieldWithPath("categories[].childCategories[].parentCategoryNo")
+                                    PayloadDocumentation.fieldWithPath("content[].categoryInfo.parentCategoryNo")
                                         .description("소속된 상위 카테고리 고유번호"),
-                                    PayloadDocumentation.fieldWithPath("categories[].childCategories[].accountBookNo")
-                                        .description("가계부 고유번호"),
-                                    PayloadDocumentation.fieldWithPath("accountRole")
-                                        .description("사용자의 가계부 권한"),
+                                    PayloadDocumentation.fieldWithPath("content[].categoryInfo.parentCategoryName")
+                                        .description("소속된 상위 카테고리 이름"),
+                                    PayloadDocumentation.fieldWithPath("pageable")
+                                        .description("페이징 관련 정보"),
+                                    PayloadDocumentation.fieldWithPath("pageable.sort")
+                                        .description("페이징 정렬 정보"),
+                                    PayloadDocumentation.fieldWithPath("pageable.sort.empty")
+                                        .description("페이징 정렬 정보"),
+                                    PayloadDocumentation.fieldWithPath("pageable.sort.sorted")
+                                        .description("페이징 정렬 정보"),
+                                    PayloadDocumentation.fieldWithPath("pageable.sort.unsorted")
+                                        .description("페이징 정렬 정보"),
+                                    PayloadDocumentation.fieldWithPath("pageable.offset")
+                                        .description("페이징 관련 정보"),
+                                    PayloadDocumentation.fieldWithPath("pageable.pageSize")
+                                        .description("페이징 관련 정보"),
+                                    PayloadDocumentation.fieldWithPath("pageable.pageNumber")
+                                        .description("페이징 관련 정보"),
+                                    PayloadDocumentation.fieldWithPath("pageable.unpaged")
+                                        .description("페이징 관련 정보"),
+                                    PayloadDocumentation.fieldWithPath("pageable.paged")
+                                        .description("페이징 관련 정보"),
+                                    PayloadDocumentation.fieldWithPath("size")
+                                        .description("페이징 관련 정보"),
+                                    PayloadDocumentation.fieldWithPath("number")
+                                        .description("페이징 관련 정보"),
+                                    PayloadDocumentation.fieldWithPath("sort")
+                                        .description("페이징 관련 정보"),
+                                    PayloadDocumentation.fieldWithPath("sort.empty")
+                                        .description("페이징 관련 정보"),
+                                    PayloadDocumentation.fieldWithPath("sort.sorted")
+                                        .description("페이징 관련 정보"),
+                                    PayloadDocumentation.fieldWithPath("sort.unsorted")
+                                        .description("페이징 관련 정보"),
+                                    PayloadDocumentation.fieldWithPath("first")
+                                        .description("페이징 관련 정보"),
+                                    PayloadDocumentation.fieldWithPath("last")
+                                        .description("페이징 관련 정보"),
+                                    PayloadDocumentation.fieldWithPath("numberOfElements")
+                                        .description("페이징 관련 정보"),
+                                    PayloadDocumentation.fieldWithPath("empty")
+                                        .description("페이징 관련 정보"),
                                 )
                                 .requestHeaders(
                                     ResourceDocumentation.headerWithName(HttpHeaders.AUTHORIZATION).description(
@@ -263,53 +316,83 @@ class PurchaseControllerTest {
         }
     }
 
-
-    @DisplayName("GET /categories/{categoryNo} API 성공 200")
+    @DisplayName("DELETE /purchase API 성공 200")
     @Nested
-    inner class Category_get_success {
-        @DisplayName("카테고리를 상세 조회된다.")
+    inner class Purchase_delete_success {
+        @DisplayName("가계부에 속한 지출 내역을 삭제한다.")
         @Test
-        fun categoryDetailTest_success() {
+        fun purchaseRemoveTest_success() {
             //Given
-            val categoryFindAllResponse = CategoryDetailResponse(
-                accountBookNo = 1L,
-                categoryNo = 1L,
-                categoryName = "식비",
-                categoryDesc = "식비내역카테고리입니다.",
-                categoryIcon = "food.png",
-                childCategories = listOf(
-                    CategoryDetailResponse.ChildCategory(
-                        accountBookNo = 1L,
-                        categoryNo = 10L,
-                        parentCategoryNo = 1L,
-                        categoryName = "일식",
-                        categoryDesc = "일식내역 카테고리입니다.",
-                        categoryIcon = "japan.png",
-                        createdAt = LocalDateTime.now(),
-                        modifiedAt = LocalDateTime.now()
-                    ),
-                    CategoryDetailResponse.ChildCategory(
-                        accountBookNo = 2L,
-                        categoryNo = 11L,
-                        parentCategoryNo = 1L,
-                        categoryName = "한식",
-                        categoryDesc = "한식내역 카테고리입니다.",
-                        categoryIcon = "korea.png",
-                        createdAt = LocalDateTime.now(),
-                        modifiedAt = LocalDateTime.now()
-                    ),
-                )
-            )
 
             val userInfo = createUserInfo()
 
-            BDDMockito.given(categoryService.findCategory(1L, userInfo.userNo))
-                .willReturn(categoryFindAllResponse)
+            BDDMockito.doNothing().`when`(purchaseService).removePurchase(userInfo.userNo, 1L)
+
+            //When && Then
+            mockMvc.perform(
+                RestDocumentationRequestBuilders.delete("/purchase/{purchaseNo}", 1L)
+                    .header(HttpHeaders.AUTHORIZATION, JwtTokenProvider.BEARER_PREFIX + "dXNlcjpzZWNyZXQ=")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .with(
+                        SecurityMockMvcRequestPostProcessors.user(userInfo)
+                    ).with(
+                        SecurityMockMvcRequestPostProcessors.csrf(),
+                    )
+            )
+                .andExpect(MockMvcResultMatchers.status().isNoContent)
+                .andDo(
+                    MockMvcRestDocumentationWrapper.document(
+                        "지출 내역삭제 성공",
+                        ApiDocumentUtil.getDocumentResponse(),
+                        ResourceDocumentation.resource(
+                            ResourceSnippetParameters.builder()
+                                .description("지출 내역삭제 성공합니다.")
+                                .tag(PURCHASE_TAG)
+                                .requestHeaders(
+                                    ResourceDocumentation.headerWithName(HttpHeaders.AUTHORIZATION).description(
+                                        JwtTokenProvider.BEARER_PREFIX + "JWT토큰값"
+                                    )
+                                )
+                                .build()
+                        ),
+                        HeaderDocumentation.requestHeaders(
+                            HeaderDocumentation.headerWithName(HttpHeaders.AUTHORIZATION)
+                                .description(JwtTokenProvider.BEARER_PREFIX + "JWT토큰값")
+                        ),
+                    )
+                )
+
+        }
+    }
+
+    @DisplayName("GET /purchase/{purchaseNo} API 성공 200")
+    @Nested
+    inner class PurchaseDetail_get_success {
+        @DisplayName("가계부에 속한 지출 내역 상세조회가 된다.")
+        @Test
+        fun purchasesFindTest_success() {
+            //Given
+
+            val userInfo = createUserInfo()
+
+            val purchaseDetailResponse = PurchaseDetailResponse(
+                purchaseNo = 1L,
+                accountBookNo = 1L,
+                cardNo = 2L,
+                categoryNo = 2L,
+                purchaseType = PurchaseType.OUTGOING,
+                price = 10000,
+                reason = "세차비",
+                purchaseDate = LocalDate.of(2023, 5, 1)
+            )
+
+            BDDMockito.given(purchaseService.findPurchase(userInfo.userNo, 1L))
+                .willReturn(purchaseDetailResponse)
 
 
             //When && Then
             mockMvc.perform(
-                RestDocumentationRequestBuilders.get("/categories/{categoryNo}", 1L)
+                RestDocumentationRequestBuilders.get("/purchase/{purchaseNo}", 1L)
                     .header(HttpHeaders.AUTHORIZATION, JwtTokenProvider.BEARER_PREFIX + "dXNlcjpzZWNyZXQ=")
                     .contentType(MediaType.APPLICATION_JSON)
                     .with(
@@ -319,43 +402,31 @@ class PurchaseControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isOk)
                 .andDo(
                     MockMvcRestDocumentationWrapper.document(
-                        "카테고리 상세 조회 성공",
+                        "지출 내역상세 조회 성공",
                         ApiDocumentUtil.getDocumentResponse(),
                         ResourceDocumentation.resource(
                             ResourceSnippetParameters.builder()
-                                .description("카테고리를 상세 조회합니다.")
-                                .tag(CATEGORY_TAG)
+                                .description("지출 내역을 상세 조회합니다.")
+                                .tag(PURCHASE_TAG)
                                 .responseFields(
+                                    PayloadDocumentation.fieldWithPath("purchaseNo")
+                                        .description("지출 고유번호"),
+                                    PayloadDocumentation.fieldWithPath("cardNo").optional()
+                                        .description("카드 고유번호"),
                                     PayloadDocumentation.fieldWithPath("accountBookNo")
                                         .description("가계부 고유번호"),
-                                    PayloadDocumentation.fieldWithPath("parentCategoryNo")
-                                        .description("상위 카테고리 고유번호"),
+                                    PayloadDocumentation.fieldWithPath("purchaseType")
+                                        .description("지출 형태"),
+                                    PayloadDocumentation.fieldWithPath("price")
+                                        .description("금액"),
+                                    PayloadDocumentation.fieldWithPath("reason")
+                                        .description("사유"),
+                                    PayloadDocumentation.fieldWithPath("purchaseDate")
+                                        .description("지출 일자"),
                                     PayloadDocumentation.fieldWithPath("categoryNo")
-                                        .description("카테고리 고유번호"),
-                                    PayloadDocumentation.fieldWithPath("categoryName")
-                                        .description("카테고리 이름"),
-                                    PayloadDocumentation.fieldWithPath("categoryDesc")
-                                        .description("카테고리 설명"),
-                                    PayloadDocumentation.fieldWithPath("categoryIcon")
-                                        .description("카테고리 아이콘"),
-                                    PayloadDocumentation.fieldWithPath("childCategories")
-                                        .description("하위 카테고리정보"),
-                                    PayloadDocumentation.fieldWithPath("childCategories[].categoryNo")
                                         .description("하위 카테고리 고유번호"),
-                                    PayloadDocumentation.fieldWithPath("childCategories[].categoryName")
-                                        .description("하위 카테고리 이름"),
-                                    PayloadDocumentation.fieldWithPath("childCategories[].categoryDesc")
-                                        .description("하위 카테고리 설명"),
-                                    PayloadDocumentation.fieldWithPath("childCategories[].categoryIcon")
-                                        .description("하위 카테고리 아이콘"),
-                                    PayloadDocumentation.fieldWithPath("childCategories[].parentCategoryNo")
+                                    PayloadDocumentation.fieldWithPath("parentCategoryNo")
                                         .description("소속된 상위 카테고리 고유번호"),
-                                    PayloadDocumentation.fieldWithPath("childCategories[].accountBookNo")
-                                        .description("가계부 고유번호"),
-                                    PayloadDocumentation.fieldWithPath("childCategories[].createdAt")
-                                        .description("카테고리 생성일자"),
-                                    PayloadDocumentation.fieldWithPath("childCategories[].modifiedAt")
-                                        .description("카테고리 수정일자"),
                                 )
                                 .requestHeaders(
                                     ResourceDocumentation.headerWithName(HttpHeaders.AUTHORIZATION).description(
@@ -374,32 +445,30 @@ class PurchaseControllerTest {
         }
     }
 
-    @DisplayName("PATCH /categories API 성공 200")
+    @DisplayName("PATCH /purchase API 성공 200")
     @Nested
-    inner class Categories_patch_success {
-        @DisplayName("카테고리를 수정한다.")
+    inner class Purchase_patch_success {
+        @DisplayName("가계부에 속한 지출 내역을 수정한다.")
         @Test
-        fun categoryModifyTest_success() {
+        fun purchaseModifyTest_success() {
             //Given
-            val categoryModifyRequest = CategoryModifyRequest(
-                accountBookNo = 1L,
-                categoryName = "카테고리명",
-                categoryDesc = "설명",
-                categoryIcon = "abc.png"
-            )
 
             val userInfo = createUserInfo()
 
+            val purchaseModifyRequest = PurchaseModifyRequest(
+                accountBookNo = 1L,
+                cardNo = 1L, categoryNo = 1L, purchaseType = PurchaseType.OUTGOING,
+                price = 5000000, reason = "변경이유", purchaseDate = LocalDate.of(2023, 7, 6)
+            )
 
-            Mockito.`when`(categoryService.modifyCategory(userInfo.userNo, 1L, categoryModifyRequest))
-                .thenReturn(null)
+            BDDMockito.doNothing().`when`(purchaseService).modifyPurchase(userInfo.userNo, 1L, purchaseModifyRequest)
 
             //When && Then
             mockMvc.perform(
-                RestDocumentationRequestBuilders.patch("/categories/{categoryNo}", 1L)
+                RestDocumentationRequestBuilders.patch("/purchase/{purchaseNo}", 1L)
+                    .content(objectMapper.writeValueAsBytes(purchaseModifyRequest))
                     .header(HttpHeaders.AUTHORIZATION, JwtTokenProvider.BEARER_PREFIX + "dXNlcjpzZWNyZXQ=")
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsBytes(categoryModifyRequest))
                     .with(
                         SecurityMockMvcRequestPostProcessors.user(userInfo)
                     ).with(
@@ -409,67 +478,12 @@ class PurchaseControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isNoContent)
                 .andDo(
                     MockMvcRestDocumentationWrapper.document(
-                        "카테고리 수정 성공",
+                        "지출 내역수정 성공",
                         ApiDocumentUtil.getDocumentResponse(),
                         ResourceDocumentation.resource(
                             ResourceSnippetParameters.builder()
-                                .description("카테고리를 수정합니다.")
-                                .tag(CATEGORY_TAG)
-                                .requestHeaders(
-                                    ResourceDocumentation.headerWithName(HttpHeaders.AUTHORIZATION).description(
-                                        JwtTokenProvider.BEARER_PREFIX + "JWT토큰값"
-                                    )
-                                )
-                                .build()
-                        ),
-                        HeaderDocumentation.requestHeaders(
-                            HeaderDocumentation.headerWithName(HttpHeaders.AUTHORIZATION)
-                                .description(JwtTokenProvider.BEARER_PREFIX + "JWT토큰값")
-                        ),
-                    )
-                )
-
-        }
-    }
-
-
-    @DisplayName("DELETE /categories API 성공 200")
-    @Nested
-    inner class Categories_delete_success {
-        @DisplayName("카테고리를 삭제한다.")
-        @Test
-        fun categoryRemoveTest_success() {
-            //Given
-            val categoryRemoveRequest = CategoryRemoveRequest(
-                accountBookNo = 1L,
-            )
-
-            val userInfo = createUserInfo()
-
-
-            Mockito.doNothing().`when`(categoryService).deleteCategory(1L, categoryRemoveRequest.accountBookNo, userInfo.userNo)
-
-            //When && Then
-            mockMvc.perform(
-                RestDocumentationRequestBuilders.delete("/categories/{categoryNo}", 1L)
-                    .header(HttpHeaders.AUTHORIZATION, JwtTokenProvider.BEARER_PREFIX + "dXNlcjpzZWNyZXQ=")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsBytes(categoryRemoveRequest))
-                    .with(
-                        SecurityMockMvcRequestPostProcessors.user(userInfo)
-                    ).with(
-                        SecurityMockMvcRequestPostProcessors.csrf(),
-                    )
-            )
-                .andExpect(MockMvcResultMatchers.status().isNoContent)
-                .andDo(
-                    MockMvcRestDocumentationWrapper.document(
-                        "카테고리 삭제 성공",
-                        ApiDocumentUtil.getDocumentResponse(),
-                        ResourceDocumentation.resource(
-                            ResourceSnippetParameters.builder()
-                                .description("카테고리를 삭제합니다.")
-                                .tag(CATEGORY_TAG)
+                                .description("지출 내역수정 성공합니다.")
+                                .tag(PURCHASE_TAG)
                                 .requestHeaders(
                                     ResourceDocumentation.headerWithName(HttpHeaders.AUTHORIZATION).description(
                                         JwtTokenProvider.BEARER_PREFIX + "JWT토큰값"

@@ -1,5 +1,6 @@
 package com.hjj.apiserver.dto.purchase.request
 
+import com.hjj.apiserver.common.exception.PurchaseModifyByIncomeValidFailException
 import com.hjj.apiserver.domain.purchase.PurchaseType
 import java.time.LocalDate
 
@@ -15,7 +16,7 @@ data class PurchaseModifyRequest(
 
     fun validRequest(){
         if(purchaseType == PurchaseType.INCOME && (cardNo != null || categoryNo != null)){
-            throw IllegalArgumentException()
+            throw PurchaseModifyByIncomeValidFailException()
         }
     }
 }

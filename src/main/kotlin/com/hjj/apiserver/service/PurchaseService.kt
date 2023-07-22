@@ -4,7 +4,6 @@ import com.hjj.apiserver.common.exception.AccountBookNotFoundException
 import com.hjj.apiserver.common.exception.CardNotFoundException
 import com.hjj.apiserver.common.exception.CategoryNotFoundException
 import com.hjj.apiserver.common.exception.PurchaseNotFoundException
-import com.hjj.apiserver.domain.accountbook.AccountRole
 import com.hjj.apiserver.dto.purchase.request.PurchaseAddRequest
 import com.hjj.apiserver.dto.purchase.request.PurchaseFindOfPageRequest
 import com.hjj.apiserver.dto.purchase.request.PurchaseModifyRequest
