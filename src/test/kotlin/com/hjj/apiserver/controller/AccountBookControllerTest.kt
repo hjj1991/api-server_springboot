@@ -33,6 +33,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
+import org.springframework.restdocs.headers.HeaderDocumentation
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*
 import org.springframework.restdocs.payload.PayloadDocumentation
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors
@@ -104,6 +105,21 @@ class AccountBookControllerTest {
                         "가계부 목록 조회 성공",
                         ApiDocumentUtil.getDocumentRequest(),
                         ApiDocumentUtil.getDocumentResponse(),
+                        PayloadDocumentation.responseFields(
+                            PayloadDocumentation.fieldWithPath("[].accountBookNo").description("가계부 No"),
+                            PayloadDocumentation.fieldWithPath("[].accountBookName").description("가계부명"),
+                            PayloadDocumentation.fieldWithPath("[].accountBookDesc").description("가계부 설명"),
+                            PayloadDocumentation.fieldWithPath("[].backGroundColor").description("가계부 배경색"),
+                            PayloadDocumentation.fieldWithPath("[].color").description("가계부 글씨색"),
+                            PayloadDocumentation.fieldWithPath("[].accountRole").description("해당 가계부 사용자권한"),
+                            PayloadDocumentation.fieldWithPath("[].joinedUsers").description("해당 가계부에 속한 사용자 상세정보"),
+                            PayloadDocumentation.fieldWithPath("[].joinedUsers.[].userNo")
+                                .description("해당 가계부에 속한 사용자번호"),
+                            PayloadDocumentation.fieldWithPath("[].joinedUsers.[].nickName")
+                                .description("해당 가계부에 속한 사용자별명"),
+                            PayloadDocumentation.fieldWithPath("[].joinedUsers.[].picture")
+                                .description("해당 가계부에 속한 사용자사진"),
+                        ),
                         ResourceDocumentation.resource(
                             ResourceSnippetParameters.builder()
                                 .description("사용자의 가계부 목록이 정상 조회됩니다.")
@@ -115,6 +131,7 @@ class AccountBookControllerTest {
                                     PayloadDocumentation.fieldWithPath("[].backGroundColor").description("가계부 배경색"),
                                     PayloadDocumentation.fieldWithPath("[].color").description("가계부 글씨색"),
                                     PayloadDocumentation.fieldWithPath("[].accountRole").description("해당 가계부 사용자권한"),
+                                    PayloadDocumentation.fieldWithPath("[].joinedUsers").description("해당 가계부에 속한 사용자 상세정보"),
                                     PayloadDocumentation.fieldWithPath("[].joinedUsers.[].userNo")
                                         .description("해당 가계부에 속한 사용자번호"),
                                     PayloadDocumentation.fieldWithPath("[].joinedUsers.[].nickName")
@@ -127,6 +144,10 @@ class AccountBookControllerTest {
                                         JwtTokenProvider.BEARER_PREFIX + "JWT토큰값"
                                     )
                                 ).build()
+                        ),
+                        HeaderDocumentation.requestHeaders(
+                            HeaderDocumentation.headerWithName(org.apache.http.HttpHeaders.AUTHORIZATION)
+                                .description(JwtTokenProvider.BEARER_PREFIX + "JWT토큰값")
                         ),
                     )
                 )
@@ -209,6 +230,10 @@ class AccountBookControllerTest {
                                         JwtTokenProvider.BEARER_PREFIX + "JWT토큰값"
                                     )
                                 ).build()
+                        ),
+                        HeaderDocumentation.requestHeaders(
+                            HeaderDocumentation.headerWithName(org.apache.http.HttpHeaders.AUTHORIZATION)
+                                .description(JwtTokenProvider.BEARER_PREFIX + "JWT토큰값")
                         ),
                     )
                 )
@@ -327,6 +352,10 @@ class AccountBookControllerTest {
                                     )
                                 ).build()
                         ),
+                        HeaderDocumentation.requestHeaders(
+                            HeaderDocumentation.headerWithName(org.apache.http.HttpHeaders.AUTHORIZATION)
+                                .description(JwtTokenProvider.BEARER_PREFIX + "JWT토큰값")
+                        ),
                     )
                 )
         }
@@ -367,6 +396,10 @@ class AccountBookControllerTest {
                                         JwtTokenProvider.BEARER_PREFIX + "JWT토큰값"
                                     )
                                 ).build()
+                        ),
+                        HeaderDocumentation.requestHeaders(
+                            HeaderDocumentation.headerWithName(org.apache.http.HttpHeaders.AUTHORIZATION)
+                                .description(JwtTokenProvider.BEARER_PREFIX + "JWT토큰값")
                         ),
                     )
                 )
