@@ -12,6 +12,7 @@ import com.hjj.apiserver.domain.user.User
 import com.hjj.apiserver.domain.user.UserLog
 import com.hjj.apiserver.dto.oauth2.OAuth2Attribute
 import com.hjj.apiserver.dto.user.CurrentUserInfo
+import com.hjj.apiserver.dto.user.UserAttribute
 import com.hjj.apiserver.dto.user.request.UserModifyRequest
 import com.hjj.apiserver.dto.user.request.UserSignInRequest
 import com.hjj.apiserver.dto.user.request.UserSignUpRequest
@@ -38,11 +39,12 @@ import java.util.*
 class UserService(
     private val userRepository: UserRepository,
     private val userLogService: UserLogService,
-    private val passwordEncoder: PasswordEncoder,
     private val userLogRepository: UserLogRepository,
     private val jwtTokenProvider: JwtTokenProvider,
     private val fireBaseService: FireBaseService,
     private val objectMapper: ObjectMapper,
+    private val authServices: List<UserAuthService>,
+    private val passwordEncoder: PasswordEncoder,
 
 
     @Value(value = "\${app.firebase-storage-uri}")
@@ -70,56 +72,34 @@ class UserService(
         return userRepository.findExistsUserId(userId)
     }
 
-    @Transactional(readOnly = false, rollbackFor = [Exception::class])
-    fun signUp(request: UserSignUpRequest): User {
-        val newUser = User(
-            userId = request.userId,
-            nickName = request.nickName,
-            userEmail = request.userEmail,
-            userPw = passwordEncoder.encode(request.userPw),
-            picture = request.picture,
-            provider = request.provider
-        )
-
-        val savedUser = userRepository.save(newUser)
-        userLogRepository.save(UserLog(logType = LogType.INSERT, user = savedUser))
-
-        return savedUser
+    @Transactional(readOnly = false)
+    fun signUp(userAttribute: UserAttribute) {
+        for (authService in authServices) {
+            if(authService.isMatchingProvider(userAttribute.provider)){
+                val newUser = authService.register(userAttribute)
+                val savedUser = userRepository.save(newUser)
+                userLogRepository.save(UserLog(logType = LogType.INSERT, user = savedUser))
+                return
+            }
+        }
     }
 
     @Transactional(readOnly = false, rollbackFor = [Exception::class])
-    fun signIn(request: UserSignInRequest): UserSignInResponse {
-        val user = userRepository.findByUserId(request.userId) ?: throw UserNotFoundException()
-
-        /* SNS 로그인 계정인 경우 Exception처리 */
-        if (user.isSocialUser()) {
-            throw ExistedSocialUserException()
+    fun signIn(userAttribute: UserAttribute): UserSignInResponse {
+        for (authService in authServices) {
+            if(authService.isMatchingProvider(userAttribute.provider)){
+                val user = authService.signIn(userAttribute)
+                val accessToken = jwtTokenProvider.createToken(user, TokenType.ACCESS_TOKEN)
+                val refreshToken = jwtTokenProvider.createToken(user, TokenType.REFRESH_TOKEN)
+                /* 리프레쉬 토큰 업데이트 */
+                user.updateUserLogin(refreshToken)
+                /* 유저 로그 INSERT */
+                userLogService.addUserLog(UserLog(LocalDateTime.now(), SignInType.GENERAL, LogType.SIGNIN, user))
+                return UserSignInResponse.of(user, accessToken, refreshToken)
+            }
         }
 
-        if (!passwordEncoder.matches(request.userPw, user.userPw)) {
-            throw BadCredentialsException("패스워드가 일치하지 않습니다.")
-        }
-
-        val accessToken = jwtTokenProvider.createToken(user, TokenType.ACCESS_TOKEN)
-        val refreshToken = jwtTokenProvider.createToken(user, TokenType.REFRESH_TOKEN)
-        /* 리프레쉬 토큰 업데이트 */
-        user.updateUserLogin(refreshToken)
-
-        /* 유저 로그 INSERT */
-        userLogService.addUserLog(UserLog(LocalDateTime.now(), SignInType.GENERAL, LogType.SIGNIN, user))
-
-        return UserSignInResponse(
-            user.userId,
-            user.nickName,
-            user.userEmail,
-            user.picture,
-            user.provider,
-            accessToken,
-            refreshToken,
-            user.createdAt,
-            LocalDateTime.now()
-        )
-
+        throw Exception()
     }
 
     @Transactional(readOnly = false, rollbackFor = [Exception::class])
@@ -197,59 +177,6 @@ class UserService(
         user.updateUser(picture = picturePath)
     }
 
-    @Transactional(readOnly = false, rollbackFor = [Exception::class])
-    fun socialSignUp(oAuth2Attribute: OAuth2Attribute) {
-
-        userRepository.findByProviderAndProviderId(oAuth2Attribute.provider, oAuth2Attribute.providerId)
-            ?.also { throw AlreadyExistedUserException() }
-
-        val nickName = userRepository.findByNickName(oAuth2Attribute.nickName)?.let {
-            Random().ints(97, 123)
-                .limit(10).collect({ StringBuilder() }, StringBuilder::appendCodePoint, StringBuilder::append)
-                .toString()
-        } ?: oAuth2Attribute.nickName
-
-
-        val newUser = User(
-            provider = oAuth2Attribute.provider,
-            providerId = oAuth2Attribute.providerId,
-            userEmail = oAuth2Attribute.userEmail,
-            nickName = nickName,
-            picture = oAuth2Attribute.picture
-        )
-
-        userRepository.save(newUser)
-
-        userLogService.addUserLog(UserLog(user = newUser, logType = LogType.INSERT))
-    }
-
-    @Transactional(readOnly = false, rollbackFor = [Exception::class])
-    fun socialSignIn(oAuth2Attribute: OAuth2Attribute): UserSignInResponse {
-        val user = userRepository.findByProviderAndProviderId(oAuth2Attribute.provider, oAuth2Attribute.providerId)
-
-        user?.let {
-            val accessToken = jwtTokenProvider.createToken(user, TokenType.ACCESS_TOKEN)
-            val refreshToken = jwtTokenProvider.createToken(user, TokenType.REFRESH_TOKEN)
-            /* 리프레쉬 토큰 업데이트 */
-            user.updateUserLogin(refreshToken)
-
-            /* 유저 로그 INSERT */
-            userLogService.addUserLog(UserLog(LocalDateTime.now(), SignInType.SOCIAL, LogType.SIGNIN, user))
-
-            return UserSignInResponse(
-                user.userId,
-                user.nickName,
-                user.userEmail,
-                user.picture,
-                user.provider,
-                accessToken,
-                refreshToken,
-                user.createdAt,
-                LocalDateTime.now()
-            )
-        } ?: throw UserNotFoundException()
-
-    }
 
     fun findUser(userNo: Long): UserDetailResponse? {
         return userRepository.findUserDetail(userNo)

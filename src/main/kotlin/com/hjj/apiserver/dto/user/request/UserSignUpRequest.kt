@@ -1,6 +1,7 @@
 package com.hjj.apiserver.dto.user.request
 
 import com.hjj.apiserver.domain.user.Provider
+import com.hjj.apiserver.dto.user.UserAttribute
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.Pattern
 
@@ -12,4 +13,14 @@ data class UserSignUpRequest(
     val picture: String? = null,
     val provider: Provider? = null,
 ) {
+    fun toUserAttribute(): UserAttribute{
+        return UserAttribute(
+            userId = userId,
+            nickName = nickName,
+            userEmail = userEmail,
+            userPw = userPw,
+            picture = picture,
+            provider = provider,
+        )
+    }
 }

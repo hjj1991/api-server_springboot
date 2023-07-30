@@ -1,8 +1,6 @@
 package com.hjj.apiserver.controller
 
-import com.hjj.apiserver.common.ErrCode
 import com.hjj.apiserver.common.JwtTokenProvider
-import com.hjj.apiserver.domain.user.Provider
 import com.hjj.apiserver.dto.user.CurrentUserInfo
 import com.hjj.apiserver.dto.user.request.ReIssueTokenRequest
 import com.hjj.apiserver.dto.user.request.UserModifyRequest
@@ -16,13 +14,13 @@ import com.hjj.apiserver.service.UserService
 import com.hjj.apiserver.util.CurrentUser
 import com.hjj.apiserver.util.logger
 import io.swagger.annotations.*
+import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.util.StringUtils
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
-import jakarta.validation.Valid
 
 @Api(tags = ["1. User"])
 @RestController
@@ -35,7 +33,10 @@ class UserController(
 
     @ApiOperation(value = "유저닉네임 중복 조회", notes = "유저닉네임의 중복여부를 확인한다.")
     @GetMapping("/user/{nickName}/exists-nickname")
-    fun checkUserNickNameDuplicate(@CurrentUser currentUserInfo: CurrentUserInfo?, @PathVariable nickName: String): Boolean {
+    fun checkUserNickNameDuplicate(
+        @CurrentUser currentUserInfo: CurrentUserInfo?,
+        @PathVariable nickName: String
+    ): Boolean {
         return userService.existsNickName(currentUserInfo, nickName)
     }
 
@@ -52,7 +53,7 @@ class UserController(
             value = "회원 한 명의 정보를 갖는 객체",
             required = true
         ) request: UserSignUpRequest
-    ){
+    ) {
         userService.signUp(request)
 
     }
@@ -79,13 +80,13 @@ class UserController(
     fun socialMapping(
         @CurrentUser currentUserInfo: CurrentUserInfo,
         @RequestBody request: HashMap<String, String>
-    ){
+    ) {
 
     }
 
     @ApiOperation(value = "AcessToken 재발급", notes = "AcessToken을 재발급한다.")
     @PostMapping("/user/oauth/token")
-    fun reIssueToken(@RequestBody request: ReIssueTokenRequest):UserReIssueTokenResponse {
+    fun reIssueToken(@RequestBody request: ReIssueTokenRequest): UserReIssueTokenResponse {
         return userService.reIssueToken(request.refreshToken)
 
     }
@@ -121,7 +122,7 @@ class UserController(
     fun userModify(
         @CurrentUser currentUserInfo: CurrentUserInfo,
         @RequestBody @Valid request: UserModifyRequest
-    ): UserSignInResponse{
+    ): UserSignInResponse {
         return userService.modifyUser(currentUserInfo.userNo, request)
     }
 
@@ -140,7 +141,7 @@ class UserController(
     fun userProfileImgModify(
         @CurrentUser currentUserInfo: CurrentUserInfo,
         pictureFile: MultipartFile
-    ){
+    ) {
         userService.modifyUserPicture(currentUserInfo.userNo, pictureFile)
     }
 

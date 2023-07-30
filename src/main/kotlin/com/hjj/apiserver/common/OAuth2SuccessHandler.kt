@@ -66,8 +66,8 @@ class OAuth2SuccessHandler(
         }
 
         val userSignInResponse = kotlin.runCatching {
-            userService.socialSignUp(oAuth2Attribute)
-            userService.socialSignIn(oAuth2Attribute)
+            userService.signUp(oAuth2Attribute)
+            userService.signIn(oAuth2Attribute)
         }.recoverCatching { exception ->
             when (exception::class) {
                 AlreadyExistedUserException::class -> {

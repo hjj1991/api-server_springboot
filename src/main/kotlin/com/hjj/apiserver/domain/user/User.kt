@@ -34,8 +34,6 @@ class User(
     cards: MutableList<Card> = mutableListOf(),
     role: Role = Role.USER,
     refreshToken: String? = null,
-
-
 ): UserDetails, BaseTimeEntity() {
 
 
