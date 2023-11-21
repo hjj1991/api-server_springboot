@@ -16,6 +16,7 @@ import com.hjj.apiserver.dto.category.response.CategoryDetailResponse
 import com.hjj.apiserver.repository.accountbook.AccountBookRepository
 import com.hjj.apiserver.repository.accountbook.AccountBookUserRepository
 import com.hjj.apiserver.repository.category.CategoryRepository
+import com.hjj.apiserver.service.impl.CategoryService
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test

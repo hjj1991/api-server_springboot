@@ -1,4 +1,4 @@
-package com.hjj.apiserver.service
+package com.hjj.apiserver.service.impl
 
 import com.hjj.apiserver.common.exception.AlreadyExistedUserException
 import com.hjj.apiserver.common.exception.ExistedSocialUserException
@@ -7,6 +7,7 @@ import com.hjj.apiserver.domain.user.Provider
 import com.hjj.apiserver.domain.user.User
 import com.hjj.apiserver.dto.user.UserAttribute
 import com.hjj.apiserver.repository.user.UserRepository
+import com.hjj.apiserver.service.UserAuthService
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.crypto.password.PasswordEncoder

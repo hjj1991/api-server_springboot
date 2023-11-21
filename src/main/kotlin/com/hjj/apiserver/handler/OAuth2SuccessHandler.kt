@@ -1,9 +1,9 @@
-package com.hjj.apiserver.common
+package com.hjj.apiserver.handler
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.hjj.apiserver.common.exception.AlreadyExistedUserException
 import com.hjj.apiserver.dto.oauth2.OAuth2Attribute
-import com.hjj.apiserver.service.UserService
+import com.hjj.apiserver.service.impl.UserService
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.core.Authentication
 import org.springframework.security.oauth2.core.user.OAuth2User
@@ -34,35 +34,32 @@ class OAuth2SuccessHandler(
         authentication: Authentication
     ) {
         val oAuth2User = authentication.principal as OAuth2User
+        val uriComponentsBuilder = UriComponentsBuilder.newInstance()
+            .scheme(HttpTransportConstants.HTTP_URI_SCHEME)
+            .host(redirectHost)
+            .port(redirectPort)
+
         if(isUserModify(oAuth2User)){
-            val redirectUrl = UriComponentsBuilder.newInstance()
-                .scheme(HttpTransportConstants.HTTP_URI_SCHEME)
-                .host(redirectHost)
-                .port(redirectPort)
+            val redirectUrl = uriComponentsBuilder
                 .path(redirectPathMapping)
                 .queryParam("provider", oAuth2User.attributes["provider"])
                 .build()
                 .toUriString()
 
             redirectStrategy.sendRedirect(request, response, redirectUrl)
-            return
         }
 
         val oAuth2Attribute = objectMapper.convertValue(oAuth2User.attributes, OAuth2Attribute::class.java)
 
         if (oAuth2User.attributes.containsKey("mappingUserNo")) {
             userService.socialMapping(oAuth2User)
-            val redirectUrl = UriComponentsBuilder.newInstance()
-                .scheme(HttpTransportConstants.HTTP_URI_SCHEME)
-                .host(redirectHost)
-                .port(redirectPort)
+            val redirectUrl = uriComponentsBuilder
                 .path(redirectPathMapping)
                 .queryParam("provider", oAuth2Attribute.provider)
                 .build()
                 .toUriString()
 
             redirectStrategy.sendRedirect(request, response, redirectUrl)
-            return
         }
 
         val userSignInResponse = kotlin.runCatching {
@@ -80,10 +77,7 @@ class OAuth2SuccessHandler(
 
 
 
-        val redirectUrl = UriComponentsBuilder.newInstance()
-            .scheme(HttpTransportConstants.HTTP_URI_SCHEME)
-            .host(redirectHost)
-            .port(redirectPort)
+        val redirectUrl = uriComponentsBuilder
             .path(redirectPathSignIn)
             .queryParam("accessToken", userSignInResponse.accessToken)
             .queryParam("refreshToken", userSignInResponse.refreshToken)
@@ -95,9 +89,6 @@ class OAuth2SuccessHandler(
     }
 
     private fun isUserModify(oAuth2User: OAuth2User): Boolean{
-        if(oAuth2User.attributes.containsKey("modify") && oAuth2User.attributes["modify"] == true){
-            return true
-        }
-        return false
+        return oAuth2User.attributes.getOrDefault("modify", false) as Boolean
     }
 }

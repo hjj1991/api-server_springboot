@@ -22,7 +22,7 @@ import jakarta.persistence.*
 class User(
     userNo: Long? = null,
     userId: String? = null,
-    nickName: String,
+    nickName: String? = null,
     userEmail: String? = null,
     userPw: String? = null,
     picture: String? = null,
@@ -45,7 +45,7 @@ class User(
     val userId: String? = userId
 
     @Column(length = 20, unique = true)
-    var nickName: String = nickName
+    var nickName: String? = nickName
 
     @Column(length = 200)
     var userEmail: String? = userEmail

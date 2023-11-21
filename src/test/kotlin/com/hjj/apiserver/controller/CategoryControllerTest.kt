@@ -15,7 +15,7 @@ import com.hjj.apiserver.dto.category.response.CategoryAddResponse
 import com.hjj.apiserver.dto.category.response.CategoryDetailResponse
 import com.hjj.apiserver.dto.category.response.CategoryFindAllResponse
 import com.hjj.apiserver.dto.user.CurrentUserInfo
-import com.hjj.apiserver.service.CategoryService
+import com.hjj.apiserver.service.impl.CategoryService
 import com.hjj.apiserver.utils.ApiDocumentUtil
 import org.apache.http.HttpHeaders
 import org.junit.jupiter.api.DisplayName

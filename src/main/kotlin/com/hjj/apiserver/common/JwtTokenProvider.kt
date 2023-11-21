@@ -1,7 +1,7 @@
 package com.hjj.apiserver.common
 
 import com.hjj.apiserver.domain.user.User
-import com.hjj.apiserver.service.CustomUserDetailService
+import com.hjj.apiserver.service.impl.CustomUserDetailService
 import com.hjj.apiserver.util.logger
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm

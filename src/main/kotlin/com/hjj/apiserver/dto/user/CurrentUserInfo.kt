@@ -8,7 +8,7 @@ import java.io.Serial
 
 class CurrentUserInfo(
     val userId: String? = null,
-    val nickName: String,
+    val nickName: String? = null,
     val userNo: Long,
     val role: Role,
 ): UserDetails {

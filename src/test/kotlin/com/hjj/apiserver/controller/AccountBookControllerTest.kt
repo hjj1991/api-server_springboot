@@ -18,7 +18,7 @@ import com.hjj.apiserver.dto.accountbook.response.AccountBookDetailResponse
 import com.hjj.apiserver.dto.accountbook.response.AccountBookFindAllResponse
 import com.hjj.apiserver.dto.category.CategoryDto
 import com.hjj.apiserver.dto.user.CurrentUserInfo
-import com.hjj.apiserver.service.AccountBookService
+import com.hjj.apiserver.service.impl.AccountBookService
 import com.hjj.apiserver.utils.ApiDocumentUtil
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested

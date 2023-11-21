@@ -1,4 +1,4 @@
-package com.hjj.apiserver.service
+package com.hjj.apiserver.service.impl
 
 import com.hjj.apiserver.domain.user.UserLog
 import com.hjj.apiserver.repository.user.UserLogRepository

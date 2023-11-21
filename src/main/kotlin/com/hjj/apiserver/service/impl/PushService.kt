@@ -1,4 +1,4 @@
-package com.hjj.apiserver.service
+package com.hjj.apiserver.service.impl
 
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service

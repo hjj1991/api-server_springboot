@@ -1,7 +1,7 @@
 package com.hjj.apiserver.controller
 
 import com.hjj.apiserver.dto.main.response.MainFindResponse
-import com.hjj.apiserver.service.MainService
+import com.hjj.apiserver.service.impl.MainService
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
 import org.springframework.web.bind.annotation.GetMapping

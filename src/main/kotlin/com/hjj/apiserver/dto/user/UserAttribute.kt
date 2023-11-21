@@ -4,12 +4,12 @@ import com.hjj.apiserver.domain.user.Provider
 import com.hjj.apiserver.domain.user.User
 import org.springframework.security.crypto.password.PasswordEncoder
 
-class UserAttribute(
+open class UserAttribute(
     val provider: Provider? = null,
     val providerId: String? = null,
     val picture: String? = null,
     val userPw: String? = null,
-    val nickName: String,
+    val nickName: String? = null,
     val userId: String? = null,
     val userEmail: String? = null,
 ) {
@@ -57,6 +57,13 @@ class UserAttribute(
                 userEmail = attribute["email"] as String,
                 nickName = profile["nickname"] as String,
                 picture = profile["profile_image_url"] as String
+            )
+        }
+
+        fun ofGeneral(userId: String, userPw: String): UserAttribute {
+            return UserAttribute(
+                userId = userId,
+                userPw = userPw,
             )
         }
     }

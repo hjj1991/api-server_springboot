@@ -14,7 +14,7 @@ import com.hjj.apiserver.dto.purchase.response.PurchaseAddResponse
 import com.hjj.apiserver.dto.purchase.response.PurchaseDetailResponse
 import com.hjj.apiserver.dto.purchase.response.PurchaseFindOfPageResponse
 import com.hjj.apiserver.dto.user.CurrentUserInfo
-import com.hjj.apiserver.service.PurchaseService
+import com.hjj.apiserver.service.impl.PurchaseService
 import com.hjj.apiserver.util.CommonUtils
 import com.hjj.apiserver.utils.ApiDocumentUtil
 import org.apache.http.HttpHeaders

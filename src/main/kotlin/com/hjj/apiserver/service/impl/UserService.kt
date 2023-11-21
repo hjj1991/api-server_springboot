@@ -1,26 +1,23 @@
-package com.hjj.apiserver.service
+package com.hjj.apiserver.service.impl
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.hjj.apiserver.common.JwtTokenProvider
 import com.hjj.apiserver.common.TokenType
 import com.hjj.apiserver.common.exception.AlreadyExistedUserException
-import com.hjj.apiserver.common.exception.ExistedSocialUserException
 import com.hjj.apiserver.common.exception.UserNotFoundException
 import com.hjj.apiserver.domain.user.LogType
 import com.hjj.apiserver.domain.user.SignInType
-import com.hjj.apiserver.domain.user.User
 import com.hjj.apiserver.domain.user.UserLog
 import com.hjj.apiserver.dto.oauth2.OAuth2Attribute
 import com.hjj.apiserver.dto.user.CurrentUserInfo
 import com.hjj.apiserver.dto.user.UserAttribute
 import com.hjj.apiserver.dto.user.request.UserModifyRequest
-import com.hjj.apiserver.dto.user.request.UserSignInRequest
-import com.hjj.apiserver.dto.user.request.UserSignUpRequest
 import com.hjj.apiserver.dto.user.response.UserDetailResponse
 import com.hjj.apiserver.dto.user.response.UserReIssueTokenResponse
 import com.hjj.apiserver.dto.user.response.UserSignInResponse
 import com.hjj.apiserver.repository.user.UserLogRepository
 import com.hjj.apiserver.repository.user.UserRepository
+import com.hjj.apiserver.service.UserAuthService
 import com.hjj.apiserver.util.logger
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.repository.findByIdOrNull
@@ -32,7 +29,6 @@ import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
 import java.net.URLEncoder
 import java.time.LocalDateTime
-import java.util.*
 
 @Service
 @Transactional(readOnly = true)

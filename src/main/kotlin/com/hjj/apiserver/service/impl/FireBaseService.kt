@@ -1,4 +1,4 @@
-package com.hjj.apiserver.service
+package com.hjj.apiserver.service.impl
 
 import com.google.cloud.storage.Bucket
 import com.google.firebase.cloud.StorageClient

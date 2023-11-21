@@ -1,4 +1,4 @@
-package com.hjj.apiserver.service
+package com.hjj.apiserver.service.impl
 
 import com.hjj.apiserver.dto.deposit.response.DepositFindAllResponse
 import com.hjj.apiserver.repository.deposit.DepositRepository

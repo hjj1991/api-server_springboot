@@ -22,6 +22,7 @@ import com.hjj.apiserver.repository.card.CardRepository
 import com.hjj.apiserver.repository.category.CategoryRepository
 import com.hjj.apiserver.repository.purchase.PurchaseRepository
 import com.hjj.apiserver.repository.user.UserRepository
+import com.hjj.apiserver.service.impl.PurchaseService
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test

@@ -7,9 +7,8 @@ import com.hjj.apiserver.dto.category.response.CategoryAddResponse
 import com.hjj.apiserver.dto.category.response.CategoryDetailResponse
 import com.hjj.apiserver.dto.category.response.CategoryFindAllResponse
 import com.hjj.apiserver.dto.user.CurrentUserInfo
-import com.hjj.apiserver.service.CategoryService
+import com.hjj.apiserver.service.impl.CategoryService
 import com.hjj.apiserver.util.CurrentUser
-import io.swagger.annotations.*
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*

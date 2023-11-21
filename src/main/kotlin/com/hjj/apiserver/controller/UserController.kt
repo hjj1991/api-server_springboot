@@ -2,6 +2,7 @@ package com.hjj.apiserver.controller
 
 import com.hjj.apiserver.common.JwtTokenProvider
 import com.hjj.apiserver.dto.user.CurrentUserInfo
+import com.hjj.apiserver.dto.user.UserAttribute
 import com.hjj.apiserver.dto.user.request.ReIssueTokenRequest
 import com.hjj.apiserver.dto.user.request.UserModifyRequest
 import com.hjj.apiserver.dto.user.request.UserSignInRequest
@@ -9,8 +10,8 @@ import com.hjj.apiserver.dto.user.request.UserSignUpRequest
 import com.hjj.apiserver.dto.user.response.UserDetailResponse
 import com.hjj.apiserver.dto.user.response.UserReIssueTokenResponse
 import com.hjj.apiserver.dto.user.response.UserSignInResponse
-import com.hjj.apiserver.service.FireBaseService
-import com.hjj.apiserver.service.UserService
+import com.hjj.apiserver.service.impl.FireBaseService
+import com.hjj.apiserver.service.impl.UserService
 import com.hjj.apiserver.util.CurrentUser
 import com.hjj.apiserver.util.logger
 import io.swagger.annotations.*
@@ -46,7 +47,6 @@ class UserController(
         userService.existsUserId(userId)
     }
 
-    @ApiOperation(value = "유저 회원가입", notes = "유저 회원가입을 한다.")
     @PostMapping("/user/signup")
     fun signUp(
         @Valid @RequestBody @ApiParam(
@@ -54,14 +54,14 @@ class UserController(
             required = true
         ) request: UserSignUpRequest
     ) {
-        userService.signUp(request)
+        userService.signUp(request.toUserAttribute())
 
     }
 
-    @ApiOperation(value = "유저 로그인", notes = "유저 로그인을 한다.")
     @PostMapping("/user/signin")
     fun signIn(@RequestBody request: UserSignInRequest): UserSignInResponse {
-        return userService.signIn(request)
+        val userAttribute = UserAttribute.ofGeneral(userId = request.userId, userPw = request.userPw)
+        return userService.signIn(userAttribute)
     }
 
 

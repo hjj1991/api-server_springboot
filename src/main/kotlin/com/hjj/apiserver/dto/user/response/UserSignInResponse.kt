@@ -6,7 +6,7 @@ import java.time.LocalDateTime
 
 data class UserSignInResponse(
     val userId: String? = null,
-    val nickName: String,
+    val nickName: String? = null,
     val userEmail: String? = null,
     val picture: String? = null,
     val provider: Provider? = null,
