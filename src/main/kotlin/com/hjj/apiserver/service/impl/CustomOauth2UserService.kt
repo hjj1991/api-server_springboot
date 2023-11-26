@@ -2,7 +2,7 @@ package com.hjj.apiserver.service.impl
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.hjj.apiserver.common.JwtTokenProvider
-import com.hjj.apiserver.dto.oauth2.OAuth2Attribute
+import com.hjj.apiserver.dto.oauth2.OAuth2UserAttribute
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService
@@ -15,12 +15,6 @@ import org.springframework.stereotype.Service
 class CustomOauth2UserService(
     private val objectMapper: ObjectMapper,
     private val tokenProvider: JwtTokenProvider,
-    @Value("\${front.redirect-uri.host}")
-    private val redirectHost: String,
-    @Value("\${front.redirect-uri.path.mapping}")
-    private val redirectPathMapping: String,
-    @Value("\${front.redirect-uri.port}")
-    private val redirectPort: String,
 ) : DefaultOAuth2UserService() {
     override fun loadUser(userRequest: OAuth2UserRequest): OAuth2User {
 
@@ -36,10 +30,9 @@ class CustomOauth2UserService(
         val oAuth2User = super.loadUser(userRequest)
         val userNameAttributeName =
             userRequest.clientRegistration.providerDetails.userInfoEndpoint.userNameAttributeName
-
         val registrationId = userRequest.clientRegistration.registrationId
-        val oAuth2Attribute = OAuth2Attribute.of(registrationId, oAuth2User, userNameAttributeName)
-        val mutableMap = objectMapper.convertValue(oAuth2Attribute, Map::class.java).toMutableMap()
+        val oAuth2UserAttribute = OAuth2UserAttribute(registrationId, oAuth2User.attributes, userNameAttributeName)
+        val mutableMap = objectMapper.convertValue(oAuth2UserAttribute, Map::class.java).toMutableMap()
 
 
         if (isMapping(userRequest)) {
@@ -47,12 +40,7 @@ class CustomOauth2UserService(
                 tokenProvider.getUserNoByToken(userRequest.additionalParameters["accessToken"] as String)
         }
 
-
-        return DefaultOAuth2User(
-            listOf(SimpleGrantedAuthority("ROLE_USER")),
-            mutableMap as MutableMap<String, Any>,
-            "providerId"
-        )
+        return oAuth2UserAttribute
 
     }
 

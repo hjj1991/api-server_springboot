@@ -22,7 +22,7 @@ enum class ErrCode(
     ERR_CODE0012("해당 지출 또는 수입 내역이 존재하지 않습니다."),
     ERR_CODE9999("서버 에러입니다.");
 
-    @Component
+//    @Component
     class ErrorInjector(
         private val messageSource: MessageSource,
     ) {

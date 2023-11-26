@@ -8,7 +8,7 @@ import com.hjj.apiserver.common.exception.UserNotFoundException
 import com.hjj.apiserver.domain.user.LogType
 import com.hjj.apiserver.domain.user.SignInType
 import com.hjj.apiserver.domain.user.UserLog
-import com.hjj.apiserver.dto.oauth2.OAuth2Attribute
+import com.hjj.apiserver.dto.oauth2.OAuth2UserAttribute
 import com.hjj.apiserver.dto.user.CurrentUserInfo
 import com.hjj.apiserver.dto.user.UserAttribute
 import com.hjj.apiserver.dto.user.request.UserModifyRequest
@@ -185,13 +185,13 @@ class UserService(
             throw AlreadyExistedUserException()
         }
 
-        val oAuth2Attribute = objectMapper.convertValue(oAuth2User.attributes, OAuth2Attribute::class.java)
+        val oAuth2UserAttribute = objectMapper.convertValue(oAuth2User.attributes, OAuth2UserAttribute::class.java)
 
-        user.updateUser(
-            provider = oAuth2Attribute.provider,
-            providerId = oAuth2Attribute.providerId,
-            providerConnectDate = LocalDateTime.now()
-        )
+//        user.updateUser(
+//            provider = oAuth2UserAttribute.provider,
+//            providerId = oAuth2UserAttribute.providerId,
+//            providerConnectDate = LocalDateTime.now()
+//        )
 
         userRepository.flush()
         userLogService.addUserLog(UserLog(logType = LogType.MODIFY, user = user))
