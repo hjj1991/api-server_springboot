@@ -10,13 +10,14 @@ plugins {
     id 'org.springframework.boot' version '3.1.5'
     id 'io.spring.dependency-management' version '1.1.0'
     id 'com.ewerk.gradle.plugins.querydsl' version '1.0.10'
-    id 'org.jetbrains.kotlin.jvm' version '1.8.22'
-    id 'org.jetbrains.kotlin.plugin.spring' version '1.8.22'
-    id 'org.jetbrains.kotlin.plugin.jpa' version '1.8.22'
-    id 'org.jetbrains.kotlin.plugin.allopen' version '1.8.22'
-    id 'org.jetbrains.kotlin.kapt' version '1.8.22'
+    id 'org.jetbrains.kotlin.jvm' version '1.9.22'
+    id 'org.jetbrains.kotlin.plugin.spring' version '1.9.22'
+    id 'org.jetbrains.kotlin.plugin.jpa' version '1.9.22'
+    id 'org.jetbrains.kotlin.plugin.allopen' version '1.9.22'
+    id 'org.jetbrains.kotlin.kapt' version '1.9.22'
     id "org.asciidoctor.jvm.convert" version "3.3.2"
     id 'com.epages.restdocs-api-spec' version "${restdocsApiSpecVersion}"
+    id 'com.palantir.docker' version '0.35.0'
 }
 
 configurations {
@@ -32,9 +33,8 @@ allOpen {
 }
 
 
-group = 'com.hjj'
+group = 'com.hjj.apiserver'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = JavaVersion.VERSION_17
 
 
 repositories {
@@ -118,13 +118,13 @@ asciidoctor.doLast {  // 8
     println("---------------- asciidoctor is deleted!")
 }
 
-task copyHTML(type: Copy) {  // 9
+tasks.register('copyHTML', Copy) {  // 9
     dependsOn asciidoctor
     from file("build/docs/asciidoc")
     into file("src/main/resources/static/docs")
 }
 
-task register(type: Copy) {
+tasks.register('register', Copy) {
     delete file("src/main/resources/static/swagger-ui/openapi3.yaml") // 기존 OAS 파일 삭제
     from file("$buildDir/api-spec/openapi3.yaml") // 복제할 OAS 파일 지정
     into file("src/main/resources/static/swagger-ui/") // 타겟 디렉터리로 파일 복제
@@ -137,7 +137,7 @@ build {  // 10
 
 
 bootJar {
-    dependsOn asciidoctor
+    dependsOn asciidoctor, copyHTML, register
     from(asciidoctor.outputDir) {
         into 'src/main/resources/static/docs'
     }
@@ -154,4 +154,20 @@ openapi3 {
         from "build/api-spec"
         into "src/main/resources/static/docs"
     }
+}
+
+docker {
+    println(tasks.bootJar.outputs.files)
+
+    // 이미지 이름
+    name rootProject.name.toLowerCase() + ':' + version
+
+    // 어떤 Dockerfile
+    dockerfile file('Dockerfile')
+
+    // 어떤 파일들을 Dockerfile 에 복사할 것인가
+    files tasks.bootJar.outputs.files
+
+    // Dockerfile 에 전달할 인자
+    buildArgs(['JAR_FILE': tasks.bootJar.outputs.files.singleFile.name])
 }

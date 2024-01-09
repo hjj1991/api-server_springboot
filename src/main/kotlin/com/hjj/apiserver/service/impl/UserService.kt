@@ -90,7 +90,7 @@ class UserService(
                 /* 리프레쉬 토큰 업데이트 */
                 user.updateUserLogin(refreshToken)
                 /* 유저 로그 INSERT */
-                userLogService.addUserLog(UserLog(LocalDateTime.now(), SignInType.GENERAL, LogType.SIGNIN, user))
+                userLogService.addUserLog(UserLog(LocalDateTime.now(), LogType.SIGNIN, user))
                 return UserSignInResponse.of(user, accessToken, refreshToken)
             }
         }

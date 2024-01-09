@@ -38,8 +38,8 @@ spring:
       on-profile: local
   datasource:
     url: jdbc:mariadb://localhost:3306/api_server?serverTimezone=Asia/Seoul&useUnicode=true&characterEncoding=utf-8
-    username: root
-    password: 1234
+    username: mysqluser
+    password: mysqlpw
 decorator:
   datasource:
     p6spy:

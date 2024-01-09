@@ -7,7 +7,6 @@ import jakarta.persistence.*
 @Table(name = "tb_user_log")
 class UserLog(
     loginDateTime: LocalDateTime? = null,
-    signInType: SignInType? = null,
     logType: LogType,
     user: User,
     createdDate: LocalDateTime = LocalDateTime.now()
@@ -20,10 +19,6 @@ class UserLog(
 
     @Column
     val loginDateTime: LocalDateTime? = loginDateTime
-
-    @Column
-    @Enumerated(EnumType.STRING)
-    val signInType: SignInType? = signInType
 
     @Column
     @Enumerated(EnumType.STRING)

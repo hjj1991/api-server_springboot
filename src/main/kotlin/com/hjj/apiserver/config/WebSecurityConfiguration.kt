@@ -21,6 +21,7 @@ import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequest
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.access.AccessDeniedHandlerImpl
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher
 import org.springframework.security.web.util.matcher.RequestMatcher
 import org.springframework.web.cors.CorsUtils
 
@@ -36,9 +37,6 @@ class WebSecurityConfiguration(
 
     @Bean
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
-        val defaultOAuth2AuthorizationRequestResolver =
-            DefaultOAuth2AuthorizationRequestResolver(clientRegistrationRepository, "/oauth2/authorization")
-        defaultOAuth2AuthorizationRequestResolver.setAuthorizationRequestCustomizer { }
 
         http.httpBasic { httpBasic -> httpBasic.disable() }
             .formLogin { formLogin -> formLogin.disable() }
@@ -65,18 +63,22 @@ class WebSecurityConfiguration(
                     CorsUtils.isPreFlightRequest(it)
                 }).permitAll()
                     .requestMatchers(
-                        "/static/**",
-                        "/user/*/exists*",
-                        "/main*",
-                        "/deposit*",
-                        "/saving*",
-                        "/user/signup",
-                        "/user/signin",
-                        "/user/social/signin",
-                        "/user/social/signup",
-                        "/user/oauth/token",
-                        "/user/profile*",
-                        "/h2-console/**"
+                        AntPathRequestMatcher("/static/**"),
+                        AntPathRequestMatcher("/swagger-ui/swagger-ui.html"),
+                        AntPathRequestMatcher("/swagger-ui/**"),
+                        AntPathRequestMatcher("/docs/**"),
+                        AntPathRequestMatcher("/webjars/**"),
+                        AntPathRequestMatcher("/user/*/exists*"),
+                        AntPathRequestMatcher("/main*"),
+                        AntPathRequestMatcher("/deposit*"),
+                        AntPathRequestMatcher("/saving*"),
+                        AntPathRequestMatcher("/user/signup"),
+                        AntPathRequestMatcher("/user/signin"),
+                        AntPathRequestMatcher("/user/social/signin"),
+                        AntPathRequestMatcher("/user/social/signup"),
+                        AntPathRequestMatcher("/user/oauth/token"),
+                        AntPathRequestMatcher("/user/profile*"),
+                        AntPathRequestMatcher("/h2-console/**")
                     ).permitAll() // 가입 및 인증 주소는 누구나 접근가능
                     .anyRequest().hasRole("USER")
             }
@@ -94,25 +96,14 @@ class WebSecurityConfiguration(
         return http.build()
     }
 
-    @Bean
-    fun webSecurityCustomizer(): WebSecurityCustomizer {
-        return WebSecurityCustomizer { web ->
-            web.ignoring().requestMatchers(
-                "/docs/**", "/swagger-resources/**", "/swagger-ui/swagger-ui.html", "/webjars/**",
-                "/swagger/**", "/swagger-ui/**"
-            )
-        }
-    }
-
-    @Bean
-    fun defaultOAuth2AuthorizationRequestResolver(clientRegistrationRepository: ClientRegistrationRepository): OAuth2AuthorizationRequestResolver {
-        val defaultOAuth2AuthorizationRequestResolver =
-            DefaultOAuth2AuthorizationRequestResolver(clientRegistrationRepository, "/oauth2/authorization")
-
-        defaultOAuth2AuthorizationRequestResolver.setAuthorizationRequestCustomizer { bi -> bi.authorizationRequestUri("13245") }
-
-        return defaultOAuth2AuthorizationRequestResolver
-    }
-
+//    @Bean
+//    fun webSecurityCustomizer(): WebSecurityCustomizer {
+//        return WebSecurityCustomizer { web ->
+//            web.ignoring().requestMatchers(
+//                "/docs/**", "/swagger-resources/**", "/swagger-ui/swagger-ui.html", "/webjars/**",
+//                "/swagger/**", "/swagger-ui/**"
+//            )
+//        }
+//    }
 
 }
