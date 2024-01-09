@@ -12,12 +12,8 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.Customizer
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer
-import org.springframework.security.config.annotation.web.configurers.CorsConfigurer
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository
-import org.springframework.security.oauth2.client.web.DefaultOAuth2AuthorizationRequestResolver
-import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestResolver
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.access.AccessDeniedHandlerImpl
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
@@ -38,48 +34,42 @@ class WebSecurityConfiguration(
     @Bean
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
 
-        http.httpBasic { httpBasic -> httpBasic.disable() }
-            .formLogin { formLogin -> formLogin.disable() }
+        http.httpBasic { httpBasic -> httpBasic.disable() }.formLogin { formLogin -> formLogin.disable() }
             .csrf { csrf -> csrf.disable() }
             .headers { headers -> headers.frameOptions { frameOption -> frameOption.disable() } }
             .sessionManagement { sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
-            .cors(Customizer.withDefaults())
-            .oauth2Login { oauth2Login ->
+            .cors(Customizer.withDefaults()).oauth2Login { oauth2Login ->
                 oauth2Login.authorizationEndpoint { endPoint ->
                     endPoint.authorizationRequestResolver(
                         CustomAuthorizationRequestResolver(this.clientRegistrationRepository)
                     )
-                }
-                    .tokenEndpoint { tokenEndpoint ->
-                        tokenEndpoint.accessTokenResponseClient(
-                            CustomAuthorizationCodeTokenResponseClient()
-                        )
-                    }
-                    .userInfoEndpoint { userEndPoint -> userEndPoint.userService(customOauth2UserService) }
+                }.tokenEndpoint { tokenEndpoint ->
+                    tokenEndpoint.accessTokenResponseClient(
+                        CustomAuthorizationCodeTokenResponseClient()
+                    )
+                }.userInfoEndpoint { userEndPoint -> userEndPoint.userService(customOauth2UserService) }
                     .successHandler(oAuth2SuccessHandler)
-            }
-            .authorizeHttpRequests { authorizeHttpRequests ->
+            }.authorizeHttpRequests { authorizeHttpRequests ->
                 authorizeHttpRequests.requestMatchers(RequestMatcher {
                     CorsUtils.isPreFlightRequest(it)
-                }).permitAll()
-                    .requestMatchers(
-                        AntPathRequestMatcher("/static/**"),
-                        AntPathRequestMatcher("/swagger-ui/swagger-ui.html"),
-                        AntPathRequestMatcher("/swagger-ui/**"),
-                        AntPathRequestMatcher("/docs/**"),
-                        AntPathRequestMatcher("/webjars/**"),
-                        AntPathRequestMatcher("/user/*/exists*"),
-                        AntPathRequestMatcher("/main*"),
-                        AntPathRequestMatcher("/deposit*"),
-                        AntPathRequestMatcher("/saving*"),
-                        AntPathRequestMatcher("/user/signup"),
-                        AntPathRequestMatcher("/user/signin"),
-                        AntPathRequestMatcher("/user/social/signin"),
-                        AntPathRequestMatcher("/user/social/signup"),
-                        AntPathRequestMatcher("/user/oauth/token"),
-                        AntPathRequestMatcher("/user/profile*"),
-                        AntPathRequestMatcher("/h2-console/**")
-                    ).permitAll() // 가입 및 인증 주소는 누구나 접근가능
+                }).permitAll().requestMatchers(
+                    AntPathRequestMatcher("/static/**"),
+                    AntPathRequestMatcher("/swagger-ui/swagger-ui.html"),
+                    AntPathRequestMatcher("/swagger-ui/**"),
+                    AntPathRequestMatcher("/docs/**"),
+                    AntPathRequestMatcher("/webjars/**"),
+                    AntPathRequestMatcher("/user/*/exists*"),
+                    AntPathRequestMatcher("/main*"),
+                    AntPathRequestMatcher("/deposit*"),
+                    AntPathRequestMatcher("/saving*"),
+                    AntPathRequestMatcher("/user/signup"),
+                    AntPathRequestMatcher("/user/signin"),
+                    AntPathRequestMatcher("/user/social/signin"),
+                    AntPathRequestMatcher("/user/social/signup"),
+                    AntPathRequestMatcher("/user/oauth/token"),
+                    AntPathRequestMatcher("/user/profile*"),
+                    AntPathRequestMatcher("/h2-console/**")
+                ).permitAll() // 가입 및 인증 주소는 누구나 접근가능
                     .anyRequest().hasRole("USER")
             }
             .exceptionHandling { exceptionHandling -> exceptionHandling.accessDeniedHandler(AccessDeniedHandlerImpl()) }
@@ -87,23 +77,11 @@ class WebSecurityConfiguration(
                 exceptionHandling.authenticationEntryPoint(
                     customAuthenticationEntryPoint
                 )
-            }
-            .addFilterBefore(
+            }.addFilterBefore(
                 JwtAuthenticationFilter(jwtTokenProvider),  // jwt token 필터를 id/password 인증 필터 전에 넣는다
                 UsernamePasswordAuthenticationFilter::class.java
             )
 
         return http.build()
     }
-
-//    @Bean
-//    fun webSecurityCustomizer(): WebSecurityCustomizer {
-//        return WebSecurityCustomizer { web ->
-//            web.ignoring().requestMatchers(
-//                "/docs/**", "/swagger-resources/**", "/swagger-ui/swagger-ui.html", "/webjars/**",
-//                "/swagger/**", "/swagger-ui/**"
-//            )
-//        }
-//    }
-
 }
