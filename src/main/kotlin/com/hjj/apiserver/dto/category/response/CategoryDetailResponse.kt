@@ -1,7 +1,7 @@
 package com.hjj.apiserver.dto.category.response
 
 import com.hjj.apiserver.domain.category.Category
-import java.time.LocalDateTime
+import java.time.ZonedDateTime
 
 
 data class CategoryDetailResponse(
@@ -46,7 +46,7 @@ data class CategoryDetailResponse(
         val categoryName: String,
         val categoryDesc: String,
         val categoryIcon: String,
-        val createdAt: LocalDateTime,
-        val modifiedAt: LocalDateTime,
+        val createdAt: ZonedDateTime,
+        val modifiedAt: ZonedDateTime,
     )
 }

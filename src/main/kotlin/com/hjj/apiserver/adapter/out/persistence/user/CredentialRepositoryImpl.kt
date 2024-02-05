@@ -1,0 +1,15 @@
+package com.hjj.apiserver.adapter.out.persistence.user
+
+import com.hjj.apiserver.adapter.out.persistence.user.QCredentialEntity.Companion.credentialEntity
+import com.hjj.apiserver.domain.user.Provider
+import com.querydsl.jpa.impl.JPAQueryFactory
+
+class CredentialRepositoryImpl(
+    private val jpaQueryFactory: JPAQueryFactory,
+) : CredentialRepositoryCustom {
+    override fun findCredentialUserIdByUserIdAndProvider(userId: String, provider: Provider): Boolean {
+        return jpaQueryFactory.selectOne()
+            .from(credentialEntity)
+            .where(credentialEntity.userId.eq(userId), credentialEntity.provider.eq(provider)).fetchOne() != null
+    }
+}

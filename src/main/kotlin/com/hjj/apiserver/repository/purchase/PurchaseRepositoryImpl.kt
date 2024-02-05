@@ -31,7 +31,7 @@ class PurchaseRepositoryImpl(
             )
             .from(purchase)
             .leftJoin(purchase.category, category)
-            .where(purchase.purchaseNo.eq(purchaseNo).and(purchase.user.userNo.eq(userNo)))
+            .where(purchase.purchaseNo.eq(purchaseNo).and(purchase.userEntity.userNo.eq(userNo)))
             .fetchOne()
     }
 

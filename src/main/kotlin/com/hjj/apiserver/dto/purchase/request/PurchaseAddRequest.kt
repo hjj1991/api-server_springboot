@@ -6,7 +6,7 @@ import com.hjj.apiserver.domain.card.Card
 import com.hjj.apiserver.domain.category.Category
 import com.hjj.apiserver.domain.purchase.Purchase
 import com.hjj.apiserver.domain.purchase.PurchaseType
-import com.hjj.apiserver.domain.user.User
+import com.hjj.apiserver.adapter.out.persistence.user.UserEntity
 import com.hjj.apiserver.util.EnumValue
 import jakarta.validation.constraints.PositiveOrZero
 import java.time.LocalDate
@@ -32,7 +32,7 @@ data class PurchaseAddRequest(
 
     }
 
-    fun toEntity(card: Card?, category: Category?, user: User, accountBook: AccountBook): Purchase {
+    fun toEntity(card: Card?, category: Category?, userEntity: UserEntity, accountBook: AccountBook): Purchase {
         return Purchase(
             purchaseType = purchaseType,
             price = price,
@@ -40,7 +40,7 @@ data class PurchaseAddRequest(
             purchaseDate = purchaseDate,
             card = card,
             category = category,
-            user = user,
+            userEntity = userEntity,
             accountBook = accountBook,
         )
     }

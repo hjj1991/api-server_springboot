@@ -45,7 +45,7 @@ data class PurchaseFindOfPageResponse(
         fun of(purchase: Purchase): PurchaseFindOfPageResponse{
             return PurchaseFindOfPageResponse(
                 purchaseNo = purchase.purchaseNo!!,
-                userNo = purchase.user.userNo!!,
+                userNo = purchase.userEntity.userNo!!,
                 cardNo = purchase.card?.cardNo,
                 accountBookNo = purchase.accountBook.accountBookNo!!,
                 purchaseType = purchase.purchaseType,

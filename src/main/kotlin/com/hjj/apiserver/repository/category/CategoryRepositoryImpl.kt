@@ -6,8 +6,6 @@ import com.hjj.apiserver.domain.accountbook.QAccountBookUser.Companion.accountBo
 import com.hjj.apiserver.domain.category.Category
 import com.hjj.apiserver.domain.category.QCategory
 import com.hjj.apiserver.domain.category.QCategory.Companion.category
-import com.hjj.apiserver.domain.user.QUser
-import com.hjj.apiserver.domain.user.QUser.Companion.user
 import com.hjj.apiserver.dto.category.CategoryDto
 import com.querydsl.core.group.GroupBy.groupBy
 import com.querydsl.core.group.GroupBy.list
@@ -31,7 +29,7 @@ class CategoryRepositoryImpl(
                                 .from(accountBookUser)
                                 .where(
                                     accountBookUser.accountBook.accountBookNo.eq(accountBookNo)
-                                        .and(accountBookUser.user.userNo.eq(userNo))
+                                        .and(accountBookUser.userEntity.userNo.eq(userNo))
                                         .and(accountBookUser.accountRole.ne(AccountRole.GUEST))
                                 )
                         )
@@ -88,7 +86,7 @@ class CategoryRepositoryImpl(
                             JPAExpressions.select(accountBookUser.accountBook.accountBookNo)
                                 .from(accountBookUser)
                                 .where(
-                                    accountBookUser.user.userNo.eq(userNo),
+                                    accountBookUser.userEntity.userNo.eq(userNo),
                                     accountBookUser.accountBook.accountBookNo.eq(accountBookNo)
                                         .and(accountBookUser.accountRole.`in`(accountRoles))
                                 )
@@ -106,7 +104,7 @@ class CategoryRepositoryImpl(
             .leftJoin(category.childCategories, childCategory)
             .join(category.accountBook, accountBookUser.accountBook)
             .where(
-                accountBookUser.user.userNo.eq(userNo),
+                accountBookUser.userEntity.userNo.eq(userNo),
                 category.accountBook.isDelete.isFalse,
                 category.isDelete.isFalse,
                 category.categoryNo.eq(categoryNo)

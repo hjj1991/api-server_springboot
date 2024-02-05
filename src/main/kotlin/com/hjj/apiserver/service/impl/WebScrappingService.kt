@@ -25,7 +25,7 @@ class WebScrappingService(
         //페이지가 로드될 때까지 대기
         //Normal: 로드 이벤트 실행이 반환 될 때 까지 기다린다.
         options.setPageLoadStrategy(PageLoadStrategy.NORMAL)
-        options.setHeadless(true)
+//        options.setHeadless(true)
         options.addArguments("no-sandbox")
         options.addArguments("disable-dev-shm-usage")
 

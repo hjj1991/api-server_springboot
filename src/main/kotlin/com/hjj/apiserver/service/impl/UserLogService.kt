@@ -1,6 +1,6 @@
 package com.hjj.apiserver.service.impl
 
-import com.hjj.apiserver.domain.user.UserLog
+import com.hjj.apiserver.adapter.out.persistence.user.UserLogEntity
 import com.hjj.apiserver.repository.user.UserLogRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -12,7 +12,7 @@ class UserLogService(
 ) {
 
     @Transactional(readOnly = false, rollbackFor = [Exception::class])
-    fun addUserLog(userLog: UserLog){
-        userLogRepository.save(userLog)
+    fun addUserLog(userLogEntity: UserLogEntity){
+        userLogRepository.save(userLogEntity)
     }
 }

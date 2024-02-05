@@ -4,7 +4,7 @@ import com.hjj.apiserver.domain.BaseEntity
 import com.hjj.apiserver.domain.accountbook.AccountBook
 import com.hjj.apiserver.domain.card.Card
 import com.hjj.apiserver.domain.category.Category
-import com.hjj.apiserver.domain.user.User
+import com.hjj.apiserver.adapter.out.persistence.user.UserEntity
 import com.hjj.apiserver.dto.purchase.request.PurchaseModifyRequest
 import org.hibernate.annotations.DynamicUpdate
 import java.time.LocalDate
@@ -22,7 +22,7 @@ class Purchase(
     purchaseDate: LocalDate,
     card: Card? = null,
     category: Category? = null,
-    user: User,
+    userEntity: UserEntity,
     accountBook: AccountBook,
 ): BaseEntity() {
 
@@ -55,7 +55,7 @@ class Purchase(
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userNo", nullable = false)
-    var user: User = user
+    var userEntity: UserEntity = userEntity
         protected set
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -74,11 +74,11 @@ class Purchase(
     }
 
     /* 연관관계 편의 메서드 */
-    fun changeUser(user: User) {
-        this.user.purchaseList.remove(this)
+    fun changeUser(userEntity: UserEntity) {
+        this.userEntity.purchaseList.remove(this)
 
-        this.user = user
-        user.purchaseList.add(this)
+        this.userEntity = userEntity
+        userEntity.purchaseList.add(this)
     }
 
 

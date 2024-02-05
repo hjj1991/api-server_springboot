@@ -49,20 +49,22 @@ class WebSecurityConfiguration(
                     )
                 }.userInfoEndpoint { userEndPoint -> userEndPoint.userService(customOauth2UserService) }
                     .successHandler(oAuth2SuccessHandler)
-            }.authorizeHttpRequests { authorizeHttpRequests ->
+            }
+            .authorizeHttpRequests { authorizeHttpRequests ->
                 authorizeHttpRequests.requestMatchers(RequestMatcher {
                     CorsUtils.isPreFlightRequest(it)
-                }).permitAll().requestMatchers(
+                }).permitAll()
+                    .requestMatchers(
                     AntPathRequestMatcher("/static/**"),
                     AntPathRequestMatcher("/swagger-ui/swagger-ui.html"),
                     AntPathRequestMatcher("/swagger-ui/**"),
                     AntPathRequestMatcher("/docs/**"),
                     AntPathRequestMatcher("/webjars/**"),
-                    AntPathRequestMatcher("/user/*/exists*"),
+                    AntPathRequestMatcher("/users/exists**/**"),
                     AntPathRequestMatcher("/main*"),
                     AntPathRequestMatcher("/deposit*"),
                     AntPathRequestMatcher("/saving*"),
-                    AntPathRequestMatcher("/user/signup"),
+                    AntPathRequestMatcher("/users/signup"),
                     AntPathRequestMatcher("/user/signin"),
                     AntPathRequestMatcher("/user/social/signin"),
                     AntPathRequestMatcher("/user/social/signup"),

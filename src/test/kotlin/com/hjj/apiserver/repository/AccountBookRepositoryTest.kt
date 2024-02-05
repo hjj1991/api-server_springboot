@@ -36,7 +36,7 @@ class AccountBookRepositoryTest : BaseRepositoryTest() {
 
         val accountBookUser = accountBookUserRepository.save(
             AccountBookUser(
-                accountBook = accountBook, user = user, accountRole = AccountRole.OWNER,
+                accountBook = accountBook, userEntity = user, accountRole = AccountRole.OWNER,
                 backGroundColor = "#00000", color = "#11111"
             )
         )

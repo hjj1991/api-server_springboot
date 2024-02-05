@@ -1,10 +1,10 @@
 package com.hjj.apiserver.repository.accountbook
 
+import com.hjj.apiserver.adapter.out.persistence.user.QUserEntity.Companion.userEntity
 import com.hjj.apiserver.domain.accountbook.AccountRole
 import com.hjj.apiserver.domain.accountbook.QAccountBook.Companion.accountBook
 import com.hjj.apiserver.domain.accountbook.QAccountBookUser
 import com.hjj.apiserver.domain.accountbook.QAccountBookUser.Companion.accountBookUser
-import com.hjj.apiserver.domain.user.QUser.Companion.user
 import com.hjj.apiserver.dto.accountbook.response.AccountBookFindAllResponse
 import com.querydsl.core.group.GroupBy.groupBy
 import com.querydsl.core.group.GroupBy.list
@@ -21,8 +21,8 @@ class AccountBookUserRepositoryImpl(
             .innerJoin(accountBookUser.accountBook, accountBook)
             .leftJoin(subABU)
             .on(accountBookUser.accountBook.accountBookNo.eq(subABU.accountBook.accountBookNo))
-            .innerJoin(subABU.user, user)
-            .where(accountBookUser.user.userNo.eq(userNo))
+            .innerJoin(subABU.userEntity, userEntity)
+            .where(accountBookUser.userEntity.userNo.eq(userNo))
             .orderBy(accountBookUser.accountBook.accountBookNo.asc())
             .transform(
                 groupBy(
@@ -44,9 +44,9 @@ class AccountBookUserRepositoryImpl(
                         list(
                             Projections.constructor(
                                 AccountBookFindAllResponse.JoinedUser::class.java,
-                                user.userNo,
-                                user.nickName,
-                                user.picture
+                                userEntity.userNo,
+                                userEntity.nickName,
+                                userEntity.picture
                             )
                         )
                     )
@@ -58,7 +58,7 @@ class AccountBookUserRepositoryImpl(
         return jpaQueryFactory.select(accountBookUser.accountRole)
             .from(accountBookUser)
             .where(
-                accountBookUser.user.userNo.eq(userNo),
+                accountBookUser.userEntity.userNo.eq(userNo),
                 accountBookUser.accountBook.accountBookNo.eq(accountBookNo)
             ).fetchOne()
     }

@@ -1,12 +1,13 @@
 package com.hjj.apiserver.service
 
+import com.hjj.apiserver.adapter.out.persistence.user.UserEntity
+import com.hjj.apiserver.adapter.out.persistence.user.UserRepository
 import com.hjj.apiserver.common.exception.AccountBookNotFoundException
 import com.hjj.apiserver.domain.accountbook.AccountBook
 import com.hjj.apiserver.domain.accountbook.AccountBookUser
 import com.hjj.apiserver.domain.accountbook.AccountRole
 import com.hjj.apiserver.domain.card.Card
 import com.hjj.apiserver.domain.card.CardType
-import com.hjj.apiserver.domain.user.User
 import com.hjj.apiserver.dto.accountbook.AccountBookDto
 import com.hjj.apiserver.dto.accountbook.request.AccountBookAddRequest
 import com.hjj.apiserver.dto.accountbook.response.AccountBookDetailResponse
@@ -16,7 +17,6 @@ import com.hjj.apiserver.repository.accountbook.AccountBookRepository
 import com.hjj.apiserver.repository.accountbook.AccountBookUserRepository
 import com.hjj.apiserver.repository.card.CardRepository
 import com.hjj.apiserver.repository.category.CategoryRepository
-import com.hjj.apiserver.repository.user.UserRepository
 import com.hjj.apiserver.service.impl.AccountBookService
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
@@ -62,9 +62,8 @@ class AccountBookServiceTest {
             backGroundColor = "#ffffff",
             color = "#000000",
         )
-        val savedUser = User(
+        val savedUserEntity = UserEntity(
             userNo = 1L,
-            userId = "testUser",
             nickName = "닉네임",
             userEmail = "tester@test.co.kr"
         )
@@ -78,7 +77,7 @@ class AccountBookServiceTest {
         val newAccountBookUser = AccountBookUser(
             accountBookUserNo = 1L,
             accountBook = newAccountBook,
-            user = savedUser,
+            userEntity = savedUserEntity,
             accountRole = AccountRole.OWNER,
             backGroundColor = request.backGroundColor,
             color = request.color
@@ -87,7 +86,7 @@ class AccountBookServiceTest {
         Mockito.`when`(accountBookRepository.save(Mockito.any())).thenReturn(newAccountBook)
 
         Mockito.`when`(userRepository.getReferenceById(1L))
-            .thenReturn(savedUser)
+            .thenReturn(savedUserEntity)
 
         Mockito.`when`(accountBookUserRepository.save(Mockito.any()))
             .thenReturn(newAccountBookUser)
@@ -112,9 +111,8 @@ class AccountBookServiceTest {
         // given
         val accountBookNo = 1L
         val userNo = 1L
-        val user = User(
+        val userEntity = UserEntity(
             userNo = userNo,
-            userId = "테스트아이디",
             nickName = "닉네임",
         )
         val accountBookDto = AccountBookDto(
@@ -133,7 +131,7 @@ class AccountBookServiceTest {
                 cardName = "카드",
                 cardType = CardType.CREDIT_CARD,
                 cardDesc = "카드설명",
-                user = user
+                userEntity = userEntity
             )
         )
 
@@ -163,7 +161,7 @@ class AccountBookServiceTest {
         Mockito.`when`(accountBookRepository.findAccountBook(userNo, accountBookNo))
             .thenReturn(accountBookDto)
 
-        Mockito.`when`(cardRepository.findByUser_UserNo(userNo))
+        Mockito.`when`(cardRepository.findByUserEntity_UserNo(userNo))
             .thenReturn(cards)
 
         Mockito.`when`(categoryRepository.findCategories(userNo, accountBookNo))

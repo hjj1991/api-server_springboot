@@ -1,7 +1,7 @@
 package com.hjj.apiserver.dto.user
 
+import com.hjj.apiserver.adapter.out.persistence.user.UserEntity
 import com.hjj.apiserver.domain.user.Provider
-import com.hjj.apiserver.domain.user.User
 import org.springframework.security.crypto.password.PasswordEncoder
 
 open class UserAttribute(
@@ -14,26 +14,22 @@ open class UserAttribute(
     val userEmail: String? = null,
 ) {
 
-    fun toUserEntity(changeNickName: String?=null): User{
-        return User(
-            userId = userId,
-            nickName = changeNickName ?: nickName,
+    fun toUserEntity(changeNickName: String?=null): UserEntity {
+        return UserEntity(
+//            userId = userId!!,
+            nickName = changeNickName ?: nickName!!,
             userEmail = userEmail,
             picture = picture,
-            provider = provider,
-            providerId = providerId,
         )
     }
 
-    fun toEncryptPwUserEntity(passwordEncoder: PasswordEncoder): User{
-        return User(
-            userId = userId,
-            nickName = nickName,
+    fun toEncryptPwUserEntity(passwordEncoder: PasswordEncoder): UserEntity {
+        return UserEntity(
+//            userId = userId!!,
+            nickName = nickName!!,
             userEmail = userEmail,
             userPw = passwordEncoder.encode(userPw),
             picture = picture,
-            provider = provider,
-            providerId = providerId,
         )
     }
 

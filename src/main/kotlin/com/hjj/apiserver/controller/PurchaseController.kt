@@ -8,7 +8,7 @@ import com.hjj.apiserver.dto.purchase.response.PurchaseDetailResponse
 import com.hjj.apiserver.dto.purchase.response.PurchaseFindOfPageResponse
 import com.hjj.apiserver.dto.user.CurrentUserInfo
 import com.hjj.apiserver.service.impl.PurchaseService
-import com.hjj.apiserver.util.CurrentUser
+import com.hjj.apiserver.util.AuthUser
 import jakarta.validation.Valid
 import org.springframework.data.domain.Slice
 import org.springframework.http.HttpStatus
@@ -21,16 +21,16 @@ class PurchaseController(
 
     @PostMapping("/purchase")
     fun purchaseAdd(
-        @CurrentUser currentUserInfo: CurrentUserInfo,
+        @AuthUser authUserInfo: CurrentUserInfo,
         @RequestBody @Valid request: PurchaseAddRequest
     ): PurchaseAddResponse {
         request.validRequest()
-        return purchaseService.addPurchase(currentUserInfo.userNo, request)
+        return purchaseService.addPurchase(authUserInfo.userNo, request)
     }
 
     @GetMapping("/purchase")
     fun purchasesFind(
-        @CurrentUser user: CurrentUserInfo,
+        @AuthUser user: CurrentUserInfo,
         request: PurchaseFindOfPageRequest
     ): Slice<PurchaseFindOfPageResponse> {
         return purchaseService.findPurchasesOfPage(
@@ -41,27 +41,27 @@ class PurchaseController(
 
     @DeleteMapping("/purchase/{purchaseNo}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    fun purchaseRemove(@CurrentUser currentUserInfo: CurrentUserInfo, @PathVariable("purchaseNo") purchaseNo: Long) {
-        purchaseService.removePurchase(currentUserInfo.userNo, purchaseNo)
+    fun purchaseRemove(@AuthUser authUserInfo: CurrentUserInfo, @PathVariable("purchaseNo") purchaseNo: Long) {
+        purchaseService.removePurchase(authUserInfo.userNo, purchaseNo)
     }
 
 
     @GetMapping("/purchase/{purchaseNo}")
     fun purchaseDetail(
-        @CurrentUser currentUserInfo: CurrentUserInfo,
+        @AuthUser authUserInfo: CurrentUserInfo,
         @PathVariable("purchaseNo") purchaseNo: Long
     ): PurchaseDetailResponse {
-        return purchaseService.findPurchase(currentUserInfo.userNo, purchaseNo)
+        return purchaseService.findPurchase(authUserInfo.userNo, purchaseNo)
     }
 
     @PatchMapping("/purchase/{purchaseNo}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun purchaseModify(
-        @CurrentUser currentUserInfo: CurrentUserInfo,
+        @AuthUser authUserInfo: CurrentUserInfo,
         @PathVariable("purchaseNo") purchaseNo: Long,
         @RequestBody @Valid request: PurchaseModifyRequest
     ) {
         request.validRequest()
-        purchaseService.modifyPurchase(currentUserInfo.userNo, purchaseNo, request)
+        purchaseService.modifyPurchase(authUserInfo.userNo, purchaseNo, request)
     }
 }

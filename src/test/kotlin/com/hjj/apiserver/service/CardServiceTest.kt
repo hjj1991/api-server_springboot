@@ -1,14 +1,14 @@
 package com.hjj.apiserver.service
 
+import com.hjj.apiserver.adapter.out.persistence.user.UserEntity
+import com.hjj.apiserver.adapter.out.persistence.user.UserRepository
 import com.hjj.apiserver.common.exception.CardNotFoundException
 import com.hjj.apiserver.domain.card.Card
 import com.hjj.apiserver.domain.card.CardType
-import com.hjj.apiserver.domain.user.User
 import com.hjj.apiserver.dto.card.reqeust.CardAddRequest
 import com.hjj.apiserver.dto.card.reqeust.CardModifyRequest
 import com.hjj.apiserver.dto.card.response.CardFindAllResponse
 import com.hjj.apiserver.repository.card.CardRepository
-import com.hjj.apiserver.repository.user.UserRepository
 import com.hjj.apiserver.service.impl.CardService
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
@@ -43,9 +43,8 @@ class CardServiceTest {
             cardType = CardType.CREDIT_CARD,
             cardDesc = "신한 신용카드"
         )
-        val savedUser = User(
+        val savedUserEntity = UserEntity(
             userNo = 1L,
-            userId = "testUser",
             nickName = "닉네임",
             userEmail = "tester@test.co.kr"
         )
@@ -54,17 +53,17 @@ class CardServiceTest {
             cardName = cardAddRequest.cardName,
             cardType = cardAddRequest.cardType,
             cardDesc = cardAddRequest.cardDesc,
-            user = savedUser
+            userEntity = savedUserEntity
         )
 
         Mockito.`when`(cardRepository.save(Mockito.any()))
             .thenReturn(newCard)
 
         Mockito.`when`(userRepository.getReferenceById(1L))
-            .thenReturn(savedUser)
+            .thenReturn(savedUserEntity)
 
         // When
-        val cardAddResponse = cardService.addCard(savedUser.userNo!!, cardAddRequest)
+        val cardAddResponse = cardService.addCard(savedUserEntity.userNo!!, cardAddRequest)
 
 
         // Then
@@ -78,9 +77,8 @@ class CardServiceTest {
     @Test
     fun removeCard_success() {
         // Given
-        val savedUser = User(
+        val savedUserEntity = UserEntity(
             userNo = 1L,
-            userId = "testUser",
             nickName = "닉네임",
             userEmail = "tester@test.co.kr"
         )
@@ -89,15 +87,15 @@ class CardServiceTest {
             cardName = "신한카드",
             cardType = CardType.CREDIT_CARD,
             cardDesc = "신한 신용카드",
-            user = savedUser
+            userEntity = savedUserEntity
         )
 
-        Mockito.`when`(cardRepository.findByCardNoAndUser_UserNoAndIsDeleteIsFalse(newCard.cardNo!!, savedUser.userNo!!))
+        Mockito.`when`(cardRepository.findByCardNoAndUserEntity_UserNoAndIsDeleteIsFalse(newCard.cardNo!!, savedUserEntity.userNo!!))
             .thenReturn(newCard)
 
 
         // When
-        cardService.removeCard(savedUser.userNo!!, newCard.cardNo!!)
+        cardService.removeCard(savedUserEntity.userNo!!, newCard.cardNo!!)
 
         // Then
         assertThat(newCard.isDelete).isTrue()
@@ -110,7 +108,7 @@ class CardServiceTest {
         val cardNo = 1L
         val userNo = 1L
 
-        Mockito.`when`(cardRepository.findByCardNoAndUser_UserNoAndIsDeleteIsFalse(cardNo, userNo))
+        Mockito.`when`(cardRepository.findByCardNoAndUserEntity_UserNoAndIsDeleteIsFalse(cardNo, userNo))
             .thenReturn(null)
 
         // When && Then
@@ -122,9 +120,8 @@ class CardServiceTest {
     @Test
     fun modifyCard_success() {
         // Given
-        val savedUser = User(
+        val savedUserEntity = UserEntity(
             userNo = 1L,
-            userId = "testUser",
             nickName = "닉네임",
             userEmail = "tester@test.co.kr"
         )
@@ -133,7 +130,7 @@ class CardServiceTest {
             cardName = "신한카드",
             cardType = CardType.CREDIT_CARD,
             cardDesc = "신한 신용카드",
-            user = savedUser
+            userEntity = savedUserEntity
         )
 
         val cardModifyRequest = CardModifyRequest(
@@ -143,15 +140,15 @@ class CardServiceTest {
         )
 
         Mockito.`when`(
-            cardRepository.findByCardNoAndUser_UserNoAndIsDeleteIsFalse(
+            cardRepository.findByCardNoAndUserEntity_UserNoAndIsDeleteIsFalse(
                 savedCard.cardNo!!,
-                savedUser.userNo!!
+                savedUserEntity.userNo!!
             )
         )
             .thenReturn(savedCard)
 
         // When
-        val cardModifyResponse = cardService.modifyCard(savedUser.userNo!!, savedCard.cardNo!!, cardModifyRequest)
+        val cardModifyResponse = cardService.modifyCard(savedUserEntity.userNo!!, savedCard.cardNo!!, cardModifyRequest)
 
         // Then
         assertThat(cardModifyResponse.cardNo).isEqualTo(savedCard.cardNo)
@@ -173,7 +170,7 @@ class CardServiceTest {
         )
 
 
-        Mockito.`when`(cardRepository.findByCardNoAndUser_UserNoAndIsDeleteIsFalse(cardNo, userNo))
+        Mockito.`when`(cardRepository.findByCardNoAndUserEntity_UserNoAndIsDeleteIsFalse(cardNo, userNo))
             .thenReturn(null)
 
         // When && Then
@@ -186,22 +183,21 @@ class CardServiceTest {
     @Test
     fun findCards_success() {
         // Given
-        val savedUser = User(
+        val savedUserEntity = UserEntity(
             userNo = 1L,
-            userId = "testUser",
             nickName = "닉네임",
             userEmail = "tester@test.co.kr"
         )
         val cards = listOf(
-            Card(1L, "국민카드", CardType.CHECK_CARD, "KB카드 설명", savedUser),
-            Card(2L, "신한카드", CardType.CREDIT_CARD, "신한카드 설명", savedUser)
+            Card(1L, "국민카드", CardType.CHECK_CARD, "KB카드 설명", savedUserEntity),
+            Card(2L, "신한카드", CardType.CREDIT_CARD, "신한카드 설명", savedUserEntity)
         )
 
-        Mockito.`when`(cardRepository.findByUser_UserNoAndIsDeleteIsFalse(savedUser.userNo!!))
+        Mockito.`when`(cardRepository.findByUserEntity_UserNoAndIsDeleteIsFalse(savedUserEntity.userNo!!))
             .thenReturn(cards.toMutableList())
 
         // When
-        val cardFindAllResponses = cardService.findCards(savedUser.userNo!!)
+        val cardFindAllResponses = cardService.findCards(savedUserEntity.userNo!!)
 
         // Then
         assertThat(cardFindAllResponses.size).isEqualTo(2)
@@ -222,9 +218,8 @@ class CardServiceTest {
     @Test
     fun findCardDetail_success() {
         // Given
-        val savedUser = User(
+        val savedUserEntity = UserEntity(
             userNo = 1L,
-            userId = "testUser",
             nickName = "닉네임",
             userEmail = "tester@test.co.kr"
         )
@@ -233,18 +228,18 @@ class CardServiceTest {
             cardName = "신한카드",
             cardType = CardType.CREDIT_CARD,
             cardDesc = "신한 신용카드",
-            user = savedUser
+            userEntity = savedUserEntity
         )
 
         Mockito.`when`(
-            cardRepository.findByCardNoAndUser_UserNoAndIsDeleteIsFalse(
+            cardRepository.findByCardNoAndUserEntity_UserNoAndIsDeleteIsFalse(
                 savedCard.cardNo!!,
-                savedUser.userNo!!
+                savedUserEntity.userNo!!
             )
         ).thenReturn(savedCard)
 
         // When
-        val findCardDetail = cardService.findCardDetail(savedUser.userNo!!, savedCard.cardNo!!)
+        val findCardDetail = cardService.findCardDetail(savedUserEntity.userNo!!, savedCard.cardNo!!)
 
         // Then
         assertThat(findCardDetail.cardNo).isEqualTo(savedCard.cardNo)
@@ -260,7 +255,7 @@ class CardServiceTest {
         val userNo = 1L
         val cardNo = 1L
 
-        Mockito.`when`(cardRepository.findByCardNoAndUser_UserNoAndIsDeleteIsFalse(cardNo, userNo))
+        Mockito.`when`(cardRepository.findByCardNoAndUserEntity_UserNoAndIsDeleteIsFalse(cardNo, userNo))
             .thenReturn(null)
 
         // When && Then

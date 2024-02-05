@@ -34,7 +34,7 @@ class CategoryRepositoryTest : BaseRepositoryTest() {
 
         accountBookUserRepository.save(
             AccountBookUser(
-                accountBook = accountBook, user = tester1, accountRole = AccountRole.OWNER,
+                accountBook = accountBook, userEntity = tester1, accountRole = AccountRole.OWNER,
                 backGroundColor = "#00000", color = "#11111"
             )
         )
@@ -118,7 +118,7 @@ class CategoryRepositoryTest : BaseRepositoryTest() {
             accountBookRepository.save(AccountBook(accountBookName = "testBookName", accountBookDesc = "testBookDesc"))
         accountBookUserRepository.save(
             AccountBookUser(
-                accountBook = accountBook, user = tester1, accountRole = AccountRole.OWNER,
+                accountBook = accountBook, userEntity = tester1, accountRole = AccountRole.OWNER,
                 backGroundColor = "#00000", color = "#11111"
             )
         )
@@ -163,7 +163,7 @@ class CategoryRepositoryTest : BaseRepositoryTest() {
             accountBookRepository.save(AccountBook(accountBookName = "testBookName", accountBookDesc = "testBookDesc"))
         accountBookUserRepository.save(
             AccountBookUser(
-                accountBook = accountBook, user = tester1, accountRole = AccountRole.GUEST,
+                accountBook = accountBook, userEntity = tester1, accountRole = AccountRole.GUEST,
                 backGroundColor = "#00000", color = "#11111"
             )
         )

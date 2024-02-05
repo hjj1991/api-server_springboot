@@ -1,6 +1,8 @@
 package com.hjj.apiserver.config
 
+import com.hjj.apiserver.common.AuthUserArgumentResolver
 import org.springframework.context.annotation.Configuration
+import org.springframework.web.method.support.HandlerMethodArgumentResolver
 import org.springframework.web.servlet.config.annotation.CorsRegistry
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
@@ -19,5 +21,9 @@ class WebMvcConfiguration : WebMvcConfigurer {
 
     override fun addResourceHandlers(registry: ResourceHandlerRegistry) {
         registry.addResourceHandler("/**").addResourceLocations("classpath:/static/")
+    }
+
+    override fun addArgumentResolvers(resolvers: MutableList<HandlerMethodArgumentResolver>) {
+        resolvers.add(AuthUserArgumentResolver())
     }
 }

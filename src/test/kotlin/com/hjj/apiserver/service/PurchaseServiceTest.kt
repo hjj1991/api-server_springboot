@@ -1,5 +1,7 @@
 package com.hjj.apiserver.service
 
+import com.hjj.apiserver.adapter.out.persistence.user.UserEntity
+import com.hjj.apiserver.adapter.out.persistence.user.UserRepository
 import com.hjj.apiserver.common.exception.AccountBookNotFoundException
 import com.hjj.apiserver.common.exception.CardNotFoundException
 import com.hjj.apiserver.common.exception.CategoryNotFoundException
@@ -11,7 +13,6 @@ import com.hjj.apiserver.domain.card.CardType
 import com.hjj.apiserver.domain.category.Category
 import com.hjj.apiserver.domain.purchase.Purchase
 import com.hjj.apiserver.domain.purchase.PurchaseType
-import com.hjj.apiserver.domain.user.User
 import com.hjj.apiserver.dto.accountbook.AccountBookDto
 import com.hjj.apiserver.dto.purchase.request.PurchaseAddRequest
 import com.hjj.apiserver.dto.purchase.request.PurchaseFindOfPageRequest
@@ -21,7 +22,6 @@ import com.hjj.apiserver.repository.accountbook.AccountBookRepository
 import com.hjj.apiserver.repository.card.CardRepository
 import com.hjj.apiserver.repository.category.CategoryRepository
 import com.hjj.apiserver.repository.purchase.PurchaseRepository
-import com.hjj.apiserver.repository.user.UserRepository
 import com.hjj.apiserver.service.impl.PurchaseService
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.DisplayName
@@ -92,7 +92,7 @@ class PurchaseServiceTest {
             cardName = "테스트카드",
             cardType = CardType.CHECK_CARD,
             cardDesc = "카드설명",
-            user = savedUser
+            userEntity = savedUser
         )
 
         val purchaseAddRequest = PurchaseAddRequest(
@@ -113,7 +113,7 @@ class PurchaseServiceTest {
             purchaseDate = purchaseAddRequest.purchaseDate,
             card = card,
             category = category,
-            user = savedUser,
+            userEntity = savedUser,
             accountBook = accountBook
         )
 
@@ -193,7 +193,7 @@ class PurchaseServiceTest {
             price = purchaseAddRequest.price,
             reason = purchaseAddRequest.reason,
             purchaseDate = purchaseAddRequest.purchaseDate,
-            user = savedUser,
+            userEntity = savedUser,
             accountBook = accountBook
         )
 
@@ -351,7 +351,7 @@ class PurchaseServiceTest {
             cardName = "국민",
             cardType = CardType.CHECK_CARD,
             cardDesc = "사치비",
-            user = savedUser,
+            userEntity = savedUser,
         )
 
         val category = Category(
@@ -368,7 +368,7 @@ class PurchaseServiceTest {
             price = 1000,
             reason = "월급",
             purchaseDate = LocalDate.of(2023, 7, 3),
-            user = savedUser,
+            userEntity = savedUser,
             accountBook = accountBook
         )
 
@@ -378,7 +378,7 @@ class PurchaseServiceTest {
             price = 50000,
             reason = "세차비",
             purchaseDate = LocalDate.of(2023, 7, 3),
-            user = savedUser,
+            userEntity = savedUser,
             accountBook = accountBook,
             card = card,
             category = category
@@ -390,7 +390,7 @@ class PurchaseServiceTest {
             price = 3000,
             reason = "밥값",
             purchaseDate = LocalDate.of(2023, 7, 3),
-            user = savedUser,
+            userEntity = savedUser,
             accountBook = accountBook
         )
 
@@ -453,7 +453,7 @@ class PurchaseServiceTest {
             cardName = "국민",
             cardType = CardType.CHECK_CARD,
             cardDesc = "사치비",
-            user = savedUser,
+            userEntity = savedUser,
         )
 
         val category = Category(
@@ -469,7 +469,7 @@ class PurchaseServiceTest {
             price = 50000,
             reason = "세차비",
             purchaseDate = LocalDate.of(2023, 7, 3),
-            user = savedUser,
+            userEntity = savedUser,
             accountBook = accountBook,
             card = card,
             category = category
@@ -478,7 +478,7 @@ class PurchaseServiceTest {
 
 
         Mockito.`when`(
-            purchaseRepository.findEntityGraphByUser_UserNoAndPurchaseNoAndIsDeleteIsFalse(
+            purchaseRepository.findEntityGraphByUserEntity_UserNoAndPurchaseNoAndIsDeleteIsFalse(
                 savedUser.userNo!!, purchase.purchaseNo!!
             )
         ).thenReturn(purchase)
@@ -517,7 +517,7 @@ class PurchaseServiceTest {
             cardName = "국민",
             cardType = CardType.CHECK_CARD,
             cardDesc = "사치비",
-            user = savedUser,
+            userEntity = savedUser,
         )
 
         val category = Category(
@@ -533,7 +533,7 @@ class PurchaseServiceTest {
             price = 50000,
             reason = "세차비",
             purchaseDate = LocalDate.of(2023, 7, 3),
-            user = savedUser,
+            userEntity = savedUser,
             accountBook = accountBook,
         )
 
@@ -544,12 +544,12 @@ class PurchaseServiceTest {
         )
 
         Mockito.`when`(
-            purchaseRepository.findEntityGraphByUser_UserNoAndPurchaseNoAndIsDeleteIsFalse(
+            purchaseRepository.findEntityGraphByUserEntity_UserNoAndPurchaseNoAndIsDeleteIsFalse(
                 savedUser.userNo!!, purchase.purchaseNo!!
             )
         ).thenReturn(purchase)
 
-        Mockito.`when`(cardRepository.findByCardNoAndUser_UserNoAndIsDeleteIsFalse(card.cardNo!!, savedUser.userNo!!))
+        Mockito.`when`(cardRepository.findByCardNoAndUserEntity_UserNoAndIsDeleteIsFalse(card.cardNo!!, savedUser.userNo!!))
             .thenReturn(card)
 
         Mockito.`when`(
@@ -586,7 +586,7 @@ class PurchaseServiceTest {
             cardName = "국민",
             cardType = CardType.CHECK_CARD,
             cardDesc = "사치비",
-            user = savedUser,
+            userEntity = savedUser,
         )
 
         val category = Category(
@@ -602,7 +602,7 @@ class PurchaseServiceTest {
             price = 50000,
             reason = "세차비",
             purchaseDate = LocalDate.of(2023, 7, 3),
-            user = savedUser,
+            userEntity = savedUser,
             accountBook = accountBook,
         )
 
@@ -613,12 +613,12 @@ class PurchaseServiceTest {
         )
 
         Mockito.`when`(
-            purchaseRepository.findEntityGraphByUser_UserNoAndPurchaseNoAndIsDeleteIsFalse(
+            purchaseRepository.findEntityGraphByUserEntity_UserNoAndPurchaseNoAndIsDeleteIsFalse(
                 savedUser.userNo!!, purchase.purchaseNo!!
             )
         ).thenReturn(purchase)
 
-        Mockito.`when`(cardRepository.findByCardNoAndUser_UserNoAndIsDeleteIsFalse(card.cardNo!!, savedUser.userNo!!))
+        Mockito.`when`(cardRepository.findByCardNoAndUserEntity_UserNoAndIsDeleteIsFalse(card.cardNo!!, savedUser.userNo!!))
             .thenReturn(card)
 
         Mockito.`when`(
@@ -655,7 +655,7 @@ class PurchaseServiceTest {
             cardName = "국민",
             cardType = CardType.CHECK_CARD,
             cardDesc = "사치비",
-            user = savedUser,
+            userEntity = savedUser,
         )
 
         val purchase = Purchase(
@@ -664,7 +664,7 @@ class PurchaseServiceTest {
             price = 50000,
             reason = "세차비",
             purchaseDate = LocalDate.of(2023, 7, 3),
-            user = savedUser,
+            userEntity = savedUser,
             accountBook = accountBook,
         )
 
@@ -675,12 +675,12 @@ class PurchaseServiceTest {
         )
 
         Mockito.`when`(
-            purchaseRepository.findEntityGraphByUser_UserNoAndPurchaseNoAndIsDeleteIsFalse(
+            purchaseRepository.findEntityGraphByUserEntity_UserNoAndPurchaseNoAndIsDeleteIsFalse(
                 savedUser.userNo!!, purchase.purchaseNo!!
             )
         ).thenReturn(purchase)
 
-        Mockito.`when`(cardRepository.findByCardNoAndUser_UserNoAndIsDeleteIsFalse(card.cardNo!!, savedUser.userNo!!))
+        Mockito.`when`(cardRepository.findByCardNoAndUserEntity_UserNoAndIsDeleteIsFalse(card.cardNo!!, savedUser.userNo!!))
             .thenReturn(null)
 
 
@@ -711,7 +711,7 @@ class PurchaseServiceTest {
             cardName = "국민",
             cardType = CardType.CHECK_CARD,
             cardDesc = "사치비",
-            user = savedUser,
+            userEntity = savedUser,
         )
 
         val purchase = Purchase(
@@ -720,7 +720,7 @@ class PurchaseServiceTest {
             price = 50000,
             reason = "세차비",
             purchaseDate = LocalDate.of(2023, 7, 3),
-            user = savedUser,
+            userEntity = savedUser,
             accountBook = accountBook,
         )
 
@@ -731,12 +731,12 @@ class PurchaseServiceTest {
         )
 
         Mockito.`when`(
-            purchaseRepository.findEntityGraphByUser_UserNoAndPurchaseNoAndIsDeleteIsFalse(
+            purchaseRepository.findEntityGraphByUserEntity_UserNoAndPurchaseNoAndIsDeleteIsFalse(
                 savedUser.userNo!!, purchase.purchaseNo!!
             )
         ).thenReturn(purchase)
 
-        Mockito.`when`(cardRepository.findByCardNoAndUser_UserNoAndIsDeleteIsFalse(card.cardNo!!, savedUser.userNo!!))
+        Mockito.`when`(cardRepository.findByCardNoAndUserEntity_UserNoAndIsDeleteIsFalse(card.cardNo!!, savedUser.userNo!!))
             .thenReturn(card)
 
         Mockito.`when`(
@@ -775,7 +775,7 @@ class PurchaseServiceTest {
             cardName = "국민",
             cardType = CardType.CHECK_CARD,
             cardDesc = "사치비",
-            user = savedUser,
+            userEntity = savedUser,
         )
 
         val purchase = Purchase(
@@ -784,7 +784,7 @@ class PurchaseServiceTest {
             price = 50000,
             reason = "세차비",
             purchaseDate = LocalDate.of(2023, 7, 3),
-            user = savedUser,
+            userEntity = savedUser,
             accountBook = accountBook,
         )
 
@@ -795,7 +795,7 @@ class PurchaseServiceTest {
         )
 
         Mockito.`when`(
-            purchaseRepository.findEntityGraphByUser_UserNoAndPurchaseNoAndIsDeleteIsFalse(
+            purchaseRepository.findEntityGraphByUserEntity_UserNoAndPurchaseNoAndIsDeleteIsFalse(
                 savedUser.userNo!!, purchase.purchaseNo!!
             )
         ).thenReturn(null)
@@ -828,7 +828,7 @@ class PurchaseServiceTest {
             cardName = "국민",
             cardType = CardType.CHECK_CARD,
             cardDesc = "사치비",
-            user = savedUser,
+            userEntity = savedUser,
         )
 
         val category = Category(
@@ -875,10 +875,9 @@ class PurchaseServiceTest {
 
     }
 
-    private fun createUser(): User {
-        return User(
+    private fun createUser(): UserEntity {
+        return UserEntity(
             userNo = 1L,
-            userId = "testUser",
             nickName = "닉네임",
             userEmail = "tester@test.co.kr"
         )

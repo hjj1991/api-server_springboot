@@ -11,14 +11,14 @@ import java.time.LocalDate
 interface PurchaseRepository: JpaRepository<Purchase, Long>, PurchaseRepositoryCustom {
 
     @EntityGraph(attributePaths = ["card", "category"])
-    fun findAllEntityGraphByPurchaseDateBetweenAndUser_UserNoOrderByPurchaseDateDesc(
+    fun findAllEntityGraphByPurchaseDateBetweenAndUserEntity_UserNoOrderByPurchaseDateDesc(
         startDate: LocalDate,
         endDate: LocalDate,
         userNo: Long
     ): List<Purchase>
 
     @EntityGraph(attributePaths = ["user"])
-    fun findEntityGraphByUser_UserNoAndPurchaseNoAndIsDeleteIsFalse(
+    fun findEntityGraphByUserEntity_UserNoAndPurchaseNoAndIsDeleteIsFalse(
         userNo: Long,
         purchaseNo: Long,
     ): Purchase?

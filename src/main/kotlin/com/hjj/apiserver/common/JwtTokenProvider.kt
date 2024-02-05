@@ -1,17 +1,17 @@
 package com.hjj.apiserver.common
 
-import com.hjj.apiserver.domain.user.User
+import com.hjj.apiserver.adapter.out.persistence.user.UserEntity
 import com.hjj.apiserver.service.impl.CustomUserDetailService
 import com.hjj.apiserver.util.logger
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
+import jakarta.servlet.http.HttpServletRequest
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Component
 import org.springframework.util.StringUtils
 import java.util.*
-import jakarta.servlet.http.HttpServletRequest
 
 @Component
 class JwtTokenProvider(
@@ -33,13 +33,14 @@ class JwtTokenProvider(
     }
 
 
-    fun createToken(user: User, tokenType: TokenType): String{
+    fun createToken(userEntity: UserEntity, tokenType: TokenType): String{
         val claims = Jwts.claims()
-        claims.subject = user.userNo.toString()
+        claims.subject = userEntity.userNo.toString()
         var validTime = Date(Date().time + REFRESH_TOKEN_VALID_TIME)
         if(tokenType == TokenType.ACCESS_TOKEN){
-            claims["userRole"] = user.role
-            claims["userId"] = user.userId
+            claims["userRole"] = userEntity.role
+//            claims["userId"] = userEntity.userId
+            claims["userId"] = userEntity.userEmail
             validTime = Date(Date().time + TOKEN_VALID_TIME)
         }
 

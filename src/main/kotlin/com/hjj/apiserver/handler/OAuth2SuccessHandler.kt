@@ -1,9 +1,8 @@
 package com.hjj.apiserver.handler
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.hjj.apiserver.common.exception.AlreadyExistedUserException
+import com.hjj.apiserver.application.service.UserService
 import com.hjj.apiserver.dto.oauth2.OAuth2UserAttribute
-import com.hjj.apiserver.service.impl.UserService
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.beans.factory.annotation.Value
@@ -40,35 +39,35 @@ class OAuth2SuccessHandler(
 //            redirectStrategy.sendRedirect(request, response, redirectUrl)
 //        }
 
-        if (oAuth2User.attributes.containsKey("mappingUserNo")) {
-            userService.socialMapping(oAuth2User)
-            val redirectUrl =
-                uriComponentsBuilder.path(redirectPathMapping).queryParam("provider", oAuth2User.registrationId).build()
-                    .toUriString()
-
-            redirectStrategy.sendRedirect(request, response, redirectUrl)
-        }
-
-        val userAttribute = oAuth2User.toUserAttribute()
-
-        val userSignInResponse = kotlin.runCatching {
-            userService.signUp(userAttribute)
-            userService.signIn(userAttribute)
-        }.recoverCatching { exception ->
-            when (exception::class) {
-                AlreadyExistedUserException::class -> {
-                    userService.signIn(userAttribute)
-                }
-
-                else -> throw Exception()
-            }
-        }.getOrThrow()
-
-
-        val redirectUrl =
-            uriComponentsBuilder.path(redirectPathSignIn).queryParam("accessToken", userSignInResponse.accessToken)
-                .queryParam("refreshToken", userSignInResponse.refreshToken).build().toUriString()
-
+//        if (oAuth2User.attributes.containsKey("mappingUserNo")) {
+//            userService.socialMapping(oAuth2User)
+//            val redirectUrl =
+//                uriComponentsBuilder.path(redirectPathMapping).queryParam("provider", oAuth2User.registrationId).build()
+//                    .toUriString()
+//
+//            redirectStrategy.sendRedirect(request, response, redirectUrl)
+//        }
+//
+//        val userAttribute = oAuth2User.toUserAttribute()
+//
+//        val userSignInResponse = kotlin.runCatching {
+//            userService.signUp(userAttribute)
+//            userService.signIn(userAttribute)
+//        }.recoverCatching { exception ->
+//            when (exception::class) {
+//                AlreadyExistedUserException::class -> {
+//                    userService.signIn(userAttribute)
+//                }
+//
+//                else -> throw Exception()
+//            }
+//        }.getOrThrow()
+//
+//
+//        val redirectUrl =
+//            uriComponentsBuilder.path(redirectPathSignIn).queryParam("accessToken", userSignInResponse.accessToken)
+//                .queryParam("refreshToken", userSignInResponse.refreshToken).build().toUriString()
+        val redirectUrl = "abc"
 
         redirectStrategy.sendRedirect(request, response, redirectUrl)
     }

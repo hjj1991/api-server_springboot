@@ -1,7 +1,7 @@
 package com.hjj.apiserver.domain.card
 
 import com.hjj.apiserver.domain.BaseEntity
-import com.hjj.apiserver.domain.user.User
+import com.hjj.apiserver.adapter.out.persistence.user.UserEntity
 import org.hibernate.annotations.DynamicUpdate
 import jakarta.persistence.*
 
@@ -14,7 +14,7 @@ class Card(
     cardName: String,
     cardType: CardType,
     cardDesc: String = "",
-    user: User,
+    userEntity: UserEntity,
 ): BaseEntity(){
 
     @Column(nullable = false, length = 100)
@@ -32,7 +32,7 @@ class Card(
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userNo", nullable = false)
-    var user: User = user
+    var userEntity: UserEntity = userEntity
         protected set
 
     fun updateCard(cardName: String, cardType: CardType, cardDesc: String){

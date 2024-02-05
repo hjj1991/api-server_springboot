@@ -8,12 +8,15 @@ import com.hjj.apiserver.dto.user.CurrentUserInfo
 import com.hjj.apiserver.util.logger
 import com.querydsl.jpa.JPQLTemplates
 import com.querydsl.jpa.impl.JPAQueryFactory
+import jakarta.annotation.PostConstruct
+import jakarta.persistence.EntityManager
 import org.modelmapper.ModelMapper
 import org.modelmapper.convention.MatchingStrategies
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.data.domain.AuditorAware
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.crypto.factory.PasswordEncoderFactories
 import org.springframework.security.crypto.password.PasswordEncoder
@@ -23,11 +26,9 @@ import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Mono
 import java.io.FileInputStream
 import java.io.IOException
+import java.time.Clock
 import java.util.*
 import java.util.function.Consumer
-import jakarta.annotation.PostConstruct
-import jakarta.persistence.EntityManager
-import org.springframework.data.jpa.repository.config.EnableJpaAuditing
 
 @EnableJpaAuditing
 @Configuration
@@ -38,7 +39,10 @@ class ApplicationConfig(
 
     private val log = logger()
 
-
+    @Bean
+    fun clock(): Clock {
+        return Clock.systemUTC()
+    }
 
     @Bean
     fun passwordEncoder(): PasswordEncoder {

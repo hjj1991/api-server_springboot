@@ -12,7 +12,7 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 
-class AccountBookUserRepositoryTest : BaseRepositoryTest() {
+class AccountBookUserRepositoryTestEntity : BaseRepositoryTest() {
 
     @Autowired
     private lateinit var accountBookUserRepository: AccountBookUserRepository
@@ -34,19 +34,19 @@ class AccountBookUserRepositoryTest : BaseRepositoryTest() {
 
         val accountBookUser1 = accountBookUserRepository.save(
             AccountBookUser(
-                accountBook = accountBook1, user = tester1, accountRole = AccountRole.OWNER,
+                accountBook = accountBook1, userEntity = tester1, accountRole = AccountRole.OWNER,
                 backGroundColor = "#00000", color = "#11111"
             )
         )
         accountBookUserRepository.save(
             AccountBookUser(
-                accountBook = accountBook1, user = tester2, accountRole = AccountRole.MEMBER,
+                accountBook = accountBook1, userEntity = tester2, accountRole = AccountRole.MEMBER,
                 backGroundColor = "#00123", color = "#11789"
             )
         )
         accountBookUserRepository.save(
             AccountBookUser(
-                accountBook = accountBook1, user = tester3, accountRole = AccountRole.GUEST,
+                accountBook = accountBook1, userEntity = tester3, accountRole = AccountRole.GUEST,
                 backGroundColor = "#00456", color = "#11345"
             )
         )
@@ -61,7 +61,7 @@ class AccountBookUserRepositoryTest : BaseRepositoryTest() {
 
         val accountBookUser2 = accountBookUserRepository.save(
             AccountBookUser(
-                accountBook = accountBook2, user = tester1, accountRole = AccountRole.OWNER,
+                accountBook = accountBook2, userEntity = tester1, accountRole = AccountRole.OWNER,
                 backGroundColor = "#33000", color = "#55511"
             )
         )
@@ -107,7 +107,7 @@ class AccountBookUserRepositoryTest : BaseRepositoryTest() {
             accountBookRepository.save(AccountBook(accountBookName = "testBookName", accountBookDesc = "testBookDesc"))
         val accountBookUser1 = accountBookUserRepository.save(
             AccountBookUser(
-                accountBook = accountBook1, user = tester1, accountRole = AccountRole.OWNER,
+                accountBook = accountBook1, userEntity = tester1, accountRole = AccountRole.OWNER,
                 backGroundColor = "#00000", color = "#11111"
             )
         )

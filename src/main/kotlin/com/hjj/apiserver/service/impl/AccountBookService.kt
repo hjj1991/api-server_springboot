@@ -12,7 +12,7 @@ import com.hjj.apiserver.repository.accountbook.AccountBookRepository
 import com.hjj.apiserver.repository.accountbook.AccountBookUserRepository
 import com.hjj.apiserver.repository.card.CardRepository
 import com.hjj.apiserver.repository.category.CategoryRepository
-import com.hjj.apiserver.repository.user.UserRepository
+import com.hjj.apiserver.adapter.out.persistence.user.UserRepository
 import com.hjj.apiserver.util.CommonUtils
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -37,7 +37,7 @@ class AccountBookService(
         val savedAccountBookUser = accountBookUserRepository.save(
             AccountBookUser(
                 accountBook = newAccountBook,
-                user = userRepository.getReferenceById(userNo),
+                userEntity = userRepository.getReferenceById(userNo),
                 accountRole = AccountRole.OWNER,
                 backGroundColor = request.backGroundColor,
                 color = request.color,
@@ -51,7 +51,7 @@ class AccountBookService(
     fun findAccountBookDetail(accountBookNo: Long, userNo: Long): AccountBookDetailResponse {
         val findAccountBook = accountBookRepository.findAccountBook(accountBookNo, userNo)
             ?: throw AccountBookNotFoundException()
-        val findCards = cardRepository.findByUser_UserNo(userNo).map(AccountBookDetailResponse.CardDetail.Companion::of)
+        val findCards = cardRepository.findByUserEntity_UserNo(userNo).map(AccountBookDetailResponse.CardDetail.Companion::of)
 
         val findCategories = categoryRepository.findCategories(userNo, accountBookNo)
 

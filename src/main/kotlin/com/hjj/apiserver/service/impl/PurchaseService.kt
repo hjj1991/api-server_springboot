@@ -14,7 +14,7 @@ import com.hjj.apiserver.repository.accountbook.AccountBookRepository
 import com.hjj.apiserver.repository.card.CardRepository
 import com.hjj.apiserver.repository.category.CategoryRepository
 import com.hjj.apiserver.repository.purchase.PurchaseRepository
-import com.hjj.apiserver.repository.user.UserRepository
+import com.hjj.apiserver.adapter.out.persistence.user.UserRepository
 import com.hjj.apiserver.util.CommonUtils
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Slice
@@ -76,18 +76,18 @@ class PurchaseService(
 
     @Transactional(readOnly = false)
     fun removePurchase(userNo: Long, purchaseNo: Long) {
-        purchaseRepository.findEntityGraphByUser_UserNoAndPurchaseNoAndIsDeleteIsFalse(userNo, purchaseNo)?.delete()
+        purchaseRepository.findEntityGraphByUserEntity_UserNoAndPurchaseNoAndIsDeleteIsFalse(userNo, purchaseNo)?.delete()
             ?: throw PurchaseNotFoundException()
     }
 
     @Transactional(readOnly = false)
     fun modifyPurchase(userNo: Long, purchaseNo: Long, request: PurchaseModifyRequest) {
         val purchase =
-            purchaseRepository.findEntityGraphByUser_UserNoAndPurchaseNoAndIsDeleteIsFalse(userNo, purchaseNo)
+            purchaseRepository.findEntityGraphByUserEntity_UserNoAndPurchaseNoAndIsDeleteIsFalse(userNo, purchaseNo)
                 ?: throw PurchaseNotFoundException()
 
         val card = request.cardNo?.let {
-            cardRepository.findByCardNoAndUser_UserNoAndIsDeleteIsFalse(it, userNo) ?: throw CardNotFoundException()
+            cardRepository.findByCardNoAndUserEntity_UserNoAndIsDeleteIsFalse(it, userNo) ?: throw CardNotFoundException()
         }
         val category = request.categoryNo?.let {
             categoryRepository.findCategoryByAccountRole(

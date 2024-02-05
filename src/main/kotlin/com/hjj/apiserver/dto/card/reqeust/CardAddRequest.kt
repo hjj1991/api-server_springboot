@@ -2,7 +2,7 @@ package com.hjj.apiserver.dto.card.reqeust
 
 import com.hjj.apiserver.domain.card.Card
 import com.hjj.apiserver.domain.card.CardType
-import com.hjj.apiserver.domain.user.User
+import com.hjj.apiserver.adapter.out.persistence.user.UserEntity
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
 
@@ -14,12 +14,12 @@ data class CardAddRequest(
     @field:NotNull
     val cardDesc: String = "",
 ) {
-    fun toEntity(user: User): Card {
+    fun toEntity(userEntity: UserEntity): Card {
         return Card(
             cardName = cardName,
             cardType = cardType,
             cardDesc = cardDesc,
-            user = user,
+            userEntity = userEntity,
         )
     }
 }

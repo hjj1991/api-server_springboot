@@ -58,7 +58,7 @@ class ExceptionControllerAdvice{
 
     @ExceptionHandler(MethodArgumentNotValidException::class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    protected fun methodArgumentNotValidException(request: HttpServletRequest): ApiError{
+    protected fun methodArgumentNotValidException(request: HttpServletRequest, e: Exception): ApiError{
         return ApiError(ErrCode.ERR_CODE9999)
     }
 

@@ -8,7 +8,7 @@ import com.hjj.apiserver.dto.category.response.CategoryDetailResponse
 import com.hjj.apiserver.dto.category.response.CategoryFindAllResponse
 import com.hjj.apiserver.dto.user.CurrentUserInfo
 import com.hjj.apiserver.service.impl.CategoryService
-import com.hjj.apiserver.util.CurrentUser
+import com.hjj.apiserver.util.AuthUser
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
@@ -21,50 +21,50 @@ class CategoryController(
     @PostMapping("/categories")
     @ResponseStatus(HttpStatus.CREATED)
     fun categoryAdd(
-        @CurrentUser currentUserInfo: CurrentUserInfo,
+        @AuthUser authUserInfo: CurrentUserInfo,
         @RequestBody @Valid categoryAddRequest: CategoryAddRequest
     ): CategoryAddResponse {
-        return categoryService.addCategory(currentUserInfo.userNo, categoryAddRequest)
+        return categoryService.addCategory(authUserInfo.userNo, categoryAddRequest)
     }
 
     @GetMapping("/categories")
     fun categoriesFind(
-        @CurrentUser currentUserInfo: CurrentUserInfo,
+        @AuthUser authUserInfo: CurrentUserInfo,
         @RequestParam accountBookNo: Long
     ): CategoryFindAllResponse {
-        return categoryService.findAllCategories(currentUserInfo.userNo, accountBookNo)
+        return categoryService.findAllCategories(authUserInfo.userNo, accountBookNo)
     }
 
     @GetMapping("/categories/{categoryNo}")
     fun categoryDetail(
-        @CurrentUser currentUserInfo: CurrentUserInfo,
+        @AuthUser authUserInfo: CurrentUserInfo,
         @PathVariable("categoryNo") categoryNo: Long
     ): CategoryDetailResponse {
-        return categoryService.findCategory(categoryNo, currentUserInfo.userNo)
+        return categoryService.findCategory(categoryNo, authUserInfo.userNo)
     }
 
     @PatchMapping("/categories/{categoryNo}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun categoryModify(
-        @CurrentUser currentUserInfo: CurrentUserInfo,
+        @AuthUser authUserInfo: CurrentUserInfo,
         @PathVariable("categoryNo") categoryNo: Long,
         @Valid @RequestBody request: CategoryModifyRequest
     ) {
-        categoryService.modifyCategory(currentUserInfo.userNo, categoryNo, request)
+        categoryService.modifyCategory(authUserInfo.userNo, categoryNo, request)
     }
 
 
     @DeleteMapping("/categories/{categoryNo}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun categoryRemove(
-        @CurrentUser currentUserInfo: CurrentUserInfo,
+        @AuthUser authUserInfo: CurrentUserInfo,
         @PathVariable("categoryNo") categoryNo: Long,
         @RequestBody request: CategoryRemoveRequest
     ) {
         categoryService.deleteCategory(
             categoryNo,
             request.accountBookNo,
-            currentUserInfo.userNo
+            authUserInfo.userNo
         )
     }
 

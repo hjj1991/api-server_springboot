@@ -1,5 +1,6 @@
 package com.hjj.apiserver.service
 
+import com.hjj.apiserver.adapter.out.persistence.user.UserEntity
 import com.hjj.apiserver.common.ErrCode
 import com.hjj.apiserver.common.exception.AccountBookAccessDeniedException
 import com.hjj.apiserver.common.exception.AccountBookNotFoundException
@@ -7,7 +8,6 @@ import com.hjj.apiserver.common.exception.CategoryNotFoundException
 import com.hjj.apiserver.domain.accountbook.AccountBook
 import com.hjj.apiserver.domain.accountbook.AccountRole
 import com.hjj.apiserver.domain.category.Category
-import com.hjj.apiserver.domain.user.User
 import com.hjj.apiserver.dto.accountbook.AccountBookDto
 import com.hjj.apiserver.dto.category.CategoryDto
 import com.hjj.apiserver.dto.category.request.CategoryAddRequest
@@ -594,10 +594,9 @@ class CategoryServiceTest {
 
     }
 
-    private fun createUser(): User {
-        return User(
+    private fun createUser(): UserEntity {
+        return UserEntity(
             userNo = 1L,
-            userId = "testUser",
             nickName = "닉네임",
             userEmail = "tester@test.co.kr"
         )

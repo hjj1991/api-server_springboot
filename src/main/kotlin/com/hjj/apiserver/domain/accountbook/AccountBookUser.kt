@@ -1,7 +1,7 @@
 package com.hjj.apiserver.domain.accountbook
 
 import com.hjj.apiserver.domain.BaseEntity
-import com.hjj.apiserver.domain.user.User
+import com.hjj.apiserver.adapter.out.persistence.user.UserEntity
 import jakarta.persistence.*
 
 @Entity
@@ -15,7 +15,7 @@ class AccountBookUser(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     var accountBookUserNo: Long? = null,
     accountBook: AccountBook,
-    user: User,
+    userEntity: UserEntity,
     accountRole: AccountRole,
     backGroundColor: String,
     color: String,
@@ -28,7 +28,7 @@ class AccountBookUser(
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
     @JoinColumn(name = "userNo")
-    var user: User = user
+    var userEntity: UserEntity = userEntity
         protected set
 
     @Column

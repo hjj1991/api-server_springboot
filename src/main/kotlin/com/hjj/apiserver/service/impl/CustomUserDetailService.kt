@@ -1,8 +1,8 @@
 package com.hjj.apiserver.service.impl
 
+import com.hjj.apiserver.adapter.out.persistence.user.UserRepository
 import com.hjj.apiserver.common.exception.UserNotFoundException
 import com.hjj.apiserver.dto.user.CurrentUserInfo
-import com.hjj.apiserver.repository.user.UserRepository
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.core.userdetails.UserDetails
@@ -18,7 +18,7 @@ class CustomUserDetailService(
     override fun loadUserByUsername(username: String): UserDetails {
         return userRepository.findByIdOrNull(username.toLong())?.run {
             CurrentUserInfo(
-                userId = userId,
+                userId = "userId",
                 nickName = nickName,
                 userNo = userNo!!,
                 role = role,
