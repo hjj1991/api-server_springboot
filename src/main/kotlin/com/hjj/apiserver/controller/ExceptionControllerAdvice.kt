@@ -3,10 +3,11 @@ package com.hjj.apiserver.controller
 import com.hjj.apiserver.common.ApiError
 import com.hjj.apiserver.common.ErrCode
 import com.hjj.apiserver.common.exception.AccountBookNotFoundException
-import com.hjj.apiserver.common.exception.AlreadyExistedUserException
+import com.hjj.apiserver.common.exception.AlreadyExistsUserException
 import com.hjj.apiserver.common.exception.ExistedSocialUserException
 import com.hjj.apiserver.common.exception.UserNotFoundException
 import com.hjj.apiserver.util.logger
+import jakarta.servlet.http.HttpServletRequest
 import org.slf4j.Logger
 import org.springframework.http.HttpStatus
 import org.springframework.security.authentication.BadCredentialsException
@@ -17,7 +18,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import java.util.stream.Collectors
-import jakarta.servlet.http.HttpServletRequest
 
 @RestControllerAdvice
 class ExceptionControllerAdvice{
@@ -44,9 +44,10 @@ class ExceptionControllerAdvice{
         return ApiError(ErrCode.ERR_CODE0008)
     }
 
-    @ExceptionHandler(AlreadyExistedUserException::class)
+    @ExceptionHandler(AlreadyExistsUserException::class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    protected fun alreadyExistedUserException(request: HttpServletRequest): ApiError{
+    protected fun alreadyExistedUserException(request: HttpServletRequest, e: Exception): ApiError{
+        log.error(e.message)
         return ApiError(ErrCode.ERR_CODE0006)
     }
 
@@ -59,6 +60,7 @@ class ExceptionControllerAdvice{
     @ExceptionHandler(MethodArgumentNotValidException::class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     protected fun methodArgumentNotValidException(request: HttpServletRequest, e: Exception): ApiError{
+        log.error(e.message)
         return ApiError(ErrCode.ERR_CODE9999)
     }
 

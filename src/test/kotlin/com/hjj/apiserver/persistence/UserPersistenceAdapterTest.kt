@@ -1,9 +1,7 @@
 package com.hjj.apiserver.persistence
 
-import com.hjj.apiserver.adapter.out.persistence.user.UserEntity
 import com.hjj.apiserver.adapter.out.persistence.user.UserMapper
 import com.hjj.apiserver.adapter.out.persistence.user.UserPersistenceAdapter
-import com.hjj.apiserver.adapter.out.persistence.user.UserRepository
 import com.hjj.apiserver.application.port.out.user.GetUserPort
 import com.hjj.apiserver.application.port.out.user.WriteUserPort
 import com.hjj.apiserver.config.DataSourceConfiguration
@@ -35,9 +33,6 @@ class UserPersistenceAdapterTest {
     @Autowired
     lateinit var writeUserPort: WriteUserPort
 
-    @Autowired
-    lateinit var userRepository: UserRepository
-
     @Test
     fun registerUserTest_success() {
         // Given
@@ -65,8 +60,8 @@ class UserPersistenceAdapterTest {
     fun findExistsUserNickNameTest_when_existsNickName_then_true() {
         // Given
         val nickName = "alreadyNickName"
-        val userEntity = UserEntity(nickName = nickName)
-        userRepository.save(userEntity)
+        val user = User(nickName = nickName)
+        writeUserPort.registerUser(user)
 
         // When
         val existsUserNickName = getUserPort.findExistsUserNickName(nickName)

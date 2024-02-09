@@ -1,4 +1,4 @@
-package com.hjj.apiserver.application.port.`in`.user
+package com.hjj.apiserver.application.port.`in`.user.command
 
 import com.hjj.apiserver.common.component.SelfValidating
 import com.hjj.apiserver.domain.user.User

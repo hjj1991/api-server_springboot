@@ -1,15 +1,18 @@
 package com.hjj.apiserver.adapter.`in`.web.user
 
+import com.hjj.apiserver.adapter.`in`.web.user.request.UserSignInRequest
+import com.hjj.apiserver.adapter.`in`.web.user.request.UserSignUpRequest
 import com.hjj.apiserver.adapter.`in`.web.user.response.ExistsNickNameResponse
 import com.hjj.apiserver.adapter.`in`.web.user.response.ExistsUserIdResponse
-import com.hjj.apiserver.application.port.`in`.user.CheckUserNickNameDuplicateCommand
+import com.hjj.apiserver.adapter.`in`.web.user.response.UserSignInResponse
 import com.hjj.apiserver.application.port.`in`.user.GetUserUseCase
-import com.hjj.apiserver.application.port.`in`.user.RegisterUserCommand
 import com.hjj.apiserver.application.port.`in`.user.UserCredentialUseCase
 import com.hjj.apiserver.application.port.`in`.user.WriteUserUseCase
+import com.hjj.apiserver.application.port.`in`.user.command.CheckUserNickNameDuplicateCommand
+import com.hjj.apiserver.application.port.`in`.user.command.RegisterUserCommand
+import com.hjj.apiserver.application.port.`in`.user.command.SignInUserCommand
 import com.hjj.apiserver.domain.user.Provider
 import com.hjj.apiserver.domain.user.User
-import com.hjj.apiserver.dto.user.request.UserSignUpRequest
 import com.hjj.apiserver.util.AuthUser
 import com.hjj.apiserver.util.logger
 import jakarta.validation.Valid
@@ -56,12 +59,14 @@ class UserController(
             RegisterUserCommand(request.userId, request.nickName, request.userEmail, request.userPw, Provider.GENERAL)
         writeUserUseCase.signUp(registerUserCommand)
     }
-//
-//    @PostMapping("/user/signin")
-//    fun signIn(@RequestBody request: UserSignInRequest): UserSignInResponse {
-//        val userAttribute = UserAttribute.ofGeneral(userId = request.userId, userPw = request.userPw)
-//        return userService.signIn(userAttribute)
-//    }
+
+    @PostMapping("/user/signin")
+    fun signIn(
+        @Valid @RequestBody request: UserSignInRequest
+    ): UserSignInResponse {
+        val signInUserCommand = SignInUserCommand(request.userId, request.userPw, provider = Provider.GENERAL)
+        return writeUserUseCase.signIn(signInUserCommand)
+    }
 //
 //
 //    @ApiImplicitParams(

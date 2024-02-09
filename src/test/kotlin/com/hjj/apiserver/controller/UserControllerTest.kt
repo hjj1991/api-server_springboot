@@ -7,16 +7,19 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.hjj.apiserver.adapter.`in`.web.user.UserController
 import com.hjj.apiserver.adapter.`in`.web.user.response.ExistsNickNameResponse
 import com.hjj.apiserver.adapter.`in`.web.user.response.ExistsUserIdResponse
-import com.hjj.apiserver.application.port.`in`.user.CheckUserNickNameDuplicateCommand
+import com.hjj.apiserver.application.port.`in`.user.command.CheckUserNickNameDuplicateCommand
 import com.hjj.apiserver.application.port.`in`.user.GetUserUseCase
-import com.hjj.apiserver.application.port.`in`.user.RegisterUserCommand
+import com.hjj.apiserver.application.port.`in`.user.command.RegisterUserCommand
 import com.hjj.apiserver.application.port.`in`.user.UserCredentialUseCase
 import com.hjj.apiserver.application.port.`in`.user.WriteUserUseCase
+import com.hjj.apiserver.common.ApiError
+import com.hjj.apiserver.common.ErrCode
 import com.hjj.apiserver.common.JwtTokenProvider
+import com.hjj.apiserver.common.exception.AlreadyExistsUserException
 import com.hjj.apiserver.domain.user.Provider
 import com.hjj.apiserver.domain.user.Role
 import com.hjj.apiserver.domain.user.User
-import com.hjj.apiserver.dto.user.request.UserSignUpRequest
+import com.hjj.apiserver.adapter.`in`.web.user.request.UserSignUpRequest
 import com.hjj.apiserver.utils.ApiDocumentUtil
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
@@ -259,7 +262,7 @@ class UserControllerTest {
     @DisplayName("POST /users/signup API")
     @Nested
     inner class SignUp_test {
-        @DisplayName("회원가입 API")
+        @DisplayName("회원가입 성공API")
         @Test
         @WithMockUser
         fun signUpTest_success() {
@@ -303,9 +306,66 @@ class UserControllerTest {
                     )
                 )
         }
+        @DisplayName("회원가입 실패 API 이미 존재하는 사용자인 경우")
+        @Test
+        @WithMockUser
+        fun signUpTest_fail_already_exists_user() {
+            // Given
+            val userSignUpRequest = UserSignUpRequest(
+                userId = "1234,",
+                nickName = "nickName",
+                userEmail = "test@example.com",
+                userPw = "1354135",
+            )
+
+            val registerUserCommand = RegisterUserCommand(
+                userId = userSignUpRequest.userId,
+                nickName = userSignUpRequest.nickName,
+                userEmail = userSignUpRequest.userEmail,
+                userPw = userSignUpRequest.userPw,
+                provider = Provider.GENERAL
+            )
+            BDDMockito.`when`(writeUserUseCase.signUp(registerUserCommand)).thenThrow(AlreadyExistsUserException::class.java)
+
+            val alreadyExsistsUserResponse = ApiError(ErrCode.ERR_CODE0006, ErrCode.ERR_CODE0006.msg)
+
+            // When && Then
+            mockMvc.perform(
+                RestDocumentationRequestBuilders.post("/users/signup")
+                    .header(HttpHeaders.AUTHORIZATION, JwtTokenProvider.BEARER_PREFIX + "aergaeaerg")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .with(SecurityMockMvcRequestPostProcessors.csrf())
+                    .content(objectMapper.writeValueAsString(userSignUpRequest))
+            )
+                .andExpect(MockMvcResultMatchers.status().isBadRequest)
+                .andExpect(
+                    MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(alreadyExsistsUserResponse))
+                )
+                .andDo(
+                    MockMvcRestDocumentationWrapper.document(
+                        "이미 존재하는 사용자인 경우",
+                        ApiDocumentUtil.getDocumentRequest(),
+                        ApiDocumentUtil.getDocumentResponse(),
+                        PayloadDocumentation.responseFields(
+                            PayloadDocumentation.fieldWithPath("errCode").description("에러코드"),
+                            PayloadDocumentation.fieldWithPath("message").description("에러 메시지"),
+                        ),
+                        ResourceDocumentation.resource(
+                            ResourceSnippetParameters.builder()
+                                .description("이미 존재하는 사용자인 경우")
+                                .tag(USER_TAG)
+                                .responseFields(
+                                    PayloadDocumentation.fieldWithPath("errCode").description("에러 코드"),
+                                    PayloadDocumentation.fieldWithPath("message").description("에러 메시지"),
+                                ).build()
+                        ),
+                    )
+                )
+        }
+
     }
 
-        private fun getUser(): User {
+    private fun getUser(): User {
         return User(3L, "id", "닉네임", role = Role.USER)
     }
 }

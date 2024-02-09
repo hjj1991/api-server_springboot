@@ -1,18 +1,21 @@
 package com.hjj.apiserver.application.service
 
-import com.hjj.apiserver.application.port.`in`.user.CheckUserNickNameDuplicateCommand
+import com.hjj.apiserver.adapter.`in`.web.user.response.UserSignInResponse
 import com.hjj.apiserver.application.port.`in`.user.GetUserUseCase
-import com.hjj.apiserver.application.port.`in`.user.RegisterCredentialCommand
-import com.hjj.apiserver.application.port.`in`.user.RegisterUserCommand
-import com.hjj.apiserver.application.port.`in`.user.UserCredentialUseCase
 import com.hjj.apiserver.application.port.`in`.user.WriteUserUseCase
+import com.hjj.apiserver.application.port.`in`.user.command.CheckUserNickNameDuplicateCommand
+import com.hjj.apiserver.application.port.`in`.user.command.RegisterCredentialCommand
+import com.hjj.apiserver.application.port.`in`.user.command.RegisterUserCommand
+import com.hjj.apiserver.application.port.`in`.user.command.SignInUserCommand
 import com.hjj.apiserver.application.port.out.user.GetUserPort
+import com.hjj.apiserver.application.port.out.user.WriteCredentialPort
 import com.hjj.apiserver.application.port.out.user.WriteUserPort
-import com.hjj.apiserver.common.exception.ProviderNotFoundException
-import com.hjj.apiserver.domain.user.Provider
+import com.hjj.apiserver.common.exception.AlreadyExistsUserException
+import com.hjj.apiserver.domain.user.Credential
 import com.hjj.apiserver.domain.user.Role
 import com.hjj.apiserver.domain.user.User
 import com.hjj.apiserver.util.logger
+import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -25,10 +28,10 @@ class UserService(
 //    private val jwtTokenProvider: JwtTokenProvider,
 //    private val fireBaseService: FireBaseService,
 //    private val objectMapper: ObjectMapper,
-    private val userCredentialUseCases: List<UserCredentialUseCase>,
     private val passwordEncoder: PasswordEncoder,
     private val getUserPort: GetUserPort,
     private val writeUserPort: WriteUserPort,
+    private val writeCredentialPort: WriteCredentialPort,
 
 //    @Value(value = "\${app.firebase-storage-uri}")
 //    private val firebaseStorageUri: String,
@@ -42,7 +45,7 @@ class UserService(
     private val log = logger()
 
 
-    override fun existsNickName(command: CheckUserNickNameDuplicateCommand): kotlin.Boolean {
+    override fun existsNickName(command: CheckUserNickNameDuplicateCommand): Boolean {
         if (command.authUser.role != Role.GUEST && command.authUser.nickName == command.nickName) {
             return true
         }
@@ -52,24 +55,38 @@ class UserService(
     @Transactional(readOnly = false)
     override fun signUp(command: RegisterUserCommand) {
         val password = command.userPw?.let { passwordEncoder.encode(it) }
-        val user = writeUserPort.registerUser(User(nickName = command.nickName, userEmail = command.userEmail, userPw = password))
+        kotlin.runCatching {
+            val user = writeUserPort.registerUser(
+                User(
+                    nickName = command.nickName,
+                    userEmail = command.userEmail,
+                    userPw = password
+                )
+            )
+            val registerCredentialCommand = RegisterCredentialCommand(
+                userId = command.userId,
+                user = user,
+                userEmail = command.userEmail,
+                provider = command.provider
+            )
+            writeCredentialPort.registerCredential(
+                Credential(
+                    userId = registerCredentialCommand.userId,
+                    credentialEmail = registerCredentialCommand.userEmail,
+                    user = registerCredentialCommand.user,
+                    provider = registerCredentialCommand.provider,
+                )
+            )
+        }.onFailure { exception ->
+            when (exception) {
+                is DataIntegrityViolationException -> throw AlreadyExistsUserException("[signup] Failed to register command: $command, exeception: $exception")
+                else -> throw exception
+            }
+        }
+    }
 
-        val registerCredentialCommand = RegisterCredentialCommand(
-            userId = command.userId,
-            user = user,
-            userEmail = command.userEmail,
-            provider = command.provider
-        )
-        val matchingProviderCredentialService = getMatchingProviderCredentialService(command.provider)
-        val credential = matchingProviderCredentialService.register(registerCredentialCommand)
-//        for (authService in userCredentialServices) {
-//            if (authService.isMatchingProvider(userAttribute.provider)) {
-//                val newUser = authService.register(userAttribute)
-//                val savedUser = userRepository.save(newUser)
-//                userLogRepository.save(UserLog(logType = LogType.INSERT, userEntity = savedUser))
-//                return
-//            }
-//        }
+    override fun signIn(signInUserCommand: SignInUserCommand): UserSignInResponse {
+        TODO("Not yet implemented")
     }
 
 //    fun existsUserId(userId: String): Boolean {
@@ -195,12 +212,4 @@ class UserService(
 //        userLogService.addUserLog(UserLog(logType = LogType.MODIFY, userEntity = user))
 //
 //    }
-    private fun getMatchingProviderCredentialService(provider: Provider): UserCredentialUseCase {
-        for (userCredentialService in userCredentialUseCases) {
-            if(userCredentialService.isMatchingProvider(provider)){
-                return userCredentialService
-            }
-        }
-        throw ProviderNotFoundException()
-    }
 }

@@ -1,10 +1,10 @@
 package com.hjj.apiserver.application.service
 
-import com.hjj.apiserver.application.port.`in`.user.RegisterCredentialCommand
+import com.hjj.apiserver.application.port.`in`.user.command.RegisterCredentialCommand
 import com.hjj.apiserver.application.port.`in`.user.UserCredentialUseCase
 import com.hjj.apiserver.application.port.out.user.GetCredentialPort
 import com.hjj.apiserver.application.port.out.user.WriteCredentialPort
-import com.hjj.apiserver.common.exception.AlreadyExistedUserException
+import com.hjj.apiserver.common.exception.AlreadyExistsUserException
 import com.hjj.apiserver.domain.user.Credential
 import com.hjj.apiserver.domain.user.Provider
 import com.hjj.apiserver.domain.user.User
@@ -32,7 +32,7 @@ class GeneralUserCredentialService(
             writeCredentialPort.registerCredential(credential)
         }.onFailure { exception ->
             when (exception) {
-                is DataIntegrityViolationException -> throw AlreadyExistedUserException()
+                is DataIntegrityViolationException -> throw AlreadyExistsUserException()
                 else -> throw exception
             }
         }.getOrThrow()

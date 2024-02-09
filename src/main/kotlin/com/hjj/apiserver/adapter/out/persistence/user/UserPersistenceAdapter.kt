@@ -14,10 +14,6 @@ class UserPersistenceAdapter(
         return userRepository.findExistsUserNickName(nickName)
     }
 
-//    override fun findExistsUserId(userId: String): Boolean {
-//        return userRepository.findExistsUserId(userId)
-//    }
-
     override fun registerUser(user: User): User {
         val userEntity = userRepository.save(
             UserEntity(

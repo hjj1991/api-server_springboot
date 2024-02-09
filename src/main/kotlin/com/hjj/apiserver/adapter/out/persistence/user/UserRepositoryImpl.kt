@@ -7,7 +7,6 @@ class UserRepositoryImpl(
     private val jpaQueryFactory: JPAQueryFactory,
 ) : UserRepositoryCustom {
 
-
     override fun findExistsUserNickName(nickName: String): Boolean {
         return jpaQueryFactory.selectOne()
             .from(userEntity)

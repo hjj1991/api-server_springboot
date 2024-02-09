@@ -1,4 +1,4 @@
-package com.hjj.apiserver.dto.user.request
+package com.hjj.apiserver.adapter.`in`.web.user.request
 
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.Pattern

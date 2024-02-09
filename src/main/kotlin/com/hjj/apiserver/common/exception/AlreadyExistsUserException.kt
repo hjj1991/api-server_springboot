@@ -1,6 +1,6 @@
 package com.hjj.apiserver.common.exception
 
-class AlreadyExistedUserException: RuntimeException {
+open class AlreadyExistsUserException: RuntimeException {
 
     constructor() : super()
     constructor(message: String) : super(message)
@@ -16,4 +16,12 @@ class AlreadyExistedUserException: RuntimeException {
     override fun fillInStackTrace(): Throwable {
         return this
     }
+}
+
+class AlreadyExistsCredentialException: AlreadyExistsUserException {
+    constructor() : super()
+    constructor(message: String) : super(message)
+    constructor(message: String, cause: Throwable) : super(message, cause)
+    constructor(cause: Throwable) : super(cause)
+
 }

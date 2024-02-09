@@ -1,4 +1,4 @@
-package com.hjj.apiserver.dto.user.response
+package com.hjj.apiserver.adapter.`in`.web.user.response
 
 import com.hjj.apiserver.adapter.out.persistence.user.UserEntity
 import java.time.LocalDateTime
@@ -16,7 +16,7 @@ data class UserSignInResponse(
 ) {
 
     companion object{
-        fun of(userEntity: UserEntity, accessToken: String, refreshToken: String): UserSignInResponse{
+        fun of(userEntity: UserEntity, accessToken: String, refreshToken: String): UserSignInResponse {
             return UserSignInResponse(
                 "userEntity.userId",
                 userEntity.nickName,
