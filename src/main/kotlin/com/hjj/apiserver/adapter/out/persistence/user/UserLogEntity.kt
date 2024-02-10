@@ -1,5 +1,6 @@
 package com.hjj.apiserver.adapter.out.persistence.user
 
+import com.hjj.apiserver.domain.BaseTimeEntity
 import com.hjj.apiserver.domain.user.LogType
 import jakarta.persistence.Column
 import jakarta.persistence.ConstraintMode
@@ -14,23 +15,17 @@ import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.Table
-import java.time.LocalDateTime
 
 @Entity
 @Table(name = "tb_user_log")
 class UserLogEntity(
-    loginDateTime: LocalDateTime? = null,
     logType: LogType,
     userEntity: UserEntity,
-    createdDate: LocalDateTime = LocalDateTime.now()
-) {
+):BaseTimeEntity() {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val userLogNo: Long = 0L
-
-    @Column
-    val loginDateTime: LocalDateTime? = loginDateTime
 
     @Column
     @Enumerated(EnumType.STRING)
@@ -40,6 +35,4 @@ class UserLogEntity(
     @JoinColumn(name = "userNo", foreignKey = ForeignKey(ConstraintMode.NO_CONSTRAINT))
     val userEntity: UserEntity = userEntity
 
-    @Column
-    val createdDate: LocalDateTime = createdDate
 }

@@ -14,6 +14,8 @@ class UserMapper {
             userPw = userEntity.userPw,
             picture = userEntity.picture,
             role = userEntity.role,
+            createdAt = userEntity.createdAt,
+            modifiedAt = userEntity.modifiedAt,
         )
     }
 }

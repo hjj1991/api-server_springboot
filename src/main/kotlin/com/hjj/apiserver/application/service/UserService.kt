@@ -9,6 +9,7 @@ import com.hjj.apiserver.application.port.`in`.user.command.RegisterUserCommand
 import com.hjj.apiserver.application.port.`in`.user.command.SignInUserCommand
 import com.hjj.apiserver.application.port.out.user.GetUserPort
 import com.hjj.apiserver.application.port.out.user.WriteCredentialPort
+import com.hjj.apiserver.application.port.out.user.WriteUserLogPort
 import com.hjj.apiserver.application.port.out.user.WriteUserPort
 import com.hjj.apiserver.common.exception.AlreadyExistsUserException
 import com.hjj.apiserver.domain.user.Credential
@@ -32,6 +33,7 @@ class UserService(
     private val getUserPort: GetUserPort,
     private val writeUserPort: WriteUserPort,
     private val writeCredentialPort: WriteCredentialPort,
+    private val writeUserLogPort: WriteUserLogPort,
 
 //    @Value(value = "\${app.firebase-storage-uri}")
 //    private val firebaseStorageUri: String,
