@@ -7,14 +7,21 @@ import com.hjj.apiserver.application.port.`in`.user.command.CheckUserNickNameDup
 import com.hjj.apiserver.application.port.`in`.user.command.RegisterCredentialCommand
 import com.hjj.apiserver.application.port.`in`.user.command.RegisterUserCommand
 import com.hjj.apiserver.application.port.`in`.user.command.SignInUserCommand
+import com.hjj.apiserver.application.port.out.user.GetCredentialPort
 import com.hjj.apiserver.application.port.out.user.GetUserPort
 import com.hjj.apiserver.application.port.out.user.WriteCredentialPort
 import com.hjj.apiserver.application.port.out.user.WriteUserLogPort
 import com.hjj.apiserver.application.port.out.user.WriteUserPort
+import com.hjj.apiserver.common.JwtProvider
+import com.hjj.apiserver.common.TokenType
 import com.hjj.apiserver.common.exception.AlreadyExistsUserException
+import com.hjj.apiserver.common.exception.UserNotFoundException
 import com.hjj.apiserver.domain.user.Credential
+import com.hjj.apiserver.domain.user.CredentialState
+import com.hjj.apiserver.domain.user.LogType
 import com.hjj.apiserver.domain.user.Role
 import com.hjj.apiserver.domain.user.User
+import com.hjj.apiserver.domain.user.UserLog
 import com.hjj.apiserver.util.logger
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.security.crypto.password.PasswordEncoder
@@ -26,11 +33,12 @@ import org.springframework.transaction.annotation.Transactional
 class UserService(
 //    private val userLogService: UserLogService,
 //    private val userLogRepository: UserLogRepository,
-//    private val jwtTokenProvider: JwtTokenProvider,
 //    private val fireBaseService: FireBaseService,
 //    private val objectMapper: ObjectMapper,
+    private val jwtProvider: JwtProvider,
     private val passwordEncoder: PasswordEncoder,
     private val getUserPort: GetUserPort,
+    private val getCredentialPort: GetCredentialPort,
     private val writeUserPort: WriteUserPort,
     private val writeCredentialPort: WriteCredentialPort,
     private val writeUserLogPort: WriteUserLogPort,
@@ -77,8 +85,11 @@ class UserService(
                     credentialEmail = registerCredentialCommand.userEmail,
                     user = registerCredentialCommand.user,
                     provider = registerCredentialCommand.provider,
+                    state = CredentialState.CONNECTED,
                 )
             )
+            val userLog = UserLog(logType = LogType.SIGNUP, user = user)
+            writeUserLogPort.registerUserLog(userLog)
         }.onFailure { exception ->
             when (exception) {
                 is DataIntegrityViolationException -> throw AlreadyExistsUserException("[signup] Failed to register command: $command, exeception: $exception")
@@ -88,7 +99,13 @@ class UserService(
     }
 
     override fun signIn(signInUserCommand: SignInUserCommand): UserSignInResponse {
-        TODO("Not yet implemented")
+        val credential = getCredentialPort.findCredentialByUserIdAndProvider(
+            signInUserCommand.userId, signInUserCommand.provider
+        ) ?: throw UserNotFoundException("[signIn] Failed to find credential by command: $signInUserCommand")
+        val accessToken = jwtProvider.createToken(credential.user, TokenType.ACCESS_TOKEN)
+        val refreshToken = jwtProvider.createToken(credential.user, TokenType.REFRESH_TOKEN)
+
+        return UserSignInResponse.fromUserAndToken(credential.user, accessToken, refreshToken)
     }
 
 //    fun existsUserId(userId: String): Boolean {

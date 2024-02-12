@@ -3,7 +3,7 @@ package com.hjj.apiserver.config
 import com.hjj.apiserver.common.CustomAuthenticationEntryPoint
 import com.hjj.apiserver.common.CustomAuthorizationCodeTokenResponseClient
 import com.hjj.apiserver.common.CustomAuthorizationRequestResolver
-import com.hjj.apiserver.common.JwtTokenProvider
+import com.hjj.apiserver.common.JwtProvider
 import com.hjj.apiserver.common.filter.JwtAuthenticationFilter
 import com.hjj.apiserver.handler.OAuth2SuccessHandler
 import com.hjj.apiserver.service.impl.CustomOauth2UserService
@@ -24,7 +24,7 @@ import org.springframework.web.cors.CorsUtils
 @Configuration
 @EnableWebSecurity
 class WebSecurityConfiguration(
-    private val jwtTokenProvider: JwtTokenProvider,
+    private val jwtProvider: JwtProvider,
     private val customAuthenticationEntryPoint: CustomAuthenticationEntryPoint,
     private val customOauth2UserService: CustomOauth2UserService,
     private val oAuth2SuccessHandler: OAuth2SuccessHandler,
@@ -80,7 +80,7 @@ class WebSecurityConfiguration(
                     customAuthenticationEntryPoint
                 )
             }.addFilterBefore(
-                JwtAuthenticationFilter(jwtTokenProvider),  // jwt token 필터를 id/password 인증 필터 전에 넣는다
+                JwtAuthenticationFilter(jwtProvider),  // jwt token 필터를 id/password 인증 필터 전에 넣는다
                 UsernamePasswordAuthenticationFilter::class.java
             )
 

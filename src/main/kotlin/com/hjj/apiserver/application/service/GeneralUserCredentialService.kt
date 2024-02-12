@@ -1,11 +1,12 @@
 package com.hjj.apiserver.application.service
 
-import com.hjj.apiserver.application.port.`in`.user.command.RegisterCredentialCommand
 import com.hjj.apiserver.application.port.`in`.user.UserCredentialUseCase
+import com.hjj.apiserver.application.port.`in`.user.command.RegisterCredentialCommand
 import com.hjj.apiserver.application.port.out.user.GetCredentialPort
 import com.hjj.apiserver.application.port.out.user.WriteCredentialPort
 import com.hjj.apiserver.common.exception.AlreadyExistsUserException
 import com.hjj.apiserver.domain.user.Credential
+import com.hjj.apiserver.domain.user.CredentialState
 import com.hjj.apiserver.domain.user.Provider
 import com.hjj.apiserver.domain.user.User
 import com.hjj.apiserver.dto.user.UserAttribute
@@ -28,6 +29,7 @@ class GeneralUserCredentialService(
                 credentialEmail = registerCredentialCommand.userEmail,
                 user = registerCredentialCommand.user,
                 provider = registerCredentialCommand.provider,
+                state = CredentialState.CONNECTED,
             )
             writeCredentialPort.registerCredential(credential)
         }.onFailure { exception ->
@@ -51,7 +53,7 @@ class GeneralUserCredentialService(
 //        }
 //
 //        return user
-        return Credential(userId="!24124", provider=Provider.GENERAL, user = User(nickName = "sample"))
+        return Credential(userId="!24124", provider=Provider.GENERAL, user = User(nickName = "sample"), state = CredentialState.CONNECTED)
     }
 
     override fun isMatchingProvider(provider: Provider): Boolean {

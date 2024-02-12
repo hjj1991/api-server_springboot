@@ -1,5 +1,6 @@
-package com.hjj.apiserver.adapter.out.persistence.user
+package com.hjj.apiserver.converter
 
+import com.hjj.apiserver.adapter.out.persistence.user.UserEntity
 import com.hjj.apiserver.domain.user.User
 import org.springframework.stereotype.Component
 
@@ -14,8 +15,6 @@ class UserMapper {
             userPw = userEntity.userPw,
             picture = userEntity.picture,
             role = userEntity.role,
-            createdAt = userEntity.createdAt,
-            modifiedAt = userEntity.modifiedAt,
         )
     }
 }

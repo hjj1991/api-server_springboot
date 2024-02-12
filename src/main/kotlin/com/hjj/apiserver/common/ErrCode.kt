@@ -1,9 +1,8 @@
 package com.hjj.apiserver.common
 
-import org.springframework.context.MessageSource
-import org.springframework.stereotype.Component
-import java.util.*
 import jakarta.annotation.PostConstruct
+import org.springframework.context.MessageSource
+import java.util.*
 
 enum class ErrCode(
     var msg: String,
@@ -20,6 +19,7 @@ enum class ErrCode(
     ERR_CODE0010("해당 가계부가 존재하지 않습니다."),
     ERR_CODE0011("존재하지 않는 상위 카테고리입니다."),
     ERR_CODE0012("해당 지출 또는 수입 내역이 존재하지 않습니다."),
+    ERR_CODE0013("로그인이 필요합니다. 로그인 해주세요."),
     ERR_CODE9999("서버 에러입니다.");
 
 //    @Component

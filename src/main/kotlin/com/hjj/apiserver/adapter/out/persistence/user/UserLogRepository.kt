@@ -1,4 +1,4 @@
-package com.hjj.apiserver.repository.user
+package com.hjj.apiserver.adapter.out.persistence.user
 
 import com.hjj.apiserver.adapter.out.persistence.user.UserLogEntity
 import org.springframework.data.jpa.repository.JpaRepository

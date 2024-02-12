@@ -1,8 +1,6 @@
 package com.hjj.apiserver.persistence
 
-import com.hjj.apiserver.adapter.out.persistence.user.CredentialMapper
 import com.hjj.apiserver.adapter.out.persistence.user.CredentialPersistenceAdapter
-import com.hjj.apiserver.adapter.out.persistence.user.UserMapper
 import com.hjj.apiserver.adapter.out.persistence.user.UserPersistenceAdapter
 import com.hjj.apiserver.application.port.out.user.GetCredentialPort
 import com.hjj.apiserver.application.port.out.user.WriteCredentialPort
@@ -10,7 +8,10 @@ import com.hjj.apiserver.application.port.out.user.WriteUserPort
 import com.hjj.apiserver.config.DataSourceConfiguration
 import com.hjj.apiserver.config.TestConfiguration
 import com.hjj.apiserver.config.TestMariaDBContainer
+import com.hjj.apiserver.converter.CredentialMapper
+import com.hjj.apiserver.converter.UserMapper
 import com.hjj.apiserver.domain.user.Credential
+import com.hjj.apiserver.domain.user.CredentialState
 import com.hjj.apiserver.domain.user.Provider
 import com.hjj.apiserver.domain.user.Role
 import com.hjj.apiserver.domain.user.User
@@ -53,7 +54,8 @@ class CredentialPersistenceAdapterTest {
             userId = "tester",
             credentialEmail = "tester@tester.com",
             provider = Provider.GENERAL,
-            user = savedUser
+            user = savedUser,
+            state = CredentialState.CONNECTED,
         )
         // When
         val registerCredential = writeCredentialPort.registerCredential(credential)
@@ -74,7 +76,8 @@ class CredentialPersistenceAdapterTest {
             userId = "tester",
             credentialEmail = "tester@tester.com",
             provider = Provider.GENERAL,
-            user = savedUser
+            user = savedUser,
+            state = CredentialState.CONNECTED,
         )
         writeCredentialPort.registerCredential(credential)
         // When
@@ -92,7 +95,8 @@ class CredentialPersistenceAdapterTest {
             userId = "tester",
             credentialEmail = "tester@tester.com",
             provider = Provider.NAVER,
-            user = savedUser
+            user = savedUser,
+            state = CredentialState.CONNECTED,
         )
         writeCredentialPort.registerCredential(credential)
         // When

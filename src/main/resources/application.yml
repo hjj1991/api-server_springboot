@@ -13,7 +13,7 @@ spring:
         default_batch_fetch_size: 100
 #    show-sql: true
   jwt:
-    secret: testToken
+    secret: testTokenspaeratkgspeokrtgpaeokrgpaejrgoaeijrgoaeijrgfndkbjnrstghjsrteghjoaeorigjaeorigj
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher

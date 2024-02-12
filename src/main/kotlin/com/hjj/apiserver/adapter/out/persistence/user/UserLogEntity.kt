@@ -19,20 +19,21 @@ import jakarta.persistence.Table
 @Entity
 @Table(name = "tb_user_log")
 class UserLogEntity(
+    userLogNo: Long = 0L,
     logType: LogType,
     userEntity: UserEntity,
 ):BaseTimeEntity() {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val userLogNo: Long = 0L
+    var userLogNo: Long = userLogNo
 
     @Column
     @Enumerated(EnumType.STRING)
-    val logType: LogType = logType
+    var logType: LogType = logType
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userNo", foreignKey = ForeignKey(ConstraintMode.NO_CONSTRAINT))
-    val userEntity: UserEntity = userEntity
+    var userEntity: UserEntity = userEntity
 
 }

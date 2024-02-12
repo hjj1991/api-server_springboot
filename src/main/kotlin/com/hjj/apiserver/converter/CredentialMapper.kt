@@ -1,5 +1,6 @@
-package com.hjj.apiserver.adapter.out.persistence.user
+package com.hjj.apiserver.converter
 
+import com.hjj.apiserver.adapter.out.persistence.user.CredentialEntity
 import com.hjj.apiserver.domain.user.Credential
 import org.springframework.stereotype.Component
 
@@ -13,7 +14,8 @@ class CredentialMapper(
             userId = credentialEntity.userId,
             credentialEmail = credentialEntity.credentialEmail,
             provider = credentialEntity.provider,
-            user = userMapper.mapToDomainEntity(credentialEntity.userEntity)
+            user = userMapper.mapToDomainEntity(credentialEntity.userEntity),
+            state = credentialEntity.state,
         )
     }
 }

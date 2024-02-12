@@ -1,9 +1,8 @@
 package com.hjj.apiserver.service.impl
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.hjj.apiserver.common.JwtTokenProvider
+import com.hjj.apiserver.common.JwtProvider
 import com.hjj.apiserver.dto.oauth2.OAuth2UserAttribute
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest
@@ -14,7 +13,7 @@ import org.springframework.stereotype.Service
 @Service
 class CustomOauth2UserService(
     private val objectMapper: ObjectMapper,
-    private val tokenProvider: JwtTokenProvider,
+    private val tokenProvider: JwtProvider,
 ) : DefaultOAuth2UserService() {
     override fun loadUser(userRequest: OAuth2UserRequest): OAuth2User {
 
@@ -49,7 +48,7 @@ class CustomOauth2UserService(
     }
 
     private fun isMapping(userRequest: OAuth2UserRequest): Boolean {
-        return userRequest.additionalParameters.containsKey("accessToken") && tokenProvider.validateToken(userRequest.additionalParameters["accessToken"] as String)
+        return userRequest.additionalParameters.containsKey("accessToken") && tokenProvider.isValidToken(userRequest.additionalParameters["accessToken"] as String)
     }
 
 

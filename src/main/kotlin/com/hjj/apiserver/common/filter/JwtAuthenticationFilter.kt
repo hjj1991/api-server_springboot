@@ -1,6 +1,6 @@
 package com.hjj.apiserver.common.filter
 
-import com.hjj.apiserver.common.JwtTokenProvider
+import com.hjj.apiserver.common.JwtProvider
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
@@ -8,7 +8,7 @@ import org.springframework.web.filter.OncePerRequestFilter
 
 
 class JwtAuthenticationFilter(
-    private val jwtTokenProvider: JwtTokenProvider,
+    private val jwtProvider: JwtProvider,
 ): OncePerRequestFilter() {
     override fun doFilterInternal(
         request: HttpServletRequest,

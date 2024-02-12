@@ -3,6 +3,7 @@ package com.hjj.apiserver.adapter.out.persistence.user
 import com.hjj.apiserver.application.port.out.user.GetUserPort
 import com.hjj.apiserver.application.port.out.user.WriteUserPort
 import com.hjj.apiserver.common.PersistenceAdapter
+import com.hjj.apiserver.converter.UserMapper
 import com.hjj.apiserver.domain.user.User
 
 @PersistenceAdapter

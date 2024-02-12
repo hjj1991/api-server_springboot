@@ -14,7 +14,7 @@ import com.hjj.apiserver.application.port.`in`.user.UserCredentialUseCase
 import com.hjj.apiserver.application.port.`in`.user.WriteUserUseCase
 import com.hjj.apiserver.common.ApiError
 import com.hjj.apiserver.common.ErrCode
-import com.hjj.apiserver.common.JwtTokenProvider
+import com.hjj.apiserver.common.JwtProvider
 import com.hjj.apiserver.common.exception.AlreadyExistsUserException
 import com.hjj.apiserver.domain.user.Provider
 import com.hjj.apiserver.domain.user.Role
@@ -86,7 +86,7 @@ class UserControllerTest {
                     "/users/exists-nickname/{nickName}",
                     checkUserNickNameDuplicateCommand.nickName
                 )
-                    .header(HttpHeaders.AUTHORIZATION, JwtTokenProvider.BEARER_PREFIX + "aergaeaerg")
+                    .header(HttpHeaders.AUTHORIZATION, JwtProvider.BEARER_PREFIX + "aergaeaerg")
                     .contentType(MediaType.APPLICATION_JSON)
                     .with(SecurityMockMvcRequestPostProcessors.user(user))
             )
@@ -111,13 +111,13 @@ class UserControllerTest {
                                 )
                                 .requestHeaders(
                                     ResourceDocumentation.headerWithName(HttpHeaders.AUTHORIZATION).description(
-                                        JwtTokenProvider.BEARER_PREFIX + "JWT토큰값"
+                                        JwtProvider.BEARER_PREFIX + "JWT토큰값"
                                     ).optional()
                                 ).build()
                         ),
                         HeaderDocumentation.requestHeaders(
                             HeaderDocumentation.headerWithName(org.apache.http.HttpHeaders.AUTHORIZATION)
-                                .description(JwtTokenProvider.BEARER_PREFIX + "JWT토큰값").optional()
+                                .description(JwtProvider.BEARER_PREFIX + "JWT토큰값").optional()
                         ),
                     )
                 )
@@ -141,7 +141,7 @@ class UserControllerTest {
                     "/users/exists-nickname/{nickName}",
                     checkUserNickNameDuplicateCommand.nickName
                 )
-                    .header(HttpHeaders.AUTHORIZATION, JwtTokenProvider.BEARER_PREFIX + "aergaeaerg")
+                    .header(HttpHeaders.AUTHORIZATION, JwtProvider.BEARER_PREFIX + "aergaeaerg")
                     .contentType(MediaType.APPLICATION_JSON)
                     .with(SecurityMockMvcRequestPostProcessors.user(user))
             )
@@ -166,13 +166,13 @@ class UserControllerTest {
                                 )
                                 .requestHeaders(
                                     ResourceDocumentation.headerWithName(HttpHeaders.AUTHORIZATION).description(
-                                        JwtTokenProvider.BEARER_PREFIX + "JWT토큰값"
+                                        JwtProvider.BEARER_PREFIX + "JWT토큰값"
                                     ).optional()
                                 ).build()
                         ),
                         HeaderDocumentation.requestHeaders(
                             HeaderDocumentation.headerWithName(org.apache.http.HttpHeaders.AUTHORIZATION)
-                                .description(JwtTokenProvider.BEARER_PREFIX + "JWT토큰값").optional()
+                                .description(JwtProvider.BEARER_PREFIX + "JWT토큰값").optional()
                         ),
                     )
                 )
@@ -286,7 +286,7 @@ class UserControllerTest {
             // When && Then
             mockMvc.perform(
                 RestDocumentationRequestBuilders.post("/users/signup")
-                    .header(HttpHeaders.AUTHORIZATION, JwtTokenProvider.BEARER_PREFIX + "aergaeaerg")
+                    .header(HttpHeaders.AUTHORIZATION, JwtProvider.BEARER_PREFIX + "aergaeaerg")
                     .contentType(MediaType.APPLICATION_JSON)
                     .with(SecurityMockMvcRequestPostProcessors.csrf())
                     .content(objectMapper.writeValueAsString(userSignUpRequest))
@@ -332,7 +332,7 @@ class UserControllerTest {
             // When && Then
             mockMvc.perform(
                 RestDocumentationRequestBuilders.post("/users/signup")
-                    .header(HttpHeaders.AUTHORIZATION, JwtTokenProvider.BEARER_PREFIX + "aergaeaerg")
+                    .header(HttpHeaders.AUTHORIZATION, JwtProvider.BEARER_PREFIX + "aergaeaerg")
                     .contentType(MediaType.APPLICATION_JSON)
                     .with(SecurityMockMvcRequestPostProcessors.csrf())
                     .content(objectMapper.writeValueAsString(userSignUpRequest))

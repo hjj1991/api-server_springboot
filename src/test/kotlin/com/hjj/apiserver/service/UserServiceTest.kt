@@ -5,10 +5,12 @@ import com.hjj.apiserver.application.port.`in`.user.command.RegisterUserCommand
 import com.hjj.apiserver.application.port.out.user.GetCredentialPort
 import com.hjj.apiserver.application.port.out.user.GetUserPort
 import com.hjj.apiserver.application.port.out.user.WriteCredentialPort
+import com.hjj.apiserver.application.port.out.user.WriteUserLogPort
 import com.hjj.apiserver.application.port.out.user.WriteUserPort
 import com.hjj.apiserver.application.service.UserService
 import com.hjj.apiserver.common.exception.AlreadyExistsUserException
 import com.hjj.apiserver.domain.user.Credential
+import com.hjj.apiserver.domain.user.CredentialState
 import com.hjj.apiserver.domain.user.Provider
 import com.hjj.apiserver.domain.user.Role
 import com.hjj.apiserver.domain.user.User
@@ -44,6 +46,9 @@ class UserServiceTest {
 
     @Mock
     lateinit var passwordEncoder: PasswordEncoder
+
+    @Mock
+    lateinit var writeUserLogPort: WriteUserLogPort
 
 
     @Test
@@ -118,7 +123,8 @@ class UserServiceTest {
             userId = registerUserCommand.userId,
             credentialEmail = registerUserCommand.userEmail,
             provider = Provider.GENERAL,
-            user = savedUser
+            user = savedUser,
+            state = CredentialState.CONNECTED,
         )
 
         Mockito.`when`(writeUserPort.registerUser(MockitoTestUtil.any(User::class.java))).thenReturn(savedUser)

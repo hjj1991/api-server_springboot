@@ -3,19 +3,29 @@ package com.hjj.apiserver.domain.user
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
-import java.time.Clock
-import java.time.ZonedDateTime
 
 class User(
-    val userNo: Long = 0L,
-    val nickName: String,
-    val userEmail: String? = null,
-    val userPw: String? = null,
-    val picture: String? = null,
-    val role: Role = Role.GUEST,
-    val createdAt: ZonedDateTime = ZonedDateTime.now(Clock.systemUTC()),
-    val modifiedAt: ZonedDateTime = ZonedDateTime.now(Clock.systemUTC()),
+    userNo: Long = 0L,
+    nickName: String,
+    userEmail: String? = null,
+    userPw: String? = null,
+    picture: String? = null,
+    role: Role = Role.GUEST,
 ) : UserDetails {
+
+
+    var userNo: Long = userNo
+        private set
+    var nickName: String = nickName
+        private set
+    var userEmail: String? = userEmail
+        private set
+    var userPw: String? = userPw
+        private set
+    var picture: String? = picture
+        private set
+    var role: Role = role
+        private set
 
     companion object {
         fun createGuestUser(): User{
@@ -67,6 +77,5 @@ class User(
         result = 31 * result + role.hashCode()
         return result
     }
-
 
 }

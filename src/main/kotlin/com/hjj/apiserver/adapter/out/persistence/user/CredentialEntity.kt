@@ -1,5 +1,6 @@
 package com.hjj.apiserver.adapter.out.persistence.user
 
+import com.hjj.apiserver.domain.user.CredentialState
 import com.hjj.apiserver.domain.user.Provider
 import jakarta.persistence.Column
 import jakarta.persistence.ConstraintMode
@@ -29,6 +30,7 @@ class CredentialEntity(
     credentialEmail: String? = null,
     provider: Provider,
     userEntity: UserEntity,
+    state: CredentialState,
 ) {
 
     @Id
@@ -53,4 +55,7 @@ class CredentialEntity(
     @JoinColumn(name = "userNo", foreignKey = ForeignKey(ConstraintMode.NO_CONSTRAINT))
     val userEntity: UserEntity = userEntity
 
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    var state: CredentialState = state
 }

@@ -1,12 +1,12 @@
 package com.hjj.apiserver.persistence
 
-import com.hjj.apiserver.adapter.out.persistence.user.UserMapper
 import com.hjj.apiserver.adapter.out.persistence.user.UserPersistenceAdapter
 import com.hjj.apiserver.application.port.out.user.GetUserPort
 import com.hjj.apiserver.application.port.out.user.WriteUserPort
 import com.hjj.apiserver.config.DataSourceConfiguration
 import com.hjj.apiserver.config.TestConfiguration
 import com.hjj.apiserver.config.TestMariaDBContainer
+import com.hjj.apiserver.converter.UserMapper
 import com.hjj.apiserver.domain.user.Role
 import com.hjj.apiserver.domain.user.User
 import org.assertj.core.api.Assertions
