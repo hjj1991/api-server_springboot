@@ -7,7 +7,9 @@ import com.hjj.apiserver.application.port.out.user.GetUserPort
 import com.hjj.apiserver.application.port.out.user.WriteCredentialPort
 import com.hjj.apiserver.application.port.out.user.WriteUserLogPort
 import com.hjj.apiserver.application.port.out.user.WriteUserPort
+import com.hjj.apiserver.application.port.out.user.WriteUserTokenPort
 import com.hjj.apiserver.application.service.UserService
+import com.hjj.apiserver.common.JwtProvider
 import com.hjj.apiserver.common.exception.AlreadyExistsUserException
 import com.hjj.apiserver.domain.user.Credential
 import com.hjj.apiserver.domain.user.CredentialState
@@ -49,6 +51,12 @@ class UserServiceTest {
 
     @Mock
     lateinit var writeUserLogPort: WriteUserLogPort
+
+    @Mock
+    lateinit var writeUserTokenPort: WriteUserTokenPort
+
+    @Mock
+    lateinit var jwtProvider: JwtProvider
 
 
     @Test

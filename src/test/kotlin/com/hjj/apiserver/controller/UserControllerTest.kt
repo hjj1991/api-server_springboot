@@ -5,21 +5,25 @@ import com.epages.restdocs.apispec.ResourceDocumentation
 import com.epages.restdocs.apispec.ResourceSnippetParameters
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.hjj.apiserver.adapter.`in`.web.user.UserController
+import com.hjj.apiserver.adapter.`in`.web.user.request.UserSignInRequest
+import com.hjj.apiserver.adapter.`in`.web.user.request.UserSignUpRequest
 import com.hjj.apiserver.adapter.`in`.web.user.response.ExistsNickNameResponse
 import com.hjj.apiserver.adapter.`in`.web.user.response.ExistsUserIdResponse
-import com.hjj.apiserver.application.port.`in`.user.command.CheckUserNickNameDuplicateCommand
+import com.hjj.apiserver.adapter.`in`.web.user.response.UserSignInResponse
 import com.hjj.apiserver.application.port.`in`.user.GetUserUseCase
-import com.hjj.apiserver.application.port.`in`.user.command.RegisterUserCommand
 import com.hjj.apiserver.application.port.`in`.user.UserCredentialUseCase
 import com.hjj.apiserver.application.port.`in`.user.WriteUserUseCase
+import com.hjj.apiserver.application.port.`in`.user.command.CheckUserNickNameDuplicateCommand
+import com.hjj.apiserver.application.port.`in`.user.command.RegisterUserCommand
+import com.hjj.apiserver.application.port.`in`.user.command.SignInUserCommand
 import com.hjj.apiserver.common.ApiError
 import com.hjj.apiserver.common.ErrCode
 import com.hjj.apiserver.common.JwtProvider
 import com.hjj.apiserver.common.exception.AlreadyExistsUserException
+import com.hjj.apiserver.common.exception.UserNotFoundException
 import com.hjj.apiserver.domain.user.Provider
 import com.hjj.apiserver.domain.user.Role
 import com.hjj.apiserver.domain.user.User
-import com.hjj.apiserver.adapter.`in`.web.user.request.UserSignUpRequest
 import com.hjj.apiserver.utils.ApiDocumentUtil
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
@@ -306,6 +310,7 @@ class UserControllerTest {
                     )
                 )
         }
+
         @DisplayName("회원가입 실패 API 이미 존재하는 사용자인 경우")
         @Test
         @WithMockUser
@@ -325,7 +330,8 @@ class UserControllerTest {
                 userPw = userSignUpRequest.userPw,
                 provider = Provider.GENERAL
             )
-            BDDMockito.`when`(writeUserUseCase.signUp(registerUserCommand)).thenThrow(AlreadyExistsUserException::class.java)
+            BDDMockito.`when`(writeUserUseCase.signUp(registerUserCommand))
+                .thenThrow(AlreadyExistsUserException::class.java)
 
             val alreadyExsistsUserResponse = ApiError(ErrCode.ERR_CODE0006, ErrCode.ERR_CODE0006.msg)
 
@@ -362,6 +368,130 @@ class UserControllerTest {
                     )
                 )
         }
+
+    }
+
+    @DisplayName("POST /users/signin API")
+    @Nested
+    inner class SignIn_test {
+        @DisplayName("로그인 성공 API")
+        @Test
+        @WithMockUser
+        fun signInTest_success() {
+            // Given
+            val userSignInRequest = UserSignInRequest(userId = "1234,", userPw = "<PASSWORD>")
+
+            val signInUserCommand = SignInUserCommand(
+                userId = userSignInRequest.userId,
+                userPw = userSignInRequest.userPw,
+                provider = Provider.GENERAL
+            )
+            val userSignInResponse = UserSignInResponse(
+                nickName = "nickName",
+                accessToken = "accessToken",
+                refreshToken = "refreshToken"
+            )
+            BDDMockito.`when`(writeUserUseCase.signIn(signInUserCommand)).thenReturn(userSignInResponse)
+
+            // When && Then
+            mockMvc.perform(
+                RestDocumentationRequestBuilders.post("/users/signin")
+                    .header(HttpHeaders.AUTHORIZATION, JwtProvider.BEARER_PREFIX + "aergaeaerg")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .with(SecurityMockMvcRequestPostProcessors.csrf())
+                    .content(objectMapper.writeValueAsString(userSignInRequest))
+            )
+                .andExpect(MockMvcResultMatchers.status().isOk)
+                .andExpect(
+                    MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(userSignInResponse))
+                )
+                .andDo(
+                    MockMvcRestDocumentationWrapper.document(
+                        "로그인이 정상적으로 성공한 경우",
+                        ApiDocumentUtil.getDocumentRequest(),
+                        ApiDocumentUtil.getDocumentResponse(),
+                        PayloadDocumentation.responseFields(
+                            PayloadDocumentation.fieldWithPath("nickName").description("닉네임").type(String::class.java),
+                            PayloadDocumentation.fieldWithPath("picture").description("프로필 사진")
+                                .type(String::class.java),
+                            PayloadDocumentation.fieldWithPath("accessToken").description("액세스 토큰")
+                                .type(String::class.java),
+                            PayloadDocumentation.fieldWithPath("refreshToken").description("리프레쉬 토큰")
+                                .type(String::class.java),
+                        ),
+                        ResourceDocumentation.resource(
+                            ResourceSnippetParameters.builder()
+                                .description("로그인이 정상적으로 성공한 경우")
+                                .tag(USER_TAG)
+                                .responseFields(
+                                    PayloadDocumentation.fieldWithPath("nickName").description("닉네임")
+                                        .type(String::class.java),
+                                    PayloadDocumentation.fieldWithPath("picture").description("프로필 사진")
+                                        .type(String::class.java),
+                                    PayloadDocumentation.fieldWithPath("accessToken").description("액세스 토큰")
+                                        .type(String::class.java),
+                                    PayloadDocumentation.fieldWithPath("refreshToken").description("리프레쉬 토큰")
+                                        .type(String::class.java),
+                                ).build()
+                        ),
+                    )
+                )
+        }
+
+        @DisplayName("로그인 실패 API")
+        @Test
+        @WithMockUser
+        fun signInTest_fail_when_user_not_exists() {
+            // Given
+            val userSignInRequest = UserSignInRequest(userId = "1234,", userPw = "<PASSWORD>")
+
+            val signInUserCommand = SignInUserCommand(
+                userId = userSignInRequest.userId,
+                userPw = userSignInRequest.userPw,
+                provider = Provider.GENERAL
+            )
+            val userSignInResponse = UserSignInResponse(
+                nickName = "nickName",
+                accessToken = "accessToken",
+                refreshToken = "refreshToken"
+            )
+            val userNotFoundExceptionResponse = ApiError(ErrCode.ERR_CODE0001, ErrCode.ERR_CODE0001.msg)
+            BDDMockito.`when`(writeUserUseCase.signIn(signInUserCommand)).thenThrow(UserNotFoundException::class.java)
+
+            // When && Then
+            mockMvc.perform(
+                RestDocumentationRequestBuilders.post("/users/signin")
+                    .header(HttpHeaders.AUTHORIZATION, JwtProvider.BEARER_PREFIX + "aergaeaerg")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .with(SecurityMockMvcRequestPostProcessors.csrf())
+                    .content(objectMapper.writeValueAsString(userSignInRequest))
+            )
+                .andExpect(MockMvcResultMatchers.status().isBadRequest)
+                .andExpect(
+                    MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(userNotFoundExceptionResponse))
+                )
+                .andDo(
+                    MockMvcRestDocumentationWrapper.document(
+                        "로그인이 실패한 경우",
+                        ApiDocumentUtil.getDocumentRequest(),
+                        ApiDocumentUtil.getDocumentResponse(),
+                        PayloadDocumentation.responseFields(
+                            PayloadDocumentation.fieldWithPath("errCode").description("에러 코드"),
+                            PayloadDocumentation.fieldWithPath("message").description("에러 메시지"),
+                        ),
+                        ResourceDocumentation.resource(
+                            ResourceSnippetParameters.builder()
+                                .description("로그인이 실패한 경우")
+                                .tag(USER_TAG)
+                                .responseFields(
+                                    PayloadDocumentation.fieldWithPath("errCode").description("에러 코드"),
+                                    PayloadDocumentation.fieldWithPath("message").description("에러 메시지"),
+                                ).build()
+                        ),
+                    )
+                )
+        }
+
 
     }
 

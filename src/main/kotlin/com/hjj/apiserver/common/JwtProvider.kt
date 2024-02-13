@@ -29,7 +29,7 @@ class JwtProvider(
         const val BEARER_PREFIX = "Bearer "
         const val ACCESS_TOKEN_VALID_MILLISECONDS: Long = 1000L * 60 * 20
         const val REFRESH_TOKEN_VALID_MILLISECONDS: Long = 1000L * 3600 * 24 * 14 // 2주 동안만 토큰 유효
-
+        const val REFRESH_TOKEN_REISSUED_REQUIRED_MILLISECONDS: Long = 1000L * 3600 * 24 * 7 // 1주이하로 남은 경우 토큰 재발급
     }
 
     init {
@@ -88,6 +88,17 @@ class JwtProvider(
         return when(tokenType){
             TokenType.ACCESS_TOKEN -> Date(currentDate().time + ACCESS_TOKEN_VALID_MILLISECONDS)
             TokenType.REFRESH_TOKEN -> Date(currentDate().time + REFRESH_TOKEN_VALID_MILLISECONDS)
+        }
+    }
+
+    fun isRefreshTokenRenewalRequired(token: String): Boolean {
+        try{
+            val refreshTokenReissuedRequiredDate = Date(clock.millis() - REFRESH_TOKEN_REISSUED_REQUIRED_MILLISECONDS)
+            val secret = Keys.hmacShaKeyFor(secretKey.toByteArray())
+            val validToken = Jwts.parser().verifyWith(secret).build().parseSignedClaims(token)
+            validToken.payload.expiration.after(refreshTokenReissuedRequiredDate)
+        }catch (e: Exception){
+            false
         }
     }
 

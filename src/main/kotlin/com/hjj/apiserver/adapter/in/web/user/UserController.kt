@@ -13,6 +13,8 @@ import com.hjj.apiserver.application.port.`in`.user.command.RegisterUserCommand
 import com.hjj.apiserver.application.port.`in`.user.command.SignInUserCommand
 import com.hjj.apiserver.domain.user.Provider
 import com.hjj.apiserver.domain.user.User
+import com.hjj.apiserver.adapter.`in`.web.user.request.ReIssueTokenRequest
+import com.hjj.apiserver.adapter.`in`.web.user.response.UserReIssueTokenResponse
 import com.hjj.apiserver.util.AuthUser
 import com.hjj.apiserver.util.logger
 import jakarta.validation.Valid
@@ -60,12 +62,18 @@ class UserController(
         writeUserUseCase.signUp(registerUserCommand)
     }
 
-    @PostMapping("/user/signin")
+    @PostMapping("/users/signin")
     fun signIn(
         @Valid @RequestBody request: UserSignInRequest
     ): UserSignInResponse {
         val signInUserCommand = SignInUserCommand(request.userId, request.userPw, provider = Provider.GENERAL)
         return writeUserUseCase.signIn(signInUserCommand)
+    }
+
+    @PostMapping("/users/oauth/reissue-token")
+    fun reIssueToken(@RequestBody request: ReIssueTokenRequest): UserReIssueTokenResponse {
+        return userService.reIssueToken(request.refreshToken)
+
     }
 //
 //
@@ -88,12 +96,7 @@ class UserController(
 //
 //    }
 //
-//    @ApiOperation(value = "AcessToken 재발급", notes = "AcessToken을 재발급한다.")
-//    @PostMapping("/user/oauth/token")
-//    fun reIssueToken(@RequestBody request: ReIssueTokenRequest): UserReIssueTokenResponse {
-//        return userService.reIssueToken(request.refreshToken)
-//
-//    }
+
 //
 //    @ApiImplicitParams(
 //        ApiImplicitParam(

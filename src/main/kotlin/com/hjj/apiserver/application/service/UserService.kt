@@ -1,5 +1,6 @@
 package com.hjj.apiserver.application.service
 
+import com.hjj.apiserver.adapter.`in`.web.user.response.UserReIssueTokenResponse
 import com.hjj.apiserver.adapter.`in`.web.user.response.UserSignInResponse
 import com.hjj.apiserver.application.port.`in`.user.GetUserUseCase
 import com.hjj.apiserver.application.port.`in`.user.WriteUserUseCase
@@ -12,6 +13,7 @@ import com.hjj.apiserver.application.port.out.user.GetUserPort
 import com.hjj.apiserver.application.port.out.user.WriteCredentialPort
 import com.hjj.apiserver.application.port.out.user.WriteUserLogPort
 import com.hjj.apiserver.application.port.out.user.WriteUserPort
+import com.hjj.apiserver.application.port.out.user.WriteUserTokenPort
 import com.hjj.apiserver.common.JwtProvider
 import com.hjj.apiserver.common.TokenType
 import com.hjj.apiserver.common.exception.AlreadyExistsUserException
@@ -19,6 +21,7 @@ import com.hjj.apiserver.common.exception.UserNotFoundException
 import com.hjj.apiserver.domain.user.Credential
 import com.hjj.apiserver.domain.user.CredentialState
 import com.hjj.apiserver.domain.user.LogType
+import com.hjj.apiserver.domain.user.Provider
 import com.hjj.apiserver.domain.user.Role
 import com.hjj.apiserver.domain.user.User
 import com.hjj.apiserver.domain.user.UserLog
@@ -42,6 +45,7 @@ class UserService(
     private val writeUserPort: WriteUserPort,
     private val writeCredentialPort: WriteCredentialPort,
     private val writeUserLogPort: WriteUserLogPort,
+    private val writeUserTokenPort: WriteUserTokenPort,
 
 //    @Value(value = "\${app.firebase-storage-uri}")
 //    private val firebaseStorageUri: String,
@@ -101,11 +105,18 @@ class UserService(
     override fun signIn(signInUserCommand: SignInUserCommand): UserSignInResponse {
         val credential = getCredentialPort.findCredentialByUserIdAndProvider(
             signInUserCommand.userId, signInUserCommand.provider
-        ) ?: throw UserNotFoundException("[signIn] Failed to find credential by command: $signInUserCommand")
+        ) ?: throw UserNotFoundException("[signIn] Failed to find credential by userId: ${signInUserCommand.userId}")
+        if (credential.provider == Provider.GENERAL && !passwordEncoder.matches(signInUserCommand.userPw, credential.user.userPw)) {
+            throw UserNotFoundException("[signIn] Failed to find credential by userId: ${signInUserCommand.userId}")
+        }
         val accessToken = jwtProvider.createToken(credential.user, TokenType.ACCESS_TOKEN)
         val refreshToken = jwtProvider.createToken(credential.user, TokenType.REFRESH_TOKEN)
-
+        writeUserTokenPort.registerUserToken(credential.user.userNo, refreshToken)
         return UserSignInResponse.fromUserAndToken(credential.user, accessToken, refreshToken)
+    }
+
+    override fun reissueToken(refreshToken: String): UserReIssueTokenResponse {
+        jwtProvider.isValidToken(refreshToken)
     }
 
 //    fun existsUserId(userId: String): Boolean {
