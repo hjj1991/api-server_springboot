@@ -22,7 +22,7 @@ import jakarta.persistence.Table
     name = "tb_user",
     indexes = [
         Index(name = "idx_nick_name", columnList = "nick_name"),
-        Index(name = "user_email", columnList = "user_email")
+        Index(name = "user_email", columnList = "user_email"),
     ],
 )
 class UserEntity(
@@ -35,8 +35,6 @@ class UserEntity(
     cards: MutableList<Card> = mutableListOf(),
     role: Role = Role.USER,
 ) : BaseTimeEntity() {
-
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var userNo: Long = userNo
@@ -65,5 +63,4 @@ class UserEntity(
     @Column(nullable = false, columnDefinition = "varchar(20) default 'USER'")
     @Enumerated(EnumType.STRING)
     var role: Role = role
-
 }

@@ -1,12 +1,12 @@
 package com.hjj.apiserver.dto.purchase.request
 
 import com.fasterxml.jackson.annotation.JsonFormat
+import com.hjj.apiserver.adapter.out.persistence.user.UserEntity
 import com.hjj.apiserver.domain.accountbook.AccountBook
 import com.hjj.apiserver.domain.card.Card
 import com.hjj.apiserver.domain.category.Category
 import com.hjj.apiserver.domain.purchase.Purchase
 import com.hjj.apiserver.domain.purchase.PurchaseType
-import com.hjj.apiserver.adapter.out.persistence.user.UserEntity
 import com.hjj.apiserver.util.EnumValue
 import jakarta.validation.constraints.PositiveOrZero
 import java.time.LocalDate
@@ -23,16 +23,19 @@ data class PurchaseAddRequest(
     @field:JsonFormat(pattern = "yyyy-MM-dd")
     val purchaseDate: LocalDate,
 ) {
-
     fun validRequest() {
-        /* 들어온 돈은 카테고리, 카드 정보가 있으면 안된다. */
+        // 들어온 돈은 카테고리, 카드 정보가 있으면 안된다.
         if (purchaseType == PurchaseType.INCOME && (categoryNo != null || cardNo != null)) {
             throw IllegalArgumentException()
         }
-
     }
 
-    fun toEntity(card: Card?, category: Category?, userEntity: UserEntity, accountBook: AccountBook): Purchase {
+    fun toEntity(
+        card: Card?,
+        category: Category?,
+        userEntity: UserEntity,
+        accountBook: AccountBook,
+    ): Purchase {
         return Purchase(
             purchaseType = purchaseType,
             price = price,

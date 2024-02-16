@@ -13,5 +13,4 @@ data class PurchaseDetailResponse(
     val price: Int,
     val reason: String,
     val purchaseDate: LocalDate,
-) {
-}
+)

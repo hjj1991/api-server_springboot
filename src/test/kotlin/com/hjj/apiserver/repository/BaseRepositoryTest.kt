@@ -15,15 +15,19 @@ import org.springframework.context.annotation.Import
 @Import(TestMariaDBContainer::class, DataSourceConfiguration::class, TestConfiguration::class)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class BaseRepositoryTest {
-
     @Autowired
     lateinit var userRepository: UserRepository
 
-    fun createUser(userId: String = "testId", nickName: String = "tsetNickName", role: Role = Role.USER): UserEntity {
-        val userEntity = UserEntity(
-            nickName = nickName,
-            role = role
-        )
+    fun createUser(
+        userId: String = "testId",
+        nickName: String = "tsetNickName",
+        role: Role = Role.USER,
+    ): UserEntity {
+        val userEntity =
+            UserEntity(
+                nickName = nickName,
+                role = role,
+            )
         return userRepository.save(userEntity)
     }
 }

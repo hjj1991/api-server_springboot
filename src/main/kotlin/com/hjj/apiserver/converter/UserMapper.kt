@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component
 
 @Component
 class UserMapper {
-
     fun mapToDomainEntity(userEntity: UserEntity): User {
         return User(
             userNo = userEntity.userNo,

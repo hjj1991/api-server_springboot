@@ -8,10 +8,7 @@ import org.springframework.stereotype.Service
 class SavingService(
     private val savingRepository: SavingRepository,
 ) {
-
-    fun findSavings():List<SavingFindAllResponse>{
+    fun findSavings(): List<SavingFindAllResponse> {
         return savingRepository.findSavingAll()
     }
-
-
 }

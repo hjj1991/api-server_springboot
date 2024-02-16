@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController
 class SavingController(
     private val savingService: SavingService,
 ) {
-
     @ApiOperation(value = "적금 목록", notes = "적금 목록 조회.")
     @GetMapping("/saving")
     fun savingsFind(): List<SavingFindAllResponse> {

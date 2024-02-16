@@ -20,17 +20,17 @@ class GeneralUserCredentialService(
     private val writeCredentialPort: WriteCredentialPort,
     private val getCredentialPort: GetCredentialPort,
 ) : UserCredentialUseCase {
-
     @Transactional(readOnly = false)
     override fun register(registerCredentialCommand: RegisterCredentialCommand): Credential {
         return kotlin.runCatching {
-            val credential = Credential(
-                userId = registerCredentialCommand.userId,
-                credentialEmail = registerCredentialCommand.userEmail,
-                user = registerCredentialCommand.user,
-                provider = registerCredentialCommand.provider,
-                state = CredentialState.CONNECTED,
-            )
+            val credential =
+                Credential(
+                    userId = registerCredentialCommand.userId,
+                    credentialEmail = registerCredentialCommand.userEmail,
+                    user = registerCredentialCommand.user,
+                    provider = registerCredentialCommand.provider,
+                    state = CredentialState.CONNECTED,
+                )
             writeCredentialPort.registerCredential(credential)
         }.onFailure { exception ->
             when (exception) {
@@ -44,16 +44,21 @@ class GeneralUserCredentialService(
 //        val user = userRepository.findByUserId(userAttribute.userId!!) ?: throw UserNotFoundException()
 //
 //        /* SNS 로그인 계정인 경우 Exception처리 */
-////        if (user.isSocialUser()) {
-////            throw ExistedSocialUserException()
-////        }
+// //        if (user.isSocialUser()) {
+// //            throw ExistedSocialUserException()
+// //        }
 //
 //        if (!passwordEncoder.matches(userAttribute.userPw, user.userPw)) {
 //            throw BadCredentialsException("패스워드가 일치하지 않습니다.")
 //        }
 //
 //        return user
-        return Credential(userId="!24124", provider=Provider.GENERAL, user = User(nickName = "sample"), state = CredentialState.CONNECTED)
+        return Credential(
+            userId = "!24124",
+            provider = Provider.GENERAL,
+            user = User(nickName = "sample"),
+            state = CredentialState.CONNECTED,
+        )
     }
 
     override fun isMatchingProvider(provider: Provider): Boolean {

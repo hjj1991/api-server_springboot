@@ -13,5 +13,4 @@ data class AccountBookDto(
     val accountRole: AccountRole,
     @field:JsonFormat(pattern = "YYYY-MM-dd HH:mm:ss")
     val createdAt: LocalDateTime,
-) {
-}
+)

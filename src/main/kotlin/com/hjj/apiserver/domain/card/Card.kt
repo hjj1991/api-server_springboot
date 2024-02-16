@@ -1,9 +1,9 @@
 package com.hjj.apiserver.domain.card
 
-import com.hjj.apiserver.domain.BaseEntity
 import com.hjj.apiserver.adapter.out.persistence.user.UserEntity
-import org.hibernate.annotations.DynamicUpdate
+import com.hjj.apiserver.domain.BaseEntity
 import jakarta.persistence.*
+import org.hibernate.annotations.DynamicUpdate
 
 @Entity
 @DynamicUpdate
@@ -15,8 +15,7 @@ class Card(
     cardType: CardType,
     cardDesc: String = "",
     userEntity: UserEntity,
-): BaseEntity(){
-
+) : BaseEntity() {
     @Column(nullable = false, length = 100)
     var cardName: String = cardName
         protected set
@@ -35,10 +34,13 @@ class Card(
     var userEntity: UserEntity = userEntity
         protected set
 
-    fun updateCard(cardName: String, cardType: CardType, cardDesc: String){
+    fun updateCard(
+        cardName: String,
+        cardType: CardType,
+        cardDesc: String,
+    ) {
         this.cardName = cardName
         this.cardType = cardType
         this.cardDesc = cardDesc
     }
-
 }

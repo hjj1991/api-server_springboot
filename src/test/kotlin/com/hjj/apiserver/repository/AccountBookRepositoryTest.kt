@@ -13,9 +13,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import java.time.format.DateTimeFormatter
 
-
 class AccountBookRepositoryTest : BaseRepositoryTest() {
-
     @Autowired
     private lateinit var accountBookRepository: AccountBookRepository
 
@@ -34,12 +32,16 @@ class AccountBookRepositoryTest : BaseRepositoryTest() {
         val accountBook =
             accountBookRepository.save(AccountBook(accountBookName = "testBookName", accountBookDesc = "testBookDesc"))
 
-        val accountBookUser = accountBookUserRepository.save(
-            AccountBookUser(
-                accountBook = accountBook, userEntity = user, accountRole = AccountRole.OWNER,
-                backGroundColor = "#00000", color = "#11111"
+        val accountBookUser =
+            accountBookUserRepository.save(
+                AccountBookUser(
+                    accountBook = accountBook,
+                    userEntity = user,
+                    accountRole = AccountRole.OWNER,
+                    backGroundColor = "#00000",
+                    color = "#11111",
+                ),
             )
-        )
 
         val createBasicCategories = CommonUtils.createBasicCategories(accountBook)
         categoryRepository.saveAll(createBasicCategories)
@@ -56,13 +58,13 @@ class AccountBookRepositoryTest : BaseRepositoryTest() {
         Assertions.assertThat(findAccountBook.backgroundColor).isEqualTo(accountBookUser.backGroundColor)
         Assertions.assertThat(
             findAccountBook.createdAt.format(
-                DateTimeFormatter.ofPattern("YYYY-MM-dd HH:mm:ss")
-            )
+                DateTimeFormatter.ofPattern("YYYY-MM-dd HH:mm:ss"),
+            ),
         )
             .isEqualTo(
                 accountBookUser.createdAt.format(
-                    DateTimeFormatter.ofPattern("YYYY-MM-dd HH:mm:ss")
-                )
+                    DateTimeFormatter.ofPattern("YYYY-MM-dd HH:mm:ss"),
+                ),
             )
     }
 }

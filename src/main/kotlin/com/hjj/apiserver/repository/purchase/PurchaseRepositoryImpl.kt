@@ -12,8 +12,11 @@ import java.time.LocalDate
 
 class PurchaseRepositoryImpl(
     private val jpaQueryFactory: JPAQueryFactory,
-): PurchaseRepositoryCustom {
-    override fun findPurchase(userNo: Long, purchaseNo: Long): PurchaseDetailResponse? {
+) : PurchaseRepositoryCustom {
+    override fun findPurchase(
+        userNo: Long,
+        purchaseNo: Long,
+    ): PurchaseDetailResponse? {
         return jpaQueryFactory
             .select(
                 Projections.constructor(
@@ -26,8 +29,8 @@ class PurchaseRepositoryImpl(
                     purchase.purchaseType,
                     purchase.price,
                     purchase.reason,
-                    purchase.purchaseDate
-                )
+                    purchase.purchaseDate,
+                ),
             )
             .from(purchase)
             .leftJoin(purchase.category, category)
@@ -35,7 +38,12 @@ class PurchaseRepositoryImpl(
             .fetchOne()
     }
 
-    override fun findPurchasePageCustom(searchStartDate: LocalDate, searchEndDate: LocalDate, accountBookNo: Long, pageable: Pageable): List<Purchase> {
+    override fun findPurchasePageCustom(
+        searchStartDate: LocalDate,
+        searchEndDate: LocalDate,
+        accountBookNo: Long,
+        pageable: Pageable,
+    ): List<Purchase> {
         return jpaQueryFactory
             .select(purchase)
             .from(purchase)
@@ -44,7 +52,7 @@ class PurchaseRepositoryImpl(
             .where(
                 purchase.purchaseDate.between(searchStartDate, searchEndDate)
                     .and(purchase.accountBook.accountBookNo.eq(accountBookNo))
-                    .and(purchase.isDelete.isFalse)
+                    .and(purchase.isDelete.isFalse),
             )
             .offset(pageable.offset)
             .limit(pageable.pageSize + 1L)

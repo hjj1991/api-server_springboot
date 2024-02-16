@@ -9,7 +9,7 @@ import org.springframework.web.context.request.NativeWebRequest
 import org.springframework.web.method.support.HandlerMethodArgumentResolver
 import org.springframework.web.method.support.ModelAndViewContainer
 
-class AuthUserArgumentResolver: HandlerMethodArgumentResolver {
+class AuthUserArgumentResolver : HandlerMethodArgumentResolver {
     override fun supportsParameter(parameter: MethodParameter): Boolean {
         return parameter.hasParameterAnnotation(AuthUser::class.java) && parameter.parameterType == User::class.java
     }
@@ -18,9 +18,9 @@ class AuthUserArgumentResolver: HandlerMethodArgumentResolver {
         parameter: MethodParameter,
         mavContainer: ModelAndViewContainer?,
         webRequest: NativeWebRequest,
-        binderFactory: WebDataBinderFactory?
+        binderFactory: WebDataBinderFactory?,
     ): Any {
-        if(SecurityContextHolder.getContext().authentication.principal == "anonymousUser"){
+        if (SecurityContextHolder.getContext().authentication.principal == "anonymousUser") {
             return User.createGuestUser()
         }
         return SecurityContextHolder.getContext().authentication.principal as User

@@ -1,7 +1,5 @@
 package com.hjj.apiserver.dto.deposit.response
 
-import com.hjj.apiserver.domain.bank.BankType
-
 class DepositFindAllResponse(
     var finCoSubmDay: String? = null,
     var dclsStrtDay: String? = null,
@@ -24,14 +22,11 @@ class DepositFindAllResponse(
     var dclsChrgMan: String? = null,
     var options: List<Option> = listOf(),
 ) {
-
     class Option(
         var intrRate2: Double? = null,
         var intrRate: Double? = null,
         var saveTrm: String? = null,
         var intrRateTypeNm: String? = null,
         var intrRateType: String? = null,
-    ) {
-
-    }
+    )
 }

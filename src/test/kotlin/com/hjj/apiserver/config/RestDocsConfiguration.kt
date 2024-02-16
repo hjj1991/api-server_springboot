@@ -8,11 +8,12 @@ import org.springframework.restdocs.operation.preprocess.Preprocessors
 
 @TestConfiguration
 class RestDocsConfiguration {
-
     @Bean
     fun restDocsMockMvcConfigurationCustomizer(): RestDocumentationResultHandler {
-        return MockMvcRestDocumentation.document("{class-name}/{method-name}",
+        return MockMvcRestDocumentation.document(
+            "{class-name}/{method-name}",
             Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
-            Preprocessors.preprocessResponse(Preprocessors.prettyPrint()))
+            Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
+        )
     }
 }

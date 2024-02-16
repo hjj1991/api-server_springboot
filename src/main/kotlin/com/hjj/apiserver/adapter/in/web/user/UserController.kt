@@ -1,9 +1,11 @@
 package com.hjj.apiserver.adapter.`in`.web.user
 
+import com.hjj.apiserver.adapter.`in`.web.user.request.ReIssueTokenRequest
 import com.hjj.apiserver.adapter.`in`.web.user.request.UserSignInRequest
 import com.hjj.apiserver.adapter.`in`.web.user.request.UserSignUpRequest
 import com.hjj.apiserver.adapter.`in`.web.user.response.ExistsNickNameResponse
 import com.hjj.apiserver.adapter.`in`.web.user.response.ExistsUserIdResponse
+import com.hjj.apiserver.adapter.`in`.web.user.response.UserReIssueTokenResponse
 import com.hjj.apiserver.adapter.`in`.web.user.response.UserSignInResponse
 import com.hjj.apiserver.application.port.`in`.user.GetUserUseCase
 import com.hjj.apiserver.application.port.`in`.user.UserCredentialUseCase
@@ -13,8 +15,6 @@ import com.hjj.apiserver.application.port.`in`.user.command.RegisterUserCommand
 import com.hjj.apiserver.application.port.`in`.user.command.SignInUserCommand
 import com.hjj.apiserver.domain.user.Provider
 import com.hjj.apiserver.domain.user.User
-import com.hjj.apiserver.adapter.`in`.web.user.request.ReIssueTokenRequest
-import com.hjj.apiserver.adapter.`in`.web.user.response.UserReIssueTokenResponse
 import com.hjj.apiserver.util.AuthUser
 import com.hjj.apiserver.util.logger
 import jakarta.validation.Valid
@@ -39,7 +39,7 @@ class UserController(
     @GetMapping("/users/exists-nickname/{nickName}")
     fun checkUserNickNameDuplicate(
         @AuthUser authUser: User,
-        @PathVariable("nickName") nickName: String
+        @PathVariable("nickName") nickName: String,
     ): ExistsNickNameResponse {
         val command = CheckUserNickNameDuplicateCommand(authUser, nickName)
         return ExistsNickNameResponse(getUserUseCase.existsNickName(command))
@@ -47,7 +47,7 @@ class UserController(
 
     @GetMapping("/users/exists-id/{userId}")
     fun checkUserIdDuplicate(
-        @PathVariable("userId") userId: String
+        @PathVariable("userId") userId: String,
     ): ExistsUserIdResponse {
         return ExistsUserIdResponse(userCredentialUseCase.existsUserId(userId))
     }
@@ -55,7 +55,7 @@ class UserController(
     @PostMapping("/users/signup")
     @ResponseStatus(HttpStatus.CREATED)
     fun signUp(
-        @Valid @RequestBody request: UserSignUpRequest
+        @Valid @RequestBody request: UserSignUpRequest,
     ) {
         val registerUserCommand =
             RegisterUserCommand(request.userId, request.nickName, request.userEmail, request.userPw, Provider.GENERAL)
@@ -64,16 +64,17 @@ class UserController(
 
     @PostMapping("/users/signin")
     fun signIn(
-        @Valid @RequestBody request: UserSignInRequest
+        @Valid @RequestBody request: UserSignInRequest,
     ): UserSignInResponse {
         val signInUserCommand = SignInUserCommand(request.userId, request.userPw, provider = Provider.GENERAL)
         return writeUserUseCase.signIn(signInUserCommand)
     }
 
     @PostMapping("/users/oauth/reissue-token")
-    fun reIssueToken(@RequestBody request: ReIssueTokenRequest): UserReIssueTokenResponse {
-        return userService.reIssueToken(request.refreshToken)
-
+    fun reIssueToken(
+        @RequestBody request: ReIssueTokenRequest,
+    ): UserReIssueTokenResponse {
+        return writeUserUseCase.reissueToken(request.refreshToken)
     }
 //
 //
@@ -160,6 +161,4 @@ class UserController(
 //
 //        return ResponseEntity(HttpStatus.NOT_FOUND)
 //    }
-
-
 }

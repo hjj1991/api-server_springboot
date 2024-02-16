@@ -4,9 +4,7 @@ import org.springframework.restdocs.operation.preprocess.OperationRequestPreproc
 import org.springframework.restdocs.operation.preprocess.OperationResponsePreprocessor
 import org.springframework.restdocs.operation.preprocess.Preprocessors.*
 
-
 class ApiDocumentUtil {
-
     companion object {
         fun getDocumentRequest(): OperationRequestPreprocessor { // (10)
             return preprocessRequest(
@@ -14,7 +12,7 @@ class ApiDocumentUtil {
                     .scheme("http")
                     .host("user.api.com")
                     .removePort(),
-                prettyPrint()
+                prettyPrint(),
             )
         }
 
@@ -22,5 +20,4 @@ class ApiDocumentUtil {
             return preprocessResponse(prettyPrint())
         }
     }
-
 }

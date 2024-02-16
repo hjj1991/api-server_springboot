@@ -21,9 +21,10 @@ class OAuth2SuccessHandler(
     @Value("\${front.redirect-uri.path.mapping}") private val redirectPathMapping: String,
     @Value("\${front.redirect-uri.port}") private val redirectPort: String,
 ) : SimpleUrlAuthenticationSuccessHandler() {
-
     override fun onAuthenticationSuccess(
-        request: HttpServletRequest, response: HttpServletResponse, authentication: Authentication
+        request: HttpServletRequest,
+        response: HttpServletResponse,
+        authentication: Authentication,
     ) {
         val oAuth2User = authentication.principal as OAuth2UserAttribute
         val uriComponentsBuilder =

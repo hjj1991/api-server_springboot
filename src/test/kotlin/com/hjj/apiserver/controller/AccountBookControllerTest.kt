@@ -1,53 +1,53 @@
-//package com.hjj.apiserver.controller
+// package com.hjj.apiserver.controller
 //
-//import com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper
-//import com.epages.restdocs.apispec.ResourceDocumentation
-//import com.epages.restdocs.apispec.ResourceSnippetParameters
-//import com.fasterxml.jackson.databind.ObjectMapper
-//import com.hjj.apiserver.common.JwtTokenProvider
-//import com.hjj.apiserver.common.exception.AccountBookNotFoundException
-//import com.hjj.apiserver.domain.accountbook.AccountBook
-//import com.hjj.apiserver.domain.accountbook.AccountBookUser
-//import com.hjj.apiserver.domain.accountbook.AccountRole
-//import com.hjj.apiserver.domain.card.CardType
-//import com.hjj.apiserver.domain.user.Role
-//import com.hjj.apiserver.adapter.out.persistence.user.UserEntity
-//import com.hjj.apiserver.dto.accountbook.request.AccountBookAddRequest
-//import com.hjj.apiserver.dto.accountbook.response.AccountBookAddResponse
-//import com.hjj.apiserver.dto.accountbook.response.AccountBookDetailResponse
-//import com.hjj.apiserver.dto.accountbook.response.AccountBookFindAllResponse
-//import com.hjj.apiserver.dto.category.CategoryDto
-//import com.hjj.apiserver.dto.user.CurrentUserInfo
-//import com.hjj.apiserver.service.impl.AccountBookService
-//import com.hjj.apiserver.utils.ApiDocumentUtil
-//import org.junit.jupiter.api.DisplayName
-//import org.junit.jupiter.api.Nested
-//import org.junit.jupiter.api.Test
-//import org.mockito.ArgumentMatchers
-//import org.mockito.BDDMockito
-//import org.springframework.beans.factory.annotation.Autowired
-//import org.springframework.boot.autoconfigure.ImportAutoConfiguration
-//import org.springframework.boot.autoconfigure.security.oauth2.client.servlet.OAuth2ClientAutoConfiguration
-//import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs
-//import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
-//import org.springframework.boot.test.mock.mockito.MockBean
-//import org.springframework.http.HttpHeaders
-//import org.springframework.http.MediaType
-//import org.springframework.restdocs.headers.HeaderDocumentation
-//import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*
-//import org.springframework.restdocs.payload.PayloadDocumentation
-//import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors
-//import org.springframework.test.web.servlet.MockMvc
-//import org.springframework.test.web.servlet.result.MockMvcResultMatchers
-//import java.time.LocalDateTime
+// import com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper
+// import com.epages.restdocs.apispec.ResourceDocumentation
+// import com.epages.restdocs.apispec.ResourceSnippetParameters
+// import com.fasterxml.jackson.databind.ObjectMapper
+// import com.hjj.apiserver.common.JwtTokenProvider
+// import com.hjj.apiserver.common.exception.AccountBookNotFoundException
+// import com.hjj.apiserver.domain.accountbook.AccountBook
+// import com.hjj.apiserver.domain.accountbook.AccountBookUser
+// import com.hjj.apiserver.domain.accountbook.AccountRole
+// import com.hjj.apiserver.domain.card.CardType
+// import com.hjj.apiserver.domain.user.Role
+// import com.hjj.apiserver.adapter.out.persistence.user.UserEntity
+// import com.hjj.apiserver.dto.accountbook.request.AccountBookAddRequest
+// import com.hjj.apiserver.dto.accountbook.response.AccountBookAddResponse
+// import com.hjj.apiserver.dto.accountbook.response.AccountBookDetailResponse
+// import com.hjj.apiserver.dto.accountbook.response.AccountBookFindAllResponse
+// import com.hjj.apiserver.dto.category.CategoryDto
+// import com.hjj.apiserver.dto.user.CurrentUserInfo
+// import com.hjj.apiserver.service.impl.AccountBookService
+// import com.hjj.apiserver.utils.ApiDocumentUtil
+// import org.junit.jupiter.api.DisplayName
+// import org.junit.jupiter.api.Nested
+// import org.junit.jupiter.api.Test
+// import org.mockito.ArgumentMatchers
+// import org.mockito.BDDMockito
+// import org.springframework.beans.factory.annotation.Autowired
+// import org.springframework.boot.autoconfigure.ImportAutoConfiguration
+// import org.springframework.boot.autoconfigure.security.oauth2.client.servlet.OAuth2ClientAutoConfiguration
+// import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs
+// import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
+// import org.springframework.boot.test.mock.mockito.MockBean
+// import org.springframework.http.HttpHeaders
+// import org.springframework.http.MediaType
+// import org.springframework.restdocs.headers.HeaderDocumentation
+// import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*
+// import org.springframework.restdocs.payload.PayloadDocumentation
+// import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors
+// import org.springframework.test.web.servlet.MockMvc
+// import org.springframework.test.web.servlet.result.MockMvcResultMatchers
+// import java.time.LocalDateTime
 //
-//@DisplayName("가계부 관리 API 테스트")
-//@AutoConfigureRestDocs
-//@WebMvcTest(AccountBookController::class)
-//@ImportAutoConfiguration(
+// @DisplayName("가계부 관리 API 테스트")
+// @AutoConfigureRestDocs
+// @WebMvcTest(AccountBookController::class)
+// @ImportAutoConfiguration(
 //    exclude = [OAuth2ClientAutoConfiguration::class]
-//)
-//class AccountBookControllerTest {
+// )
+// class AccountBookControllerTest {
 //
 //    private val ACCOUNTBOOK_TAG = "가계부 관리 API"
 //
@@ -419,4 +419,4 @@
 //            role = currentUserInfo.role
 //        )
 //    }
-//}
+// }

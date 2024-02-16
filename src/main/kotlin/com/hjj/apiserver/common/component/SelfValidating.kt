@@ -6,8 +6,8 @@ import jakarta.validation.Validation
 import jakarta.validation.Validator
 
 abstract class SelfValidating<T> {
-
     val validator: Validator
+
     init {
         val buildDefaultValidatorFactory = Validation.buildDefaultValidatorFactory()
         this.validator = buildDefaultValidatorFactory.validator
@@ -16,7 +16,7 @@ abstract class SelfValidating<T> {
     protected fun validateSelf() {
         val violations: Set<ConstraintViolation<SelfValidating<T>>> = validator.validate(this)
 
-        if(violations.isEmpty()){
+        if (violations.isEmpty()) {
             throw ConstraintViolationException(violations)
         }
     }

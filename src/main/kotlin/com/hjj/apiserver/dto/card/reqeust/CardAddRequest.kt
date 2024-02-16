@@ -1,8 +1,8 @@
 package com.hjj.apiserver.dto.card.reqeust
 
+import com.hjj.apiserver.adapter.out.persistence.user.UserEntity
 import com.hjj.apiserver.domain.card.Card
 import com.hjj.apiserver.domain.card.CardType
-import com.hjj.apiserver.adapter.out.persistence.user.UserEntity
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
 

@@ -10,14 +10,15 @@ class UserLogPersistenceAdapter(
     private val userLogRepository: UserLogRepository,
     private val userRepository: UserRepository,
     private val userLogMapper: UserLogMapper,
-): WriteUserLogPort {
+) : WriteUserLogPort {
     override fun registerUserLog(userLog: UserLog): UserLog {
-        val userLogEntity = userLogRepository.save(
-            UserLogEntity(
-                logType = userLog.logType,
-                userEntity = userRepository.getReferenceById(userLog.user.userNo)
+        val userLogEntity =
+            userLogRepository.save(
+                UserLogEntity(
+                    logType = userLog.logType,
+                    userEntity = userRepository.getReferenceById(userLog.user.userNo),
+                ),
             )
-        )
         return userLogMapper.mapToDomainEntity(userLogEntity)
     }
 }

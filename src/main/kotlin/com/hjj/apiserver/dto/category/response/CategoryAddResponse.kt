@@ -18,7 +18,7 @@ data class CategoryAddResponse(
                 parentCategoryNo = category.parentCategory?.categoryNo,
                 categoryName = category.categoryName,
                 categoryDesc = category.categoryDesc,
-                categoryIcon = category.categoryIcon
+                categoryIcon = category.categoryIcon,
             )
         }
     }

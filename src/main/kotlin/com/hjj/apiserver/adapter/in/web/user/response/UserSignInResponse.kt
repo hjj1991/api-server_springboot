@@ -8,9 +8,12 @@ data class UserSignInResponse(
     val accessToken: String,
     val refreshToken: String,
 ) {
-
     companion object {
-        fun fromUserAndToken(user: User, accessToken: String, refreshToken: String): UserSignInResponse {
+        fun fromUserAndToken(
+            user: User,
+            accessToken: String,
+            refreshToken: String,
+        ): UserSignInResponse {
             return UserSignInResponse(
                 user.nickName,
                 user.picture,

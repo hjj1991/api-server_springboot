@@ -9,16 +9,14 @@ data class CardModifyResponse(
     val cardType: CardType,
     val cardDesc: String,
 ) {
-
-    companion object{
-        fun of(card: Card):CardModifyResponse {
+    companion object {
+        fun of(card: Card): CardModifyResponse {
             return CardModifyResponse(
                 cardNo = card.cardNo!!,
                 cardName = card.cardName,
                 cardType = card.cardType,
-                cardDesc = card.cardDesc
+                cardDesc = card.cardDesc,
             )
-
         }
     }
 }

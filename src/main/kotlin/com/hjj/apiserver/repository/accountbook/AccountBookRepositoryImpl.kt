@@ -9,8 +9,10 @@ import com.querydsl.jpa.impl.JPAQueryFactory
 class AccountBookRepositoryImpl(
     private val jpaQueryFactory: JPAQueryFactory,
 ) : AccountBookRepositoryCustom {
-
-    override fun findAccountBook(userNo: Long, accountBookNo: Long): AccountBookDto? {
+    override fun findAccountBook(
+        userNo: Long,
+        accountBookNo: Long,
+    ): AccountBookDto? {
         return jpaQueryFactory.select(
             Projections.constructor(
                 AccountBookDto::class.java,
@@ -21,11 +23,10 @@ class AccountBookRepositoryImpl(
                 accountBookUser.color,
                 accountBookUser.accountRole,
                 accountBook.createdAt,
-            )
+            ),
         ).from(accountBook)
             .join(accountBookUser).on(accountBook.accountBookNo.eq(accountBookUser.accountBook.accountBookNo))
             .where(accountBook.accountBookNo.eq(accountBookNo), accountBook.isDelete.isFalse)
             .fetchOne()
     }
-
 }

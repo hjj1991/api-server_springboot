@@ -11,5 +11,4 @@ data class AccountBookAddRequest(
     val backGroundColor: String,
     @field:NotBlank
     val color: String,
-) {
-}
+)

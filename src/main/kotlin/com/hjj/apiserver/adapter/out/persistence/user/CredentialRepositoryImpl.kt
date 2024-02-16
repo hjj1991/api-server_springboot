@@ -7,7 +7,10 @@ import com.querydsl.jpa.impl.JPAQueryFactory
 class CredentialRepositoryImpl(
     private val jpaQueryFactory: JPAQueryFactory,
 ) : CredentialRepositoryCustom {
-    override fun findExistsUserIdByUserIdAndProvider(userId: String, provider: Provider): Boolean {
+    override fun findExistsUserIdByUserIdAndProvider(
+        userId: String,
+        provider: Provider,
+    ): Boolean {
         return jpaQueryFactory.selectOne()
             .from(credentialEntity)
             .where(credentialEntity.userId.eq(userId), credentialEntity.provider.eq(provider)).fetchOne() != null

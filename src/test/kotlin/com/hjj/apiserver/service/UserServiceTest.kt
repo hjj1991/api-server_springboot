@@ -58,7 +58,6 @@ class UserServiceTest {
     @Mock
     lateinit var jwtProvider: JwtProvider
 
-
     @Test
     @DisplayName("닉네임이 이미 존재하는 경우")
     fun existsNickName_when_alreadyExistsNickName_then_true() {
@@ -67,7 +66,6 @@ class UserServiceTest {
         val checkUserNickNameDuplicateCommand = CheckUserNickNameDuplicateCommand(User.createGuestUser(), newNickName)
 
         Mockito.`when`(getUserPort.findExistsUserNickName(newNickName)).thenReturn(true)
-
 
         // when
         val existsNickNameResponse = userService.existsNickName(checkUserNickNameDuplicateCommand)
@@ -85,14 +83,12 @@ class UserServiceTest {
 
         Mockito.`when`(getUserPort.findExistsUserNickName(newNickName)).thenReturn(false)
 
-
         // when
         val existsNickNameResponse = userService.existsNickName(checkUserNickNameDuplicateCommand)
 
         // then
         Assertions.assertThat(existsNickNameResponse).isEqualTo(false)
     }
-
 
     @Test
     @DisplayName("변경하려는 닉네임과 현재 닉네임이 동일한 경우")
@@ -113,27 +109,30 @@ class UserServiceTest {
     @DisplayName("회원가입이 정상적으로 성공된다.")
     fun signUp_success_general_user() {
         // Given
-        val registerUserCommand = RegisterUserCommand(
-            userId = "generalUser",
-            nickName = "사이트유저",
-            userEmail = "test@Test.com",
-            userPw = "testPassword12#$!",
-            provider = Provider.GENERAL
-        )
-        val savedUser = User(
-            userNo = 1L,
-            nickName = registerUserCommand.nickName,
-            userEmail = registerUserCommand.userEmail,
-            userPw = registerUserCommand.userPw
-        )
-        val savedCredential = Credential(
-            credentialNo = 1L,
-            userId = registerUserCommand.userId,
-            credentialEmail = registerUserCommand.userEmail,
-            provider = Provider.GENERAL,
-            user = savedUser,
-            state = CredentialState.CONNECTED,
-        )
+        val registerUserCommand =
+            RegisterUserCommand(
+                userId = "generalUser",
+                nickName = "사이트유저",
+                userEmail = "test@Test.com",
+                userPw = "testPassword12#$!",
+                provider = Provider.GENERAL,
+            )
+        val savedUser =
+            User(
+                userNo = 1L,
+                nickName = registerUserCommand.nickName,
+                userEmail = registerUserCommand.userEmail,
+                userPw = registerUserCommand.userPw,
+            )
+        val savedCredential =
+            Credential(
+                credentialNo = 1L,
+                userId = registerUserCommand.userId,
+                credentialEmail = registerUserCommand.userEmail,
+                provider = Provider.GENERAL,
+                user = savedUser,
+                state = CredentialState.CONNECTED,
+            )
 
         Mockito.`when`(writeUserPort.registerUser(MockitoTestUtil.any(User::class.java))).thenReturn(savedUser)
         Mockito.`when`(writeCredentialPort.registerCredential(MockitoTestUtil.any(Credential::class.java))).thenReturn(savedCredential)
@@ -147,22 +146,24 @@ class UserServiceTest {
     @DisplayName("동일한 닉네임또는 Credential이 존재하여 insert실패 한 경우 가입이 실패한다.")
     fun signUp_fail_when_duplicateNickName_user_then_throw_already_exists_user_exception() {
         // Given
-        val registerUserCommand = RegisterUserCommand(
-            userId = "generalUser",
-            nickName = "사이트유저",
-            userEmail = "test@Test.com",
-            userPw = "testPassword12#$!",
-            provider = Provider.GENERAL
-        )
-        val savedUser = User(
-            userNo = 1L,
-            nickName = registerUserCommand.nickName,
-            userEmail = registerUserCommand.userEmail,
-            userPw = registerUserCommand.userPw
-        )
+        val registerUserCommand =
+            RegisterUserCommand(
+                userId = "generalUser",
+                nickName = "사이트유저",
+                userEmail = "test@Test.com",
+                userPw = "testPassword12#$!",
+                provider = Provider.GENERAL,
+            )
+        val savedUser =
+            User(
+                userNo = 1L,
+                nickName = registerUserCommand.nickName,
+                userEmail = registerUserCommand.userEmail,
+                userPw = registerUserCommand.userPw,
+            )
 
         Mockito.`when`(writeUserPort.registerUser(MockitoTestUtil.any(User::class.java))).thenThrow(
-            DataIntegrityViolationException::class.java
+            DataIntegrityViolationException::class.java,
         )
         Mockito.`when`(passwordEncoder.encode(registerUserCommand.userPw)).thenReturn("enCryptedPassword")
 
@@ -170,5 +171,4 @@ class UserServiceTest {
         Assertions.assertThatThrownBy { userService.signUp(registerUserCommand) }
             .isInstanceOf(AlreadyExistsUserException::class.java)
     }
-
 }

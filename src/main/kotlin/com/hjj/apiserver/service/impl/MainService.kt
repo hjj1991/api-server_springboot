@@ -13,15 +13,17 @@ class MainService(
     private val depositRepository: DepositRepository,
     private val savingRepository: SavingRepository,
 ) {
-
     private val log = LoggerFactory.getLogger(MainService::class.java)
+
     fun findMain(): MainFindResponse {
-        val deposit = Mono.fromCallable { depositRepository.findDepositByHome() }
-            .doOnError{ error -> log.error("[Error] MainService::findDepositByHome, error={}", error.message)}
-            .subscribeOn(Schedulers.parallel())
-        val saving = Mono.fromCallable { savingRepository.findSavingByHome() }
-            .doOnError{ error -> log.error("[Error] MainService::findSavingByHome, error={}", error.message)}
-            .subscribeOn(Schedulers.parallel())
+        val deposit =
+            Mono.fromCallable { depositRepository.findDepositByHome() }
+                .doOnError { error -> log.error("[Error] MainService::findDepositByHome, error={}", error.message) }
+                .subscribeOn(Schedulers.parallel())
+        val saving =
+            Mono.fromCallable { savingRepository.findSavingByHome() }
+                .doOnError { error -> log.error("[Error] MainService::findSavingByHome, error={}", error.message) }
+                .subscribeOn(Schedulers.parallel())
         return Mono.zip(deposit, saving)
             .map { MainFindResponse(it.t1, it.t2) }
             .subscribeOn(Schedulers.parallel())

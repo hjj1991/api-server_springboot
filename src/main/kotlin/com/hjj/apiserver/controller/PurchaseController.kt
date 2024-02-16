@@ -18,11 +18,10 @@ import org.springframework.web.bind.annotation.*
 class PurchaseController(
     private val purchaseService: PurchaseService,
 ) {
-
     @PostMapping("/purchase")
     fun purchaseAdd(
         @AuthUser authUserInfo: CurrentUserInfo,
-        @RequestBody @Valid request: PurchaseAddRequest
+        @RequestBody @Valid request: PurchaseAddRequest,
     ): PurchaseAddResponse {
         request.validRequest()
         return purchaseService.addPurchase(authUserInfo.userNo, request)
@@ -31,25 +30,27 @@ class PurchaseController(
     @GetMapping("/purchase")
     fun purchasesFind(
         @AuthUser user: CurrentUserInfo,
-        request: PurchaseFindOfPageRequest
+        request: PurchaseFindOfPageRequest,
     ): Slice<PurchaseFindOfPageResponse> {
         return purchaseService.findPurchasesOfPage(
             request,
-            request.getPageRequest()
+            request.getPageRequest(),
         )
     }
 
     @DeleteMapping("/purchase/{purchaseNo}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    fun purchaseRemove(@AuthUser authUserInfo: CurrentUserInfo, @PathVariable("purchaseNo") purchaseNo: Long) {
+    fun purchaseRemove(
+        @AuthUser authUserInfo: CurrentUserInfo,
+        @PathVariable("purchaseNo") purchaseNo: Long,
+    ) {
         purchaseService.removePurchase(authUserInfo.userNo, purchaseNo)
     }
-
 
     @GetMapping("/purchase/{purchaseNo}")
     fun purchaseDetail(
         @AuthUser authUserInfo: CurrentUserInfo,
-        @PathVariable("purchaseNo") purchaseNo: Long
+        @PathVariable("purchaseNo") purchaseNo: Long,
     ): PurchaseDetailResponse {
         return purchaseService.findPurchase(authUserInfo.userNo, purchaseNo)
     }
@@ -59,7 +60,7 @@ class PurchaseController(
     fun purchaseModify(
         @AuthUser authUserInfo: CurrentUserInfo,
         @PathVariable("purchaseNo") purchaseNo: Long,
-        @RequestBody @Valid request: PurchaseModifyRequest
+        @RequestBody @Valid request: PurchaseModifyRequest,
     ) {
         request.validRequest()
         purchaseService.modifyPurchase(authUserInfo.userNo, purchaseNo, request)

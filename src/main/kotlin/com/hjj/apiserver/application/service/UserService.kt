@@ -10,6 +10,7 @@ import com.hjj.apiserver.application.port.`in`.user.command.RegisterUserCommand
 import com.hjj.apiserver.application.port.`in`.user.command.SignInUserCommand
 import com.hjj.apiserver.application.port.out.user.GetCredentialPort
 import com.hjj.apiserver.application.port.out.user.GetUserPort
+import com.hjj.apiserver.application.port.out.user.ReadUserTokenPort
 import com.hjj.apiserver.application.port.out.user.WriteCredentialPort
 import com.hjj.apiserver.application.port.out.user.WriteUserLogPort
 import com.hjj.apiserver.application.port.out.user.WriteUserPort
@@ -30,6 +31,8 @@ import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.Clock
+import java.util.*
 
 @Service
 @Transactional(readOnly = true)
@@ -46,7 +49,8 @@ class UserService(
     private val writeCredentialPort: WriteCredentialPort,
     private val writeUserLogPort: WriteUserLogPort,
     private val writeUserTokenPort: WriteUserTokenPort,
-
+    private val readUserTokenPort: ReadUserTokenPort,
+    private val clock: Clock,
 //    @Value(value = "\${app.firebase-storage-uri}")
 //    private val firebaseStorageUri: String,
 //    @Value(value = "\${app.firebase-bucket}")
@@ -57,7 +61,6 @@ class UserService(
     }
 
     private val log = logger()
-
 
     override fun existsNickName(command: CheckUserNickNameDuplicateCommand): Boolean {
         if (command.authUser.role != Role.GUEST && command.authUser.nickName == command.nickName) {
@@ -70,19 +73,21 @@ class UserService(
     override fun signUp(command: RegisterUserCommand) {
         val password = command.userPw?.let { passwordEncoder.encode(it) }
         kotlin.runCatching {
-            val user = writeUserPort.registerUser(
-                User(
-                    nickName = command.nickName,
-                    userEmail = command.userEmail,
-                    userPw = password
+            val user =
+                writeUserPort.registerUser(
+                    User(
+                        nickName = command.nickName,
+                        userEmail = command.userEmail,
+                        userPw = password,
+                    ),
                 )
-            )
-            val registerCredentialCommand = RegisterCredentialCommand(
-                userId = command.userId,
-                user = user,
-                userEmail = command.userEmail,
-                provider = command.provider
-            )
+            val registerCredentialCommand =
+                RegisterCredentialCommand(
+                    userId = command.userId,
+                    user = user,
+                    userEmail = command.userEmail,
+                    provider = command.provider,
+                )
             writeCredentialPort.registerCredential(
                 Credential(
                     userId = registerCredentialCommand.userId,
@@ -90,35 +95,50 @@ class UserService(
                     user = registerCredentialCommand.user,
                     provider = registerCredentialCommand.provider,
                     state = CredentialState.CONNECTED,
-                )
+                ),
             )
             val userLog = UserLog(logType = LogType.SIGNUP, user = user)
             writeUserLogPort.registerUserLog(userLog)
         }.onFailure { exception ->
             when (exception) {
-                is DataIntegrityViolationException -> throw AlreadyExistsUserException("[signup] Failed to register command: $command, exeception: $exception")
+                is DataIntegrityViolationException -> throw AlreadyExistsUserException(
+                    "[signup] Failed to register command: $command, exeception: $exception",
+                )
                 else -> throw exception
             }
         }
     }
 
     override fun signIn(signInUserCommand: SignInUserCommand): UserSignInResponse {
-        val credential = getCredentialPort.findCredentialByUserIdAndProvider(
-            signInUserCommand.userId, signInUserCommand.provider
-        ) ?: throw UserNotFoundException("[signIn] Failed to find credential by userId: ${signInUserCommand.userId}")
+        val credential =
+            getCredentialPort.findCredentialByUserIdAndProvider(
+                signInUserCommand.userId, signInUserCommand.provider,
+            ) ?: throw UserNotFoundException("[signIn] Failed to find credential by userId: ${signInUserCommand.userId}")
         if (credential.provider == Provider.GENERAL && !passwordEncoder.matches(signInUserCommand.userPw, credential.user.userPw)) {
             throw UserNotFoundException("[signIn] Failed to find credential by userId: ${signInUserCommand.userId}")
         }
-        val accessToken = jwtProvider.createToken(credential.user, TokenType.ACCESS_TOKEN)
-        val refreshToken = jwtProvider.createToken(credential.user, TokenType.REFRESH_TOKEN)
+        val accessToken = jwtProvider.createToken(credential.user.userNo, TokenType.ACCESS_TOKEN)
+        val refreshToken = jwtProvider.createToken(credential.user.userNo, TokenType.REFRESH_TOKEN)
         writeUserTokenPort.registerUserToken(credential.user.userNo, refreshToken)
         return UserSignInResponse.fromUserAndToken(credential.user, accessToken, refreshToken)
     }
 
     override fun reissueToken(refreshToken: String): UserReIssueTokenResponse {
-        jwtProvider.isValidToken(refreshToken)
+        val validatedClaims = jwtProvider.getValidatedClaims(refreshToken)
+        val userNo = validatedClaims.payload.subject.toLong()
+        readUserTokenPort.getUserToken(userNo)
+        val newAccessToken = jwtProvider.createToken(userNo, TokenType.ACCESS_TOKEN)
+        if (shouldReissueRefreshToken(validatedClaims.payload.expiration)) {
+            val newRefreshToken = jwtProvider.createToken(userNo, TokenType.REFRESH_TOKEN)
+            return UserReIssueTokenResponse(newAccessToken, newRefreshToken)
+        }
+
+        return UserReIssueTokenResponse(newAccessToken, refreshToken)
     }
 
+    private fun shouldReissueRefreshToken(expiration: Date): Boolean {
+        return expiration.after(Date(clock.millis() - JwtProvider.REFRESH_TOKEN_REISSUED_REQUIRED_MILLISECONDS))
+    }
 //    fun existsUserId(userId: String): Boolean {
 //        return userRepository.findExistsUserId(userId)
 //    }
@@ -232,11 +252,11 @@ class UserService(
 //
 //        val oAuth2UserAttribute = objectMapper.convertValue(oAuth2User.attributes, OAuth2UserAttribute::class.java)
 //
-////        user.updateUser(
-////            provider = oAuth2UserAttribute.provider,
-////            providerId = oAuth2UserAttribute.providerId,
-////            providerConnectDate = LocalDateTime.now()
-////        )
+// //        user.updateUser(
+// //            provider = oAuth2UserAttribute.provider,
+// //            providerId = oAuth2UserAttribute.providerId,
+// //            providerConnectDate = LocalDateTime.now()
+// //        )
 //
 //        userRepository.flush()
 //        userLogService.addUserLog(UserLog(logType = LogType.MODIFY, userEntity = user))

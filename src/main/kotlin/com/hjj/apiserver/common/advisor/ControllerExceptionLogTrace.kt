@@ -5,7 +5,7 @@ import com.hjj.apiserver.common.ErrCode
 import org.aspectj.lang.ProceedingJoinPoint
 import org.slf4j.LoggerFactory
 
-//@Aspect
+// @Aspect
 class ControllerExceptionLogTrace {
     private val log = LoggerFactory.getLogger(ControllerExceptionLogTrace::class.java)
 
@@ -14,7 +14,11 @@ class ControllerExceptionLogTrace {
         try {
             return joinPoint.proceed()
         } catch (e: Exception) {
-            log.error("[${joinPoint.signature.declaringType.simpleName}] Error request={}, Exception={}", joinPoint.args.toString(), e.stackTrace)
+            log.error(
+                "[${joinPoint.signature.declaringType.simpleName}] Error request={}, Exception={}",
+                joinPoint.args.toString(),
+                e.stackTrace,
+            )
             return ApiError(ErrCode.ERR_CODE9999)
         }
     }

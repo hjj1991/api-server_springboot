@@ -33,10 +33,9 @@ import java.util.function.Consumer
 @EnableJpaAuditing
 @Configuration
 class ApplicationConfig(
-        @Value("\${app.firebase-configuration-file}")
-        private val firebaseConfigPath: String
-): AuditorAware<Long> {
-
+    @Value("\${app.firebase-configuration-file}")
+    private val firebaseConfigPath: String,
+) : AuditorAware<Long> {
     private val log = logger()
 
     @Bean
@@ -49,7 +48,6 @@ class ApplicationConfig(
         return PasswordEncoderFactories.createDelegatingPasswordEncoder()
     }
 
-
     @Bean
     fun modelMapper(): ModelMapper {
         val modelMapper = ModelMapper()
@@ -60,13 +58,15 @@ class ApplicationConfig(
     @Bean
     fun webClient(): WebClient {
         return WebClient.builder()
-            .filter(ExchangeFilterFunction.ofRequestProcessor { clientRequest: ClientRequest ->
-                log.info("Request: {} {}", clientRequest.method(), clientRequest.url())
-                clientRequest.headers().forEach { name: String?, values: List<String?> ->
+            .filter(
+                ExchangeFilterFunction.ofRequestProcessor { clientRequest: ClientRequest ->
+                    log.info("Request: {} {}", clientRequest.method(), clientRequest.url())
+                    clientRequest.headers().forEach { name: String?, values: List<String?> ->
                         values.forEach(Consumer { value: String? -> log.info("{}={}", name, value) })
                     }
-                Mono.just(clientRequest)
-            })
+                    Mono.just(clientRequest)
+                },
+            )
             .build()
     }
 
@@ -80,7 +80,6 @@ class ApplicationConfig(
         return ControllerExceptionLogTrace()
     }
 
-
     override fun getCurrentAuditor(): Optional<Long> {
         val authentication = SecurityContextHolder.getContext().authentication
         if (null == authentication || !authentication.isAuthenticated || authentication.principal == "anonymousUser") {
@@ -93,9 +92,10 @@ class ApplicationConfig(
     @PostConstruct
     fun initialize() {
         try {
-            val options = FirebaseOptions.builder()
-                .setCredentials(GoogleCredentials.fromStream(FileInputStream(firebaseConfigPath)))
-                .build()
+            val options =
+                FirebaseOptions.builder()
+                    .setCredentials(GoogleCredentials.fromStream(FileInputStream(firebaseConfigPath)))
+                    .build()
             if (FirebaseApp.getApps().isEmpty()) {
                 FirebaseApp.initializeApp(options)
                 log.info("Firebase application has been initializaed")
@@ -104,5 +104,4 @@ class ApplicationConfig(
             log.error(e.message)
         }
     }
-
 }

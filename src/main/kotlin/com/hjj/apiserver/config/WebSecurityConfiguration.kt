@@ -30,10 +30,8 @@ class WebSecurityConfiguration(
     private val oAuth2SuccessHandler: OAuth2SuccessHandler,
     private val clientRegistrationRepository: ClientRegistrationRepository,
 ) {
-
     @Bean
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
-
         http.httpBasic { httpBasic -> httpBasic.disable() }.formLogin { formLogin -> formLogin.disable() }
             .csrf { csrf -> csrf.disable() }
             .headers { headers -> headers.frameOptions { frameOption -> frameOption.disable() } }
@@ -41,47 +39,49 @@ class WebSecurityConfiguration(
             .cors(Customizer.withDefaults()).oauth2Login { oauth2Login ->
                 oauth2Login.authorizationEndpoint { endPoint ->
                     endPoint.authorizationRequestResolver(
-                        CustomAuthorizationRequestResolver(this.clientRegistrationRepository)
+                        CustomAuthorizationRequestResolver(this.clientRegistrationRepository),
                     )
                 }.tokenEndpoint { tokenEndpoint ->
                     tokenEndpoint.accessTokenResponseClient(
-                        CustomAuthorizationCodeTokenResponseClient()
+                        CustomAuthorizationCodeTokenResponseClient(),
                     )
                 }.userInfoEndpoint { userEndPoint -> userEndPoint.userService(customOauth2UserService) }
                     .successHandler(oAuth2SuccessHandler)
             }
             .authorizeHttpRequests { authorizeHttpRequests ->
-                authorizeHttpRequests.requestMatchers(RequestMatcher {
-                    CorsUtils.isPreFlightRequest(it)
-                }).permitAll()
+                authorizeHttpRequests.requestMatchers(
+                    RequestMatcher {
+                        CorsUtils.isPreFlightRequest(it)
+                    },
+                ).permitAll()
                     .requestMatchers(
-                    AntPathRequestMatcher("/static/**"),
-                    AntPathRequestMatcher("/swagger-ui/swagger-ui.html"),
-                    AntPathRequestMatcher("/swagger-ui/**"),
-                    AntPathRequestMatcher("/docs/**"),
-                    AntPathRequestMatcher("/webjars/**"),
-                    AntPathRequestMatcher("/users/exists**/**"),
-                    AntPathRequestMatcher("/main*"),
-                    AntPathRequestMatcher("/deposit*"),
-                    AntPathRequestMatcher("/saving*"),
-                    AntPathRequestMatcher("/users/signup"),
-                    AntPathRequestMatcher("/user/signin"),
-                    AntPathRequestMatcher("/user/social/signin"),
-                    AntPathRequestMatcher("/user/social/signup"),
-                    AntPathRequestMatcher("/user/oauth/token"),
-                    AntPathRequestMatcher("/user/profile*"),
-                    AntPathRequestMatcher("/h2-console/**")
-                ).permitAll() // 가입 및 인증 주소는 누구나 접근가능
+                        AntPathRequestMatcher("/static/**"),
+                        AntPathRequestMatcher("/swagger-ui/swagger-ui.html"),
+                        AntPathRequestMatcher("/swagger-ui/**"),
+                        AntPathRequestMatcher("/docs/**"),
+                        AntPathRequestMatcher("/webjars/**"),
+                        AntPathRequestMatcher("/users/exists**/**"),
+                        AntPathRequestMatcher("/main*"),
+                        AntPathRequestMatcher("/deposit*"),
+                        AntPathRequestMatcher("/saving*"),
+                        AntPathRequestMatcher("/users/signup"),
+                        AntPathRequestMatcher("/user/signin"),
+                        AntPathRequestMatcher("/user/social/signin"),
+                        AntPathRequestMatcher("/user/social/signup"),
+                        AntPathRequestMatcher("/user/oauth/token"),
+                        AntPathRequestMatcher("/user/profile*"),
+                        AntPathRequestMatcher("/h2-console/**"),
+                    ).permitAll() // 가입 및 인증 주소는 누구나 접근가능
                     .anyRequest().hasRole("USER")
             }
             .exceptionHandling { exceptionHandling -> exceptionHandling.accessDeniedHandler(AccessDeniedHandlerImpl()) }
             .exceptionHandling { exceptionHandling ->
                 exceptionHandling.authenticationEntryPoint(
-                    customAuthenticationEntryPoint
+                    customAuthenticationEntryPoint,
                 )
             }.addFilterBefore(
-                JwtAuthenticationFilter(jwtProvider),  // jwt token 필터를 id/password 인증 필터 전에 넣는다
-                UsernamePasswordAuthenticationFilter::class.java
+                JwtAuthenticationFilter(jwtProvider), // jwt token 필터를 id/password 인증 필터 전에 넣는다
+                UsernamePasswordAuthenticationFilter::class.java,
             )
 
         return http.build()

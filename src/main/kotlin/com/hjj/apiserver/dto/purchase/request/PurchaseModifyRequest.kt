@@ -12,10 +12,9 @@ data class PurchaseModifyRequest(
     val price: Int,
     val reason: String,
     val purchaseDate: LocalDate,
-){
-
-    fun validRequest(){
-        if(purchaseType == PurchaseType.INCOME && (cardNo != null || categoryNo != null)){
+) {
+    fun validRequest() {
+        if (purchaseType == PurchaseType.INCOME && (cardNo != null || categoryNo != null)) {
             throw PurchaseModifyByIncomeValidFailException()
         }
     }

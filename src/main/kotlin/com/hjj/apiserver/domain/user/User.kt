@@ -12,8 +12,6 @@ class User(
     picture: String? = null,
     role: Role = Role.GUEST,
 ) : UserDetails {
-
-
     var userNo: Long = userNo
         private set
     var nickName: String = nickName
@@ -28,7 +26,7 @@ class User(
         private set
 
     companion object {
-        fun createGuestUser(): User{
+        fun createGuestUser(): User {
             return User(nickName = "")
         }
     }
@@ -52,6 +50,7 @@ class User(
     override fun isCredentialsNonExpired(): Boolean = true
 
     override fun isEnabled(): Boolean = true
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
@@ -77,5 +76,4 @@ class User(
         result = 31 * result + role.hashCode()
         return result
     }
-
 }

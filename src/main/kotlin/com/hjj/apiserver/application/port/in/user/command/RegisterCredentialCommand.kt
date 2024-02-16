@@ -8,5 +8,4 @@ class RegisterCredentialCommand(
     val user: User,
     val userEmail: String? = null,
     val provider: Provider,
-) {
-}
+)

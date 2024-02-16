@@ -29,10 +29,8 @@ import org.mockito.Mockito
 import org.mockito.junit.jupiter.MockitoExtension
 import java.time.LocalDateTime
 
-
 @ExtendWith(MockitoExtension::class)
 class AccountBookServiceTest {
-
     @InjectMocks
     lateinit var accountBookService: AccountBookService
 
@@ -51,37 +49,40 @@ class AccountBookServiceTest {
     @Mock
     lateinit var cardRepository: CardRepository
 
-
     @Test
     @DisplayName("가계부가 정상 생성된다.")
     fun addAccountBook_Success() {
         // given
-        val request = AccountBookAddRequest(
-            accountBookName = "가계부명",
-            accountBookDesc = "가계부설명",
-            backGroundColor = "#ffffff",
-            color = "#000000",
-        )
-        val savedUserEntity = UserEntity(
-            userNo = 1L,
-            nickName = "닉네임",
-            userEmail = "tester@test.co.kr"
-        )
+        val request =
+            AccountBookAddRequest(
+                accountBookName = "가계부명",
+                accountBookDesc = "가계부설명",
+                backGroundColor = "#ffffff",
+                color = "#000000",
+            )
+        val savedUserEntity =
+            UserEntity(
+                userNo = 1L,
+                nickName = "닉네임",
+                userEmail = "tester@test.co.kr",
+            )
 
-        val newAccountBook = AccountBook(
-            accountBookNo = 1L,
-            accountBookName = request.accountBookName,
-            accountBookDesc = request.accountBookDesc
-        )
+        val newAccountBook =
+            AccountBook(
+                accountBookNo = 1L,
+                accountBookName = request.accountBookName,
+                accountBookDesc = request.accountBookDesc,
+            )
 
-        val newAccountBookUser = AccountBookUser(
-            accountBookUserNo = 1L,
-            accountBook = newAccountBook,
-            userEntity = savedUserEntity,
-            accountRole = AccountRole.OWNER,
-            backGroundColor = request.backGroundColor,
-            color = request.color
-        )
+        val newAccountBookUser =
+            AccountBookUser(
+                accountBookUserNo = 1L,
+                accountBook = newAccountBook,
+                userEntity = savedUserEntity,
+                accountRole = AccountRole.OWNER,
+                backGroundColor = request.backGroundColor,
+                color = request.color,
+            )
 
         Mockito.`when`(accountBookRepository.save(Mockito.any())).thenReturn(newAccountBook)
 
@@ -103,65 +104,66 @@ class AccountBookServiceTest {
         assertThat(addAccountBookResponse.backGroundColor).isEqualTo(request.backGroundColor)
     }
 
-
-
     @Test
     @DisplayName("가계부가 정상 조회된다.")
     fun findAccountBookDetail_Success() {
         // given
         val accountBookNo = 1L
         val userNo = 1L
-        val userEntity = UserEntity(
-            userNo = userNo,
-            nickName = "닉네임",
-        )
-        val accountBookDto = AccountBookDto(
-            accountBookNo = 1L,
-            accountBookName = "테스트가계부",
-            accountBookDesc = "설명",
-            backgroundColor = "#fadvs",
-            color = "#fadvs",
-            accountRole = AccountRole.OWNER,
-            createdAt = LocalDateTime.now(),
-        )
-
-        val cards = mutableListOf(
-            Card(
-                cardNo = 1L,
-                cardName = "카드",
-                cardType = CardType.CREDIT_CARD,
-                cardDesc = "카드설명",
-                userEntity = userEntity
+        val userEntity =
+            UserEntity(
+                userNo = userNo,
+                nickName = "닉네임",
             )
-        )
-
-        val categories = listOf(
-            CategoryDto(
-                categoryNo = 1L,
-                categoryName = "카테고리",
-                categoryDesc = "카테고리 설명",
-                categoryIcon = "아이콘",
-                accountBookNo = accountBookNo,
-                childCategories = mutableListOf()
+        val accountBookDto =
+            AccountBookDto(
+                accountBookNo = 1L,
+                accountBookName = "테스트가계부",
+                accountBookDesc = "설명",
+                backgroundColor = "#fadvs",
+                color = "#fadvs",
+                accountRole = AccountRole.OWNER,
+                createdAt = LocalDateTime.now(),
             )
-        )
 
-        val accountBookDetailResponse = AccountBookDetailResponse(
-            accountBookNo = accountBookDto.accountBookNo,
-            accountBookName = accountBookDto.accountBookName,
-            accountBookDesc = accountBookDto.accountBookDesc,
-            accountRole = accountBookDto.accountRole,
-            createdAt = accountBookDto.createdAt,
-            cards = cards.map(AccountBookDetailResponse.CardDetail::of),
-            categories = categories
-        )
+        val cards =
+            mutableListOf(
+                Card(
+                    cardNo = 1L,
+                    cardName = "카드",
+                    cardType = CardType.CREDIT_CARD,
+                    cardDesc = "카드설명",
+                    userEntity = userEntity,
+                ),
+            )
 
+        val categories =
+            listOf(
+                CategoryDto(
+                    categoryNo = 1L,
+                    categoryName = "카테고리",
+                    categoryDesc = "카테고리 설명",
+                    categoryIcon = "아이콘",
+                    accountBookNo = accountBookNo,
+                    childCategories = mutableListOf(),
+                ),
+            )
 
+        val accountBookDetailResponse =
+            AccountBookDetailResponse(
+                accountBookNo = accountBookDto.accountBookNo,
+                accountBookName = accountBookDto.accountBookName,
+                accountBookDesc = accountBookDto.accountBookDesc,
+                accountRole = accountBookDto.accountRole,
+                createdAt = accountBookDto.createdAt,
+                cards = cards.map(AccountBookDetailResponse.CardDetail::of),
+                categories = categories,
+            )
 
         Mockito.`when`(accountBookRepository.findAccountBook(userNo, accountBookNo))
             .thenReturn(accountBookDto)
 
-        Mockito.`when`(cardRepository.findByUserEntity_UserNo(userNo))
+        Mockito.`when`(cardRepository.findByUserEntityUserNo(userNo))
             .thenReturn(cards)
 
         Mockito.`when`(categoryRepository.findCategories(userNo, accountBookNo))
@@ -190,29 +192,28 @@ class AccountBookServiceTest {
         Mockito.`when`(accountBookRepository.findAccountBook(userNo, accountBookNo))
             .thenReturn(null)
 
-
         // when && then
         assertThatThrownBy { accountBookService.findAccountBookDetail(accountBookNo, userNo) }
             .isInstanceOf(AccountBookNotFoundException::class.java)
     }
 
-
     @Test
     @DisplayName("가계부가 전체 조회 된다.")
-    fun findAllAccountBook_success(){
+    fun findAllAccountBook_success() {
         // given
         val userNo = 1L
 
-        val accountBookFindAllResponses = listOf(
-            AccountBookFindAllResponse(
-                accountBookNo = 1L,
-                accountBookName = "가계부",
-                accountBookDesc = "설명",
-                backGroundColor = "#00000",
-                color = "#00000",
-                accountRole = AccountRole.OWNER,
+        val accountBookFindAllResponses =
+            listOf(
+                AccountBookFindAllResponse(
+                    accountBookNo = 1L,
+                    accountBookName = "가계부",
+                    accountBookDesc = "설명",
+                    backGroundColor = "#00000",
+                    color = "#00000",
+                    accountRole = AccountRole.OWNER,
+                ),
             )
-        )
 
         Mockito.`when`(accountBookUserRepository.findAllAccountBookByUserNo(userNo))
             .thenReturn(accountBookFindAllResponses)
@@ -229,5 +230,4 @@ class AccountBookServiceTest {
         Mockito.any<T>()
         return null as T
     }
-
 }

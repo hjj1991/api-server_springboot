@@ -11,8 +11,10 @@ import java.sql.SQLException
 
 @Component
 class P6spySqlFormatConfiguration : JdbcEventListener(), MessageFormattingStrategy {
-
-    override fun onAfterGetConnection(connectionInformation: ConnectionInformation?, e: SQLException?) {
+    override fun onAfterGetConnection(
+        connectionInformation: ConnectionInformation?,
+        e: SQLException?,
+    ) {
         P6SpyOptions.getActiveInstance().logMessageFormat = javaClass.name
     }
 
@@ -23,9 +25,8 @@ class P6spySqlFormatConfiguration : JdbcEventListener(), MessageFormattingStrate
         category: String?,
         prepared: String?,
         sql: String,
-        url: String?
+        url: String?,
     ): String {
-
         val sb = StringBuilder()
         sb.append(category).append(" ").append(elapsed).append("ms")
         if (StringUtils.hasText(sql)) {
@@ -36,9 +37,9 @@ class P6spySqlFormatConfiguration : JdbcEventListener(), MessageFormattingStrate
 
     private fun formatSql(sql: String): String {
         if (isDDL(sql)) {
-            return FormatStyle.DDL.formatter.format(sql);
+            return FormatStyle.DDL.formatter.format(sql)
         } else if (isBasic(sql)) {
-            return FormatStyle.BASIC.formatter.format(sql);
+            return FormatStyle.BASIC.formatter.format(sql)
         }
 
         return sql
@@ -55,5 +56,4 @@ class P6spySqlFormatConfiguration : JdbcEventListener(), MessageFormattingStrate
     private fun isBasic(sql: String): Boolean {
         return sql.startsWith("select") || sql.startsWith("insert") || sql.startsWith("update") || sql.startsWith("delete")
     }
-
 }

@@ -5,22 +5,24 @@ import com.google.firebase.cloud.StorageClient
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import java.io.InputStream
-import jakarta.annotation.PostConstruct
 
 @Service
 class FireBaseService(
     @Value("\${app.firebase-bucket}")
     private val firebaseBucket: String,
-
-
 ) {
-
-    fun putProfileImg(file: ByteArray, fileName: String) {
+    fun putProfileImg(
+        file: ByteArray,
+        fileName: String,
+    ) {
         val bucket: Bucket = StorageClient.getInstance().bucket(firebaseBucket)
         bucket.create(fileName, file, "image/png")
     }
 
-    fun putProfileImg(file: InputStream, fileName: String) {
+    fun putProfileImg(
+        file: InputStream,
+        fileName: String,
+    ) {
         val bucket: Bucket = StorageClient.getInstance().bucket(firebaseBucket)
         bucket.create(fileName, file, "image/jpeg")
     }

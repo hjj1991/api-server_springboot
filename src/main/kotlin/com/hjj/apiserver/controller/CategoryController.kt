@@ -17,12 +17,11 @@ import org.springframework.web.bind.annotation.*
 class CategoryController(
     private val categoryService: CategoryService,
 ) {
-
     @PostMapping("/categories")
     @ResponseStatus(HttpStatus.CREATED)
     fun categoryAdd(
         @AuthUser authUserInfo: CurrentUserInfo,
-        @RequestBody @Valid categoryAddRequest: CategoryAddRequest
+        @RequestBody @Valid categoryAddRequest: CategoryAddRequest,
     ): CategoryAddResponse {
         return categoryService.addCategory(authUserInfo.userNo, categoryAddRequest)
     }
@@ -30,7 +29,7 @@ class CategoryController(
     @GetMapping("/categories")
     fun categoriesFind(
         @AuthUser authUserInfo: CurrentUserInfo,
-        @RequestParam accountBookNo: Long
+        @RequestParam accountBookNo: Long,
     ): CategoryFindAllResponse {
         return categoryService.findAllCategories(authUserInfo.userNo, accountBookNo)
     }
@@ -38,7 +37,7 @@ class CategoryController(
     @GetMapping("/categories/{categoryNo}")
     fun categoryDetail(
         @AuthUser authUserInfo: CurrentUserInfo,
-        @PathVariable("categoryNo") categoryNo: Long
+        @PathVariable("categoryNo") categoryNo: Long,
     ): CategoryDetailResponse {
         return categoryService.findCategory(categoryNo, authUserInfo.userNo)
     }
@@ -48,24 +47,22 @@ class CategoryController(
     fun categoryModify(
         @AuthUser authUserInfo: CurrentUserInfo,
         @PathVariable("categoryNo") categoryNo: Long,
-        @Valid @RequestBody request: CategoryModifyRequest
+        @Valid @RequestBody request: CategoryModifyRequest,
     ) {
         categoryService.modifyCategory(authUserInfo.userNo, categoryNo, request)
     }
-
 
     @DeleteMapping("/categories/{categoryNo}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun categoryRemove(
         @AuthUser authUserInfo: CurrentUserInfo,
         @PathVariable("categoryNo") categoryNo: Long,
-        @RequestBody request: CategoryRemoveRequest
+        @RequestBody request: CategoryRemoveRequest,
     ) {
         categoryService.deleteCategory(
             categoryNo,
             request.accountBookNo,
-            authUserInfo.userNo
+            authUserInfo.userNo,
         )
     }
-
 }

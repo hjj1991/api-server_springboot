@@ -10,7 +10,6 @@ import org.springframework.boot.test.context.SpringBootTest
 
 @SpringBootTest
 class UserTokenPersistenceAdapterTest {
-
     @Autowired
     private lateinit var writeUserTokenPort: WriteUserTokenPort
 
@@ -54,7 +53,7 @@ class UserTokenPersistenceAdapterTest {
 
         // When && Then
         Assertions.assertThatThrownBy { readUserTokenPort.getUserToken(135135L) }
-         .isInstanceOf(TokenNotFoundException::class.java)
+            .isInstanceOf(TokenNotFoundException::class.java)
     }
 
     @Test
@@ -72,5 +71,4 @@ class UserTokenPersistenceAdapterTest {
         Assertions.assertThatThrownBy { readUserTokenPort.getUserToken(userNo) }
             .isInstanceOf(TokenNotFoundException::class.java)
     }
-
 }

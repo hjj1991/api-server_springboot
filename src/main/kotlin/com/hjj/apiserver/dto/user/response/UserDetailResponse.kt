@@ -1,6 +1,5 @@
 package com.hjj.apiserver.dto.user.response
 
-import com.hjj.apiserver.domain.user.Provider
 import com.hjj.apiserver.domain.user.Role
 import java.time.LocalDateTime
 
@@ -13,5 +12,4 @@ class UserDetailResponse(
     val picture: String? = null,
     val createdDate: LocalDateTime,
     val lastLoginDateTime: LocalDateTime? = null,
-) {
-}
+)

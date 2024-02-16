@@ -12,7 +12,6 @@ import org.springframework.context.annotation.Bean
 
 @TestConfiguration
 class TestConfiguration {
-
     @PersistenceContext
     private lateinit var entityManager: EntityManager
 
@@ -32,5 +31,4 @@ class TestConfiguration {
     fun objectMapper(): ObjectMapper {
         return ObjectMapper()
     }
-
 }

@@ -1,14 +1,14 @@
 package com.hjj.apiserver.domain.purchase
 
+import com.hjj.apiserver.adapter.out.persistence.user.UserEntity
 import com.hjj.apiserver.domain.BaseEntity
 import com.hjj.apiserver.domain.accountbook.AccountBook
 import com.hjj.apiserver.domain.card.Card
 import com.hjj.apiserver.domain.category.Category
-import com.hjj.apiserver.adapter.out.persistence.user.UserEntity
 import com.hjj.apiserver.dto.purchase.request.PurchaseModifyRequest
+import jakarta.persistence.*
 import org.hibernate.annotations.DynamicUpdate
 import java.time.LocalDate
-import jakarta.persistence.*
 
 @Entity
 @DynamicUpdate
@@ -24,8 +24,7 @@ class Purchase(
     category: Category? = null,
     userEntity: UserEntity,
     accountBook: AccountBook,
-): BaseEntity() {
-
+) : BaseEntity() {
     @Column
     @Enumerated(EnumType.STRING)
     var purchaseType: PurchaseType = purchaseType
@@ -44,7 +43,7 @@ class Purchase(
         protected set
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="cardNo", nullable = true)
+    @JoinColumn(name = "cardNo", nullable = true)
     var card: Card? = card
         protected set
 
@@ -63,8 +62,8 @@ class Purchase(
     var accountBook: AccountBook = accountBook
         protected set
 
-    /* 연관관계 편의 메서드 */
-    fun changeCategory(category: Category){
+    // 연관관계 편의 메서드
+    fun changeCategory(category: Category) {
         this.category?.also {
             it.purchasesList.remove(this)
         }
@@ -73,7 +72,7 @@ class Purchase(
         category.purchasesList.add(this)
     }
 
-    /* 연관관계 편의 메서드 */
+    // 연관관계 편의 메서드
     fun changeUser(userEntity: UserEntity) {
         this.userEntity.purchaseList.remove(this)
 
@@ -81,11 +80,14 @@ class Purchase(
         userEntity.purchaseList.add(this)
     }
 
-
-    fun updatePurchase(request: PurchaseModifyRequest, card: Card?, category: Category?): Purchase{
+    fun updatePurchase(
+        request: PurchaseModifyRequest,
+        card: Card?,
+        category: Category?,
+    ): Purchase {
         var updateCard = card
         var updateCategory = category
-        if(request.purchaseType == PurchaseType.INCOME){
+        if (request.purchaseType == PurchaseType.INCOME) {
             updateCard = null
             updateCategory = null
         }

@@ -4,9 +4,8 @@ import com.hjj.apiserver.domain.category.Category
 import org.springframework.data.jpa.repository.JpaRepository
 
 interface CategoryRepository : JpaRepository<Category, Long>, CategoryRepositoryCustom {
-    fun findCategoryByCategoryNoAndAccountBook_AccountBookNoAndIsDeleteIsFalse(
+    fun findCategoryByCategoryNoAndAccountBookAccountBookNoAndIsDeleteIsFalse(
         categoryNo: Long,
-        accountBookNo: Long
+        accountBookNo: Long,
     ): Category?
-
 }

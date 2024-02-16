@@ -11,5 +11,4 @@ data class CardModifyRequest(
     val cardType: CardType,
     @field:NotNull
     val cardDesc: String = "",
-) {
-}
+)

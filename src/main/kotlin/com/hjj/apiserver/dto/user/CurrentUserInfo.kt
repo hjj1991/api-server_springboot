@@ -11,7 +11,7 @@ class CurrentUserInfo(
     val nickName: String? = null,
     val userNo: Long,
     val role: Role,
-): UserDetails {
+) : UserDetails {
     override fun getAuthorities(): MutableCollection<out GrantedAuthority> {
         return arrayListOf(SimpleGrantedAuthority(this.role.key))
     }

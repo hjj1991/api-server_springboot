@@ -49,7 +49,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 @AutoConfigureRestDocs
 @WebMvcTest(UserController::class)
 @ImportAutoConfiguration(
-    exclude = [OAuth2ClientAutoConfiguration::class]
+    exclude = [OAuth2ClientAutoConfiguration::class],
 )
 class UserControllerTest {
     private val USER_TAG = "유저 관리 API"
@@ -77,9 +77,11 @@ class UserControllerTest {
         fun checkUserNickNameDuplicateTest_when_exists_nickName_then_true() {
             // Given
             val user = getUser()
-            val checkUserNickNameDuplicateCommand = CheckUserNickNameDuplicateCommand(
-                user, "변경할 닉네임"
-            )
+            val checkUserNickNameDuplicateCommand =
+                CheckUserNickNameDuplicateCommand(
+                    user,
+                    "변경할 닉네임",
+                )
             val existsNickNameResponse = ExistsNickNameResponse(true)
             BDDMockito.given(getUserUseCase.existsNickName(checkUserNickNameDuplicateCommand))
                 .willReturn(true)
@@ -88,15 +90,15 @@ class UserControllerTest {
             mockMvc.perform(
                 RestDocumentationRequestBuilders.get(
                     "/users/exists-nickname/{nickName}",
-                    checkUserNickNameDuplicateCommand.nickName
+                    checkUserNickNameDuplicateCommand.nickName,
                 )
                     .header(HttpHeaders.AUTHORIZATION, JwtProvider.BEARER_PREFIX + "aergaeaerg")
                     .contentType(MediaType.APPLICATION_JSON)
-                    .with(SecurityMockMvcRequestPostProcessors.user(user))
+                    .with(SecurityMockMvcRequestPostProcessors.user(user)),
             )
                 .andExpect(MockMvcResultMatchers.status().isOk)
                 .andExpect(
-                    MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(existsNickNameResponse))
+                    MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(existsNickNameResponse)),
                 )
                 .andDo(
                     MockMvcRestDocumentationWrapper.document(
@@ -115,15 +117,15 @@ class UserControllerTest {
                                 )
                                 .requestHeaders(
                                     ResourceDocumentation.headerWithName(HttpHeaders.AUTHORIZATION).description(
-                                        JwtProvider.BEARER_PREFIX + "JWT토큰값"
-                                    ).optional()
-                                ).build()
+                                        JwtProvider.BEARER_PREFIX + "JWT토큰값",
+                                    ).optional(),
+                                ).build(),
                         ),
                         HeaderDocumentation.requestHeaders(
                             HeaderDocumentation.headerWithName(org.apache.http.HttpHeaders.AUTHORIZATION)
-                                .description(JwtProvider.BEARER_PREFIX + "JWT토큰값").optional()
+                                .description(JwtProvider.BEARER_PREFIX + "JWT토큰값").optional(),
                         ),
-                    )
+                    ),
                 )
         }
 
@@ -132,9 +134,11 @@ class UserControllerTest {
         fun checkUserNickNameDuplicateTest_when_login_user_not_exsists_nickName_then_false() {
             // Given
             val user = getUser()
-            val checkUserNickNameDuplicateCommand = CheckUserNickNameDuplicateCommand(
-                user, "변경할 닉네임"
-            )
+            val checkUserNickNameDuplicateCommand =
+                CheckUserNickNameDuplicateCommand(
+                    user,
+                    "변경할 닉네임",
+                )
             val existsNickNameResponse = ExistsNickNameResponse(false)
             BDDMockito.given(getUserUseCase.existsNickName(checkUserNickNameDuplicateCommand))
                 .willReturn(false)
@@ -143,15 +147,15 @@ class UserControllerTest {
             mockMvc.perform(
                 RestDocumentationRequestBuilders.get(
                     "/users/exists-nickname/{nickName}",
-                    checkUserNickNameDuplicateCommand.nickName
+                    checkUserNickNameDuplicateCommand.nickName,
                 )
                     .header(HttpHeaders.AUTHORIZATION, JwtProvider.BEARER_PREFIX + "aergaeaerg")
                     .contentType(MediaType.APPLICATION_JSON)
-                    .with(SecurityMockMvcRequestPostProcessors.user(user))
+                    .with(SecurityMockMvcRequestPostProcessors.user(user)),
             )
                 .andExpect(MockMvcResultMatchers.status().isOk)
                 .andExpect(
-                    MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(existsNickNameResponse))
+                    MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(existsNickNameResponse)),
                 )
                 .andDo(
                     MockMvcRestDocumentationWrapper.document(
@@ -170,18 +174,17 @@ class UserControllerTest {
                                 )
                                 .requestHeaders(
                                     ResourceDocumentation.headerWithName(HttpHeaders.AUTHORIZATION).description(
-                                        JwtProvider.BEARER_PREFIX + "JWT토큰값"
-                                    ).optional()
-                                ).build()
+                                        JwtProvider.BEARER_PREFIX + "JWT토큰값",
+                                    ).optional(),
+                                ).build(),
                         ),
                         HeaderDocumentation.requestHeaders(
                             HeaderDocumentation.headerWithName(org.apache.http.HttpHeaders.AUTHORIZATION)
-                                .description(JwtProvider.BEARER_PREFIX + "JWT토큰값").optional()
+                                .description(JwtProvider.BEARER_PREFIX + "JWT토큰값").optional(),
                         ),
-                    )
+                    ),
                 )
         }
-
     }
 
     @DisplayName("GET /users/exists-id/{nickName} API")
@@ -200,7 +203,7 @@ class UserControllerTest {
             // When && Then
             mockMvc.perform(
                 RestDocumentationRequestBuilders.get("/users/exists-id/{userId}", userId)
-                    .contentType(MediaType.APPLICATION_JSON)
+                    .contentType(MediaType.APPLICATION_JSON),
             )
                 .andExpect(MockMvcResultMatchers.status().isOk)
                 .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(existsUserIdResponse)))
@@ -218,9 +221,9 @@ class UserControllerTest {
                                 .tag(USER_TAG)
                                 .responseFields(
                                     PayloadDocumentation.fieldWithPath("existsUserId").description("해당 아이디 존재 여부"),
-                                ).build()
+                                ).build(),
                         ),
-                    )
+                    ),
                 )
         }
 
@@ -237,7 +240,7 @@ class UserControllerTest {
             // When && Then
             mockMvc.perform(
                 RestDocumentationRequestBuilders.get("/users/exists-id/{userId}", userId)
-                    .contentType(MediaType.APPLICATION_JSON)
+                    .contentType(MediaType.APPLICATION_JSON),
             )
                 .andExpect(MockMvcResultMatchers.status().isOk)
                 .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(existsUserIdResponse)))
@@ -255,12 +258,11 @@ class UserControllerTest {
                                 .tag(USER_TAG)
                                 .responseFields(
                                     PayloadDocumentation.fieldWithPath("existsUserId").description("해당 아이디 존재 여부"),
-                                ).build()
+                                ).build(),
                         ),
-                    )
+                    ),
                 )
         }
-
     }
 
     @DisplayName("POST /users/signup API")
@@ -271,20 +273,22 @@ class UserControllerTest {
         @WithMockUser
         fun signUpTest_success() {
             // Given
-            val userSignUpRequest = UserSignUpRequest(
-                userId = "1234,",
-                nickName = "nickName",
-                userEmail = "test@example.com",
-                userPw = "1354135",
-            )
+            val userSignUpRequest =
+                UserSignUpRequest(
+                    userId = "1234,",
+                    nickName = "nickName",
+                    userEmail = "test@example.com",
+                    userPw = "1354135",
+                )
 
-            val registerUserCommand = RegisterUserCommand(
-                userId = userSignUpRequest.userId,
-                nickName = userSignUpRequest.nickName,
-                userEmail = userSignUpRequest.userEmail,
-                userPw = userSignUpRequest.userPw,
-                provider = Provider.GENERAL
-            )
+            val registerUserCommand =
+                RegisterUserCommand(
+                    userId = userSignUpRequest.userId,
+                    nickName = userSignUpRequest.nickName,
+                    userEmail = userSignUpRequest.userEmail,
+                    userPw = userSignUpRequest.userPw,
+                    provider = Provider.GENERAL,
+                )
             BDDMockito.doNothing().`when`(writeUserUseCase).signUp(registerUserCommand)
 
             // When && Then
@@ -293,7 +297,7 @@ class UserControllerTest {
                     .header(HttpHeaders.AUTHORIZATION, JwtProvider.BEARER_PREFIX + "aergaeaerg")
                     .contentType(MediaType.APPLICATION_JSON)
                     .with(SecurityMockMvcRequestPostProcessors.csrf())
-                    .content(objectMapper.writeValueAsString(userSignUpRequest))
+                    .content(objectMapper.writeValueAsString(userSignUpRequest)),
             )
                 .andExpect(MockMvcResultMatchers.status().isCreated)
                 .andDo(
@@ -305,9 +309,9 @@ class UserControllerTest {
                             ResourceSnippetParameters.builder()
                                 .description("정상적으로 일반 회원가입 완료된 경우")
                                 .tag(USER_TAG)
-                                .build()
+                                .build(),
                         ),
-                    )
+                    ),
                 )
         }
 
@@ -316,20 +320,22 @@ class UserControllerTest {
         @WithMockUser
         fun signUpTest_fail_already_exists_user() {
             // Given
-            val userSignUpRequest = UserSignUpRequest(
-                userId = "1234,",
-                nickName = "nickName",
-                userEmail = "test@example.com",
-                userPw = "1354135",
-            )
+            val userSignUpRequest =
+                UserSignUpRequest(
+                    userId = "1234,",
+                    nickName = "nickName",
+                    userEmail = "test@example.com",
+                    userPw = "1354135",
+                )
 
-            val registerUserCommand = RegisterUserCommand(
-                userId = userSignUpRequest.userId,
-                nickName = userSignUpRequest.nickName,
-                userEmail = userSignUpRequest.userEmail,
-                userPw = userSignUpRequest.userPw,
-                provider = Provider.GENERAL
-            )
+            val registerUserCommand =
+                RegisterUserCommand(
+                    userId = userSignUpRequest.userId,
+                    nickName = userSignUpRequest.nickName,
+                    userEmail = userSignUpRequest.userEmail,
+                    userPw = userSignUpRequest.userPw,
+                    provider = Provider.GENERAL,
+                )
             BDDMockito.`when`(writeUserUseCase.signUp(registerUserCommand))
                 .thenThrow(AlreadyExistsUserException::class.java)
 
@@ -341,11 +347,11 @@ class UserControllerTest {
                     .header(HttpHeaders.AUTHORIZATION, JwtProvider.BEARER_PREFIX + "aergaeaerg")
                     .contentType(MediaType.APPLICATION_JSON)
                     .with(SecurityMockMvcRequestPostProcessors.csrf())
-                    .content(objectMapper.writeValueAsString(userSignUpRequest))
+                    .content(objectMapper.writeValueAsString(userSignUpRequest)),
             )
                 .andExpect(MockMvcResultMatchers.status().isBadRequest)
                 .andExpect(
-                    MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(alreadyExsistsUserResponse))
+                    MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(alreadyExsistsUserResponse)),
                 )
                 .andDo(
                     MockMvcRestDocumentationWrapper.document(
@@ -363,12 +369,11 @@ class UserControllerTest {
                                 .responseFields(
                                     PayloadDocumentation.fieldWithPath("errCode").description("에러 코드"),
                                     PayloadDocumentation.fieldWithPath("message").description("에러 메시지"),
-                                ).build()
+                                ).build(),
                         ),
-                    )
+                    ),
                 )
         }
-
     }
 
     @DisplayName("POST /users/signin API")
@@ -381,16 +386,18 @@ class UserControllerTest {
             // Given
             val userSignInRequest = UserSignInRequest(userId = "1234,", userPw = "<PASSWORD>")
 
-            val signInUserCommand = SignInUserCommand(
-                userId = userSignInRequest.userId,
-                userPw = userSignInRequest.userPw,
-                provider = Provider.GENERAL
-            )
-            val userSignInResponse = UserSignInResponse(
-                nickName = "nickName",
-                accessToken = "accessToken",
-                refreshToken = "refreshToken"
-            )
+            val signInUserCommand =
+                SignInUserCommand(
+                    userId = userSignInRequest.userId,
+                    userPw = userSignInRequest.userPw,
+                    provider = Provider.GENERAL,
+                )
+            val userSignInResponse =
+                UserSignInResponse(
+                    nickName = "nickName",
+                    accessToken = "accessToken",
+                    refreshToken = "refreshToken",
+                )
             BDDMockito.`when`(writeUserUseCase.signIn(signInUserCommand)).thenReturn(userSignInResponse)
 
             // When && Then
@@ -399,11 +406,11 @@ class UserControllerTest {
                     .header(HttpHeaders.AUTHORIZATION, JwtProvider.BEARER_PREFIX + "aergaeaerg")
                     .contentType(MediaType.APPLICATION_JSON)
                     .with(SecurityMockMvcRequestPostProcessors.csrf())
-                    .content(objectMapper.writeValueAsString(userSignInRequest))
+                    .content(objectMapper.writeValueAsString(userSignInRequest)),
             )
                 .andExpect(MockMvcResultMatchers.status().isOk)
                 .andExpect(
-                    MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(userSignInResponse))
+                    MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(userSignInResponse)),
                 )
                 .andDo(
                     MockMvcRestDocumentationWrapper.document(
@@ -432,9 +439,9 @@ class UserControllerTest {
                                         .type(String::class.java),
                                     PayloadDocumentation.fieldWithPath("refreshToken").description("리프레쉬 토큰")
                                         .type(String::class.java),
-                                ).build()
+                                ).build(),
                         ),
-                    )
+                    ),
                 )
         }
 
@@ -445,16 +452,18 @@ class UserControllerTest {
             // Given
             val userSignInRequest = UserSignInRequest(userId = "1234,", userPw = "<PASSWORD>")
 
-            val signInUserCommand = SignInUserCommand(
-                userId = userSignInRequest.userId,
-                userPw = userSignInRequest.userPw,
-                provider = Provider.GENERAL
-            )
-            val userSignInResponse = UserSignInResponse(
-                nickName = "nickName",
-                accessToken = "accessToken",
-                refreshToken = "refreshToken"
-            )
+            val signInUserCommand =
+                SignInUserCommand(
+                    userId = userSignInRequest.userId,
+                    userPw = userSignInRequest.userPw,
+                    provider = Provider.GENERAL,
+                )
+            val userSignInResponse =
+                UserSignInResponse(
+                    nickName = "nickName",
+                    accessToken = "accessToken",
+                    refreshToken = "refreshToken",
+                )
             val userNotFoundExceptionResponse = ApiError(ErrCode.ERR_CODE0001, ErrCode.ERR_CODE0001.msg)
             BDDMockito.`when`(writeUserUseCase.signIn(signInUserCommand)).thenThrow(UserNotFoundException::class.java)
 
@@ -464,11 +473,11 @@ class UserControllerTest {
                     .header(HttpHeaders.AUTHORIZATION, JwtProvider.BEARER_PREFIX + "aergaeaerg")
                     .contentType(MediaType.APPLICATION_JSON)
                     .with(SecurityMockMvcRequestPostProcessors.csrf())
-                    .content(objectMapper.writeValueAsString(userSignInRequest))
+                    .content(objectMapper.writeValueAsString(userSignInRequest)),
             )
                 .andExpect(MockMvcResultMatchers.status().isBadRequest)
                 .andExpect(
-                    MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(userNotFoundExceptionResponse))
+                    MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(userNotFoundExceptionResponse)),
                 )
                 .andDo(
                     MockMvcRestDocumentationWrapper.document(
@@ -486,13 +495,11 @@ class UserControllerTest {
                                 .responseFields(
                                     PayloadDocumentation.fieldWithPath("errCode").description("에러 코드"),
                                     PayloadDocumentation.fieldWithPath("message").description("에러 메시지"),
-                                ).build()
+                                ).build(),
                         ),
-                    )
+                    ),
                 )
         }
-
-
     }
 
     private fun getUser(): User {

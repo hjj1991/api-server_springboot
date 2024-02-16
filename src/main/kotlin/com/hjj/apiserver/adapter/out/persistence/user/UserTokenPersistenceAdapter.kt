@@ -9,17 +9,18 @@ import org.springframework.cache.CacheManager
 @PersistenceAdapter
 class UserTokenPersistenceAdapter(
     private val caheManager: CacheManager,
-): WriteUserTokenPort, ReadUserTokenPort {
-
-    override fun registerUserToken(userNo: Long, refreshToken: String) {
+) : WriteUserTokenPort, ReadUserTokenPort {
+    override fun registerUserToken(
+        userNo: Long,
+        refreshToken: String,
+    ) {
         val cache = caheManager.getCache("refreshTokenCache")
         cache.put(userNo, refreshToken)
     }
 
     override fun getUserToken(userNo: Long): String {
-        val cache = caheManager.getCache("refreshTokenCache").get(userNo)?: throw TokenNotFoundException("[getUserToken] 해당 사용자의 refreshToken이 존재하지 않습니다.")
+        val cache = caheManager.getCache("refreshTokenCache").get(userNo) ?: throw TokenNotFoundException("[getUserToken] 해당 사용자의 refreshToken이 존재하지 않습니다.")
         return cache.get() as String
-
     }
 
     override fun deleteUserToken(userNo: Long): Boolean {

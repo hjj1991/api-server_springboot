@@ -6,14 +6,13 @@ import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.web.filter.OncePerRequestFilter
 
-
 class JwtAuthenticationFilter(
     private val jwtProvider: JwtProvider,
-): OncePerRequestFilter() {
+) : OncePerRequestFilter() {
     override fun doFilterInternal(
         request: HttpServletRequest,
         response: HttpServletResponse,
-        filterChain: FilterChain
+        filterChain: FilterChain,
     ) {
 //        val resolveToken = jwtTokenProvider.resolveToken(request)
 //        if(StringUtils.hasText(resolveToken) && jwtTokenProvider.validateToken(resolveToken!!)){

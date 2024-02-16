@@ -12,11 +12,9 @@ import org.springframework.web.bind.annotation.RestController
 class DepositController(
     private val depositService: DepositService,
 ) {
-
     @ApiOperation(value = "예금 목록", notes = "예금 목록 조회.")
     @GetMapping("/deposit")
     fun depositsFind(): List<DepositFindAllResponse> {
         return depositService.findDeposits()
     }
-
 }

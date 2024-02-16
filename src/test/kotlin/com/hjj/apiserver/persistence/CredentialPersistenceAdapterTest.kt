@@ -34,7 +34,6 @@ import org.springframework.context.annotation.Import
 )
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class CredentialPersistenceAdapterTest {
-
     @Autowired
     private lateinit var writeCredentialPort: WriteCredentialPort
 
@@ -44,19 +43,19 @@ class CredentialPersistenceAdapterTest {
     @Autowired
     private lateinit var writeUserPort: WriteUserPort
 
-
     @Test
     fun registerCredential_success() {
         // Given
         val user = User(nickName = "테스트닉네임", userEmail = "test@test.com", userPw = "<PASSWORD>", role = Role.USER)
         val savedUser = writeUserPort.registerUser(user)
-        val credential = Credential(
-            userId = "tester",
-            credentialEmail = "tester@tester.com",
-            provider = Provider.GENERAL,
-            user = savedUser,
-            state = CredentialState.CONNECTED,
-        )
+        val credential =
+            Credential(
+                userId = "tester",
+                credentialEmail = "tester@tester.com",
+                provider = Provider.GENERAL,
+                user = savedUser,
+                state = CredentialState.CONNECTED,
+            )
         // When
         val registerCredential = writeCredentialPort.registerCredential(credential)
         // Then
@@ -72,16 +71,21 @@ class CredentialPersistenceAdapterTest {
         // Given
         val user = User(nickName = "테스트닉네임", userEmail = "test@test.com", userPw = "<PASSWORD>", role = Role.USER)
         val savedUser = writeUserPort.registerUser(user)
-        val credential = Credential(
-            userId = "tester",
-            credentialEmail = "tester@tester.com",
-            provider = Provider.GENERAL,
-            user = savedUser,
-            state = CredentialState.CONNECTED,
-        )
+        val credential =
+            Credential(
+                userId = "tester",
+                credentialEmail = "tester@tester.com",
+                provider = Provider.GENERAL,
+                user = savedUser,
+                state = CredentialState.CONNECTED,
+            )
         writeCredentialPort.registerCredential(credential)
         // When
-        val existsCredentialByUserIdAndProvider = getCredentialPort.findExistsCredentialByUserIdAndProvider(credential.userId, credential.provider)
+        val existsCredentialByUserIdAndProvider =
+            getCredentialPort.findExistsCredentialByUserIdAndProvider(
+                credential.userId,
+                credential.provider,
+            )
         // Then
         Assertions.assertThat(existsCredentialByUserIdAndProvider).isEqualTo(true)
     }
@@ -91,16 +95,21 @@ class CredentialPersistenceAdapterTest {
         // Given
         val user = User(nickName = "테스트닉네임", userEmail = "test@test.com", userPw = "<PASSWORD>", role = Role.USER)
         val savedUser = writeUserPort.registerUser(user)
-        val credential = Credential(
-            userId = "tester",
-            credentialEmail = "tester@tester.com",
-            provider = Provider.NAVER,
-            user = savedUser,
-            state = CredentialState.CONNECTED,
-        )
+        val credential =
+            Credential(
+                userId = "tester",
+                credentialEmail = "tester@tester.com",
+                provider = Provider.NAVER,
+                user = savedUser,
+                state = CredentialState.CONNECTED,
+            )
         writeCredentialPort.registerCredential(credential)
         // When
-        val existsCredentialByUserIdAndProvider = getCredentialPort.findExistsCredentialByUserIdAndProvider(credential.userId, Provider.GENERAL)
+        val existsCredentialByUserIdAndProvider =
+            getCredentialPort.findExistsCredentialByUserIdAndProvider(
+                credential.userId,
+                Provider.GENERAL,
+            )
         // Then
         Assertions.assertThat(existsCredentialByUserIdAndProvider).isEqualTo(false)
     }

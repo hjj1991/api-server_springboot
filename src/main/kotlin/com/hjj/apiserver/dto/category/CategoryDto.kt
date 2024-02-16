@@ -16,5 +16,4 @@ data class CategoryDto(
         val accountBookNo: Long,
         val parentCategoryNo: Long,
     )
-
 }

@@ -15,30 +15,28 @@ import org.springframework.web.bind.annotation.*
 class AccountBookController(
     private val accountBookService: AccountBookService,
 ) {
-
     @PostMapping("/account-books")
     @ResponseStatus(HttpStatus.CREATED)
     fun accountBookAdd(
         @AuthUser authUserInfo: CurrentUserInfo,
-        @Valid @RequestBody request: AccountBookAddRequest
+        @Valid @RequestBody request: AccountBookAddRequest,
     ): AccountBookAddResponse {
         return accountBookService.addAccountBook(authUserInfo.userNo, request)
     }
 
     @GetMapping("/account-books")
-    fun accountBooksFind(@AuthUser user: CurrentUserInfo): List<AccountBookFindAllResponse> {
+    fun accountBooksFind(
+        @AuthUser user: CurrentUserInfo,
+    ): List<AccountBookFindAllResponse> {
         return accountBookService.findAllAccountBook(user.userNo)
     }
-
 
     @GetMapping("/account-books/{accountBookNo}")
     fun accountBookDetail(
         @AuthUser user: CurrentUserInfo,
-        @PathVariable accountBookNo: Long
+        @PathVariable accountBookNo: Long,
     ): AccountBookDetailResponse {
         val findAccountBookDetail = accountBookService.findAccountBookDetail(accountBookNo, user.userNo)
         return findAccountBookDetail
     }
-
-
 }

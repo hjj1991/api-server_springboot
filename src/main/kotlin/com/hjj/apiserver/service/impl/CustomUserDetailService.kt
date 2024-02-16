@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service
 class CustomUserDetailService(
     private val userRepository: UserRepository,
 ) : UserDetailsService {
-
     @Cacheable(value = ["users"], key = "#username")
     override fun loadUserByUsername(username: String): UserDetails {
         return userRepository.findByIdOrNull(username.toLong())?.run {
@@ -25,5 +24,4 @@ class CustomUserDetailService(
             )
         } ?: throw UserNotFoundException()
     }
-
 }

@@ -46,20 +46,23 @@ class AccountBookUserRepositoryImpl(
                                 AccountBookFindAllResponse.JoinedUser::class.java,
                                 userEntity.userNo,
                                 userEntity.nickName,
-                                userEntity.picture
-                            )
-                        )
-                    )
-                )
+                                userEntity.picture,
+                            ),
+                        ),
+                    ),
+                ),
             )
     }
 
-    override fun findAccountRole(userNo: Long, accountBookNo: Long): AccountRole? {
+    override fun findAccountRole(
+        userNo: Long,
+        accountBookNo: Long,
+    ): AccountRole? {
         return jpaQueryFactory.select(accountBookUser.accountRole)
             .from(accountBookUser)
             .where(
                 accountBookUser.userEntity.userNo.eq(userNo),
-                accountBookUser.accountBook.accountBookNo.eq(accountBookNo)
+                accountBookUser.accountBook.accountBookNo.eq(accountBookNo),
             ).fetchOne()
     }
 }

@@ -24,25 +24,25 @@ class CustomAuthorizationCodeTokenResponseClient : OAuth2AccessTokenResponseClie
     private var restOperations: RestOperations
 
     init {
-        val restTemplate = RestTemplate(
-            listOf(FormHttpMessageConverter(), OAuth2AccessTokenResponseHttpMessageConverter())
-        )
+        val restTemplate =
+            RestTemplate(
+                listOf(FormHttpMessageConverter(), OAuth2AccessTokenResponseHttpMessageConverter()),
+            )
         restTemplate.errorHandler = OAuth2ErrorResponseErrorHandler()
         restOperations = restTemplate
     }
 
-    override fun getTokenResponse(
-        authorizationCodeGrantRequest: OAuth2AuthorizationCodeGrantRequest
-    ): OAuth2AccessTokenResponse {
+    override fun getTokenResponse(authorizationCodeGrantRequest: OAuth2AuthorizationCodeGrantRequest): OAuth2AccessTokenResponse {
         Assert.notNull(authorizationCodeGrantRequest, "authorizationCodeGrantRequest cannot be null")
         val request = requestEntityConverter.convert(authorizationCodeGrantRequest)!!
         val response = getResponse(request)
         var tokenResponse = response.body!!
         if (CollectionUtils.isEmpty(tokenResponse.accessToken.scopes)) {
-            tokenResponse = OAuth2AccessTokenResponse.withResponse(tokenResponse)
-                .scopes(authorizationCodeGrantRequest.clientRegistration.scopes)
-                .additionalParameters(authorizationCodeGrantRequest.authorizationExchange.authorizationRequest.additionalParameters)
-                .build()
+            tokenResponse =
+                OAuth2AccessTokenResponse.withResponse(tokenResponse)
+                    .scopes(authorizationCodeGrantRequest.clientRegistration.scopes)
+                    .additionalParameters(authorizationCodeGrantRequest.authorizationExchange.authorizationRequest.additionalParameters)
+                    .build()
         }
         return tokenResponse
     }
@@ -51,23 +51,20 @@ class CustomAuthorizationCodeTokenResponseClient : OAuth2AccessTokenResponseClie
         try {
             return restOperations.exchange(request, OAuth2AccessTokenResponse::class.java)
         } catch (ex: RestClientException) {
-            val oauth2Error = OAuth2Error(
-                INVALID_TOKEN_RESPONSE_ERROR_CODE,
-                "An error occurred while attempting to retrieve the OAuth 2.0 Access Token Response: ${ex.message}",
-                null
-            )
+            val oauth2Error =
+                OAuth2Error(
+                    INVALID_TOKEN_RESPONSE_ERROR_CODE,
+                    "An error occurred while attempting to retrieve the OAuth 2.0 Access Token Response: ${ex.message}",
+                    null,
+                )
             throw OAuth2AuthorizationException(oauth2Error, ex)
         }
     }
 
-
-    fun setRequestEntityConverter(
-        requestEntityConverter: Converter<OAuth2AuthorizationCodeGrantRequest, RequestEntity<*>>
-    ) {
+    fun setRequestEntityConverter(requestEntityConverter: Converter<OAuth2AuthorizationCodeGrantRequest, RequestEntity<*>>) {
         Assert.notNull(requestEntityConverter, "requestEntityConverter cannot be null")
         this.requestEntityConverter = requestEntityConverter
     }
-
 
     fun setRestOperations(restOperations: RestOperations) {
         Assert.notNull(restOperations, "restOperations cannot be null")

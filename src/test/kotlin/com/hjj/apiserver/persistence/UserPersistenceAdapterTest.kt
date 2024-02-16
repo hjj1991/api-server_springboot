@@ -26,7 +26,6 @@ import org.springframework.context.annotation.Import
 )
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class UserPersistenceAdapterTest {
-
     @Autowired
     lateinit var getUserPort: GetUserPort
 
@@ -36,13 +35,14 @@ class UserPersistenceAdapterTest {
     @Test
     fun registerUserTest_success() {
         // Given
-        val user = User(
-            nickName = "nickname",
-            userEmail = "test@example.com",
-            userPw = "abc",
-            picture = "haha",
-            role = Role.USER
-        )
+        val user =
+            User(
+                nickName = "nickname",
+                userEmail = "test@example.com",
+                userPw = "abc",
+                picture = "haha",
+                role = Role.USER,
+            )
 
         // When
         val savedUser = writeUserPort.registerUser(user)
@@ -53,7 +53,6 @@ class UserPersistenceAdapterTest {
         Assertions.assertThat(savedUser.nickName).isEqualTo(user.nickName)
         Assertions.assertThat(savedUser.picture).isEqualTo(user.picture)
         Assertions.assertThat(savedUser.role).isEqualTo(user.role)
-
     }
 
     @Test
@@ -80,6 +79,5 @@ class UserPersistenceAdapterTest {
 
         // Then
         Assertions.assertThat(existsUserNickName).isEqualTo(false)
-
     }
 }

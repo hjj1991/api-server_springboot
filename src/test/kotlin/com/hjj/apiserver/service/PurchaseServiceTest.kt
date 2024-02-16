@@ -34,11 +34,10 @@ import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.data.domain.PageRequest
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.util.*
+import java.util.Optional
 
 @ExtendWith(MockitoExtension::class)
 class PurchaseServiceTest {
-
     @InjectMocks
     lateinit var purchaseService: PurchaseService
 
@@ -61,62 +60,67 @@ class PurchaseServiceTest {
     @Test
     fun addPurchase_success_when_outGoing() {
         // Given
-        val accountBook = AccountBook(
-            1L,
-            "가계부",
-            "가계부 설명"
-        )
+        val accountBook =
+            AccountBook(
+                1L,
+                "가계부",
+                "가계부 설명",
+            )
 
-        val accountBookDto = AccountBookDto(
-            accountBook.accountBookNo!!,
-            accountBookName = accountBook.accountBookName,
-            accountBookDesc = accountBook.accountBookDesc,
-            backgroundColor = "#000000",
-            color = "#000111",
-            accountRole = AccountRole.OWNER,
-            createdAt = LocalDateTime.now()
-        )
+        val accountBookDto =
+            AccountBookDto(
+                accountBook.accountBookNo!!,
+                accountBookName = accountBook.accountBookName,
+                accountBookDesc = accountBook.accountBookDesc,
+                backgroundColor = "#000000",
+                color = "#000111",
+                accountRole = AccountRole.OWNER,
+                createdAt = LocalDateTime.now(),
+            )
 
-        val category = Category(
-            categoryNo = 1L,
-            categoryName = "식비",
-            categoryDesc = "밥먹을때 사용하는돈",
-            categoryIcon = "",
-            accountBook = accountBook,
-            parentCategory = null
-        )
+        val category =
+            Category(
+                categoryNo = 1L,
+                categoryName = "식비",
+                categoryDesc = "밥먹을때 사용하는돈",
+                categoryIcon = "",
+                accountBook = accountBook,
+                parentCategory = null,
+            )
 
         val savedUser = createUser()
-        val card = Card(
-            cardNo = 1L,
-            cardName = "테스트카드",
-            cardType = CardType.CHECK_CARD,
-            cardDesc = "카드설명",
-            userEntity = savedUser
-        )
+        val card =
+            Card(
+                cardNo = 1L,
+                cardName = "테스트카드",
+                cardType = CardType.CHECK_CARD,
+                cardDesc = "카드설명",
+                userEntity = savedUser,
+            )
 
-        val purchaseAddRequest = PurchaseAddRequest(
-            accountBookNo = accountBook.accountBookNo!!,
-            cardNo = card.cardNo!!,
-            categoryNo = category.categoryNo!!,
-            purchaseType = PurchaseType.OUTGOING,
-            price = 10000,
-            reason = "점심비",
-            purchaseDate = LocalDate.of(2023, 7, 13)
-        )
+        val purchaseAddRequest =
+            PurchaseAddRequest(
+                accountBookNo = accountBook.accountBookNo!!,
+                cardNo = card.cardNo!!,
+                categoryNo = category.categoryNo!!,
+                purchaseType = PurchaseType.OUTGOING,
+                price = 10000,
+                reason = "점심비",
+                purchaseDate = LocalDate.of(2023, 7, 13),
+            )
 
-        val purchase = Purchase(
-            purchaseNo = 1L,
-            purchaseType = purchaseAddRequest.purchaseType,
-            price = purchaseAddRequest.price,
-            reason = purchaseAddRequest.reason,
-            purchaseDate = purchaseAddRequest.purchaseDate,
-            card = card,
-            category = category,
-            userEntity = savedUser,
-            accountBook = accountBook
-        )
-
+        val purchase =
+            Purchase(
+                purchaseNo = 1L,
+                purchaseType = purchaseAddRequest.purchaseType,
+                price = purchaseAddRequest.price,
+                reason = purchaseAddRequest.reason,
+                purchaseDate = purchaseAddRequest.purchaseDate,
+                card = card,
+                category = category,
+                userEntity = savedUser,
+                accountBook = accountBook,
+            )
 
         Mockito.`when`(accountBookRepository.findAccountBook(savedUser.userNo!!, purchaseAddRequest.accountBookNo))
             .thenReturn(accountBookDto)
@@ -128,8 +132,8 @@ class PurchaseServiceTest {
             categoryRepository.findCategoryByAccountRole(
                 category.categoryNo!!,
                 accountBook.accountBookNo!!,
-                savedUser.userNo!!
-            )
+                savedUser.userNo!!,
+            ),
         )
             .thenReturn(category)
 
@@ -145,7 +149,6 @@ class PurchaseServiceTest {
         // When
         val purchaseAddResponse = purchaseService.addPurchase(savedUser.userNo!!, purchaseAddRequest)
 
-
         // Then
         Assertions.assertThat(purchaseAddResponse.purchaseNo).isEqualTo(purchase.purchaseNo)
         Assertions.assertThat(purchaseAddResponse.purchaseDate).isEqualTo(purchase.purchaseDate)
@@ -155,48 +158,50 @@ class PurchaseServiceTest {
         Assertions.assertThat(purchaseAddResponse.price).isEqualTo(purchase.price)
         Assertions.assertThat(purchaseAddResponse.reason).isEqualTo(purchase.reason)
         Assertions.assertThat(purchaseAddResponse.cardNo).isEqualTo(purchase.card!!.cardNo)
-
     }
 
     @DisplayName("수입이 정상 생성된다.")
     @Test
     fun addPurchase_success_when_income() {
         // Given
-        val accountBook = AccountBook(
-            1L,
-            "가계부",
-            "가계부 설명"
-        )
+        val accountBook =
+            AccountBook(
+                1L,
+                "가계부",
+                "가계부 설명",
+            )
 
-        val accountBookDto = AccountBookDto(
-            accountBook.accountBookNo!!,
-            accountBookName = accountBook.accountBookName,
-            accountBookDesc = accountBook.accountBookDesc,
-            backgroundColor = "#000000",
-            color = "#000111",
-            accountRole = AccountRole.OWNER,
-            createdAt = LocalDateTime.now()
-        )
+        val accountBookDto =
+            AccountBookDto(
+                accountBook.accountBookNo!!,
+                accountBookName = accountBook.accountBookName,
+                accountBookDesc = accountBook.accountBookDesc,
+                backgroundColor = "#000000",
+                color = "#000111",
+                accountRole = AccountRole.OWNER,
+                createdAt = LocalDateTime.now(),
+            )
         val savedUser = createUser()
 
-        val purchaseAddRequest = PurchaseAddRequest(
-            accountBookNo = accountBook.accountBookNo!!,
-            purchaseType = PurchaseType.INCOME,
-            price = 10000000,
-            reason = "월급",
-            purchaseDate = LocalDate.of(2023, 7, 13)
-        )
+        val purchaseAddRequest =
+            PurchaseAddRequest(
+                accountBookNo = accountBook.accountBookNo!!,
+                purchaseType = PurchaseType.INCOME,
+                price = 10000000,
+                reason = "월급",
+                purchaseDate = LocalDate.of(2023, 7, 13),
+            )
 
-        val purchase = Purchase(
-            purchaseNo = 1L,
-            purchaseType = purchaseAddRequest.purchaseType,
-            price = purchaseAddRequest.price,
-            reason = purchaseAddRequest.reason,
-            purchaseDate = purchaseAddRequest.purchaseDate,
-            userEntity = savedUser,
-            accountBook = accountBook
-        )
-
+        val purchase =
+            Purchase(
+                purchaseNo = 1L,
+                purchaseType = purchaseAddRequest.purchaseType,
+                price = purchaseAddRequest.price,
+                reason = purchaseAddRequest.reason,
+                purchaseDate = purchaseAddRequest.purchaseDate,
+                userEntity = savedUser,
+                accountBook = accountBook,
+            )
 
         Mockito.`when`(accountBookRepository.findAccountBook(savedUser.userNo!!, purchaseAddRequest.accountBookNo))
             .thenReturn(accountBookDto)
@@ -213,7 +218,6 @@ class PurchaseServiceTest {
         // When
         val purchaseAddResponse = purchaseService.addPurchase(savedUser.userNo!!, purchaseAddRequest)
 
-
         // Then
         Assertions.assertThat(purchaseAddResponse.purchaseNo).isEqualTo(purchase.purchaseNo)
         Assertions.assertThat(purchaseAddResponse.purchaseDate).isEqualTo(purchase.purchaseDate)
@@ -223,7 +227,6 @@ class PurchaseServiceTest {
         Assertions.assertThat(purchaseAddResponse.price).isEqualTo(purchase.price)
         Assertions.assertThat(purchaseAddResponse.reason).isEqualTo(purchase.reason)
         Assertions.assertThat(purchaseAddResponse.cardNo).isEqualTo(null)
-
     }
 
     @DisplayName("지출 생성시 가계부가 없는 경우 AccountBookNotFoundException이 발생한다.")
@@ -231,13 +234,14 @@ class PurchaseServiceTest {
     fun addPurchase_fail_when_outGoing_and_accountBookNotExists_throw_AccountBookNotFoundException() {
         // Given
         val savedUser = createUser()
-        val purchaseAddRequest = PurchaseAddRequest(
-            accountBookNo = 1L,
-            purchaseType = PurchaseType.OUTGOING,
-            price = 10000,
-            reason = "점심비",
-            purchaseDate = LocalDate.of(2023, 7, 13)
-        )
+        val purchaseAddRequest =
+            PurchaseAddRequest(
+                accountBookNo = 1L,
+                purchaseType = PurchaseType.OUTGOING,
+                price = 10000,
+                reason = "점심비",
+                purchaseDate = LocalDate.of(2023, 7, 13),
+            )
 
         Mockito.`when`(accountBookRepository.findAccountBook(savedUser.userNo!!, purchaseAddRequest.accountBookNo))
             .thenReturn(null)
@@ -245,36 +249,38 @@ class PurchaseServiceTest {
         // When && Then
         Assertions.assertThatThrownBy { purchaseService.addPurchase(savedUser.userNo!!, purchaseAddRequest) }
             .isInstanceOf(AccountBookNotFoundException::class.java)
-
     }
 
     @DisplayName("지출을 생성시 카드번호를 추가하였으나 해당 카드가 없는 경우 CardNotFoundException이 발생한다.")
     @Test
     fun addPurchase_fail_when_outGoing_and_cardNotExists_throw_CardNotFoundException() {
         // Given
-        val accountBook = AccountBook(
-            1L,
-            "가계부",
-            "가계부 설명"
-        )
-        val accountBookDto = AccountBookDto(
-            accountBook.accountBookNo!!,
-            accountBookName = accountBook.accountBookName,
-            accountBookDesc = accountBook.accountBookDesc,
-            backgroundColor = "#000000",
-            color = "#000111",
-            accountRole = AccountRole.OWNER,
-            createdAt = LocalDateTime.now()
-        )
+        val accountBook =
+            AccountBook(
+                1L,
+                "가계부",
+                "가계부 설명",
+            )
+        val accountBookDto =
+            AccountBookDto(
+                accountBook.accountBookNo!!,
+                accountBookName = accountBook.accountBookName,
+                accountBookDesc = accountBook.accountBookDesc,
+                backgroundColor = "#000000",
+                color = "#000111",
+                accountRole = AccountRole.OWNER,
+                createdAt = LocalDateTime.now(),
+            )
         val savedUser = createUser()
-        val purchaseAddRequest = PurchaseAddRequest(
-            accountBookNo = accountBook.accountBookNo!!,
-            purchaseType = PurchaseType.OUTGOING,
-            cardNo = 1L,
-            price = 10000,
-            reason = "점심비",
-            purchaseDate = LocalDate.of(2023, 7, 13)
-        )
+        val purchaseAddRequest =
+            PurchaseAddRequest(
+                accountBookNo = accountBook.accountBookNo!!,
+                purchaseType = PurchaseType.OUTGOING,
+                cardNo = 1L,
+                price = 10000,
+                reason = "점심비",
+                purchaseDate = LocalDate.of(2023, 7, 13),
+            )
 
         Mockito.`when`(accountBookRepository.findAccountBook(savedUser.userNo!!, purchaseAddRequest.accountBookNo))
             .thenReturn(accountBookDto)
@@ -285,36 +291,38 @@ class PurchaseServiceTest {
         // When && Then
         Assertions.assertThatThrownBy { purchaseService.addPurchase(savedUser.userNo!!, purchaseAddRequest) }
             .isInstanceOf(CardNotFoundException::class.java)
-
     }
 
     @DisplayName("지출을 생성시 카테고리번호를 추가하였으나 해당 카테고리가 없는 경우 CategoryNotFoundException이 발생한다.")
     @Test
     fun addPurchase_fail_when_outGoing_and_categoryNotExists_throw_CategoryNotFoundException() {
         // Given
-        val accountBook = AccountBook(
-            1L,
-            "가계부",
-            "가계부 설명"
-        )
-        val accountBookDto = AccountBookDto(
-            accountBook.accountBookNo!!,
-            accountBookName = accountBook.accountBookName,
-            accountBookDesc = accountBook.accountBookDesc,
-            backgroundColor = "#000000",
-            color = "#000111",
-            accountRole = AccountRole.OWNER,
-            createdAt = LocalDateTime.now()
-        )
+        val accountBook =
+            AccountBook(
+                1L,
+                "가계부",
+                "가계부 설명",
+            )
+        val accountBookDto =
+            AccountBookDto(
+                accountBook.accountBookNo!!,
+                accountBookName = accountBook.accountBookName,
+                accountBookDesc = accountBook.accountBookDesc,
+                backgroundColor = "#000000",
+                color = "#000111",
+                accountRole = AccountRole.OWNER,
+                createdAt = LocalDateTime.now(),
+            )
         val savedUser = createUser()
-        val purchaseAddRequest = PurchaseAddRequest(
-            accountBookNo = accountBook.accountBookNo!!,
-            purchaseType = PurchaseType.OUTGOING,
-            categoryNo = 1L,
-            price = 10000,
-            reason = "점심비",
-            purchaseDate = LocalDate.of(2023, 7, 13)
-        )
+        val purchaseAddRequest =
+            PurchaseAddRequest(
+                accountBookNo = accountBook.accountBookNo!!,
+                purchaseType = PurchaseType.OUTGOING,
+                categoryNo = 1L,
+                price = 10000,
+                reason = "점심비",
+                purchaseDate = LocalDate.of(2023, 7, 13),
+            )
 
         Mockito.`when`(accountBookRepository.findAccountBook(savedUser.userNo!!, purchaseAddRequest.accountBookNo))
             .thenReturn(accountBookDto)
@@ -323,102 +331,106 @@ class PurchaseServiceTest {
             categoryRepository.findCategoryByAccountRole(
                 purchaseAddRequest.categoryNo!!,
                 accountBook.accountBookNo!!,
-                savedUser.userNo!!
-            )
+                savedUser.userNo!!,
+            ),
         )
             .thenReturn(null)
-
 
         // When && Then
         Assertions.assertThatThrownBy { purchaseService.addPurchase(savedUser.userNo!!, purchaseAddRequest) }
             .isInstanceOf(CategoryNotFoundException::class.java)
-
     }
 
     @DisplayName("수입,지출내역이 정상 조회된다.")
     @Test
     fun findPurchasesOfPage_success() {
         // Given
-        val accountBook = AccountBook(
-            1L,
-            "가계부",
-            "가계부 설명"
-        )
+        val accountBook =
+            AccountBook(
+                1L,
+                "가계부",
+                "가계부 설명",
+            )
         val savedUser = createUser()
 
-        val card = Card(
-            cardNo = 1L,
-            cardName = "국민",
-            cardType = CardType.CHECK_CARD,
-            cardDesc = "사치비",
-            userEntity = savedUser,
-        )
+        val card =
+            Card(
+                cardNo = 1L,
+                cardName = "국민",
+                cardType = CardType.CHECK_CARD,
+                cardDesc = "사치비",
+                userEntity = savedUser,
+            )
 
-        val category = Category(
-            categoryNo = 1L,
-            categoryName = "식비",
-            categoryDesc = "야근하면서 묵을때쓰기",
-            categoryIcon = "",
-            accountBook = accountBook,
-        )
+        val category =
+            Category(
+                categoryNo = 1L,
+                categoryName = "식비",
+                categoryDesc = "야근하면서 묵을때쓰기",
+                categoryIcon = "",
+                accountBook = accountBook,
+            )
 
-        val purchase1 = Purchase(
-            purchaseNo = 1L,
-            purchaseType = PurchaseType.INCOME,
-            price = 1000,
-            reason = "월급",
-            purchaseDate = LocalDate.of(2023, 7, 3),
-            userEntity = savedUser,
-            accountBook = accountBook
-        )
+        val purchase1 =
+            Purchase(
+                purchaseNo = 1L,
+                purchaseType = PurchaseType.INCOME,
+                price = 1000,
+                reason = "월급",
+                purchaseDate = LocalDate.of(2023, 7, 3),
+                userEntity = savedUser,
+                accountBook = accountBook,
+            )
 
-        val purchase2 = Purchase(
-            purchaseNo = 2L,
-            purchaseType = PurchaseType.OUTGOING,
-            price = 50000,
-            reason = "세차비",
-            purchaseDate = LocalDate.of(2023, 7, 3),
-            userEntity = savedUser,
-            accountBook = accountBook,
-            card = card,
-            category = category
-        )
+        val purchase2 =
+            Purchase(
+                purchaseNo = 2L,
+                purchaseType = PurchaseType.OUTGOING,
+                price = 50000,
+                reason = "세차비",
+                purchaseDate = LocalDate.of(2023, 7, 3),
+                userEntity = savedUser,
+                accountBook = accountBook,
+                card = card,
+                category = category,
+            )
 
-        val purchase3 = Purchase(
-            purchaseNo = 3L,
-            purchaseType = PurchaseType.OUTGOING,
-            price = 3000,
-            reason = "밥값",
-            purchaseDate = LocalDate.of(2023, 7, 3),
-            userEntity = savedUser,
-            accountBook = accountBook
-        )
+        val purchase3 =
+            Purchase(
+                purchaseNo = 3L,
+                purchaseType = PurchaseType.OUTGOING,
+                price = 3000,
+                reason = "밥값",
+                purchaseDate = LocalDate.of(2023, 7, 3),
+                userEntity = savedUser,
+                accountBook = accountBook,
+            )
 
         val startDate = LocalDate.of(2023, 7, 1)
         val endDate = LocalDate.of(2023, 7, 31)
 
         val pageRequest = PageRequest.of(0, 2)
-        val purchaseFindOfPageRequest = PurchaseFindOfPageRequest(
-            accountBookNo = accountBook.accountBookNo!!,
-            startDate = startDate,
-            endDate = endDate,
-            size = pageRequest.pageSize,
-            page = pageRequest.pageNumber
-        )
+        val purchaseFindOfPageRequest =
+            PurchaseFindOfPageRequest(
+                accountBookNo = accountBook.accountBookNo!!,
+                startDate = startDate,
+                endDate = endDate,
+                size = pageRequest.pageSize,
+                page = pageRequest.pageNumber,
+            )
 
         Mockito.`when`(
             purchaseRepository.findPurchasePageCustom(
                 startDate,
                 endDate,
                 accountBook.accountBookNo!!,
-                pageRequest
-            )
+                pageRequest,
+            ),
         )
             .thenReturn(listOf(purchase1, purchase2, purchase3))
 
         // When
         val findPurchasesOfPage = purchaseService.findPurchasesOfPage(purchaseFindOfPageRequest, pageRequest)
-
 
         // Then
         Assertions.assertThat(findPurchasesOfPage.size).isEqualTo(pageRequest.pageSize)
@@ -434,62 +446,62 @@ class PurchaseServiceTest {
         Assertions.assertThat(findPurchasesOfPage.content[1].cardNo).isEqualTo(purchase2.card!!.cardNo)
         Assertions.assertThat(findPurchasesOfPage.content[1].categoryInfo!!.categoryNo)
             .isEqualTo(purchase2.category!!.categoryNo)
-
     }
 
     @DisplayName("수입,지출내역이 정상 삭제된다.")
     @Test
     fun removePurchase_success() {
         // Given
-        val accountBook = AccountBook(
-            1L,
-            "가계부",
-            "가계부 설명"
-        )
+        val accountBook =
+            AccountBook(
+                1L,
+                "가계부",
+                "가계부 설명",
+            )
         val savedUser = createUser()
 
-        val card = Card(
-            cardNo = 1L,
-            cardName = "국민",
-            cardType = CardType.CHECK_CARD,
-            cardDesc = "사치비",
-            userEntity = savedUser,
-        )
+        val card =
+            Card(
+                cardNo = 1L,
+                cardName = "국민",
+                cardType = CardType.CHECK_CARD,
+                cardDesc = "사치비",
+                userEntity = savedUser,
+            )
 
-        val category = Category(
-            categoryNo = 1L,
-            categoryName = "식비",
-            categoryDesc = "야근하면서 묵을때쓰기",
-            categoryIcon = "",
-            accountBook = accountBook,
-        )
-        val purchase = Purchase(
-            purchaseNo = 2L,
-            purchaseType = PurchaseType.OUTGOING,
-            price = 50000,
-            reason = "세차비",
-            purchaseDate = LocalDate.of(2023, 7, 3),
-            userEntity = savedUser,
-            accountBook = accountBook,
-            card = card,
-            category = category
-        )
-
-
+        val category =
+            Category(
+                categoryNo = 1L,
+                categoryName = "식비",
+                categoryDesc = "야근하면서 묵을때쓰기",
+                categoryIcon = "",
+                accountBook = accountBook,
+            )
+        val purchase =
+            Purchase(
+                purchaseNo = 2L,
+                purchaseType = PurchaseType.OUTGOING,
+                price = 50000,
+                reason = "세차비",
+                purchaseDate = LocalDate.of(2023, 7, 3),
+                userEntity = savedUser,
+                accountBook = accountBook,
+                card = card,
+                category = category,
+            )
 
         Mockito.`when`(
-            purchaseRepository.findEntityGraphByUserEntity_UserNoAndPurchaseNoAndIsDeleteIsFalse(
-                savedUser.userNo!!, purchase.purchaseNo!!
-            )
+            purchaseRepository.findEntityGraphByUserEntityUserNoAndPurchaseNoAndIsDeleteIsFalse(
+                savedUser.userNo!!,
+                purchase.purchaseNo!!,
+            ),
         ).thenReturn(purchase)
 
         // When
         purchaseService.removePurchase(savedUser.userNo!!, purchase.purchaseNo!!)
 
-
         // Then
         Assertions.assertThat(purchase.isDelete).isTrue()
-
     }
 
     @DisplayName("수입,지출내역이 존재하지 않는경우 PurchaseNotFoundException 예외가 발생한다.")
@@ -506,50 +518,60 @@ class PurchaseServiceTest {
     @Test
     fun modifyPurchase_success_when_outGoing() {
         // Given
-        val accountBook = AccountBook(
-            1L,
-            "가계부",
-            "가계부 설명"
-        )
+        val accountBook =
+            AccountBook(
+                1L,
+                "가계부",
+                "가계부 설명",
+            )
         val savedUser = createUser()
-        val card = Card(
-            cardNo = 1L,
-            cardName = "국민",
-            cardType = CardType.CHECK_CARD,
-            cardDesc = "사치비",
-            userEntity = savedUser,
-        )
+        val card =
+            Card(
+                cardNo = 1L,
+                cardName = "국민",
+                cardType = CardType.CHECK_CARD,
+                cardDesc = "사치비",
+                userEntity = savedUser,
+            )
 
-        val category = Category(
-            categoryNo = 1L,
-            categoryName = "식비",
-            categoryDesc = "야근하면서 묵을때쓰기",
-            categoryIcon = "",
-            accountBook = accountBook,
-        )
-        val purchase = Purchase(
-            purchaseNo = 2L,
-            purchaseType = PurchaseType.OUTGOING,
-            price = 50000,
-            reason = "세차비",
-            purchaseDate = LocalDate.of(2023, 7, 3),
-            userEntity = savedUser,
-            accountBook = accountBook,
-        )
+        val category =
+            Category(
+                categoryNo = 1L,
+                categoryName = "식비",
+                categoryDesc = "야근하면서 묵을때쓰기",
+                categoryIcon = "",
+                accountBook = accountBook,
+            )
+        val purchase =
+            Purchase(
+                purchaseNo = 2L,
+                purchaseType = PurchaseType.OUTGOING,
+                price = 50000,
+                reason = "세차비",
+                purchaseDate = LocalDate.of(2023, 7, 3),
+                userEntity = savedUser,
+                accountBook = accountBook,
+            )
 
-        val purchaseModifyRequest = PurchaseModifyRequest(
-            accountBookNo = accountBook.accountBookNo!!,
-            cardNo = card.cardNo, categoryNo = category.categoryNo!!, purchaseType = PurchaseType.OUTGOING,
-            price = 5000000, reason = "변경이유", purchaseDate = LocalDate.of(2023, 7, 6)
-        )
+        val purchaseModifyRequest =
+            PurchaseModifyRequest(
+                accountBookNo = accountBook.accountBookNo!!,
+                cardNo = card.cardNo,
+                categoryNo = category.categoryNo!!,
+                purchaseType = PurchaseType.OUTGOING,
+                price = 5000000,
+                reason = "변경이유",
+                purchaseDate = LocalDate.of(2023, 7, 6),
+            )
 
         Mockito.`when`(
-            purchaseRepository.findEntityGraphByUserEntity_UserNoAndPurchaseNoAndIsDeleteIsFalse(
-                savedUser.userNo!!, purchase.purchaseNo!!
-            )
+            purchaseRepository.findEntityGraphByUserEntityUserNoAndPurchaseNoAndIsDeleteIsFalse(
+                savedUser.userNo!!,
+                purchase.purchaseNo!!,
+            ),
         ).thenReturn(purchase)
 
-        Mockito.`when`(cardRepository.findByCardNoAndUserEntity_UserNoAndIsDeleteIsFalse(card.cardNo!!, savedUser.userNo!!))
+        Mockito.`when`(cardRepository.findByCardNoAndUserEntityUserNoAndIsDeleteIsFalse(card.cardNo!!, savedUser.userNo!!))
             .thenReturn(card)
 
         Mockito.`when`(
@@ -557,7 +579,7 @@ class PurchaseServiceTest {
                 categoryNo = purchaseModifyRequest.categoryNo!!,
                 accountBookNo = accountBook.accountBookNo!!,
                 userNo = savedUser.userNo!!,
-            )
+            ),
         ).thenReturn(category)
 
         // When
@@ -575,50 +597,60 @@ class PurchaseServiceTest {
     @Test
     fun modifyPurchase_success_when_income_then_category_and_card_null_save() {
         // Given
-        val accountBook = AccountBook(
-            1L,
-            "가계부",
-            "가계부 설명"
-        )
+        val accountBook =
+            AccountBook(
+                1L,
+                "가계부",
+                "가계부 설명",
+            )
         val savedUser = createUser()
-        val card = Card(
-            cardNo = 1L,
-            cardName = "국민",
-            cardType = CardType.CHECK_CARD,
-            cardDesc = "사치비",
-            userEntity = savedUser,
-        )
+        val card =
+            Card(
+                cardNo = 1L,
+                cardName = "국민",
+                cardType = CardType.CHECK_CARD,
+                cardDesc = "사치비",
+                userEntity = savedUser,
+            )
 
-        val category = Category(
-            categoryNo = 1L,
-            categoryName = "식비",
-            categoryDesc = "야근하면서 묵을때쓰기",
-            categoryIcon = "",
-            accountBook = accountBook,
-        )
-        val purchase = Purchase(
-            purchaseNo = 2L,
-            purchaseType = PurchaseType.OUTGOING,
-            price = 50000,
-            reason = "세차비",
-            purchaseDate = LocalDate.of(2023, 7, 3),
-            userEntity = savedUser,
-            accountBook = accountBook,
-        )
+        val category =
+            Category(
+                categoryNo = 1L,
+                categoryName = "식비",
+                categoryDesc = "야근하면서 묵을때쓰기",
+                categoryIcon = "",
+                accountBook = accountBook,
+            )
+        val purchase =
+            Purchase(
+                purchaseNo = 2L,
+                purchaseType = PurchaseType.OUTGOING,
+                price = 50000,
+                reason = "세차비",
+                purchaseDate = LocalDate.of(2023, 7, 3),
+                userEntity = savedUser,
+                accountBook = accountBook,
+            )
 
-        val purchaseModifyRequest = PurchaseModifyRequest(
-            accountBookNo = accountBook.accountBookNo!!,
-            cardNo = card.cardNo, categoryNo = category.categoryNo!!, purchaseType = PurchaseType.INCOME,
-            price = 5000000, reason = "변경이유", purchaseDate = LocalDate.of(2023, 7, 6)
-        )
+        val purchaseModifyRequest =
+            PurchaseModifyRequest(
+                accountBookNo = accountBook.accountBookNo!!,
+                cardNo = card.cardNo,
+                categoryNo = category.categoryNo!!,
+                purchaseType = PurchaseType.INCOME,
+                price = 5000000,
+                reason = "변경이유",
+                purchaseDate = LocalDate.of(2023, 7, 6),
+            )
 
         Mockito.`when`(
-            purchaseRepository.findEntityGraphByUserEntity_UserNoAndPurchaseNoAndIsDeleteIsFalse(
-                savedUser.userNo!!, purchase.purchaseNo!!
-            )
+            purchaseRepository.findEntityGraphByUserEntityUserNoAndPurchaseNoAndIsDeleteIsFalse(
+                savedUser.userNo!!,
+                purchase.purchaseNo!!,
+            ),
         ).thenReturn(purchase)
 
-        Mockito.`when`(cardRepository.findByCardNoAndUserEntity_UserNoAndIsDeleteIsFalse(card.cardNo!!, savedUser.userNo!!))
+        Mockito.`when`(cardRepository.findByCardNoAndUserEntityUserNoAndIsDeleteIsFalse(card.cardNo!!, savedUser.userNo!!))
             .thenReturn(card)
 
         Mockito.`when`(
@@ -626,7 +658,7 @@ class PurchaseServiceTest {
                 categoryNo = purchaseModifyRequest.categoryNo!!,
                 accountBookNo = accountBook.accountBookNo!!,
                 userNo = savedUser.userNo!!,
-            )
+            ),
         ).thenReturn(category)
 
         // When
@@ -644,99 +676,114 @@ class PurchaseServiceTest {
     @Test
     fun modifyPurchase_fail_when_cardNotExists_throw_cardNotFoundException() {
         // Given
-        val accountBook = AccountBook(
-            1L,
-            "가계부",
-            "가계부 설명"
-        )
+        val accountBook =
+            AccountBook(
+                1L,
+                "가계부",
+                "가계부 설명",
+            )
         val savedUser = createUser()
-        val card = Card(
-            cardNo = 1L,
-            cardName = "국민",
-            cardType = CardType.CHECK_CARD,
-            cardDesc = "사치비",
-            userEntity = savedUser,
-        )
+        val card =
+            Card(
+                cardNo = 1L,
+                cardName = "국민",
+                cardType = CardType.CHECK_CARD,
+                cardDesc = "사치비",
+                userEntity = savedUser,
+            )
 
-        val purchase = Purchase(
-            purchaseNo = 2L,
-            purchaseType = PurchaseType.OUTGOING,
-            price = 50000,
-            reason = "세차비",
-            purchaseDate = LocalDate.of(2023, 7, 3),
-            userEntity = savedUser,
-            accountBook = accountBook,
-        )
+        val purchase =
+            Purchase(
+                purchaseNo = 2L,
+                purchaseType = PurchaseType.OUTGOING,
+                price = 50000,
+                reason = "세차비",
+                purchaseDate = LocalDate.of(2023, 7, 3),
+                userEntity = savedUser,
+                accountBook = accountBook,
+            )
 
-        val purchaseModifyRequest = PurchaseModifyRequest(
-            accountBookNo = accountBook.accountBookNo!!,
-            cardNo = card.cardNo, purchaseType = PurchaseType.OUTGOING,
-            price = 5000000, reason = "변경이유", purchaseDate = LocalDate.of(2023, 7, 6)
-        )
+        val purchaseModifyRequest =
+            PurchaseModifyRequest(
+                accountBookNo = accountBook.accountBookNo!!,
+                cardNo = card.cardNo,
+                purchaseType = PurchaseType.OUTGOING,
+                price = 5000000,
+                reason = "변경이유",
+                purchaseDate = LocalDate.of(2023, 7, 6),
+            )
 
         Mockito.`when`(
-            purchaseRepository.findEntityGraphByUserEntity_UserNoAndPurchaseNoAndIsDeleteIsFalse(
-                savedUser.userNo!!, purchase.purchaseNo!!
-            )
+            purchaseRepository.findEntityGraphByUserEntityUserNoAndPurchaseNoAndIsDeleteIsFalse(
+                savedUser.userNo!!,
+                purchase.purchaseNo!!,
+            ),
         ).thenReturn(purchase)
 
-        Mockito.`when`(cardRepository.findByCardNoAndUserEntity_UserNoAndIsDeleteIsFalse(card.cardNo!!, savedUser.userNo!!))
+        Mockito.`when`(cardRepository.findByCardNoAndUserEntityUserNoAndIsDeleteIsFalse(card.cardNo!!, savedUser.userNo!!))
             .thenReturn(null)
-
 
         // When && Then
         Assertions.assertThatThrownBy {
             purchaseService.modifyPurchase(
                 savedUser.userNo!!,
                 purchase.purchaseNo!!,
-                purchaseModifyRequest
+                purchaseModifyRequest,
             )
         }
             .isInstanceOf(CardNotFoundException::class.java)
-
     }
 
     @DisplayName("수입내역 수정시 categoryNo값이 있는데 DB에 카테고리가 없는 경우 CategoryNotFoundException이 발생한다.")
     @Test
     fun modifyPurchase_fail_when_categoryNotExists_throw_CategoryNotFoundException() {
         // Given
-        val accountBook = AccountBook(
-            1L,
-            "가계부",
-            "가계부 설명"
-        )
+        val accountBook =
+            AccountBook(
+                1L,
+                "가계부",
+                "가계부 설명",
+            )
         val savedUser = createUser()
-        val card = Card(
-            cardNo = 1L,
-            cardName = "국민",
-            cardType = CardType.CHECK_CARD,
-            cardDesc = "사치비",
-            userEntity = savedUser,
-        )
+        val card =
+            Card(
+                cardNo = 1L,
+                cardName = "국민",
+                cardType = CardType.CHECK_CARD,
+                cardDesc = "사치비",
+                userEntity = savedUser,
+            )
 
-        val purchase = Purchase(
-            purchaseNo = 2L,
-            purchaseType = PurchaseType.OUTGOING,
-            price = 50000,
-            reason = "세차비",
-            purchaseDate = LocalDate.of(2023, 7, 3),
-            userEntity = savedUser,
-            accountBook = accountBook,
-        )
+        val purchase =
+            Purchase(
+                purchaseNo = 2L,
+                purchaseType = PurchaseType.OUTGOING,
+                price = 50000,
+                reason = "세차비",
+                purchaseDate = LocalDate.of(2023, 7, 3),
+                userEntity = savedUser,
+                accountBook = accountBook,
+            )
 
-        val purchaseModifyRequest = PurchaseModifyRequest(
-            accountBookNo = accountBook.accountBookNo!!,
-            cardNo = card.cardNo, purchaseType = PurchaseType.OUTGOING, categoryNo = 5L,
-            price = 5000000, reason = "변경이유", purchaseDate = LocalDate.of(2023, 7, 6)
-        )
+        val purchaseModifyRequest =
+            PurchaseModifyRequest(
+                accountBookNo = accountBook.accountBookNo!!,
+                cardNo = card.cardNo,
+                purchaseType = PurchaseType.OUTGOING,
+                categoryNo = 5L,
+                price = 5000000,
+                reason = "변경이유",
+                purchaseDate = LocalDate.of(2023, 7, 6),
+            )
 
         Mockito.`when`(
-            purchaseRepository.findEntityGraphByUserEntity_UserNoAndPurchaseNoAndIsDeleteIsFalse(
-                savedUser.userNo!!, purchase.purchaseNo!!
-            )
+            purchaseRepository.findEntityGraphByUserEntityUserNoAndPurchaseNoAndIsDeleteIsFalse(
+                savedUser.userNo!!,
+                purchase.purchaseNo!!,
+            ),
         ).thenReturn(purchase)
 
-        Mockito.`when`(cardRepository.findByCardNoAndUserEntity_UserNoAndIsDeleteIsFalse(card.cardNo!!, savedUser.userNo!!))
+        Mockito.`when`(cardRepository.findByCardNoAndUserEntityUserNoAndIsDeleteIsFalse(card.cardNo!!, savedUser.userNo!!))
             .thenReturn(card)
 
         Mockito.`when`(
@@ -744,60 +791,67 @@ class PurchaseServiceTest {
                 categoryNo = purchaseModifyRequest.categoryNo!!,
                 accountBookNo = accountBook.accountBookNo!!,
                 userNo = savedUser.userNo!!,
-            )
+            ),
         ).thenReturn(null)
-
 
         // When && Then
         Assertions.assertThatThrownBy {
             purchaseService.modifyPurchase(
                 savedUser.userNo!!,
                 purchase.purchaseNo!!,
-                purchaseModifyRequest
+                purchaseModifyRequest,
             )
         }
             .isInstanceOf(CategoryNotFoundException::class.java)
-
     }
 
     @DisplayName("수입내역 수정시 수입내역이 없는 경우 PurchaseNotFoundException이 발생한다.")
     @Test
     fun modifyPurchase_fail_when_purchaseNotExists_throw_PurchaseNotFoundException() {
         // Given
-        val accountBook = AccountBook(
-            1L,
-            "가계부",
-            "가계부 설명"
-        )
+        val accountBook =
+            AccountBook(
+                1L,
+                "가계부",
+                "가계부 설명",
+            )
         val savedUser = createUser()
-        val card = Card(
-            cardNo = 1L,
-            cardName = "국민",
-            cardType = CardType.CHECK_CARD,
-            cardDesc = "사치비",
-            userEntity = savedUser,
-        )
+        val card =
+            Card(
+                cardNo = 1L,
+                cardName = "국민",
+                cardType = CardType.CHECK_CARD,
+                cardDesc = "사치비",
+                userEntity = savedUser,
+            )
 
-        val purchase = Purchase(
-            purchaseNo = 2L,
-            purchaseType = PurchaseType.OUTGOING,
-            price = 50000,
-            reason = "세차비",
-            purchaseDate = LocalDate.of(2023, 7, 3),
-            userEntity = savedUser,
-            accountBook = accountBook,
-        )
+        val purchase =
+            Purchase(
+                purchaseNo = 2L,
+                purchaseType = PurchaseType.OUTGOING,
+                price = 50000,
+                reason = "세차비",
+                purchaseDate = LocalDate.of(2023, 7, 3),
+                userEntity = savedUser,
+                accountBook = accountBook,
+            )
 
-        val purchaseModifyRequest = PurchaseModifyRequest(
-            accountBookNo = accountBook.accountBookNo!!,
-            cardNo = card.cardNo, purchaseType = PurchaseType.OUTGOING, categoryNo = 5L,
-            price = 5000000, reason = "변경이유", purchaseDate = LocalDate.of(2023, 7, 6)
-        )
+        val purchaseModifyRequest =
+            PurchaseModifyRequest(
+                accountBookNo = accountBook.accountBookNo!!,
+                cardNo = card.cardNo,
+                purchaseType = PurchaseType.OUTGOING,
+                categoryNo = 5L,
+                price = 5000000,
+                reason = "변경이유",
+                purchaseDate = LocalDate.of(2023, 7, 6),
+            )
 
         Mockito.`when`(
-            purchaseRepository.findEntityGraphByUserEntity_UserNoAndPurchaseNoAndIsDeleteIsFalse(
-                savedUser.userNo!!, purchase.purchaseNo!!
-            )
+            purchaseRepository.findEntityGraphByUserEntityUserNoAndPurchaseNoAndIsDeleteIsFalse(
+                savedUser.userNo!!,
+                purchase.purchaseNo!!,
+            ),
         ).thenReturn(null)
 
         // When && Then
@@ -805,50 +859,53 @@ class PurchaseServiceTest {
             purchaseService.modifyPurchase(
                 savedUser.userNo!!,
                 purchase.purchaseNo!!,
-                purchaseModifyRequest
+                purchaseModifyRequest,
             )
         }
             .isInstanceOf(PurchaseNotFoundException::class.java)
-
     }
 
     @DisplayName("수입,지출내역 상세가 정상 조회된다.")
     @Test
     fun findPurchase_success() {
         // Given
-        val accountBook = AccountBook(
-            1L,
-            "가계부",
-            "가계부 설명"
-        )
+        val accountBook =
+            AccountBook(
+                1L,
+                "가계부",
+                "가계부 설명",
+            )
         val savedUser = createUser()
 
-        val card = Card(
-            cardNo = 1L,
-            cardName = "국민",
-            cardType = CardType.CHECK_CARD,
-            cardDesc = "사치비",
-            userEntity = savedUser,
-        )
+        val card =
+            Card(
+                cardNo = 1L,
+                cardName = "국민",
+                cardType = CardType.CHECK_CARD,
+                cardDesc = "사치비",
+                userEntity = savedUser,
+            )
 
-        val category = Category(
-            categoryNo = 1L,
-            categoryName = "식비",
-            categoryDesc = "야근하면서 묵을때쓰기",
-            categoryIcon = "",
-            accountBook = accountBook,
-        )
+        val category =
+            Category(
+                categoryNo = 1L,
+                categoryName = "식비",
+                categoryDesc = "야근하면서 묵을때쓰기",
+                categoryIcon = "",
+                accountBook = accountBook,
+            )
 
-        val purchaseDetailResponse = PurchaseDetailResponse(
-            purchaseNo = 1L,
-            accountBookNo = accountBook.accountBookNo!!,
-            cardNo = card.cardNo!!,
-            categoryNo = category.categoryNo!!,
-            purchaseType = PurchaseType.OUTGOING,
-            price = 10000,
-            reason = "세차비",
-            purchaseDate = LocalDate.of(2023, 5, 1)
-        )
+        val purchaseDetailResponse =
+            PurchaseDetailResponse(
+                purchaseNo = 1L,
+                accountBookNo = accountBook.accountBookNo!!,
+                cardNo = card.cardNo!!,
+                categoryNo = category.categoryNo!!,
+                purchaseType = PurchaseType.OUTGOING,
+                price = 10000,
+                reason = "세차비",
+                purchaseDate = LocalDate.of(2023, 5, 1),
+            )
 
         Mockito.`when`(purchaseRepository.findPurchase(savedUser.userNo!!, 1L))
             .thenReturn(purchaseDetailResponse)
@@ -856,10 +913,8 @@ class PurchaseServiceTest {
         // When
         val findPurchase = purchaseService.findPurchase(savedUser.userNo!!, 1L)
 
-
         // Then
         Assertions.assertThat(findPurchase).isEqualTo(purchaseDetailResponse)
-
     }
 
     @DisplayName("수입,지출내역 상세가 존재하지 않는 경우 PurchaseNotFoundException이 발생한다.")
@@ -872,14 +927,13 @@ class PurchaseServiceTest {
         // When && Then
         Assertions.assertThatThrownBy { purchaseService.findPurchase(1L, 1L) }
             .isInstanceOf(PurchaseNotFoundException::class.java)
-
     }
 
     private fun createUser(): UserEntity {
         return UserEntity(
             userNo = 1L,
             nickName = "닉네임",
-            userEmail = "tester@test.co.kr"
+            userEmail = "tester@test.co.kr",
         )
     }
 }

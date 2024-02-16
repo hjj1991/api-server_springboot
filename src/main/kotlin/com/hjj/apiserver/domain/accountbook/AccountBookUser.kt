@@ -1,15 +1,15 @@
 package com.hjj.apiserver.domain.accountbook
 
-import com.hjj.apiserver.domain.BaseEntity
 import com.hjj.apiserver.adapter.out.persistence.user.UserEntity
+import com.hjj.apiserver.domain.BaseEntity
 import jakarta.persistence.*
 
 @Entity
 @Table(
     name = "tb_account_book_user",
     uniqueConstraints = [
-        UniqueConstraint(columnNames = ["accountBookNo", "userNo"])
-    ]
+        UniqueConstraint(columnNames = ["accountBookNo", "userNo"]),
+    ],
 )
 class AccountBookUser(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,7 +20,6 @@ class AccountBookUser(
     backGroundColor: String,
     color: String,
 ) : BaseEntity() {
-
     @ManyToOne(fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
     @JoinColumn(name = "accountBookNo")
     var accountBook: AccountBook = accountBook
@@ -43,6 +42,4 @@ class AccountBookUser(
     @Column(length = 10)
     var color: String = color
         protected set
-
-
 }

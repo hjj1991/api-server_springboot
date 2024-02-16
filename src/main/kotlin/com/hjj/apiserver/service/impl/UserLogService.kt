@@ -10,9 +10,8 @@ import org.springframework.transaction.annotation.Transactional
 class UserLogService(
     private val userLogRepository: UserLogRepository,
 ) {
-
     @Transactional(readOnly = false, rollbackFor = [Exception::class])
-    fun addUserLog(userLogEntity: UserLogEntity){
+    fun addUserLog(userLogEntity: UserLogEntity) {
         userLogRepository.save(userLogEntity)
     }
 }

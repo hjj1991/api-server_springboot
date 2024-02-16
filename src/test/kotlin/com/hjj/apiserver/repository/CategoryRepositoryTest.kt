@@ -13,7 +13,6 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 
 class CategoryRepositoryTest : BaseRepositoryTest() {
-
     @Autowired
     private lateinit var accountBookUserRepository: AccountBookUserRepository
 
@@ -34,67 +33,74 @@ class CategoryRepositoryTest : BaseRepositoryTest() {
 
         accountBookUserRepository.save(
             AccountBookUser(
-                accountBook = accountBook, userEntity = tester1, accountRole = AccountRole.OWNER,
-                backGroundColor = "#00000", color = "#11111"
-            )
-        )
-        val parentCategory1 = categoryRepository.save(
-            Category(
-                categoryName = "부모카테고리1",
-                categoryDesc = "부모카테고리1 설명",
-                categoryIcon = "",
                 accountBook = accountBook,
-            )
+                userEntity = tester1,
+                accountRole = AccountRole.OWNER,
+                backGroundColor = "#00000",
+                color = "#11111",
+            ),
         )
-        val parentCategory2 = categoryRepository.save(
-            Category(
-                categoryName = "부모카테고리2",
-                categoryDesc = "부모카테고리2 설명",
-                categoryIcon = "",
-                accountBook = accountBook,
+        val parentCategory1 =
+            categoryRepository.save(
+                Category(
+                    categoryName = "부모카테고리1",
+                    categoryDesc = "부모카테고리1 설명",
+                    categoryIcon = "",
+                    accountBook = accountBook,
+                ),
             )
-        )
-        val parentCategory3 = categoryRepository.save(
-            Category(
-                categoryName = "부모카테고리3",
-                categoryDesc = "부모카테고리3 설명",
-                categoryIcon = "",
-                accountBook = accountBook,
+        val parentCategory2 =
+            categoryRepository.save(
+                Category(
+                    categoryName = "부모카테고리2",
+                    categoryDesc = "부모카테고리2 설명",
+                    categoryIcon = "",
+                    accountBook = accountBook,
+                ),
             )
-        )
-        val category1 = categoryRepository.save(
-            Category(
-                categoryName = "자식카테고리1",
-                categoryDesc = "자식카테고리1 설명",
-                categoryIcon = "",
-                accountBook = accountBook,
-                parentCategory = parentCategory1,
+        val parentCategory3 =
+            categoryRepository.save(
+                Category(
+                    categoryName = "부모카테고리3",
+                    categoryDesc = "부모카테고리3 설명",
+                    categoryIcon = "",
+                    accountBook = accountBook,
+                ),
             )
-        )
-        val category2 = categoryRepository.save(
-            Category(
-                categoryName = "자식카테고리2",
-                categoryDesc = "자식카테고리2 설명",
-                categoryIcon = "",
-                accountBook = accountBook,
-                parentCategory = parentCategory1,
+        val category1 =
+            categoryRepository.save(
+                Category(
+                    categoryName = "자식카테고리1",
+                    categoryDesc = "자식카테고리1 설명",
+                    categoryIcon = "",
+                    accountBook = accountBook,
+                    parentCategory = parentCategory1,
+                ),
             )
-        )
+        val category2 =
+            categoryRepository.save(
+                Category(
+                    categoryName = "자식카테고리2",
+                    categoryDesc = "자식카테고리2 설명",
+                    categoryIcon = "",
+                    accountBook = accountBook,
+                    parentCategory = parentCategory1,
+                ),
+            )
 
-        val category3 = categoryRepository.save(
-            Category(
-                categoryName = "자식카테고리3",
-                categoryDesc = "자식카테고리3 설명",
-                categoryIcon = "",
-                accountBook = accountBook,
-                parentCategory = parentCategory3,
+        val category3 =
+            categoryRepository.save(
+                Category(
+                    categoryName = "자식카테고리3",
+                    categoryDesc = "자식카테고리3 설명",
+                    categoryIcon = "",
+                    accountBook = accountBook,
+                    parentCategory = parentCategory3,
+                ),
             )
-        )
-
 
         // when
         val findCategories = categoryRepository.findCategories(tester1.userNo!!, accountBook.accountBookNo!!)
-
 
         // then
         Assertions.assertThat(findCategories.size).isEqualTo(3)
@@ -104,9 +110,7 @@ class CategoryRepositoryTest : BaseRepositoryTest() {
         Assertions.assertThat(findCategories[0].childCategories).extracting("categoryNo").contains(category1.categoryNo)
         Assertions.assertThat(findCategories[1].childCategories).isEmpty()
         Assertions.assertThat(findCategories[2].childCategories[0].categoryNo).isEqualTo(category3.categoryNo)
-
     }
-
 
     @Test
     @DisplayName("카테고리 권한이 있는 경우 정상 조회된다.")
@@ -118,18 +122,22 @@ class CategoryRepositoryTest : BaseRepositoryTest() {
             accountBookRepository.save(AccountBook(accountBookName = "testBookName", accountBookDesc = "testBookDesc"))
         accountBookUserRepository.save(
             AccountBookUser(
-                accountBook = accountBook, userEntity = tester1, accountRole = AccountRole.OWNER,
-                backGroundColor = "#00000", color = "#11111"
-            )
-        )
-        val parentCategory1 = categoryRepository.save(
-            Category(
-                categoryName = "부모카테고리1",
-                categoryDesc = "부모카테고리1 설명",
-                categoryIcon = "",
                 accountBook = accountBook,
-            )
+                userEntity = tester1,
+                accountRole = AccountRole.OWNER,
+                backGroundColor = "#00000",
+                color = "#11111",
+            ),
         )
+        val parentCategory1 =
+            categoryRepository.save(
+                Category(
+                    categoryName = "부모카테고리1",
+                    categoryDesc = "부모카테고리1 설명",
+                    categoryIcon = "",
+                    accountBook = accountBook,
+                ),
+            )
         categoryRepository.save(
             Category(
                 categoryName = "자식카테고리1",
@@ -137,20 +145,19 @@ class CategoryRepositoryTest : BaseRepositoryTest() {
                 categoryIcon = "",
                 accountBook = accountBook,
                 parentCategory = parentCategory1,
-            )
+            ),
         )
-
 
         // when
-        val findCategory = categoryRepository.findCategoryByAccountRole(
-            parentCategory1.categoryNo!!, accountBook.accountBookNo!!,
-            tester1.userNo!!
-        )
-
+        val findCategory =
+            categoryRepository.findCategoryByAccountRole(
+                parentCategory1.categoryNo!!,
+                accountBook.accountBookNo!!,
+                tester1.userNo!!,
+            )
 
         // then
         Assertions.assertThat(findCategory).isEqualTo(parentCategory1)
-
     }
 
     @Test
@@ -163,18 +170,22 @@ class CategoryRepositoryTest : BaseRepositoryTest() {
             accountBookRepository.save(AccountBook(accountBookName = "testBookName", accountBookDesc = "testBookDesc"))
         accountBookUserRepository.save(
             AccountBookUser(
-                accountBook = accountBook, userEntity = tester1, accountRole = AccountRole.GUEST,
-                backGroundColor = "#00000", color = "#11111"
-            )
-        )
-        val parentCategory1 = categoryRepository.save(
-            Category(
-                categoryName = "부모카테고리1",
-                categoryDesc = "부모카테고리1 설명",
-                categoryIcon = "",
                 accountBook = accountBook,
-            )
+                userEntity = tester1,
+                accountRole = AccountRole.GUEST,
+                backGroundColor = "#00000",
+                color = "#11111",
+            ),
         )
+        val parentCategory1 =
+            categoryRepository.save(
+                Category(
+                    categoryName = "부모카테고리1",
+                    categoryDesc = "부모카테고리1 설명",
+                    categoryIcon = "",
+                    accountBook = accountBook,
+                ),
+            )
         categoryRepository.save(
             Category(
                 categoryName = "자식카테고리1",
@@ -182,20 +193,18 @@ class CategoryRepositoryTest : BaseRepositoryTest() {
                 categoryIcon = "",
                 accountBook = accountBook,
                 parentCategory = parentCategory1,
-            )
+            ),
         )
-
 
         // when
-        val findCategory = categoryRepository.findCategoryByAccountRole(
-            parentCategory1.categoryNo!!, accountBook.accountBookNo!!,
-            tester1.userNo!!
-        )
-
+        val findCategory =
+            categoryRepository.findCategoryByAccountRole(
+                parentCategory1.categoryNo!!,
+                accountBook.accountBookNo!!,
+                tester1.userNo!!,
+            )
 
         // then
         Assertions.assertThat(findCategory).isNull()
-
     }
-
 }

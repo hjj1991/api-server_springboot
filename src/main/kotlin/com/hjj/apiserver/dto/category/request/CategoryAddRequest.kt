@@ -12,15 +12,16 @@ data class CategoryAddRequest(
     val categoryDesc: String,
     val categoryIcon: String,
 ) {
-
-    fun toEntity(accountBook: AccountBook, parentCategory: Category?):Category {
+    fun toEntity(
+        accountBook: AccountBook,
+        parentCategory: Category?,
+    ): Category {
         return Category(
             categoryName = categoryName,
             categoryDesc = categoryDesc,
             categoryIcon = categoryIcon,
             accountBook = accountBook,
-            parentCategory = parentCategory
+            parentCategory = parentCategory,
         )
     }
-
 }

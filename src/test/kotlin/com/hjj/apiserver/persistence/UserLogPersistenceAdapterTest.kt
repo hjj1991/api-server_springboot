@@ -30,7 +30,6 @@ import org.springframework.context.annotation.Import
 )
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class UserLogPersistenceAdapterTest {
-
     @Autowired
     private lateinit var writeUserLogPort: WriteUserLogPort
 
@@ -40,16 +39,19 @@ class UserLogPersistenceAdapterTest {
     @Autowired
     private lateinit var userRepository: UserRepository
 
-
     @Test
     fun registerUserLog_success() {
         // Given
-        val savedUserEntity = userRepository.save(UserEntity(nickName = "테스트닉네임", userEmail = "test@test.com", userPw = "<PASSWORD>", role = Role.USER))
+        val savedUserEntity =
+            userRepository.save(
+                UserEntity(nickName = "테스트닉네임", userEmail = "test@test.com", userPw = "<PASSWORD>", role = Role.USER),
+            )
         val user = userMapper.mapToDomainEntity(savedUserEntity)
-        val userLog = UserLog(
-            logType = LogType.SIGNUP,
-            user = user,
-        )
+        val userLog =
+            UserLog(
+                logType = LogType.SIGNUP,
+                user = user,
+            )
 
         // When
         val registerUserLog = writeUserLogPort.registerUserLog(userLog)

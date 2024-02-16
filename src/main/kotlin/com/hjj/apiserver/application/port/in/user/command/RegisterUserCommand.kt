@@ -8,6 +8,4 @@ data class RegisterUserCommand(
     val userEmail: String? = null,
     val userPw: String? = null,
     val provider: Provider,
-) {
-
-}
+)

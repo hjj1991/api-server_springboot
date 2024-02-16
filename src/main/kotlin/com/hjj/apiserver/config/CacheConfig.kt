@@ -12,7 +12,6 @@ import java.util.concurrent.TimeUnit
 @EnableCaching
 @Configuration
 class CacheConfig {
-
     @Bean(name = ["caffeineCacheManager"])
     fun cacheManager(): CacheManager {
         val caffeineCacheManager = CaffeineCacheManager()
@@ -22,7 +21,7 @@ class CacheConfig {
                 .maximumSize(500)
                 .expireAfterWrite(JwtProvider.REFRESH_TOKEN_VALID_MILLISECONDS, TimeUnit.MILLISECONDS)
                 .weakKeys()
-                .recordStats()
+                .recordStats(),
         )
         return caffeineCacheManager
     }

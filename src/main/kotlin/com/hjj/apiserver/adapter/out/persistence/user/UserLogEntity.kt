@@ -22,8 +22,7 @@ class UserLogEntity(
     userLogNo: Long = 0L,
     logType: LogType,
     userEntity: UserEntity,
-):BaseTimeEntity() {
-
+) : BaseTimeEntity() {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var userLogNo: Long = userLogNo
@@ -35,5 +34,4 @@ class UserLogEntity(
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userNo", foreignKey = ForeignKey(ConstraintMode.NO_CONSTRAINT))
     var userEntity: UserEntity = userEntity
-
 }

@@ -7,7 +7,7 @@ import java.time.Clock
 import java.time.ZonedDateTime
 
 @MappedSuperclass
-abstract class BaseTimeEntity(){
+abstract class BaseTimeEntity() {
     var createdAt: ZonedDateTime = ZonedDateTime.now(Clock.systemUTC())
     var modifiedAt: ZonedDateTime = ZonedDateTime.now(Clock.systemUTC())
 

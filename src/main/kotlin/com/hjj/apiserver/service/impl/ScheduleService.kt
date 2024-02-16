@@ -9,8 +9,8 @@ import java.time.LocalDateTime
 class ScheduleService(
     private val webScrappingService: WebScrappingService,
 ) {
-
     private val log = logger()
+
     @Scheduled(cron = "0 00 14 * * *")
     fun scheduleliivMateTodayQuizTask() {
         try {

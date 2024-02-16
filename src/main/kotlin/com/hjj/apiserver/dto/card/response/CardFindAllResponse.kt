@@ -9,13 +9,13 @@ data class CardFindAllResponse(
     val cardType: CardType,
     val cardDesc: String,
 ) {
-    companion object{
+    companion object {
         fun of(card: Card): CardFindAllResponse {
             return CardFindAllResponse(
                 cardNo = card.cardNo!!,
                 cardName = card.cardName,
                 cardType = card.cardType,
-                cardDesc = card.cardDesc
+                cardDesc = card.cardDesc,
             )
         }
     }

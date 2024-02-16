@@ -18,7 +18,7 @@ data class PurchaseFindOfPageRequest(
         const val PURCHASE_DEFAULT_SIZE = 100
     }
 
-    fun getPageRequest(): Pageable{
+    fun getPageRequest(): Pageable {
         return PageRequest.of(page, size)
     }
 }

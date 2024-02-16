@@ -23,7 +23,6 @@ import org.mockito.junit.jupiter.MockitoExtension
 
 @ExtendWith(MockitoExtension::class)
 class CardServiceTest {
-
     @InjectMocks
     lateinit var cardService: CardService
 
@@ -33,28 +32,30 @@ class CardServiceTest {
     @Mock
     lateinit var userRepository: UserRepository
 
-
     @DisplayName("카드가 정상 생성된다.")
     @Test
     fun addCard_success() {
         // Given
-        val cardAddRequest = CardAddRequest(
-            cardName = "신한카드",
-            cardType = CardType.CREDIT_CARD,
-            cardDesc = "신한 신용카드"
-        )
-        val savedUserEntity = UserEntity(
-            userNo = 1L,
-            nickName = "닉네임",
-            userEmail = "tester@test.co.kr"
-        )
-        val newCard = Card(
-            cardNo = 1L,
-            cardName = cardAddRequest.cardName,
-            cardType = cardAddRequest.cardType,
-            cardDesc = cardAddRequest.cardDesc,
-            userEntity = savedUserEntity
-        )
+        val cardAddRequest =
+            CardAddRequest(
+                cardName = "신한카드",
+                cardType = CardType.CREDIT_CARD,
+                cardDesc = "신한 신용카드",
+            )
+        val savedUserEntity =
+            UserEntity(
+                userNo = 1L,
+                nickName = "닉네임",
+                userEmail = "tester@test.co.kr",
+            )
+        val newCard =
+            Card(
+                cardNo = 1L,
+                cardName = cardAddRequest.cardName,
+                cardType = cardAddRequest.cardType,
+                cardDesc = cardAddRequest.cardDesc,
+                userEntity = savedUserEntity,
+            )
 
         Mockito.`when`(cardRepository.save(Mockito.any()))
             .thenReturn(newCard)
@@ -64,7 +65,6 @@ class CardServiceTest {
 
         // When
         val cardAddResponse = cardService.addCard(savedUserEntity.userNo!!, cardAddRequest)
-
 
         // Then
         assertThat(cardAddResponse.cardNo).isEqualTo(newCard.cardNo)
@@ -77,22 +77,23 @@ class CardServiceTest {
     @Test
     fun removeCard_success() {
         // Given
-        val savedUserEntity = UserEntity(
-            userNo = 1L,
-            nickName = "닉네임",
-            userEmail = "tester@test.co.kr"
-        )
-        val newCard = Card(
-            cardNo = 1L,
-            cardName = "신한카드",
-            cardType = CardType.CREDIT_CARD,
-            cardDesc = "신한 신용카드",
-            userEntity = savedUserEntity
-        )
+        val savedUserEntity =
+            UserEntity(
+                userNo = 1L,
+                nickName = "닉네임",
+                userEmail = "tester@test.co.kr",
+            )
+        val newCard =
+            Card(
+                cardNo = 1L,
+                cardName = "신한카드",
+                cardType = CardType.CREDIT_CARD,
+                cardDesc = "신한 신용카드",
+                userEntity = savedUserEntity,
+            )
 
-        Mockito.`when`(cardRepository.findByCardNoAndUserEntity_UserNoAndIsDeleteIsFalse(newCard.cardNo!!, savedUserEntity.userNo!!))
+        Mockito.`when`(cardRepository.findByCardNoAndUserEntityUserNoAndIsDeleteIsFalse(newCard.cardNo!!, savedUserEntity.userNo!!))
             .thenReturn(newCard)
-
 
         // When
         cardService.removeCard(savedUserEntity.userNo!!, newCard.cardNo!!)
@@ -108,7 +109,7 @@ class CardServiceTest {
         val cardNo = 1L
         val userNo = 1L
 
-        Mockito.`when`(cardRepository.findByCardNoAndUserEntity_UserNoAndIsDeleteIsFalse(cardNo, userNo))
+        Mockito.`when`(cardRepository.findByCardNoAndUserEntityUserNoAndIsDeleteIsFalse(cardNo, userNo))
             .thenReturn(null)
 
         // When && Then
@@ -120,30 +121,33 @@ class CardServiceTest {
     @Test
     fun modifyCard_success() {
         // Given
-        val savedUserEntity = UserEntity(
-            userNo = 1L,
-            nickName = "닉네임",
-            userEmail = "tester@test.co.kr"
-        )
-        val savedCard = Card(
-            cardNo = 1L,
-            cardName = "신한카드",
-            cardType = CardType.CREDIT_CARD,
-            cardDesc = "신한 신용카드",
-            userEntity = savedUserEntity
-        )
+        val savedUserEntity =
+            UserEntity(
+                userNo = 1L,
+                nickName = "닉네임",
+                userEmail = "tester@test.co.kr",
+            )
+        val savedCard =
+            Card(
+                cardNo = 1L,
+                cardName = "신한카드",
+                cardType = CardType.CREDIT_CARD,
+                cardDesc = "신한 신용카드",
+                userEntity = savedUserEntity,
+            )
 
-        val cardModifyRequest = CardModifyRequest(
-            cardName = "KB카드",
-            cardType = CardType.CHECK_CARD,
-            cardDesc = "KB 체크카드"
-        )
+        val cardModifyRequest =
+            CardModifyRequest(
+                cardName = "KB카드",
+                cardType = CardType.CHECK_CARD,
+                cardDesc = "KB 체크카드",
+            )
 
         Mockito.`when`(
-            cardRepository.findByCardNoAndUserEntity_UserNoAndIsDeleteIsFalse(
+            cardRepository.findByCardNoAndUserEntityUserNoAndIsDeleteIsFalse(
                 savedCard.cardNo!!,
-                savedUserEntity.userNo!!
-            )
+                savedUserEntity.userNo!!,
+            ),
         )
             .thenReturn(savedCard)
 
@@ -163,14 +167,14 @@ class CardServiceTest {
         // Given
         val cardNo = 1L
         val userNo = 1L
-        val cardModifyRequest = CardModifyRequest(
-            cardName = "KB카드",
-            cardType = CardType.CHECK_CARD,
-            cardDesc = "KB 체크카드"
-        )
+        val cardModifyRequest =
+            CardModifyRequest(
+                cardName = "KB카드",
+                cardType = CardType.CHECK_CARD,
+                cardDesc = "KB 체크카드",
+            )
 
-
-        Mockito.`when`(cardRepository.findByCardNoAndUserEntity_UserNoAndIsDeleteIsFalse(cardNo, userNo))
+        Mockito.`when`(cardRepository.findByCardNoAndUserEntityUserNoAndIsDeleteIsFalse(cardNo, userNo))
             .thenReturn(null)
 
         // When && Then
@@ -178,22 +182,23 @@ class CardServiceTest {
             .isInstanceOf(CardNotFoundException::class.java)
     }
 
-
     @DisplayName("사용자 카드 전체 조회가 성공한다.")
     @Test
     fun findCards_success() {
         // Given
-        val savedUserEntity = UserEntity(
-            userNo = 1L,
-            nickName = "닉네임",
-            userEmail = "tester@test.co.kr"
-        )
-        val cards = listOf(
-            Card(1L, "국민카드", CardType.CHECK_CARD, "KB카드 설명", savedUserEntity),
-            Card(2L, "신한카드", CardType.CREDIT_CARD, "신한카드 설명", savedUserEntity)
-        )
+        val savedUserEntity =
+            UserEntity(
+                userNo = 1L,
+                nickName = "닉네임",
+                userEmail = "tester@test.co.kr",
+            )
+        val cards =
+            listOf(
+                Card(1L, "국민카드", CardType.CHECK_CARD, "KB카드 설명", savedUserEntity),
+                Card(2L, "신한카드", CardType.CREDIT_CARD, "신한카드 설명", savedUserEntity),
+            )
 
-        Mockito.`when`(cardRepository.findByUserEntity_UserNoAndIsDeleteIsFalse(savedUserEntity.userNo!!))
+        Mockito.`when`(cardRepository.findByUserEntityUserNoAndIsDeleteIsFalse(savedUserEntity.userNo!!))
             .thenReturn(cards.toMutableList())
 
         // When
@@ -206,7 +211,7 @@ class CardServiceTest {
                 CardFindAllResponse::cardNo,
                 CardFindAllResponse::cardName,
                 CardFindAllResponse::cardType,
-                CardFindAllResponse::cardDesc
+                CardFindAllResponse::cardDesc,
             )
             .contains(
                 Tuple.tuple(cards[0].cardNo, cards[0].cardName, cards[0].cardType, cards[0].cardDesc),
@@ -218,24 +223,26 @@ class CardServiceTest {
     @Test
     fun findCardDetail_success() {
         // Given
-        val savedUserEntity = UserEntity(
-            userNo = 1L,
-            nickName = "닉네임",
-            userEmail = "tester@test.co.kr"
-        )
-        val savedCard = Card(
-            cardNo = 1L,
-            cardName = "신한카드",
-            cardType = CardType.CREDIT_CARD,
-            cardDesc = "신한 신용카드",
-            userEntity = savedUserEntity
-        )
+        val savedUserEntity =
+            UserEntity(
+                userNo = 1L,
+                nickName = "닉네임",
+                userEmail = "tester@test.co.kr",
+            )
+        val savedCard =
+            Card(
+                cardNo = 1L,
+                cardName = "신한카드",
+                cardType = CardType.CREDIT_CARD,
+                cardDesc = "신한 신용카드",
+                userEntity = savedUserEntity,
+            )
 
         Mockito.`when`(
-            cardRepository.findByCardNoAndUserEntity_UserNoAndIsDeleteIsFalse(
+            cardRepository.findByCardNoAndUserEntityUserNoAndIsDeleteIsFalse(
                 savedCard.cardNo!!,
-                savedUserEntity.userNo!!
-            )
+                savedUserEntity.userNo!!,
+            ),
         ).thenReturn(savedCard)
 
         // When
@@ -250,12 +257,12 @@ class CardServiceTest {
 
     @DisplayName("카드 상세조회시 카드가 존재하지 않으면 CardNotFoundException가 발생한다.")
     @Test
-    fun findCardDetail_fail_when_cardNotExists_raise_cardNotFoundException(){
-        //Given
+    fun findCardDetail_fail_when_cardNotExists_raise_cardNotFoundException() {
+        // Given
         val userNo = 1L
         val cardNo = 1L
 
-        Mockito.`when`(cardRepository.findByCardNoAndUserEntity_UserNoAndIsDeleteIsFalse(cardNo, userNo))
+        Mockito.`when`(cardRepository.findByCardNoAndUserEntityUserNoAndIsDeleteIsFalse(cardNo, userNo))
             .thenReturn(null)
 
         // When && Then

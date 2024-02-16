@@ -1,5 +1,6 @@
 package com.hjj.apiserver.service.impl
 
+import com.hjj.apiserver.adapter.out.persistence.user.UserRepository
 import com.hjj.apiserver.common.exception.AccountBookNotFoundException
 import com.hjj.apiserver.domain.accountbook.AccountBook
 import com.hjj.apiserver.domain.accountbook.AccountBookUser
@@ -12,7 +13,6 @@ import com.hjj.apiserver.repository.accountbook.AccountBookRepository
 import com.hjj.apiserver.repository.accountbook.AccountBookUserRepository
 import com.hjj.apiserver.repository.card.CardRepository
 import com.hjj.apiserver.repository.category.CategoryRepository
-import com.hjj.apiserver.adapter.out.persistence.user.UserRepository
 import com.hjj.apiserver.util.CommonUtils
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -26,32 +26,42 @@ class AccountBookService(
     private val cardRepository: CardRepository,
     private val userRepository: UserRepository,
 ) {
-
     @Transactional(readOnly = false)
-    fun addAccountBook(userNo: Long, request: AccountBookAddRequest): AccountBookAddResponse {
-        val newAccountBook = accountBookRepository.save(AccountBook(
-            accountBookName = request.accountBookName,
-            accountBookDesc = request.accountBookDesc,
-        ))
-
-        val savedAccountBookUser = accountBookUserRepository.save(
-            AccountBookUser(
-                accountBook = newAccountBook,
-                userEntity = userRepository.getReferenceById(userNo),
-                accountRole = AccountRole.OWNER,
-                backGroundColor = request.backGroundColor,
-                color = request.color,
+    fun addAccountBook(
+        userNo: Long,
+        request: AccountBookAddRequest,
+    ): AccountBookAddResponse {
+        val newAccountBook =
+            accountBookRepository.save(
+                AccountBook(
+                    accountBookName = request.accountBookName,
+                    accountBookDesc = request.accountBookDesc,
+                ),
             )
-        )
+
+        val savedAccountBookUser =
+            accountBookUserRepository.save(
+                AccountBookUser(
+                    accountBook = newAccountBook,
+                    userEntity = userRepository.getReferenceById(userNo),
+                    accountRole = AccountRole.OWNER,
+                    backGroundColor = request.backGroundColor,
+                    color = request.color,
+                ),
+            )
         val createBasicCategories = CommonUtils.createBasicCategories(newAccountBook)
         categoryRepository.saveAll(createBasicCategories)
         return AccountBookAddResponse.of(savedAccountBookUser)
     }
 
-    fun findAccountBookDetail(accountBookNo: Long, userNo: Long): AccountBookDetailResponse {
-        val findAccountBook = accountBookRepository.findAccountBook(accountBookNo, userNo)
-            ?: throw AccountBookNotFoundException()
-        val findCards = cardRepository.findByUserEntity_UserNo(userNo).map(AccountBookDetailResponse.CardDetail.Companion::of)
+    fun findAccountBookDetail(
+        accountBookNo: Long,
+        userNo: Long,
+    ): AccountBookDetailResponse {
+        val findAccountBook =
+            accountBookRepository.findAccountBook(accountBookNo, userNo)
+                ?: throw AccountBookNotFoundException()
+        val findCards = cardRepository.findByUserEntityUserNo(userNo).map(AccountBookDetailResponse.CardDetail.Companion::of)
 
         val findCategories = categoryRepository.findCategories(userNo, accountBookNo)
 

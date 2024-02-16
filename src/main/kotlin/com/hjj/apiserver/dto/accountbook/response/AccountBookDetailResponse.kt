@@ -22,10 +22,9 @@ data class AccountBookDetailResponse(
         var cardName: String,
         var cardType: CardType,
         var cardDesc: String,
-    ){
-
+    ) {
         companion object {
-            fun of(card: Card): CardDetail{
+            fun of(card: Card): CardDetail {
                 return CardDetail(
                     cardNo = card.cardNo!!,
                     cardName = card.cardName,
@@ -42,6 +41,4 @@ data class AccountBookDetailResponse(
         var categoryIcon: String?,
         var parentCategoryNo: Long?,
     )
-
-
 }

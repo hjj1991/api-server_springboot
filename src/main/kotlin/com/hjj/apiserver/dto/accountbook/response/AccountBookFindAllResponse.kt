@@ -9,9 +9,8 @@ data class AccountBookFindAllResponse(
     val backGroundColor: String,
     val color: String,
     val accountRole: AccountRole,
-    val joinedUsers: List<JoinedUser> = mutableListOf()
+    val joinedUsers: List<JoinedUser> = mutableListOf(),
 ) {
-
     data class JoinedUser(
         val userNo: Long,
         val nickName: String,

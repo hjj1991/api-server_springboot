@@ -5,7 +5,6 @@ class UserLog(
     logType: LogType,
     user: User,
 ) {
-
     var userLogNo: Long = userLogNo
         private set
     var logType: LogType = logType

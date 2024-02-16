@@ -11,16 +11,15 @@ data class AccountBookAddResponse(
     val color: String,
     val accountRole: AccountRole,
 ) {
-
-    companion object{
-        fun of(savedAccountBookUser: AccountBookUser):AccountBookAddResponse {
+    companion object {
+        fun of(savedAccountBookUser: AccountBookUser): AccountBookAddResponse {
             return AccountBookAddResponse(
                 accountBookNo = savedAccountBookUser.accountBook.accountBookNo!!,
                 accountBookName = savedAccountBookUser.accountBook.accountBookName,
                 accountBookDesc = savedAccountBookUser.accountBook.accountBookDesc,
                 backGroundColor = savedAccountBookUser.backGroundColor,
                 color = savedAccountBookUser.color,
-                accountRole = savedAccountBookUser.accountRole
+                accountRole = savedAccountBookUser.accountRole,
             )
         }
     }

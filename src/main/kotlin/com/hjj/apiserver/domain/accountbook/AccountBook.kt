@@ -13,7 +13,6 @@ class AccountBook(
     accountBookName: String,
     accountBookDesc: String,
 ) : BaseEntity() {
-
     @Column(length = 100, nullable = false)
     var accountBookName: String = accountBookName
         protected set

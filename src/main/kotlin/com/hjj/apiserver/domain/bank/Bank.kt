@@ -13,7 +13,7 @@ class Bank(
     calTel: String? = null,
     bankType: BankType,
     enable: Int = 1,
-): BaseTimeEntity() {
+) : BaseTimeEntity() {
     @Id
     @Column(length = 20)
     val finCoNo: String? = null
@@ -46,7 +46,4 @@ class Bank(
     @Column
     var enable: Int = enable
         protected set
-
-
-
 }

@@ -16,15 +16,16 @@ class UserPersistenceAdapter(
     }
 
     override fun registerUser(user: User): User {
-        val userEntity = userRepository.save(
-            UserEntity(
-                nickName = user.nickName,
-                userEmail = user.userEmail,
-                userPw = user.userPw,
-                role = user.role,
-                picture = user.picture,
+        val userEntity =
+            userRepository.save(
+                UserEntity(
+                    nickName = user.nickName,
+                    userEmail = user.userEmail,
+                    userPw = user.userPw,
+                    role = user.role,
+                    picture = user.picture,
+                ),
             )
-        )
         return userMapper.mapToDomainEntity(userEntity)
     }
 }

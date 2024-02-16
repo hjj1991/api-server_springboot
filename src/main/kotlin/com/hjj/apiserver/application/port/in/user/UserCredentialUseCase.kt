@@ -7,7 +7,10 @@ import com.hjj.apiserver.dto.user.UserAttribute
 
 interface UserCredentialUseCase {
     fun register(registerCredentialCommand: RegisterCredentialCommand): Credential
+
     fun signIn(userAttribute: UserAttribute): Credential
+
     fun isMatchingProvider(provider: Provider): Boolean
+
     fun existsUserId(userId: String): Boolean
 }

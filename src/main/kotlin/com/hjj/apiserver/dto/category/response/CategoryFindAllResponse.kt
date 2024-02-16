@@ -7,11 +7,14 @@ data class CategoryFindAllResponse(
     val categories: List<CategoryDto> = listOf(),
     val accountRole: AccountRole?,
 ) {
-    companion object{
-        fun of(categories: List<CategoryDto>, accountRole: AccountRole?): CategoryFindAllResponse{
+    companion object {
+        fun of(
+            categories: List<CategoryDto>,
+            accountRole: AccountRole?,
+        ): CategoryFindAllResponse {
             return CategoryFindAllResponse(
                 categories = categories,
-                accountRole = accountRole
+                accountRole = accountRole,
             )
         }
     }

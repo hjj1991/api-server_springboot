@@ -14,8 +14,7 @@ data class PurchaseAddResponse(
     val reason: String = "",
     val purchaseDate: LocalDate,
 ) {
-
-    companion object{
+    companion object {
         fun of(purchase: Purchase): PurchaseAddResponse {
             return PurchaseAddResponse(
                 purchaseNo = purchase.purchaseNo!!,
@@ -29,5 +28,4 @@ data class PurchaseAddResponse(
             )
         }
     }
-
 }

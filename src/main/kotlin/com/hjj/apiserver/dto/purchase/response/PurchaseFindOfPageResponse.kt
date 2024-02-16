@@ -15,9 +15,7 @@ data class PurchaseFindOfPageResponse(
     val reason: String,
     val purchaseDate: LocalDate,
     val categoryInfo: PurchaseCategoryInfo? = null,
-
 ) {
-
     data class PurchaseCategoryInfo(
         val parentCategoryNo: Long? = null,
         val categoryNo: Long,
@@ -25,8 +23,8 @@ data class PurchaseFindOfPageResponse(
         val categoryName: String,
         val categoryDesc: String,
         val categoryIcon: String,
-    ){
-        companion object{
+    ) {
+        companion object {
             fun of(category: Category): PurchaseCategoryInfo {
                 return PurchaseCategoryInfo(
                     parentCategoryNo = category.parentCategory?.categoryNo,
@@ -40,9 +38,8 @@ data class PurchaseFindOfPageResponse(
         }
     }
 
-
-    companion object{
-        fun of(purchase: Purchase): PurchaseFindOfPageResponse{
+    companion object {
+        fun of(purchase: Purchase): PurchaseFindOfPageResponse {
             return PurchaseFindOfPageResponse(
                 purchaseNo = purchase.purchaseNo!!,
                 userNo = purchase.userEntity.userNo!!,
@@ -52,7 +49,7 @@ data class PurchaseFindOfPageResponse(
                 price = purchase.price,
                 reason = purchase.reason,
                 purchaseDate = purchase.purchaseDate,
-                categoryInfo = purchase.category?.let(PurchaseCategoryInfo::of)
+                categoryInfo = purchase.category?.let(PurchaseCategoryInfo::of),
             )
         }
     }

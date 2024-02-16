@@ -6,5 +6,4 @@ data class SignInUserCommand(
     val userId: String,
     val userPw: String? = null,
     val provider: Provider,
-) {
-}
+)

@@ -1,48 +1,48 @@
-//package com.hjj.apiserver.controller
+// package com.hjj.apiserver.controller
 //
-//import com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper
-//import com.epages.restdocs.apispec.ResourceDocumentation.headerWithName
-//import com.epages.restdocs.apispec.ResourceDocumentation.resource
-//import com.epages.restdocs.apispec.ResourceSnippetParameters
-//import com.fasterxml.jackson.databind.ObjectMapper
-//import com.hjj.apiserver.common.JwtTokenProvider
-//import com.hjj.apiserver.domain.card.CardType
-//import com.hjj.apiserver.domain.user.Role
-//import com.hjj.apiserver.dto.card.reqeust.CardAddRequest
-//import com.hjj.apiserver.dto.card.reqeust.CardModifyRequest
-//import com.hjj.apiserver.dto.card.response.CardAddResponse
-//import com.hjj.apiserver.dto.card.response.CardFindAllResponse
-//import com.hjj.apiserver.dto.card.response.CardFindResponse
-//import com.hjj.apiserver.dto.card.response.CardModifyResponse
-//import com.hjj.apiserver.dto.user.CurrentUserInfo
-//import com.hjj.apiserver.service.impl.CardService
-//import com.hjj.apiserver.utils.ApiDocumentUtil
-//import org.apache.http.HttpHeaders
-//import org.junit.jupiter.api.DisplayName
-//import org.junit.jupiter.api.Nested
-//import org.junit.jupiter.api.Test
-//import org.mockito.BDDMockito.*
-//import org.springframework.beans.factory.annotation.Autowired
-//import org.springframework.boot.autoconfigure.ImportAutoConfiguration
-//import org.springframework.boot.autoconfigure.security.oauth2.client.servlet.OAuth2ClientAutoConfiguration
-//import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs
-//import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
-//import org.springframework.boot.test.mock.mockito.MockBean
-//import org.springframework.http.MediaType.*
-//import org.springframework.restdocs.headers.HeaderDocumentation
-//import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*
-//import org.springframework.restdocs.payload.PayloadDocumentation.*
-//import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors
-//import org.springframework.test.web.servlet.MockMvc
-//import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
+// import com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper
+// import com.epages.restdocs.apispec.ResourceDocumentation.headerWithName
+// import com.epages.restdocs.apispec.ResourceDocumentation.resource
+// import com.epages.restdocs.apispec.ResourceSnippetParameters
+// import com.fasterxml.jackson.databind.ObjectMapper
+// import com.hjj.apiserver.common.JwtTokenProvider
+// import com.hjj.apiserver.domain.card.CardType
+// import com.hjj.apiserver.domain.user.Role
+// import com.hjj.apiserver.dto.card.reqeust.CardAddRequest
+// import com.hjj.apiserver.dto.card.reqeust.CardModifyRequest
+// import com.hjj.apiserver.dto.card.response.CardAddResponse
+// import com.hjj.apiserver.dto.card.response.CardFindAllResponse
+// import com.hjj.apiserver.dto.card.response.CardFindResponse
+// import com.hjj.apiserver.dto.card.response.CardModifyResponse
+// import com.hjj.apiserver.dto.user.CurrentUserInfo
+// import com.hjj.apiserver.service.impl.CardService
+// import com.hjj.apiserver.utils.ApiDocumentUtil
+// import org.apache.http.HttpHeaders
+// import org.junit.jupiter.api.DisplayName
+// import org.junit.jupiter.api.Nested
+// import org.junit.jupiter.api.Test
+// import org.mockito.BDDMockito.*
+// import org.springframework.beans.factory.annotation.Autowired
+// import org.springframework.boot.autoconfigure.ImportAutoConfiguration
+// import org.springframework.boot.autoconfigure.security.oauth2.client.servlet.OAuth2ClientAutoConfiguration
+// import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs
+// import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
+// import org.springframework.boot.test.mock.mockito.MockBean
+// import org.springframework.http.MediaType.*
+// import org.springframework.restdocs.headers.HeaderDocumentation
+// import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*
+// import org.springframework.restdocs.payload.PayloadDocumentation.*
+// import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors
+// import org.springframework.test.web.servlet.MockMvc
+// import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 //
-//@DisplayName("카드 관리 API 테스트")
-//@AutoConfigureRestDocs
-//@WebMvcTest(CardController::class)
-//@ImportAutoConfiguration(
+// @DisplayName("카드 관리 API 테스트")
+// @AutoConfigureRestDocs
+// @WebMvcTest(CardController::class)
+// @ImportAutoConfiguration(
 //    exclude = [OAuth2ClientAutoConfiguration::class],
-//)
-//class CardControllerTest {
+// )
+// class CardControllerTest {
 //
 //    private val CARD_TAG = "카드 관리 API"
 //
@@ -385,4 +385,4 @@
 //    private fun getUserInfo(): CurrentUserInfo {
 //        return CurrentUserInfo("test", "닉네임", 1L, Role.USER)
 //    }
-//}
+// }

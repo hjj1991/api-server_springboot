@@ -4,20 +4,18 @@ import com.hjj.apiserver.common.exception.ProviderNotFoundException
 import com.hjj.apiserver.domain.user.Provider
 import com.hjj.apiserver.domain.user.Role
 import com.hjj.apiserver.dto.user.UserAttribute
-import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User
-import org.springframework.security.oauth2.core.user.OAuth2User
 
 class OAuth2UserAttribute(
     val registrationId: String? = null,
     attributes: Map<String, Any>,
-    nameAttributeKey: String
+    nameAttributeKey: String,
 ) : DefaultOAuth2User(
-    listOf(SimpleGrantedAuthority(Role.USER.key)),
-    attributes,
-    nameAttributeKey
-) {
+        listOf(SimpleGrantedAuthority(Role.USER.key)),
+        attributes,
+        nameAttributeKey,
+    ) {
     fun toUserAttribute(): UserAttribute {
         when (registrationId) {
             "naver" -> {
@@ -27,7 +25,7 @@ class OAuth2UserAttribute(
                     providerId = attribute["id"] ?: throw IllegalStateException(),
                     userEmail = attribute["email"],
                     nickName = attribute["nickname"] ?: throw IllegalArgumentException(),
-                    picture = attribute["profile_image"]
+                    picture = attribute["profile_image"],
                 )
             }
 
@@ -39,12 +37,11 @@ class OAuth2UserAttribute(
                     providerId = name,
                     userEmail = kakaoAccount["email"] as String,
                     nickName = profile["nickname"] as String,
-                    picture = profile["profile_image_url"] as String
+                    picture = profile["profile_image_url"] as String,
                 )
             }
 
             else -> throw ProviderNotFoundException()
         }
     }
-
 }

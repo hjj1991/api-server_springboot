@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component
 class UserLogMapper(
     private val userMapper: UserMapper,
 ) {
-
     fun mapToDomainEntity(userLogEntity: UserLogEntity): UserLog {
         return UserLog(
             userLogNo = userLogEntity.userLogNo,

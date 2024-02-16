@@ -13,8 +13,7 @@ open class UserAttribute(
     val userId: String? = null,
     val userEmail: String? = null,
 ) {
-
-    fun toUserEntity(changeNickName: String?=null): UserEntity {
+    fun toUserEntity(changeNickName: String? = null): UserEntity {
         return UserEntity(
 //            userId = userId!!,
             nickName = changeNickName ?: nickName!!,
@@ -34,14 +33,13 @@ open class UserAttribute(
     }
 
     companion object {
-
         fun ofNaver(attribute: LinkedHashMap<String, String>): UserAttribute {
             return UserAttribute(
                 provider = Provider.NAVER,
                 providerId = attribute["id"] ?: throw IllegalStateException(),
                 userEmail = attribute["email"],
                 nickName = attribute["nickname"] ?: throw IllegalArgumentException(),
-                picture = attribute["profile_image"]
+                picture = attribute["profile_image"],
             )
         }
 
@@ -52,11 +50,14 @@ open class UserAttribute(
                 providerId = "userNameAttributeName",
                 userEmail = attribute["email"] as String,
                 nickName = profile["nickname"] as String,
-                picture = profile["profile_image_url"] as String
+                picture = profile["profile_image_url"] as String,
             )
         }
 
-        fun ofGeneral(userId: String, userPw: String): UserAttribute {
+        fun ofGeneral(
+            userId: String,
+            userPw: String,
+        ): UserAttribute {
             return UserAttribute(
                 userId = userId,
                 userPw = userPw,

@@ -15,15 +15,16 @@ class WebScrappingService(
     private val pushService: PushService,
 ) {
     private val log = logger()
-    fun liivMateTodayQuizAnswerFind() {
-        //세션 시작
 
-        //세션 시작
+    fun liivMateTodayQuizAnswerFind() {
+        // 세션 시작
+
+        // 세션 시작
         val options = ChromeOptions()
-        //페이지가 로드될 때까지 대기
-        //Normal: 로드 이벤트 실행이 반환 될 때 까지 기다린다.
-        //페이지가 로드될 때까지 대기
-        //Normal: 로드 이벤트 실행이 반환 될 때 까지 기다린다.
+        // 페이지가 로드될 때까지 대기
+        // Normal: 로드 이벤트 실행이 반환 될 때 까지 기다린다.
+        // 페이지가 로드될 때까지 대기
+        // Normal: 로드 이벤트 실행이 반환 될 때 까지 기다린다.
         options.setPageLoadStrategy(PageLoadStrategy.NORMAL)
 //        options.setHeadless(true)
         options.addArguments("no-sandbox")
@@ -35,13 +36,13 @@ class WebScrappingService(
 
         val todaySearchValue = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일")) + "리브메이트"
 
-        /* 검색창에 입력값 대입 */
+        // 검색창에 입력값 대입
 
-        /* 검색창에 입력값 대입 */driver.findElement(By.xpath("/html/body/div[1]/div[3]/form/div[1]/div[1]/div[1]/div/div[2]/input"))
+        // 검색창에 입력값 대입
+        driver.findElement(By.xpath("/html/body/div[1]/div[3]/form/div[1]/div[1]/div[1]/div/div[2]/input"))
             .sendKeys(todaySearchValue)
 
         driver.findElement(By.xpath("/html/body/div[1]/div[3]/form/div[1]/div[1]/div[3]/center/input[1]")).click()
-
 
         val webElement = driver.findElements(By.className("yuRUbf"))
         val urlList: MutableList<String> = ArrayList()
@@ -53,9 +54,8 @@ class WebScrappingService(
                 LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일"))
             }정답 
                 
-                """.trimIndent()
+            """.trimIndent(),
         )
-
 
         for (element in webElement) {
             urlList.add(element.findElement(By.tagName("a")).getAttribute("href"))

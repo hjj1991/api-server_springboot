@@ -12,13 +12,12 @@ class PushService(
     private val lineNotiAccessToken: String,
     private val webClient: WebClient,
 ) {
-
-    fun pushLineNoti(message: String){
+    fun pushLineNoti(message: String) {
         val formData = LinkedMultiValueMap<String, String>()
         formData.add("message", message)
 
         webClient.post()
-            .uri{
+            .uri {
                 it.scheme("https")
                     .host("notify-api.line.me")
                     .path("api/notify")
@@ -26,11 +25,10 @@ class PushService(
             }
             .body(BodyInserters.fromFormData(formData))
             .headers {
-                it.add("Content-Type", "application/x-www-form-urlencoded");
-                it.add("Authorization", "Bearer ${lineNotiAccessToken}");
+                it.add("Content-Type", "application/x-www-form-urlencoded")
+                it.add("Authorization", "Bearer $lineNotiAccessToken")
             }
             .retrieve()
             .bodyToMono(Unit::class.java)
     }
-
 }

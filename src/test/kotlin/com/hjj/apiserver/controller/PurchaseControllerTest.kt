@@ -1,53 +1,53 @@
-//package com.hjj.apiserver.controller
+// package com.hjj.apiserver.controller
 //
-//import com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper
-//import com.epages.restdocs.apispec.ResourceDocumentation
-//import com.epages.restdocs.apispec.ResourceSnippetParameters
-//import com.fasterxml.jackson.databind.ObjectMapper
-//import com.hjj.apiserver.common.JwtTokenProvider
-//import com.hjj.apiserver.domain.purchase.PurchaseType
-//import com.hjj.apiserver.domain.user.Role
-//import com.hjj.apiserver.dto.purchase.request.PurchaseAddRequest
-//import com.hjj.apiserver.dto.purchase.request.PurchaseFindOfPageRequest
-//import com.hjj.apiserver.dto.purchase.request.PurchaseModifyRequest
-//import com.hjj.apiserver.dto.purchase.response.PurchaseAddResponse
-//import com.hjj.apiserver.dto.purchase.response.PurchaseDetailResponse
-//import com.hjj.apiserver.dto.purchase.response.PurchaseFindOfPageResponse
-//import com.hjj.apiserver.dto.user.CurrentUserInfo
-//import com.hjj.apiserver.service.impl.PurchaseService
-//import com.hjj.apiserver.util.CommonUtils
-//import com.hjj.apiserver.utils.ApiDocumentUtil
-//import org.apache.http.HttpHeaders
-//import org.junit.jupiter.api.DisplayName
-//import org.junit.jupiter.api.Nested
-//import org.junit.jupiter.api.Test
-//import org.mockito.BDDMockito
-//import org.springframework.beans.factory.annotation.Autowired
-//import org.springframework.boot.autoconfigure.ImportAutoConfiguration
-//import org.springframework.boot.autoconfigure.security.oauth2.client.servlet.OAuth2ClientAutoConfiguration
-//import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs
-//import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
-//import org.springframework.boot.test.mock.mockito.MockBean
-//import org.springframework.data.domain.SliceImpl
-//import org.springframework.http.MediaType
-//import org.springframework.restdocs.headers.HeaderDocumentation
-//import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders
-//import org.springframework.restdocs.payload.PayloadDocumentation
-//import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors
-//import org.springframework.test.web.servlet.MockMvc
-//import org.springframework.test.web.servlet.result.MockMvcResultMatchers
-//import org.springframework.util.LinkedMultiValueMap
-//import org.springframework.util.MultiValueMap
-//import java.time.LocalDate
-//import java.time.format.DateTimeFormatter
+// import com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper
+// import com.epages.restdocs.apispec.ResourceDocumentation
+// import com.epages.restdocs.apispec.ResourceSnippetParameters
+// import com.fasterxml.jackson.databind.ObjectMapper
+// import com.hjj.apiserver.common.JwtTokenProvider
+// import com.hjj.apiserver.domain.purchase.PurchaseType
+// import com.hjj.apiserver.domain.user.Role
+// import com.hjj.apiserver.dto.purchase.request.PurchaseAddRequest
+// import com.hjj.apiserver.dto.purchase.request.PurchaseFindOfPageRequest
+// import com.hjj.apiserver.dto.purchase.request.PurchaseModifyRequest
+// import com.hjj.apiserver.dto.purchase.response.PurchaseAddResponse
+// import com.hjj.apiserver.dto.purchase.response.PurchaseDetailResponse
+// import com.hjj.apiserver.dto.purchase.response.PurchaseFindOfPageResponse
+// import com.hjj.apiserver.dto.user.CurrentUserInfo
+// import com.hjj.apiserver.service.impl.PurchaseService
+// import com.hjj.apiserver.util.CommonUtils
+// import com.hjj.apiserver.utils.ApiDocumentUtil
+// import org.apache.http.HttpHeaders
+// import org.junit.jupiter.api.DisplayName
+// import org.junit.jupiter.api.Nested
+// import org.junit.jupiter.api.Test
+// import org.mockito.BDDMockito
+// import org.springframework.beans.factory.annotation.Autowired
+// import org.springframework.boot.autoconfigure.ImportAutoConfiguration
+// import org.springframework.boot.autoconfigure.security.oauth2.client.servlet.OAuth2ClientAutoConfiguration
+// import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs
+// import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
+// import org.springframework.boot.test.mock.mockito.MockBean
+// import org.springframework.data.domain.SliceImpl
+// import org.springframework.http.MediaType
+// import org.springframework.restdocs.headers.HeaderDocumentation
+// import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders
+// import org.springframework.restdocs.payload.PayloadDocumentation
+// import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors
+// import org.springframework.test.web.servlet.MockMvc
+// import org.springframework.test.web.servlet.result.MockMvcResultMatchers
+// import org.springframework.util.LinkedMultiValueMap
+// import org.springframework.util.MultiValueMap
+// import java.time.LocalDate
+// import java.time.format.DateTimeFormatter
 //
-//@DisplayName("지출 관리 API 테스트")
-//@AutoConfigureRestDocs
-//@WebMvcTest(PurchaseController::class)
-//@ImportAutoConfiguration(
+// @DisplayName("지출 관리 API 테스트")
+// @AutoConfigureRestDocs
+// @WebMvcTest(PurchaseController::class)
+// @ImportAutoConfiguration(
 //    exclude = [OAuth2ClientAutoConfiguration::class]
-//)
-//class PurchaseControllerTest {
+// )
+// class PurchaseControllerTest {
 //    private val PURCHASE_TAG = "지출 관리 API"
 //
 //    @Autowired
@@ -504,4 +504,4 @@
 //    private fun createUserInfo(): CurrentUserInfo {
 //        return CurrentUserInfo("test", "닉네임", 1L, Role.USER)
 //    }
-//}
+// }

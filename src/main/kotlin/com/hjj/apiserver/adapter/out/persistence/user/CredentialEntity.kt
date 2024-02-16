@@ -21,8 +21,8 @@ import jakarta.persistence.UniqueConstraint
 @Table(
     name = "tb_credential",
     uniqueConstraints = [
-        UniqueConstraint(columnNames = ["userId", "provider"])
-    ]
+        UniqueConstraint(columnNames = ["userId", "provider"]),
+    ],
 )
 class CredentialEntity(
     credentialNo: Long = 0L,
@@ -32,7 +32,6 @@ class CredentialEntity(
     userEntity: UserEntity,
     state: CredentialState,
 ) {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var credentialNo: Long = credentialNo

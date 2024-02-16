@@ -5,16 +5,17 @@ import org.springframework.util.StringUtils
 enum class Provider {
     GENERAL,
     NAVER,
-    KAKAO;
+    KAKAO,
+    ;
 
     companion object {
-        fun isExist(name: String?): Boolean{
-            if(!StringUtils.hasText(name)){
+        fun isExist(name: String?): Boolean {
+            if (!StringUtils.hasText(name)) {
                 return false
             }
 
             for (value in Provider.values()) {
-                if(name == value.name){
+                if (name == value.name) {
                     return true
                 }
             }

@@ -1,7 +1,10 @@
 package com.hjj.apiserver.common
 
+import com.hjj.apiserver.common.exception.TokenException
 import com.hjj.apiserver.domain.user.User
 import com.hjj.apiserver.util.logger
+import io.jsonwebtoken.Claims
+import io.jsonwebtoken.Jws
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.io.Encoders
 import io.jsonwebtoken.security.Keys
@@ -24,7 +27,8 @@ class JwtProvider(
 ) {
     private lateinit var key: Key
     private val log = logger()
-    companion object{
+
+    companion object {
         const val AUTHORIZATION_HEADER = "Authorization"
         const val BEARER_PREFIX = "Bearer "
         const val ACCESS_TOKEN_VALID_MILLISECONDS: Long = 1000L * 60 * 20
@@ -36,15 +40,17 @@ class JwtProvider(
         secretKey = Encoders.BASE64.encode(secretKey.toByteArray())
     }
 
-
-    fun createToken(user: User, tokenType: TokenType): String{
+    fun createToken(
+        userNo: Long,
+        tokenType: TokenType,
+    ): String {
         val validTime = getValidTimeByTokenType(tokenType)
-        val key : Key = Keys.hmacShaKeyFor(secretKey.toByteArray(StandardCharsets.UTF_8))
+        val key: Key = Keys.hmacShaKeyFor(secretKey.toByteArray(StandardCharsets.UTF_8))
 
         return Jwts.builder()
             .header().type("JWT")
             .and().claims()
-            .subject(user.userNo.toString())
+            .subject(userNo.toString())
             .expiration(validTime)
             .issuedAt(currentDate())
             .and()
@@ -52,7 +58,7 @@ class JwtProvider(
             .compact()
     }
 
-    /* Jwt 토큰으로 인증 정보 조회 */
+    // Jwt 토큰으로 인증 정보 조회
     fun getAuthentication(token: String): Authentication {
 //        val claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).body
 //        val user = userDetailService.loadUserByUsername(claims.subject)
@@ -64,51 +70,50 @@ class JwtProvider(
         return 2L
     }
 
-    /* Request의 Header에서 token 파싱 */
+    // Request의 Header에서 token 파싱
     fun resolveToken(request: HttpServletRequest): String? {
         val bearerToken = request.getHeader(AUTHORIZATION_HEADER)
-        if(StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX)){
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX)) {
             return bearerToken.substring(7)
         }
         return null
     }
 
-    /* Jwt 액세스토큰의 유효성 + 만료일자 확인 */
-    fun isValidToken(token: String): Boolean{
-        return try{
-            val secret = Keys.hmacShaKeyFor(secretKey.toByteArray())
-            val validToken = Jwts.parser().verifyWith(secret).build().parseSignedClaims(token)
-            !validToken.payload.expiration.before(currentDate())
-        }catch (e: Exception){
-            false
-        }
+    // Jwt 액세스토큰의 유효성 + 만료일자 확인
+    fun isValidToken(token: String): Boolean {
+        return kotlin.runCatching {
+            val validatedClaims = getValidatedClaims(token)
+            !validatedClaims.payload.expiration.before(currentDate())
+        }.getOrDefault(false)
     }
 
     fun getValidTimeByTokenType(tokenType: TokenType): Date {
-        return when(tokenType){
+        return when (tokenType) {
             TokenType.ACCESS_TOKEN -> Date(currentDate().time + ACCESS_TOKEN_VALID_MILLISECONDS)
             TokenType.REFRESH_TOKEN -> Date(currentDate().time + REFRESH_TOKEN_VALID_MILLISECONDS)
         }
     }
 
     fun isRefreshTokenRenewalRequired(token: String): Boolean {
-        try{
-            val refreshTokenReissuedRequiredDate = Date(clock.millis() - REFRESH_TOKEN_REISSUED_REQUIRED_MILLISECONDS)
+        return kotlin.runCatching {
+            val validatedClaims = getValidatedClaims(token)
+            !validatedClaims.payload.expiration.before(currentDate()) && validatedClaims.payload.expiration.after(Date(clock.millis() - REFRESH_TOKEN_REISSUED_REQUIRED_MILLISECONDS))
+        }.getOrDefault(false)
+    }
+
+    fun getValidatedClaims(token: String): Jws<Claims> {
+        return kotlin.runCatching {
             val secret = Keys.hmacShaKeyFor(secretKey.toByteArray())
-            val validToken = Jwts.parser().verifyWith(secret).build().parseSignedClaims(token)
-            validToken.payload.expiration.after(refreshTokenReissuedRequiredDate)
-        }catch (e: Exception){
-            false
-        }
+            Jwts.parser().verifyWith(secret).build().parseSignedClaims(token)
+        }.getOrDefault(throw TokenException("[getValidatedClaims] Token is not valid or expired token: $token"))
     }
 
     private fun currentDate(): Date {
         return Date(clock.millis())
     }
-
 }
 
-enum class TokenType{
+enum class TokenType {
     ACCESS_TOKEN,
     REFRESH_TOKEN,
 }

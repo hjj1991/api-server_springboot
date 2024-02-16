@@ -8,8 +8,7 @@ import org.springframework.stereotype.Service
 class DepositService(
     private val depositRepository: DepositRepository,
 ) {
-
-    fun findDeposits():List<DepositFindAllResponse> {
+    fun findDeposits(): List<DepositFindAllResponse> {
         return depositRepository.findDepositAll()
     }
 }
