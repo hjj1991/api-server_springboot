@@ -6,9 +6,8 @@ import com.hjj.apiserver.common.exception.AccountBookNotFoundException
 import com.hjj.apiserver.common.exception.AlreadyExistsUserException
 import com.hjj.apiserver.common.exception.ExistedSocialUserException
 import com.hjj.apiserver.common.exception.UserNotFoundException
-import com.hjj.apiserver.util.logger
 import jakarta.servlet.http.HttpServletRequest
-import org.slf4j.Logger
+import mu.two.KotlinLogging
 import org.springframework.http.HttpStatus
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.validation.BindingResult
@@ -21,7 +20,7 @@ import java.util.stream.Collectors
 
 @RestControllerAdvice
 class ExceptionControllerAdvice {
-    private val log: Logger = logger()
+    private val log = KotlinLogging.logger {}
 
     @ExceptionHandler(UserNotFoundException::class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)

@@ -92,7 +92,12 @@ class CardServiceTest {
                 userEntity = savedUserEntity,
             )
 
-        Mockito.`when`(cardRepository.findByCardNoAndUserEntityUserNoAndIsDeleteIsFalse(newCard.cardNo!!, savedUserEntity.userNo!!))
+        Mockito.`when`(
+            cardRepository.findByCardNoAndUserEntityUserNoAndIsDeleteIsFalse(
+                newCard.cardNo!!,
+                savedUserEntity.userNo!!,
+            ),
+        )
             .thenReturn(newCard)
 
         // When

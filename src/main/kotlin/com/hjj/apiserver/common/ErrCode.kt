@@ -2,7 +2,7 @@ package com.hjj.apiserver.common
 
 import jakarta.annotation.PostConstruct
 import org.springframework.context.MessageSource
-import java.util.*
+import java.util.Locale
 
 enum class ErrCode(
     var msg: String,

@@ -35,7 +35,10 @@ class WebSecurityConfiguration(
         http.httpBasic { httpBasic -> httpBasic.disable() }.formLogin { formLogin -> formLogin.disable() }
             .csrf { csrf -> csrf.disable() }
             .headers { headers -> headers.frameOptions { frameOption -> frameOption.disable() } }
-            .sessionManagement { sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
+            .sessionManagement {
+                    sessionManagement ->
+                sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            }
             .cors(Customizer.withDefaults()).oauth2Login { oauth2Login ->
                 oauth2Login.authorizationEndpoint { endPoint ->
                     endPoint.authorizationRequestResolver(
@@ -80,7 +83,8 @@ class WebSecurityConfiguration(
                     customAuthenticationEntryPoint,
                 )
             }.addFilterBefore(
-                JwtAuthenticationFilter(jwtProvider), // jwt token 필터를 id/password 인증 필터 전에 넣는다
+                // jwt token 필터를 id/password 인증 필터 전에 넣는다
+                JwtAuthenticationFilter(jwtProvider),
                 UsernamePasswordAuthenticationFilter::class.java,
             )
 

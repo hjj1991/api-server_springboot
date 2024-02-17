@@ -33,7 +33,8 @@ class JwtProviderTest {
         Assertions.assertThat(
             token,
         ).isEqualTo(
-            "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxMSIsImV4cCI6MzI0NzIxODEyMDAsImlhdCI6MzI0NzIxODAwMDB9.qK5PVaTQbrjT1izWB5VZ8JkwRUQlh16Yh7m3a9uq-bLbg5M4R5WrpIZ7Re1i33D90tvLwOCGMYcKSBX3A6Gcvw",
+            "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxMSIsImV4cCI6MzI0NzIxODEyMDAsImlhdCI6MzI0NzIxODAwMDB9.qK" +
+                "5PVaTQbrjT1izWB5VZ8JkwRUQlh16Yh7m3a9uq-bLbg5M4R5WrpIZ7Re1i33D90tvLwOCGMYcKSBX3A6Gcvw",
         )
     }
 

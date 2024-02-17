@@ -5,11 +5,11 @@ import com.google.firebase.FirebaseApp
 import com.google.firebase.FirebaseOptions
 import com.hjj.apiserver.common.advisor.ControllerExceptionLogTrace
 import com.hjj.apiserver.dto.user.CurrentUserInfo
-import com.hjj.apiserver.util.logger
 import com.querydsl.jpa.JPQLTemplates
 import com.querydsl.jpa.impl.JPAQueryFactory
 import jakarta.annotation.PostConstruct
 import jakarta.persistence.EntityManager
+import mu.two.KotlinLogging
 import org.modelmapper.ModelMapper
 import org.modelmapper.convention.MatchingStrategies
 import org.springframework.beans.factory.annotation.Value
@@ -27,7 +27,7 @@ import reactor.core.publisher.Mono
 import java.io.FileInputStream
 import java.io.IOException
 import java.time.Clock
-import java.util.*
+import java.util.Optional
 import java.util.function.Consumer
 
 @EnableJpaAuditing
@@ -36,7 +36,7 @@ class ApplicationConfig(
     @Value("\${app.firebase-configuration-file}")
     private val firebaseConfigPath: String,
 ) : AuditorAware<Long> {
-    private val log = logger()
+    private val log = KotlinLogging.logger {}
 
     @Bean
     fun clock(): Clock {

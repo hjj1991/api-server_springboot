@@ -5,7 +5,7 @@ import com.hjj.apiserver.domain.accountbook.AccountRole
 import com.hjj.apiserver.domain.card.Card
 import com.hjj.apiserver.domain.card.CardType
 import com.hjj.apiserver.dto.category.CategoryDto
-import java.time.LocalDateTime
+import java.time.ZonedDateTime
 
 data class AccountBookDetailResponse(
     var accountBookNo: Long,
@@ -13,7 +13,7 @@ data class AccountBookDetailResponse(
     var accountBookDesc: String,
     var accountRole: AccountRole = AccountRole.GUEST,
     @field:JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    var createdAt: LocalDateTime,
+    var createdAt: ZonedDateTime,
     var cards: List<CardDetail> = listOf(),
     var categories: List<CategoryDto> = listOf(),
 ) {

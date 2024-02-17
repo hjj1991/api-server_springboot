@@ -56,7 +56,13 @@ class DepositRepositoryImpl(
             .join(deposit.bank, bank)
             .leftJoin(deposit.depositOptions, depositOption)
             .where(deposit.enable.eq(1).and(depositOption.saveTrm.eq("12")))
-            .groupBy(deposit.korCoNm, deposit.finPrdtCd, deposit.finPrdtNm, depositOption.intrRate, depositOption.intrRate2)
+            .groupBy(
+                deposit.korCoNm,
+                deposit.finPrdtCd,
+                deposit.finPrdtNm,
+                depositOption.intrRate,
+                depositOption.intrRate2,
+            )
             .orderBy(depositOption.intrRate2.desc())
             .limit(10)
             .fetch()

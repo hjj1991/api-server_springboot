@@ -1,9 +1,10 @@
 package com.hjj.apiserver.service
 
-import com.hjj.apiserver.application.port.`in`.user.command.CheckUserNickNameDuplicateCommand
-import com.hjj.apiserver.application.port.`in`.user.command.RegisterUserCommand
+import com.hjj.apiserver.application.port.input.user.command.CheckUserNickNameDuplicateCommand
+import com.hjj.apiserver.application.port.input.user.command.RegisterUserCommand
 import com.hjj.apiserver.application.port.out.user.GetCredentialPort
 import com.hjj.apiserver.application.port.out.user.GetUserPort
+import com.hjj.apiserver.application.port.out.user.ReadUserTokenPort
 import com.hjj.apiserver.application.port.out.user.WriteCredentialPort
 import com.hjj.apiserver.application.port.out.user.WriteUserLogPort
 import com.hjj.apiserver.application.port.out.user.WriteUserPort
@@ -28,6 +29,7 @@ import org.mockito.Mockito
 import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.security.crypto.password.PasswordEncoder
+import java.time.Clock
 
 @ExtendWith(MockitoExtension::class)
 class UserServiceTest {
@@ -57,6 +59,12 @@ class UserServiceTest {
 
     @Mock
     lateinit var jwtProvider: JwtProvider
+
+    @Mock
+    lateinit var readUserTokenPort: ReadUserTokenPort
+
+    @Mock
+    lateinit var clock: Clock
 
     @Test
     @DisplayName("닉네임이 이미 존재하는 경우")
@@ -135,7 +143,9 @@ class UserServiceTest {
             )
 
         Mockito.`when`(writeUserPort.registerUser(MockitoTestUtil.any(User::class.java))).thenReturn(savedUser)
-        Mockito.`when`(writeCredentialPort.registerCredential(MockitoTestUtil.any(Credential::class.java))).thenReturn(savedCredential)
+        Mockito.`when`(
+            writeCredentialPort.registerCredential(MockitoTestUtil.any(Credential::class.java)),
+        ).thenReturn(savedCredential)
         Mockito.`when`(passwordEncoder.encode(registerUserCommand.userPw)).thenReturn("enCryptedPassword")
 
         // When && Then

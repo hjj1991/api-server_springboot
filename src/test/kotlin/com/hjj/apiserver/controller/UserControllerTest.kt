@@ -4,18 +4,18 @@ import com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper
 import com.epages.restdocs.apispec.ResourceDocumentation
 import com.epages.restdocs.apispec.ResourceSnippetParameters
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.hjj.apiserver.adapter.`in`.web.user.UserController
-import com.hjj.apiserver.adapter.`in`.web.user.request.UserSignInRequest
-import com.hjj.apiserver.adapter.`in`.web.user.request.UserSignUpRequest
-import com.hjj.apiserver.adapter.`in`.web.user.response.ExistsNickNameResponse
-import com.hjj.apiserver.adapter.`in`.web.user.response.ExistsUserIdResponse
-import com.hjj.apiserver.adapter.`in`.web.user.response.UserSignInResponse
-import com.hjj.apiserver.application.port.`in`.user.GetUserUseCase
-import com.hjj.apiserver.application.port.`in`.user.UserCredentialUseCase
-import com.hjj.apiserver.application.port.`in`.user.WriteUserUseCase
-import com.hjj.apiserver.application.port.`in`.user.command.CheckUserNickNameDuplicateCommand
-import com.hjj.apiserver.application.port.`in`.user.command.RegisterUserCommand
-import com.hjj.apiserver.application.port.`in`.user.command.SignInUserCommand
+import com.hjj.apiserver.adapter.input.web.user.UserController
+import com.hjj.apiserver.adapter.input.web.user.request.UserSignInRequest
+import com.hjj.apiserver.adapter.input.web.user.request.UserSignUpRequest
+import com.hjj.apiserver.adapter.input.web.user.response.ExistsNickNameResponse
+import com.hjj.apiserver.adapter.input.web.user.response.ExistsUserIdResponse
+import com.hjj.apiserver.adapter.input.web.user.response.UserSignInResponse
+import com.hjj.apiserver.application.port.input.user.GetUserUseCase
+import com.hjj.apiserver.application.port.input.user.UserCredentialUseCase
+import com.hjj.apiserver.application.port.input.user.WriteUserUseCase
+import com.hjj.apiserver.application.port.input.user.command.CheckUserNickNameDuplicateCommand
+import com.hjj.apiserver.application.port.input.user.command.RegisterUserCommand
+import com.hjj.apiserver.application.port.input.user.command.SignInUserCommand
 import com.hjj.apiserver.common.ApiError
 import com.hjj.apiserver.common.ErrCode
 import com.hjj.apiserver.common.JwtProvider
@@ -39,6 +39,7 @@ import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.restdocs.headers.HeaderDocumentation
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders
+import org.springframework.restdocs.payload.JsonFieldType
 import org.springframework.restdocs.payload.PayloadDocumentation
 import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors
@@ -52,7 +53,9 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers
     exclude = [OAuth2ClientAutoConfiguration::class],
 )
 class UserControllerTest {
-    private val USER_TAG = "유저 관리 API"
+    companion object {
+        const val USER_TAG = "유저 관리 API"
+    }
 
     @Autowired
     private lateinit var mockMvc: MockMvc
@@ -71,10 +74,10 @@ class UserControllerTest {
 
     @DisplayName("GET /users/exists-nickname/{nickName} API")
     @Nested
-    inner class CheckUserNickNameDuplicate_test {
+    inner class CheckUserNickNameDuplicateTest {
         @DisplayName("변경할 닉네임이 존재하는지 확인하여 존재하면 true.")
         @Test
-        fun checkUserNickNameDuplicateTest_when_exists_nickName_then_true() {
+        fun checkUserNickNameDuplicateTestWhenexistsnickNameThenTrue() {
             // Given
             val user = getUser()
             val checkUserNickNameDuplicateCommand =
@@ -189,11 +192,11 @@ class UserControllerTest {
 
     @DisplayName("GET /users/exists-id/{nickName} API")
     @Nested
-    inner class CheckUserIdDuplicate_test {
+    inner class CheckUserIdDuplicateTest {
         @DisplayName("변경할 유저 아이디가 존재하는지 확인하여 존재하면 true.")
         @Test
         @WithMockUser
-        fun checkUserIdDuplicateTest_when_exists_userId_then_true() {
+        fun checkUserIdDuplicateTestWhenExistsUserIdThenTrue() {
             // Given
             val userId = "babo"
             val existsUserIdResponse = ExistsUserIdResponse(true)
@@ -230,7 +233,7 @@ class UserControllerTest {
         @DisplayName("변경할 유저 아이디가 존재하지 않으면 false")
         @Test
         @WithMockUser
-        fun checkUserIdDuplicateTest_when_not_exsists_userId_then_false() {
+        fun checkUserIdDuplicateTestWhenNotExsistsUserIdThenFalse() {
             // Given
             val userId = "noExistsId"
             val existsUserIdResponse = ExistsUserIdResponse(false)
@@ -267,11 +270,11 @@ class UserControllerTest {
 
     @DisplayName("POST /users/signup API")
     @Nested
-    inner class SignUp_test {
+    inner class SignUpTest {
         @DisplayName("회원가입 성공API")
         @Test
         @WithMockUser
-        fun signUpTest_success() {
+        fun signUpTestSuccess() {
             // Given
             val userSignUpRequest =
                 UserSignUpRequest(
@@ -318,7 +321,7 @@ class UserControllerTest {
         @DisplayName("회원가입 실패 API 이미 존재하는 사용자인 경우")
         @Test
         @WithMockUser
-        fun signUpTest_fail_already_exists_user() {
+        fun signUpTestFailAlreadyExistsUser() {
             // Given
             val userSignUpRequest =
                 UserSignUpRequest(
@@ -378,11 +381,11 @@ class UserControllerTest {
 
     @DisplayName("POST /users/signin API")
     @Nested
-    inner class SignIn_test {
+    inner class SignInTest {
         @DisplayName("로그인 성공 API")
         @Test
         @WithMockUser
-        fun signInTest_success() {
+        fun signInTestSuccess() {
             // Given
             val userSignInRequest = UserSignInRequest(userId = "1234,", userPw = "<PASSWORD>")
 
@@ -418,13 +421,13 @@ class UserControllerTest {
                         ApiDocumentUtil.getDocumentRequest(),
                         ApiDocumentUtil.getDocumentResponse(),
                         PayloadDocumentation.responseFields(
-                            PayloadDocumentation.fieldWithPath("nickName").description("닉네임").type(String::class.java),
+                            PayloadDocumentation.fieldWithPath("nickName").description("닉네임").type(JsonFieldType.STRING),
                             PayloadDocumentation.fieldWithPath("picture").description("프로필 사진")
-                                .type(String::class.java),
+                                .type(JsonFieldType.NULL),
                             PayloadDocumentation.fieldWithPath("accessToken").description("액세스 토큰")
-                                .type(String::class.java),
+                                .type(JsonFieldType.STRING),
                             PayloadDocumentation.fieldWithPath("refreshToken").description("리프레쉬 토큰")
-                                .type(String::class.java),
+                                .type(JsonFieldType.STRING),
                         ),
                         ResourceDocumentation.resource(
                             ResourceSnippetParameters.builder()
@@ -432,13 +435,13 @@ class UserControllerTest {
                                 .tag(USER_TAG)
                                 .responseFields(
                                     PayloadDocumentation.fieldWithPath("nickName").description("닉네임")
-                                        .type(String::class.java),
+                                        .type(JsonFieldType.STRING),
                                     PayloadDocumentation.fieldWithPath("picture").description("프로필 사진")
-                                        .type(String::class.java),
+                                        .type(JsonFieldType.NULL),
                                     PayloadDocumentation.fieldWithPath("accessToken").description("액세스 토큰")
-                                        .type(String::class.java),
+                                        .type(JsonFieldType.STRING),
                                     PayloadDocumentation.fieldWithPath("refreshToken").description("리프레쉬 토큰")
-                                        .type(String::class.java),
+                                        .type(JsonFieldType.STRING),
                                 ).build(),
                         ),
                     ),
@@ -448,7 +451,7 @@ class UserControllerTest {
         @DisplayName("로그인 실패 API")
         @Test
         @WithMockUser
-        fun signInTest_fail_when_user_not_exists() {
+        fun signInTestFailWhenUserNotExists() {
             // Given
             val userSignInRequest = UserSignInRequest(userId = "1234,", userPw = "<PASSWORD>")
 
@@ -477,7 +480,9 @@ class UserControllerTest {
             )
                 .andExpect(MockMvcResultMatchers.status().isBadRequest)
                 .andExpect(
-                    MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(userNotFoundExceptionResponse)),
+                    MockMvcResultMatchers.content().json(
+                        objectMapper.writeValueAsString(userNotFoundExceptionResponse),
+                    ),
                 )
                 .andDo(
                     MockMvcRestDocumentationWrapper.document(

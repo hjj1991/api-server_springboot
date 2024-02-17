@@ -1,7 +1,7 @@
 package com.hjj.apiserver.application.service
 
-import com.hjj.apiserver.application.port.`in`.user.UserCredentialUseCase
-import com.hjj.apiserver.application.port.`in`.user.command.RegisterCredentialCommand
+import com.hjj.apiserver.application.port.input.user.UserCredentialUseCase
+import com.hjj.apiserver.application.port.input.user.command.RegisterCredentialCommand
 import com.hjj.apiserver.application.port.out.user.GetCredentialPort
 import com.hjj.apiserver.application.port.out.user.WriteCredentialPort
 import com.hjj.apiserver.common.exception.AlreadyExistsUserException

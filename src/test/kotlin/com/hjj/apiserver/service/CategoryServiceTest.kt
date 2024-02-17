@@ -25,7 +25,7 @@ import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.junit.jupiter.MockitoExtension
-import java.time.LocalDateTime
+import java.time.ZonedDateTime
 
 @ExtendWith(MockitoExtension::class)
 class CategoryServiceTest {
@@ -60,7 +60,7 @@ class CategoryServiceTest {
                 backgroundColor = "#00000",
                 color = "#11111",
                 accountRole = AccountRole.OWNER,
-                createdAt = LocalDateTime.now(),
+                createdAt = ZonedDateTime.now(),
             )
 
         val accountBook =
@@ -123,7 +123,7 @@ class CategoryServiceTest {
                 backgroundColor = "#00000",
                 color = "#11111",
                 accountRole = AccountRole.OWNER,
-                createdAt = LocalDateTime.now(),
+                createdAt = ZonedDateTime.now(),
             )
 
         val accountBook =
@@ -279,7 +279,12 @@ class CategoryServiceTest {
             .thenReturn(AccountRole.GUEST)
 
         // When && Then
-        Assertions.assertThatThrownBy { categoryService.findAllCategories(savedUser.userNo!!, accountBook.accountBookNo!!) }
+        Assertions.assertThatThrownBy {
+            categoryService.findAllCategories(
+                savedUser.userNo!!,
+                accountBook.accountBookNo!!,
+            )
+        }
             .isInstanceOf(AccountBookAccessDeniedException::class.java)
     }
 
@@ -494,7 +499,9 @@ class CategoryServiceTest {
         ).thenReturn(null)
 
         // When && Then
-        Assertions.assertThatThrownBy { categoryService.modifyCategory(savedUser.userNo!!, category.categoryNo!!, categoryModifyRequest) }
+        Assertions.assertThatThrownBy {
+            categoryService.modifyCategory(savedUser.userNo!!, category.categoryNo!!, categoryModifyRequest)
+        }
             .isInstanceOf(CategoryNotFoundException::class.java)
     }
 
@@ -541,7 +548,9 @@ class CategoryServiceTest {
         ).thenReturn(category)
 
         // When && Then
-        Assertions.assertThatThrownBy { categoryService.modifyCategory(savedUser.userNo!!, category.categoryNo!!, categoryModifyRequest) }
+        Assertions.assertThatThrownBy {
+            categoryService.modifyCategory(savedUser.userNo!!, category.categoryNo!!, categoryModifyRequest)
+        }
             .isInstanceOf(IllegalArgumentException::class.java)
     }
 
@@ -595,7 +604,9 @@ class CategoryServiceTest {
         ).thenReturn(null)
 
         // When && Then
-        Assertions.assertThatThrownBy { categoryService.modifyCategory(savedUser.userNo!!, category.categoryNo!!, categoryModifyRequest) }
+        Assertions.assertThatThrownBy {
+            categoryService.modifyCategory(savedUser.userNo!!, category.categoryNo!!, categoryModifyRequest)
+        }
             .isInstanceOf(CategoryNotFoundException::class.java)
             .hasMessage(ErrCode.ERR_CODE0011.msg)
     }

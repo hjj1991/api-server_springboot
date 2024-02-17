@@ -64,12 +64,14 @@ dependencies {
     implementation("com.cwbase:logback-redis-appender:1.1.6")
     implementation("org.mariadb.jdbc:mariadb-java-client:3.1.4")
     implementation("javax.xml.bind:jaxb-api:2.3.0")
-
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.14.2")
     implementation("com.querydsl:querydsl-jpa:5.0.0:jakarta")
     implementation("com.querydsl:querydsl-core:5.0.0")
+    // https://mvnrepository.com/artifact/io.github.microutils/kotlin-logging
+    implementation("io.github.microutils:kotlin-logging:4.0.0-beta-2")
+
     kapt("com.querydsl:querydsl-apt:5.0.0:jakarta")
     kapt("com.querydsl:querydsl-kotlin-codegen:5.0.0")
     kapt("org.springframework.boot:spring-boot-configuration-processor")
@@ -79,7 +81,7 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.security:spring-security-test")
 
-    asciidoctorExt("org.springframework.restdocs:spring-restdocs-asciidoctor")
+    asciidoctorExt("org.springframework.restdocs:spring-restdocs-asciidoctor:2.0.5.RELEASE")
     testImplementation("org.springframework.restdocs:spring-restdocs-mockmvc")
     testImplementation("com.epages:restdocs-api-spec-mockmvc:$restdocsApiSpecVersion")
 
@@ -97,45 +99,40 @@ tasks {
         outputs.dir(snippetsDir)
         useJUnitPlatform()
     }
-
     asciidoctor {
-        inputs.dir(snippetsDir)
-        configurations(asciidoctorExt.name)
         dependsOn(test)
-        doFirst {
-            println("---------------- delete present asciidoctor.")
+        setSourceDir(snippetsDir)
+        configurations("asciidoctorExt")
+    }
+
+    val copyHTML =
+        register("copyHTML") {
+            dependsOn("asciidoctor")
             delete(file("src/main/resources/static/docs"))
+            copy {
+                from(file("${layout.buildDirectory.get()}/docs/asciidoc"))
+                into(file("src/main/resources/static/docs"))
+            }
         }
-        doLast {
-            println("---------------- asciidoctor is deleted!")
-        }
-    }
 
-    register("copyHTML") {
-        dependsOn(asciidoctor)
-        copy {
-            from(file("build/docs/asciidoc"))
-            into(file("src/main/resources/static/docs"))
+    val registerOpenapi3 =
+        register("registerOpenapi3") {
+            delete(file("src/main/resources/static/swagger-ui/openapi3.yaml")) // 기존 OAS 파일 삭제
+            copy {
+                from(file("${layout.buildDirectory.get()}/api-spec/openapi3.yaml")) // 복제할 OAS 파일 지정
+                into(file("src/main/resources/static/swagger-ui/")) // 타겟 디렉터리로 파일 복제
+            }
+            dependsOn("openapi3")
         }
-    }
-
-    register("register") {
-        delete(file("src/main/resources/static/swagger-ui/openapi3.yaml")) // 기존 OAS 파일 삭제
-        copy {
-            from(file("${layout.buildDirectory}/docs/swagger-ui/openapi3.yaml")) // 복제할 OAS 파일 지정
-            into(file("src/main/resources/static/swagger-ui/")) // 타겟 디렉터리로 파일 복제
-        }
-        dependsOn("openapi3")
-    }
 
     build {
-        dependsOn("copyHTML", "register")
+        dependsOn(copyHTML, registerOpenapi3)
     }
 
     bootJar {
-        dependsOn(asciidoctor, "copyHTML", "register")
+        dependsOn(asciidoctor, copyHTML, registerOpenapi3)
         from(asciidoctor.get().outputDir) {
-            into("src/main/resources/static/docs")
+            into(file("src/main/resources/static/docs"))
         }
     }
 
@@ -145,11 +142,6 @@ tasks {
         description = "Spring REST Docs with SwaggerUI."
         version = "0.0.1"
         format = "yaml"
-
-        copy {
-            from("build/api-spec")
-            into("src/main/resources/static/docs")
-        }
     }
 
     docker {

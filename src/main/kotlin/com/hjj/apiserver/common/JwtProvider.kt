@@ -2,13 +2,13 @@ package com.hjj.apiserver.common
 
 import com.hjj.apiserver.common.exception.TokenException
 import com.hjj.apiserver.domain.user.User
-import com.hjj.apiserver.util.logger
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jws
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.io.Encoders
 import io.jsonwebtoken.security.Keys
 import jakarta.servlet.http.HttpServletRequest
+import mu.two.KotlinLogging
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
@@ -17,7 +17,7 @@ import org.springframework.util.StringUtils
 import java.nio.charset.StandardCharsets
 import java.security.Key
 import java.time.Clock
-import java.util.*
+import java.util.Date
 
 @Component
 class JwtProvider(
@@ -26,7 +26,7 @@ class JwtProvider(
     var secretKey: String,
 ) {
     private lateinit var key: Key
-    private val log = logger()
+    private val log = KotlinLogging.logger {}
 
     companion object {
         const val AUTHORIZATION_HEADER = "Authorization"
@@ -94,18 +94,11 @@ class JwtProvider(
         }
     }
 
-    fun isRefreshTokenRenewalRequired(token: String): Boolean {
-        return kotlin.runCatching {
-            val validatedClaims = getValidatedClaims(token)
-            !validatedClaims.payload.expiration.before(currentDate()) && validatedClaims.payload.expiration.after(Date(clock.millis() - REFRESH_TOKEN_REISSUED_REQUIRED_MILLISECONDS))
-        }.getOrDefault(false)
-    }
-
     fun getValidatedClaims(token: String): Jws<Claims> {
         return kotlin.runCatching {
             val secret = Keys.hmacShaKeyFor(secretKey.toByteArray())
             Jwts.parser().verifyWith(secret).build().parseSignedClaims(token)
-        }.getOrDefault(throw TokenException("[getValidatedClaims] Token is not valid or expired token: $token"))
+        }.getOrElse { throw TokenException("[getValidatedClaims] Token is not valid or expired token: $token") }
     }
 
     private fun currentDate(): Date {

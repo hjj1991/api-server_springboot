@@ -61,7 +61,10 @@ class AccountBookService(
         val findAccountBook =
             accountBookRepository.findAccountBook(accountBookNo, userNo)
                 ?: throw AccountBookNotFoundException()
-        val findCards = cardRepository.findByUserEntityUserNo(userNo).map(AccountBookDetailResponse.CardDetail.Companion::of)
+        val findCards =
+            cardRepository.findByUserEntityUserNo(
+                userNo,
+            ).map(AccountBookDetailResponse.CardDetail.Companion::of)
 
         val findCategories = categoryRepository.findCategories(userNo, accountBookNo)
 

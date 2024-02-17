@@ -1,13 +1,13 @@
 package com.hjj.apiserver.application.service
 
-import com.hjj.apiserver.adapter.`in`.web.user.response.UserReIssueTokenResponse
-import com.hjj.apiserver.adapter.`in`.web.user.response.UserSignInResponse
-import com.hjj.apiserver.application.port.`in`.user.GetUserUseCase
-import com.hjj.apiserver.application.port.`in`.user.WriteUserUseCase
-import com.hjj.apiserver.application.port.`in`.user.command.CheckUserNickNameDuplicateCommand
-import com.hjj.apiserver.application.port.`in`.user.command.RegisterCredentialCommand
-import com.hjj.apiserver.application.port.`in`.user.command.RegisterUserCommand
-import com.hjj.apiserver.application.port.`in`.user.command.SignInUserCommand
+import com.hjj.apiserver.adapter.input.web.user.response.UserReIssueTokenResponse
+import com.hjj.apiserver.adapter.input.web.user.response.UserSignInResponse
+import com.hjj.apiserver.application.port.input.user.GetUserUseCase
+import com.hjj.apiserver.application.port.input.user.WriteUserUseCase
+import com.hjj.apiserver.application.port.input.user.command.CheckUserNickNameDuplicateCommand
+import com.hjj.apiserver.application.port.input.user.command.RegisterCredentialCommand
+import com.hjj.apiserver.application.port.input.user.command.RegisterUserCommand
+import com.hjj.apiserver.application.port.input.user.command.SignInUserCommand
 import com.hjj.apiserver.application.port.out.user.GetCredentialPort
 import com.hjj.apiserver.application.port.out.user.GetUserPort
 import com.hjj.apiserver.application.port.out.user.ReadUserTokenPort
@@ -26,13 +26,13 @@ import com.hjj.apiserver.domain.user.Provider
 import com.hjj.apiserver.domain.user.Role
 import com.hjj.apiserver.domain.user.User
 import com.hjj.apiserver.domain.user.UserLog
-import com.hjj.apiserver.util.logger
+import mu.two.KotlinLogging
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.Clock
-import java.util.*
+import java.util.Date
 
 @Service
 @Transactional(readOnly = true)
@@ -60,7 +60,7 @@ class UserService(
         const val PROFILE_IMG_PATH = "profile/"
     }
 
-    private val log = logger()
+    private val log = KotlinLogging.logger {}
 
     override fun existsNickName(command: CheckUserNickNameDuplicateCommand): Boolean {
         if (command.authUser.role != Role.GUEST && command.authUser.nickName == command.nickName) {

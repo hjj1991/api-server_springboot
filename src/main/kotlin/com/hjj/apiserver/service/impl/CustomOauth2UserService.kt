@@ -44,6 +44,7 @@ class CustomOauth2UserService(
     }
 
     private fun isMapping(userRequest: OAuth2UserRequest): Boolean {
-        return userRequest.additionalParameters.containsKey("accessToken") && tokenProvider.isValidToken(userRequest.additionalParameters["accessToken"] as String)
+        return userRequest.additionalParameters.containsKey("accessToken") &&
+            tokenProvider.isValidToken(userRequest.additionalParameters["accessToken"] as String)
     }
 }

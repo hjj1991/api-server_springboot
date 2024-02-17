@@ -1,6 +1,6 @@
-package com.hjj.apiserver.application.port.`in`.user
+package com.hjj.apiserver.application.port.input.user
 
-import com.hjj.apiserver.application.port.`in`.user.command.RegisterCredentialCommand
+import com.hjj.apiserver.application.port.input.user.command.RegisterCredentialCommand
 import com.hjj.apiserver.domain.user.Credential
 import com.hjj.apiserver.domain.user.Provider
 import com.hjj.apiserver.dto.user.UserAttribute

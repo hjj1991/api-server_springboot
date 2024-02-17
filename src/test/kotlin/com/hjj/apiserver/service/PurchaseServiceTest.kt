@@ -33,7 +33,7 @@ import org.mockito.Mockito
 import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.data.domain.PageRequest
 import java.time.LocalDate
-import java.time.LocalDateTime
+import java.time.ZonedDateTime
 import java.util.Optional
 
 @ExtendWith(MockitoExtension::class)
@@ -75,7 +75,7 @@ class PurchaseServiceTest {
                 backgroundColor = "#000000",
                 color = "#000111",
                 accountRole = AccountRole.OWNER,
-                createdAt = LocalDateTime.now(),
+                createdAt = ZonedDateTime.now(),
             )
 
         val category =
@@ -179,7 +179,7 @@ class PurchaseServiceTest {
                 backgroundColor = "#000000",
                 color = "#000111",
                 accountRole = AccountRole.OWNER,
-                createdAt = LocalDateTime.now(),
+                createdAt = ZonedDateTime.now(),
             )
         val savedUser = createUser()
 
@@ -269,7 +269,7 @@ class PurchaseServiceTest {
                 backgroundColor = "#000000",
                 color = "#000111",
                 accountRole = AccountRole.OWNER,
-                createdAt = LocalDateTime.now(),
+                createdAt = ZonedDateTime.now(),
             )
         val savedUser = createUser()
         val purchaseAddRequest =
@@ -311,7 +311,7 @@ class PurchaseServiceTest {
                 backgroundColor = "#000000",
                 color = "#000111",
                 accountRole = AccountRole.OWNER,
-                createdAt = LocalDateTime.now(),
+                createdAt = ZonedDateTime.now(),
             )
         val savedUser = createUser()
         val purchaseAddRequest =
@@ -571,7 +571,9 @@ class PurchaseServiceTest {
             ),
         ).thenReturn(purchase)
 
-        Mockito.`when`(cardRepository.findByCardNoAndUserEntityUserNoAndIsDeleteIsFalse(card.cardNo!!, savedUser.userNo!!))
+        Mockito.`when`(
+            cardRepository.findByCardNoAndUserEntityUserNoAndIsDeleteIsFalse(card.cardNo!!, savedUser.userNo!!),
+        )
             .thenReturn(card)
 
         Mockito.`when`(
@@ -650,7 +652,9 @@ class PurchaseServiceTest {
             ),
         ).thenReturn(purchase)
 
-        Mockito.`when`(cardRepository.findByCardNoAndUserEntityUserNoAndIsDeleteIsFalse(card.cardNo!!, savedUser.userNo!!))
+        Mockito.`when`(
+            cardRepository.findByCardNoAndUserEntityUserNoAndIsDeleteIsFalse(card.cardNo!!, savedUser.userNo!!),
+        )
             .thenReturn(card)
 
         Mockito.`when`(
@@ -720,7 +724,9 @@ class PurchaseServiceTest {
             ),
         ).thenReturn(purchase)
 
-        Mockito.`when`(cardRepository.findByCardNoAndUserEntityUserNoAndIsDeleteIsFalse(card.cardNo!!, savedUser.userNo!!))
+        Mockito.`when`(
+            cardRepository.findByCardNoAndUserEntityUserNoAndIsDeleteIsFalse(card.cardNo!!, savedUser.userNo!!),
+        )
             .thenReturn(null)
 
         // When && Then
@@ -783,7 +789,9 @@ class PurchaseServiceTest {
             ),
         ).thenReturn(purchase)
 
-        Mockito.`when`(cardRepository.findByCardNoAndUserEntityUserNoAndIsDeleteIsFalse(card.cardNo!!, savedUser.userNo!!))
+        Mockito.`when`(
+            cardRepository.findByCardNoAndUserEntityUserNoAndIsDeleteIsFalse(card.cardNo!!, savedUser.userNo!!),
+        )
             .thenReturn(card)
 
         Mockito.`when`(

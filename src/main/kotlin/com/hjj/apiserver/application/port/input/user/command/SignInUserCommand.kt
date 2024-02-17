@@ -1,4 +1,4 @@
-package com.hjj.apiserver.application.port.`in`.user.command
+package com.hjj.apiserver.application.port.input.user.command
 
 import com.hjj.apiserver.domain.user.Provider
 

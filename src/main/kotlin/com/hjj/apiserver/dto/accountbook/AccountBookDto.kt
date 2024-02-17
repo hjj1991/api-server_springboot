@@ -2,7 +2,7 @@ package com.hjj.apiserver.dto.accountbook
 
 import com.fasterxml.jackson.annotation.JsonFormat
 import com.hjj.apiserver.domain.accountbook.AccountRole
-import java.time.LocalDateTime
+import java.time.ZonedDateTime
 
 data class AccountBookDto(
     val accountBookNo: Long,
@@ -12,5 +12,5 @@ data class AccountBookDto(
     val color: String,
     val accountRole: AccountRole,
     @field:JsonFormat(pattern = "YYYY-MM-dd HH:mm:ss")
-    val createdAt: LocalDateTime,
+    val createdAt: ZonedDateTime,
 )

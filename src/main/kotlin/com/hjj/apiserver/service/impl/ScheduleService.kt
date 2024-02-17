@@ -1,6 +1,6 @@
 package com.hjj.apiserver.service.impl
 
-import com.hjj.apiserver.util.logger
+import mu.two.KotlinLogging
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import java.time.LocalDateTime
@@ -9,7 +9,7 @@ import java.time.LocalDateTime
 class ScheduleService(
     private val webScrappingService: WebScrappingService,
 ) {
-    private val log = logger()
+    private val log = KotlinLogging.logger {}
 
     @Scheduled(cron = "0 00 14 * * *")
     fun scheduleliivMateTodayQuizTask() {

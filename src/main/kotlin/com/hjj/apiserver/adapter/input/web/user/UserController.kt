@@ -1,23 +1,23 @@
-package com.hjj.apiserver.adapter.`in`.web.user
+package com.hjj.apiserver.adapter.input.web.user
 
-import com.hjj.apiserver.adapter.`in`.web.user.request.ReIssueTokenRequest
-import com.hjj.apiserver.adapter.`in`.web.user.request.UserSignInRequest
-import com.hjj.apiserver.adapter.`in`.web.user.request.UserSignUpRequest
-import com.hjj.apiserver.adapter.`in`.web.user.response.ExistsNickNameResponse
-import com.hjj.apiserver.adapter.`in`.web.user.response.ExistsUserIdResponse
-import com.hjj.apiserver.adapter.`in`.web.user.response.UserReIssueTokenResponse
-import com.hjj.apiserver.adapter.`in`.web.user.response.UserSignInResponse
-import com.hjj.apiserver.application.port.`in`.user.GetUserUseCase
-import com.hjj.apiserver.application.port.`in`.user.UserCredentialUseCase
-import com.hjj.apiserver.application.port.`in`.user.WriteUserUseCase
-import com.hjj.apiserver.application.port.`in`.user.command.CheckUserNickNameDuplicateCommand
-import com.hjj.apiserver.application.port.`in`.user.command.RegisterUserCommand
-import com.hjj.apiserver.application.port.`in`.user.command.SignInUserCommand
+import com.hjj.apiserver.adapter.input.web.user.request.ReIssueTokenRequest
+import com.hjj.apiserver.adapter.input.web.user.request.UserSignInRequest
+import com.hjj.apiserver.adapter.input.web.user.request.UserSignUpRequest
+import com.hjj.apiserver.adapter.input.web.user.response.ExistsNickNameResponse
+import com.hjj.apiserver.adapter.input.web.user.response.ExistsUserIdResponse
+import com.hjj.apiserver.adapter.input.web.user.response.UserReIssueTokenResponse
+import com.hjj.apiserver.adapter.input.web.user.response.UserSignInResponse
+import com.hjj.apiserver.application.port.input.user.GetUserUseCase
+import com.hjj.apiserver.application.port.input.user.UserCredentialUseCase
+import com.hjj.apiserver.application.port.input.user.WriteUserUseCase
+import com.hjj.apiserver.application.port.input.user.command.CheckUserNickNameDuplicateCommand
+import com.hjj.apiserver.application.port.input.user.command.RegisterUserCommand
+import com.hjj.apiserver.application.port.input.user.command.SignInUserCommand
 import com.hjj.apiserver.domain.user.Provider
 import com.hjj.apiserver.domain.user.User
 import com.hjj.apiserver.util.AuthUser
-import com.hjj.apiserver.util.logger
 import jakarta.validation.Valid
+import mu.two.KotlinLogging
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.GetMapping
@@ -34,7 +34,7 @@ class UserController(
     @field:Qualifier("generalUserCredentialService")
     private val userCredentialUseCase: UserCredentialUseCase,
 ) {
-    private val log = logger()
+    private val log = KotlinLogging.logger {}
 
     @GetMapping("/users/exists-nickname/{nickName}")
     fun checkUserNickNameDuplicate(

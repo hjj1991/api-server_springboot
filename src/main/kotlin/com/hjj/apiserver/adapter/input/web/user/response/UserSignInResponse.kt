@@ -1,4 +1,4 @@
-package com.hjj.apiserver.adapter.`in`.web.user.response
+package com.hjj.apiserver.adapter.input.web.user.response
 
 import com.hjj.apiserver.domain.user.User
 

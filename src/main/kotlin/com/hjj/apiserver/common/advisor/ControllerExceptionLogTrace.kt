@@ -2,12 +2,12 @@ package com.hjj.apiserver.common.advisor
 
 import com.hjj.apiserver.common.ApiError
 import com.hjj.apiserver.common.ErrCode
+import mu.two.KotlinLogging
 import org.aspectj.lang.ProceedingJoinPoint
-import org.slf4j.LoggerFactory
 
 // @Aspect
 class ControllerExceptionLogTrace {
-    private val log = LoggerFactory.getLogger(ControllerExceptionLogTrace::class.java)
+    private val log = KotlinLogging.logger {}
 
 //    @Around("execution(* com.hjj.apiserver.controller..*(..))")
     fun execute(joinPoint: ProceedingJoinPoint): Any? {

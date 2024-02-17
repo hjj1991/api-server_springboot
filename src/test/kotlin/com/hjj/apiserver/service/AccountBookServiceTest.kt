@@ -27,7 +27,7 @@ import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.junit.jupiter.MockitoExtension
-import java.time.LocalDateTime
+import java.time.ZonedDateTime
 
 @ExtendWith(MockitoExtension::class)
 class AccountBookServiceTest {
@@ -123,7 +123,7 @@ class AccountBookServiceTest {
                 backgroundColor = "#fadvs",
                 color = "#fadvs",
                 accountRole = AccountRole.OWNER,
-                createdAt = LocalDateTime.now(),
+                createdAt = ZonedDateTime.now(),
             )
 
         val cards =

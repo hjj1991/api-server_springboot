@@ -62,7 +62,11 @@ class CategoryService(
         val findCategory =
             categoryRepository.findCategoryByCategoryNo(userNo, categoryNo)
                 ?: throw CategoryNotFoundException()
-        val findAccountRole = accountBookUserRepository.findAccountRole(userNo, findCategory.accountBook.accountBookNo!!)
+        val findAccountRole =
+            accountBookUserRepository.findAccountRole(
+                userNo,
+                findCategory.accountBook.accountBookNo!!,
+            )
         validateAccountBookRole(findAccountRole)
         return CategoryDetailResponse.of(findCategory)
     }

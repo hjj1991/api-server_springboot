@@ -1,6 +1,6 @@
 package com.hjj.apiserver.service.impl
 
-import com.hjj.apiserver.util.logger
+import mu.two.KotlinLogging
 import org.openqa.selenium.By
 import org.openqa.selenium.PageLoadStrategy
 import org.openqa.selenium.WebDriver
@@ -14,7 +14,7 @@ import java.time.format.DateTimeFormatter
 class WebScrappingService(
     private val pushService: PushService,
 ) {
-    private val log = logger()
+    private val log = KotlinLogging.logger {}
 
     fun liivMateTodayQuizAnswerFind() {
         // 세션 시작

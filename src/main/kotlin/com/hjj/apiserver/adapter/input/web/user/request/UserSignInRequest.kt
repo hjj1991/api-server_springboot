@@ -1,4 +1,4 @@
-package com.hjj.apiserver.adapter.`in`.web.user.request
+package com.hjj.apiserver.adapter.input.web.user.request
 
 import jakarta.validation.constraints.Pattern
 
