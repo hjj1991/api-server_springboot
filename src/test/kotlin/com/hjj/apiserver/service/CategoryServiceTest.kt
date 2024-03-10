@@ -1,7 +1,7 @@
 package com.hjj.apiserver.service
 
 import com.hjj.apiserver.adapter.out.persistence.user.UserEntity
-import com.hjj.apiserver.common.ErrCode
+import com.hjj.apiserver.common.ErrConst
 import com.hjj.apiserver.common.exception.AccountBookAccessDeniedException
 import com.hjj.apiserver.common.exception.AccountBookNotFoundException
 import com.hjj.apiserver.common.exception.CategoryNotFoundException
@@ -608,7 +608,7 @@ class CategoryServiceTest {
             categoryService.modifyCategory(savedUser.userNo!!, category.categoryNo!!, categoryModifyRequest)
         }
             .isInstanceOf(CategoryNotFoundException::class.java)
-            .hasMessage(ErrCode.ERR_CODE0011.msg)
+            .hasMessage(ErrConst.ERR_CODE0011.msg)
     }
 
     @DisplayName("카테고리 삭제시 상태값이 정상 변경된다.")

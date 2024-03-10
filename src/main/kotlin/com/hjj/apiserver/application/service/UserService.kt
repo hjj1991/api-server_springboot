@@ -34,6 +34,8 @@ import org.springframework.transaction.annotation.Transactional
 import java.time.Clock
 import java.util.Date
 
+private val log = KotlinLogging.logger {}
+
 @Service
 @Transactional(readOnly = true)
 class UserService(
@@ -59,8 +61,6 @@ class UserService(
     companion object {
         const val PROFILE_IMG_PATH = "profile/"
     }
-
-    private val log = KotlinLogging.logger {}
 
     override fun existsNickName(command: CheckUserNickNameDuplicateCommand): Boolean {
         if (command.authUser.role != Role.GUEST && command.authUser.nickName == command.nickName) {

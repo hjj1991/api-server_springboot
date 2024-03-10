@@ -4,7 +4,7 @@ import jakarta.annotation.PostConstruct
 import org.springframework.context.MessageSource
 import java.util.Locale
 
-enum class ErrCode(
+enum class ErrConst(
     var msg: String,
 ) {
     ERR_CODE0001("사용자가 없습니다."),
@@ -29,7 +29,7 @@ enum class ErrCode(
     ) {
         @PostConstruct
         fun postConstruct() {
-            ErrCode.values().forEach { it.msg = messageSource.getMessage(it.name, null, Locale.KOREA) }
+            ErrConst.values().forEach { it.msg = messageSource.getMessage(it.name, null, Locale.KOREA) }
         }
     }
 }

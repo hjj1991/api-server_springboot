@@ -1,9 +1,9 @@
-package com.hjj.apiserver.controller
+package com.hjj.apiserver.common
 
-import com.hjj.apiserver.common.ApiError
-import com.hjj.apiserver.common.ErrCode
 import com.hjj.apiserver.common.exception.AccountBookNotFoundException
 import com.hjj.apiserver.common.exception.AlreadyExistsUserException
+import com.hjj.apiserver.common.exception.DuplicatedNickNameException
+import com.hjj.apiserver.common.exception.DuplicatedUserIdException
 import com.hjj.apiserver.common.exception.ExistedSocialUserException
 import com.hjj.apiserver.common.exception.UserNotFoundException
 import jakarta.servlet.http.HttpServletRequest
@@ -24,22 +24,34 @@ class ExceptionControllerAdvice {
 
     @ExceptionHandler(UserNotFoundException::class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    protected fun userNotFoundException(request: HttpServletRequest): ApiError {
-        return ApiError(ErrCode.ERR_CODE0001)
+    protected fun handleUserNotFoundException(request: HttpServletRequest): ApiError {
+        return ApiError(ErrConst.ERR_CODE0001)
+    }
+
+    @ExceptionHandler(DuplicatedNickNameException::class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    protected fun hanldeDuplicatedNickNameException(request: HttpServletRequest): ApiError {
+        return ApiError(ErrConst.ERR_CODE0003)
+    }
+
+    @ExceptionHandler(DuplicatedUserIdException::class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    protected fun handleDuplicatedNickNameException(request: HttpServletRequest): ApiError {
+        return ApiError(ErrConst.ERR_CODE0002)
     }
 
     // 소셜 로그인 계정이 있는데 일반계정 로그인 시도시
     @ExceptionHandler(ExistedSocialUserException::class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     protected fun existedSocialUserException(request: HttpServletRequest): ApiError {
-        return ApiError(ErrCode.ERR_CODE0007)
+        return ApiError(ErrConst.ERR_CODE0007)
     }
 
     // 패스워드가 일치하지 않은 경우
     @ExceptionHandler(BadCredentialsException::class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     protected fun badCredentialsException(request: HttpServletRequest): ApiError {
-        return ApiError(ErrCode.ERR_CODE0008)
+        return ApiError(ErrConst.ERR_CODE0008)
     }
 
     @ExceptionHandler(AlreadyExistsUserException::class)
@@ -49,13 +61,13 @@ class ExceptionControllerAdvice {
         e: Exception,
     ): ApiError {
         log.error(e.message)
-        return ApiError(ErrCode.ERR_CODE0006)
+        return ApiError(ErrConst.ERR_CODE0006)
     }
 
     @ExceptionHandler(AccountBookNotFoundException::class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     protected fun accountBookNotFoundException(request: HttpServletRequest): ApiError {
-        return ApiError(ErrCode.ERR_CODE0010)
+        return ApiError(ErrConst.ERR_CODE0010)
     }
 
     @ExceptionHandler(MethodArgumentNotValidException::class)
@@ -65,7 +77,7 @@ class ExceptionControllerAdvice {
         e: Exception,
     ): ApiError {
         log.error(e.message)
-        return ApiError(ErrCode.ERR_CODE9999)
+        return ApiError(ErrConst.ERR_CODE9999)
     }
 
     @ExceptionHandler(Exception::class)
@@ -75,7 +87,7 @@ class ExceptionControllerAdvice {
         e: Exception,
     ): ApiError {
         log.error("[{}] Error Request: {}, ErrorInfo: {}", e.javaClass.name, request, e.printStackTrace())
-        return ApiError(ErrCode.ERR_CODE9999)
+        return ApiError(ErrConst.ERR_CODE9999)
     }
 
     fun makeValidFailMessage(bindingResult: BindingResult): String {

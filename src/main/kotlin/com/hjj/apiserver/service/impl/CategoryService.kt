@@ -1,6 +1,6 @@
 package com.hjj.apiserver.service.impl
 
-import com.hjj.apiserver.common.ErrCode
+import com.hjj.apiserver.common.ErrConst
 import com.hjj.apiserver.common.exception.AccountBookAccessDeniedException
 import com.hjj.apiserver.common.exception.AccountBookNotFoundException
 import com.hjj.apiserver.common.exception.CategoryNotFoundException
@@ -124,7 +124,7 @@ class CategoryService(
         return categoryRepository.findCategoryByCategoryNoAndAccountBookAccountBookNoAndIsDeleteIsFalse(
             parentCategoryNo,
             accountBookNo,
-        ) ?: throw CategoryNotFoundException(ErrCode.ERR_CODE0011.msg)
+        ) ?: throw CategoryNotFoundException(ErrConst.ERR_CODE0011.msg)
     }
 
     private fun modifyValidate(

@@ -3,8 +3,6 @@ package com.hjj.apiserver.adapter.input.web.user
 import com.hjj.apiserver.adapter.input.web.user.request.ReIssueTokenRequest
 import com.hjj.apiserver.adapter.input.web.user.request.UserSignInRequest
 import com.hjj.apiserver.adapter.input.web.user.request.UserSignUpRequest
-import com.hjj.apiserver.adapter.input.web.user.response.ExistsNickNameResponse
-import com.hjj.apiserver.adapter.input.web.user.response.ExistsUserIdResponse
 import com.hjj.apiserver.adapter.input.web.user.response.UserReIssueTokenResponse
 import com.hjj.apiserver.adapter.input.web.user.response.UserSignInResponse
 import com.hjj.apiserver.application.port.input.user.GetUserUseCase
@@ -13,6 +11,8 @@ import com.hjj.apiserver.application.port.input.user.WriteUserUseCase
 import com.hjj.apiserver.application.port.input.user.command.CheckUserNickNameDuplicateCommand
 import com.hjj.apiserver.application.port.input.user.command.RegisterUserCommand
 import com.hjj.apiserver.application.port.input.user.command.SignInUserCommand
+import com.hjj.apiserver.common.exception.DuplicatedNickNameException
+import com.hjj.apiserver.common.exception.DuplicatedUserIdException
 import com.hjj.apiserver.domain.user.Provider
 import com.hjj.apiserver.domain.user.User
 import com.hjj.apiserver.util.AuthUser
@@ -20,7 +20,9 @@ import jakarta.validation.Valid
 import mu.two.KotlinLogging
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.ModelAttribute
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -37,19 +39,25 @@ class UserController(
     private val log = KotlinLogging.logger {}
 
     @GetMapping("/users/exists-nickname/{nickName}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     fun checkUserNickNameDuplicate(
         @AuthUser authUser: User,
         @PathVariable("nickName") nickName: String,
-    ): ExistsNickNameResponse {
+    ) {
         val command = CheckUserNickNameDuplicateCommand(authUser, nickName)
-        return ExistsNickNameResponse(getUserUseCase.existsNickName(command))
+        if (getUserUseCase.existsNickName(command)) {
+            throw DuplicatedNickNameException()
+        }
     }
 
     @GetMapping("/users/exists-id/{userId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     fun checkUserIdDuplicate(
         @PathVariable("userId") userId: String,
-    ): ExistsUserIdResponse {
-        return ExistsUserIdResponse(userCredentialUseCase.existsUserId(userId))
+    ) {
+        if (userCredentialUseCase.existsUserId(userId)) {
+            throw DuplicatedUserIdException()
+        }
     }
 
     @PostMapping("/users/signup")
@@ -60,6 +68,14 @@ class UserController(
         val registerUserCommand =
             RegisterUserCommand(request.userId, request.nickName, request.userEmail, request.userPw, Provider.GENERAL)
         writeUserUseCase.signUp(registerUserCommand)
+    }
+
+    @PostMapping("/test", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
+    fun test(
+        @ModelAttribute request: UserSignInRequest,
+    ) {
+        println(request.userId)
+        println(request)
     }
 
     @PostMapping("/users/signin")

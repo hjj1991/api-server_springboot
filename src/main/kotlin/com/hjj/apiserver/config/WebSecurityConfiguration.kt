@@ -73,6 +73,7 @@ class WebSecurityConfiguration(
                         AntPathRequestMatcher("/user/social/signup"),
                         AntPathRequestMatcher("/user/oauth/token"),
                         AntPathRequestMatcher("/user/profile*"),
+                        AntPathRequestMatcher("/test"),
                         AntPathRequestMatcher("/h2-console/**"),
                     ).permitAll() // 가입 및 인증 주소는 누구나 접근가능
                     .anyRequest().hasRole("USER")

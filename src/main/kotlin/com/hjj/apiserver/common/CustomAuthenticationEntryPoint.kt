@@ -19,7 +19,7 @@ class CustomAuthenticationEntryPoint(
         if (request.getHeader("Accept") == "application/json") {
             response.status = 401
             response.contentType = "application/json;charset=utf-8"
-            response.writer.print(objectMapper.writeValueAsString(ApiError(ErrCode.ERR_CODE0009)))
+            response.writer.print(objectMapper.writeValueAsString(ApiError(ErrConst.ERR_CODE0009)))
         } else {
             response.sendError(401)
         }
