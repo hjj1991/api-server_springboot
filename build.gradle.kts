@@ -1,4 +1,4 @@
-import java.util.Locale
+import org.jetbrains.kotlin.gradle.plugin.mpp.pm20.util.archivesName
 
 val restdocsApiSpecVersion = "0.18.2"
 
@@ -128,6 +128,8 @@ tasks {
 
     build {
         dependsOn(copyHTML, registerOpenapi3)
+        archivesName.set("api-server")
+        version = ""
     }
 
     bootJar {
@@ -143,21 +145,5 @@ tasks {
         description = "Spring REST Docs with SwaggerUI."
         version = "0.0.1"
         format = "yaml"
-    }
-
-    docker {
-        println(bootJar.get().outputs.files)
-
-        // 이미지 이름
-        name = rootProject.name.lowercase(Locale.getDefault()) + ':' + version
-
-        // 어떤 Dockerfile
-        setDockerfile(file("Dockerfile"))
-
-        // 어떤 파일들을 Dockerfile 에 복사할 것인가
-        files(bootJar.get().outputs.files)
-
-        // Dockerfile 에 전달할 인자
-        buildArgs(mapOf("JAR_FILE" to bootJar.get().outputs.files.singleFile.name))
     }
 }
