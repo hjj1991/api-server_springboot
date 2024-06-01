@@ -1,129 +1,76 @@
 package com.hjj.apiserver.controller
 
-import com.hjj.apiserver.common.ApiResponse
 import com.hjj.apiserver.dto.category.request.CategoryAddRequest
 import com.hjj.apiserver.dto.category.request.CategoryModifyRequest
 import com.hjj.apiserver.dto.category.request.CategoryRemoveRequest
+import com.hjj.apiserver.dto.category.response.CategoryAddResponse
 import com.hjj.apiserver.dto.category.response.CategoryDetailResponse
 import com.hjj.apiserver.dto.category.response.CategoryFindAllResponse
 import com.hjj.apiserver.dto.user.CurrentUserInfo
-import com.hjj.apiserver.service.CategoryService
-import com.hjj.apiserver.util.ApiUtils
-import com.hjj.apiserver.util.CurrentUser
-import io.swagger.annotations.*
-import org.springframework.web.bind.annotation.*
-import javax.validation.Valid
+import com.hjj.apiserver.service.impl.CategoryService
+import com.hjj.apiserver.util.AuthUser
+import jakarta.validation.Valid
+import org.springframework.http.HttpStatus
+import org.springframework.web.bind.annotation.DeleteMapping
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PatchMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.ResponseStatus
+import org.springframework.web.bind.annotation.RestController
 
-@Api(tags = ["4. Category"])
 @RestController
 class CategoryController(
     private val categoryService: CategoryService,
 ) {
-
-    @ApiImplicitParams(
-        ApiImplicitParam(
-            name = "Authorization",
-            value = "로그인 성공 후 access_token",
-            required = true,
-            dataType = "String",
-            dataTypeClass = String::class,
-            paramType = "header"
-        )
-    )
-    @ApiOperation(value = "카테고리 등록", notes = "카테고리를 등록한다.")
-    @PostMapping("/category")
+    @PostMapping("/categories")
+    @ResponseStatus(HttpStatus.CREATED)
     fun categoryAdd(
-        @CurrentUser currentUserInfo: CurrentUserInfo,
-        @RequestBody request: CategoryAddRequest
-    ): ApiResponse<*> {
-        categoryService.addCategory(currentUserInfo.userNo, request)
-        return ApiUtils.success()
+        @AuthUser authUserInfo: CurrentUserInfo,
+        @RequestBody @Valid categoryAddRequest: CategoryAddRequest,
+    ): CategoryAddResponse {
+        return categoryService.addCategory(authUserInfo.userNo, categoryAddRequest)
     }
 
-
-    @ApiImplicitParams(
-        ApiImplicitParam(
-            name = "Authorization",
-            value = "로그인 성공 후 access_token",
-            required = true,
-            dataType = "String",
-            dataTypeClass = String::class,
-            paramType = "header"
-        )
-    )
-    @ApiOperation(value = "카테고리 리스트를 반환", notes = "카테고리를 리스트를 반환한다.")
-    @GetMapping("/category")
+    @GetMapping("/categories")
     fun categoriesFind(
-        @CurrentUser currentUserInfo: CurrentUserInfo,
-        @RequestParam accountBookNo: Long
-    ): ApiResponse<CategoryFindAllResponse> {
-        return ApiUtils.success(categoryService.findAllCategories(currentUserInfo.userNo, accountBookNo))
+        @AuthUser authUserInfo: CurrentUserInfo,
+        @RequestParam accountBookNo: Long,
+    ): CategoryFindAllResponse {
+        return categoryService.findAllCategories(authUserInfo.userNo, accountBookNo)
     }
 
-    @ApiImplicitParams(
-        ApiImplicitParam(
-            name = "Authorization",
-            value = "로그인 성공 후 access_token",
-            required = true,
-            dataType = "String",
-            dataTypeClass = String::class,
-            paramType = "header"
-        )
-    )
-    @ApiOperation(value = "카테고리 상세 조회", notes = "카테고리를 상세 조회한다.")
-    @GetMapping("/category/{categoryNo}")
+    @GetMapping("/categories/{categoryNo}")
     fun categoryDetail(
-        @CurrentUser currentUserInfo: CurrentUserInfo,
-        @ApiParam(value = "categoryNo", required = true) @PathVariable("categoryNo") categoryNo: Long
-    ): ApiResponse<CategoryDetailResponse> {
-        return ApiUtils.success(categoryService.findCategory(categoryNo))
+        @AuthUser authUserInfo: CurrentUserInfo,
+        @PathVariable("categoryNo") categoryNo: Long,
+    ): CategoryDetailResponse {
+        return categoryService.findCategory(categoryNo, authUserInfo.userNo)
     }
 
-    @ApiImplicitParams(
-        ApiImplicitParam(
-            name = "Authorization",
-            value = "로그인 성공 후 access_token",
-            required = true,
-            dataType = "String",
-            dataTypeClass = String::class,
-            paramType = "header"
-        )
-    )
-    @ApiOperation(value = "카테고리를 변경", notes = "카테고리를 변경한다.")
-    @PatchMapping("/category/{categoryNo}")
+    @PatchMapping("/categories/{categoryNo}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     fun categoryModify(
-        @CurrentUser currentUserInfo: CurrentUserInfo,
-        @ApiParam(value = "categoryNo", required = true) @PathVariable("categoryNo") categoryNo: Long,
-        @Valid @RequestBody request: CategoryModifyRequest
-    ): ApiResponse<*> {
-        categoryService.modifyCategory(currentUserInfo.userNo, categoryNo, request)
-        return ApiUtils.success()
+        @AuthUser authUserInfo: CurrentUserInfo,
+        @PathVariable("categoryNo") categoryNo: Long,
+        @Valid @RequestBody request: CategoryModifyRequest,
+    ) {
+        categoryService.modifyCategory(authUserInfo.userNo, categoryNo, request)
     }
 
-
-    @ApiImplicitParams(
-        ApiImplicitParam(
-            name = "Authorization",
-            value = "로그인 성공 후 access_token",
-            required = true,
-            dataType = "String",
-            dataTypeClass = String::class,
-            paramType = "header"
-        )
-    )
-    @ApiOperation(value = "카테고리를 삭제", notes = "카테고리를 삭제한다.")
-    @DeleteMapping("/category/{categoryNo}")
+    @DeleteMapping("/categories/{categoryNo}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     fun categoryRemove(
-        @CurrentUser currentUserInfo: CurrentUserInfo,
-        @ApiParam(value = "categoryNo", required = true) @PathVariable("categoryNo") categoryNo: Long,
-        @RequestBody request: CategoryRemoveRequest
-    ): ApiResponse<*> {
+        @AuthUser authUserInfo: CurrentUserInfo,
+        @PathVariable("categoryNo") categoryNo: Long,
+        @RequestBody request: CategoryRemoveRequest,
+    ) {
         categoryService.deleteCategory(
             categoryNo,
             request.accountBookNo,
-            currentUserInfo.userNo
+            authUserInfo.userNo,
         )
-        return ApiUtils.success()
     }
-
 }

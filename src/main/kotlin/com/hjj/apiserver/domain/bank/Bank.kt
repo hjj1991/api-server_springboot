@@ -1,7 +1,12 @@
 package com.hjj.apiserver.domain.bank
 
 import com.hjj.apiserver.domain.BaseTimeEntity
-import javax.persistence.*
+import jakarta.persistence.Column
+import jakarta.persistence.Entity
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
+import jakarta.persistence.Id
+import jakarta.persistence.Table
 
 @Entity
 @Table(name = "tb_bank")
@@ -13,7 +18,7 @@ class Bank(
     calTel: String? = null,
     bankType: BankType,
     enable: Int = 1,
-): BaseTimeEntity() {
+) : BaseTimeEntity() {
     @Id
     @Column(length = 20)
     val finCoNo: String? = null
@@ -46,7 +51,4 @@ class Bank(
     @Column
     var enable: Int = enable
         protected set
-
-
-
 }

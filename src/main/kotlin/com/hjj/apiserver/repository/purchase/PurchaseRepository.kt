@@ -8,34 +8,25 @@ import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
 import java.time.LocalDate
 
-interface PurchaseRepository: JpaRepository<Purchase, Long>, PurchaseRepositoryCustom {
-
+interface PurchaseRepository : JpaRepository<Purchase, Long>, PurchaseRepositoryCustom {
     @EntityGraph(attributePaths = ["card", "category"])
-    fun findAllEntityGraphByPurchaseDateBetweenAndAccountBook_AccountBookNoAndDeleteYnOrderByPurchaseDateDesc(
+    fun findAllEntityGraphByPurchaseDateBetweenAndUserEntityUserNoOrderByPurchaseDateDesc(
         startDate: LocalDate,
         endDate: LocalDate,
-        accountBookNo: Long,
-        deleteYn: Char
-    ): List<Purchase>
-
-    @EntityGraph(attributePaths = ["card", "category"])
-    fun findAllEntityGraphByPurchaseDateBetweenAndUser_UserNoOrderByPurchaseDateDesc(
-        startDate: LocalDate,
-        endDate: LocalDate,
-        userNo: Long
+        userNo: Long,
     ): List<Purchase>
 
     @EntityGraph(attributePaths = ["user"])
-    fun findEntityGraphByUser_UserNoAndPurchaseNoAndDeleteYn(
+    fun findEntityGraphByUserEntityUserNoAndPurchaseNoAndIsDeleteIsFalse(
         userNo: Long,
         purchaseNo: Long,
-        deleteYn: Char = 'N',
     ): Purchase?
 
-    fun findByCategory_CategoryNo(categoryNo: Long): List<Purchase>
+    fun findByCategoryCategoryNo(categoryNo: Long): List<Purchase>
 
     @Modifying(clearAutomatically = true)
     @Query("update Purchase set category = null where category.categoryNo = :categoryNo")
-    fun deleteCategoryAllPurchaseByCategoryNo(@Param("categoryNo") categoryNo: Long)
-
+    fun deleteCategoryAllPurchaseByCategoryNo(
+        @Param("categoryNo") categoryNo: Long,
+    )
 }

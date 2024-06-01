@@ -1,7 +1,7 @@
 package com.hjj.apiserver.domain.deposit
 
+import jakarta.persistence.Embeddable
 import java.io.Serializable
-import javax.persistence.Embeddable
 
 @Embeddable
 data class DepositPK(
@@ -11,5 +11,4 @@ data class DepositPK(
     companion object {
         private const val serialVersionUID: Long = 2379397187016502760L
     }
-
 }

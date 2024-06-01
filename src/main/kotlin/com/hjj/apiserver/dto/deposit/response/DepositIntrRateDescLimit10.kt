@@ -5,5 +5,4 @@ class DepositIntrRateDescLimit10(
     val finPrdtNm: String,
     val intrRate: Double,
     val intrRate2: Double,
-) {
-}
+)

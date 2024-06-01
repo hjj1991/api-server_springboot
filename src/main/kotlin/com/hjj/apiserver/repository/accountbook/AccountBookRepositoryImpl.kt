@@ -1,35 +1,32 @@
 package com.hjj.apiserver.repository.accountbook
 
-import com.hjj.apiserver.domain.accountbook.AccountBook
-import com.hjj.apiserver.domain.accountbook.AccountRole
-import com.hjj.apiserver.domain.accountbook.QAccountBook.accountBook
-import com.hjj.apiserver.domain.accountbook.QAccountBookUser.accountBookUser
-import com.hjj.apiserver.domain.category.QCategory.category
-import com.querydsl.jpa.JPAExpressions
+import com.hjj.apiserver.domain.accountbook.QAccountBook.Companion.accountBook
+import com.hjj.apiserver.domain.accountbook.QAccountBookUser.Companion.accountBookUser
+import com.hjj.apiserver.dto.accountbook.AccountBookDto
+import com.querydsl.core.types.Projections
 import com.querydsl.jpa.impl.JPAQueryFactory
 
 class AccountBookRepositoryImpl(
     private val jpaQueryFactory: JPAQueryFactory,
-): AccountBookRepositoryCustom {
-
-    override fun findAccountBook(userNo: Long, accountBookNo: Long, accountRoles: List<AccountRole>): AccountBook?{
-        return jpaQueryFactory
-            .select(accountBook)
-            .from(accountBook)
-            .distinct()
-            .innerJoin(accountBook.categories, category).fetchJoin()
-            .where(
-                accountBook.accountBookNo.eq(
-                    JPAExpressions
-                    .select(accountBookUser.accountBook.accountBookNo)
-                    .from(accountBookUser)
-                    .where(
-                        accountBookUser.user.userNo.eq(userNo),
-                        accountBookUser.accountBook.accountBookNo.eq(accountBookNo),
-                        accountBookUser.accountRole.`in`(accountRoles)
-                    )
-                )
-            )
+) : AccountBookRepositoryCustom {
+    override fun findAccountBook(
+        userNo: Long,
+        accountBookNo: Long,
+    ): AccountBookDto? {
+        return jpaQueryFactory.select(
+            Projections.constructor(
+                AccountBookDto::class.java,
+                accountBook.accountBookNo,
+                accountBook.accountBookName,
+                accountBook.accountBookDesc,
+                accountBookUser.backGroundColor,
+                accountBookUser.color,
+                accountBookUser.accountRole,
+                accountBook.createdAt,
+            ),
+        ).from(accountBook)
+            .join(accountBookUser).on(accountBook.accountBookNo.eq(accountBookUser.accountBook.accountBookNo))
+            .where(accountBook.accountBookNo.eq(accountBookNo), accountBook.isDelete.isFalse)
             .fetchOne()
     }
 }

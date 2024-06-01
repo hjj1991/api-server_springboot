@@ -1,25 +1,31 @@
 package com.hjj.apiserver.domain.card
 
+import com.hjj.apiserver.adapter.out.persistence.user.UserEntity
 import com.hjj.apiserver.domain.BaseEntity
-import com.hjj.apiserver.domain.user.User
+import jakarta.persistence.Column
+import jakarta.persistence.Entity
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
+import jakarta.persistence.FetchType
+import jakarta.persistence.GeneratedValue
+import jakarta.persistence.GenerationType
+import jakarta.persistence.Id
+import jakarta.persistence.JoinColumn
+import jakarta.persistence.ManyToOne
+import jakarta.persistence.Table
 import org.hibernate.annotations.DynamicUpdate
-import javax.persistence.*
 
 @Entity
 @DynamicUpdate
 @Table(name = "tb_card")
 class Card(
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    var cardNo: Long? = null,
     cardName: String,
     cardType: CardType,
     cardDesc: String = "",
-    user: User,
-): BaseEntity(){
-
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val cardNo: Long? = null
-
+    userEntity: UserEntity,
+) : BaseEntity() {
     @Column(nullable = false, length = 100)
     var cardName: String = cardName
         protected set
@@ -35,16 +41,16 @@ class Card(
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userNo", nullable = false)
-    var user: User = user
+    var userEntity: UserEntity = userEntity
         protected set
 
-    fun updateCard(cardName: String, cardType: CardType, cardDesc: String){
+    fun updateCard(
+        cardName: String,
+        cardType: CardType,
+        cardDesc: String,
+    ) {
         this.cardName = cardName
         this.cardType = cardType
         this.cardDesc = cardDesc
-    }
-
-    fun delete() {
-        this.deleteYn = 'Y'
     }
 }

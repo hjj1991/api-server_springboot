@@ -4,13 +4,14 @@ import com.hjj.apiserver.domain.user.Role
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
+import java.io.Serial
 
 class CurrentUserInfo(
     val userId: String? = null,
-    val nickName: String,
+    val nickName: String? = null,
     val userNo: Long,
     val role: Role,
-): UserDetails {
+) : UserDetails {
     override fun getAuthorities(): MutableCollection<out GrantedAuthority> {
         return arrayListOf(SimpleGrantedAuthority(this.role.key))
     }
@@ -26,4 +27,9 @@ class CurrentUserInfo(
     override fun isCredentialsNonExpired(): Boolean = true
 
     override fun isEnabled(): Boolean = true
+
+    companion object {
+        @Serial
+        private const val serialVersionUID: Long = 341834540654704414L
+    }
 }

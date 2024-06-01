@@ -1,22 +1,24 @@
 package com.hjj.apiserver.domain
 
-import org.springframework.data.annotation.CreatedDate
-import org.springframework.data.annotation.LastModifiedDate
-import org.springframework.data.jpa.domain.support.AuditingEntityListener
-import java.time.LocalDateTime
-import javax.persistence.Column
-import javax.persistence.EntityListeners
-import javax.persistence.MappedSuperclass
+import jakarta.persistence.MappedSuperclass
+import jakarta.persistence.PrePersist
+import jakarta.persistence.PreUpdate
+import java.time.Clock
+import java.time.ZonedDateTime
 
 @MappedSuperclass
-abstract class BaseTimeEntity {
+abstract class BaseTimeEntity() {
+    var createdAt: ZonedDateTime = ZonedDateTime.now(Clock.systemUTC())
+    var modifiedAt: ZonedDateTime = ZonedDateTime.now(Clock.systemUTC())
 
+    @PrePersist
+    fun prePersist() {
+        this.createdAt = ZonedDateTime.now(Clock.systemUTC())
+        this.modifiedAt = ZonedDateTime.now(Clock.systemUTC())
+    }
 
-    @CreatedDate
-    @Column(nullable = false, updatable = false)
-    var createdDate: LocalDateTime = LocalDateTime.now()
-
-    @LastModifiedDate
-    @Column(nullable = false)
-    var lastModifiedDate: LocalDateTime = LocalDateTime.now()
+    @PreUpdate
+    fun preUpdate() {
+        this.modifiedAt = ZonedDateTime.now(Clock.systemUTC())
+    }
 }

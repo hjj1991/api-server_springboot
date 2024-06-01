@@ -1,25 +1,37 @@
 package com.hjj.apiserver.domain.accountbook
 
+import com.hjj.apiserver.adapter.out.persistence.user.UserEntity
 import com.hjj.apiserver.domain.BaseEntity
-import com.hjj.apiserver.domain.user.User
-import org.hibernate.annotations.DynamicUpdate
-import javax.persistence.*
+import jakarta.persistence.CascadeType
+import jakarta.persistence.Column
+import jakarta.persistence.Entity
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
+import jakarta.persistence.FetchType
+import jakarta.persistence.GeneratedValue
+import jakarta.persistence.GenerationType
+import jakarta.persistence.Id
+import jakarta.persistence.JoinColumn
+import jakarta.persistence.ManyToOne
+import jakarta.persistence.Table
+import jakarta.persistence.UniqueConstraint
 
 @Entity
-@DynamicUpdate
-@Table(name = "tb_account_book_user")
+@Table(
+    name = "tb_account_book_user",
+    uniqueConstraints = [
+        UniqueConstraint(columnNames = ["accountBookNo", "userNo"]),
+    ],
+)
 class AccountBookUser(
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    var accountBookUserNo: Long? = null,
     accountBook: AccountBook,
-    user: User,
+    userEntity: UserEntity,
     accountRole: AccountRole,
     backGroundColor: String,
     color: String,
-): BaseEntity() {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val accountBookUserNo: Long? = null
-
+) : BaseEntity() {
     @ManyToOne(fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
     @JoinColumn(name = "accountBookNo")
     var accountBook: AccountBook = accountBook
@@ -27,7 +39,7 @@ class AccountBookUser(
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
     @JoinColumn(name = "userNo")
-    var user: User = user
+    var userEntity: UserEntity = userEntity
         protected set
 
     @Column
@@ -42,17 +54,4 @@ class AccountBookUser(
     @Column(length = 10)
     var color: String = color
         protected set
-
-
-    /* 연관관계 편의 메서드 */
-    fun changeAccountBook(accountBook: AccountBook) {
-        this.accountBook = accountBook
-        accountBook.accountBookUserList.add(this)
-    }
-
-    /* 연관관계 편의 메서드 */
-    fun changeUser(user: User) {
-        this.user = user
-        user.accountBookUserList.add(this)
-    }
 }

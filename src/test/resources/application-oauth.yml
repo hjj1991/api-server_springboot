@@ -60,7 +60,15 @@ app:
   firebase-configuration-file: /app/firebase-adminsdk.json
   firebase-bucket: spring-api-server.appspot.com
   firebase-storage-uri: https://firebasestorage.googleapis.com/v0/b/
-
+front:
+  redirect-uri:
+    host: cash.sundry.ninja
+    #    host: localhost
+    port: 443
+    #    port: 3000
+    path:
+      signin: social/signin
+      mapping: social/mapping
 line:
   noti:
     token: None

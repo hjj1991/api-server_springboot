@@ -1,169 +1,184 @@
 package com.hjj.apiserver.service
 
-import com.hjj.apiserver.common.JwtTokenProvider
-import com.hjj.apiserver.dto.user.request.UserModifyRequest
-import com.hjj.apiserver.dto.user.request.UserSignInRequest
-import com.hjj.apiserver.dto.user.request.UserSignUpRequest
-import com.hjj.apiserver.repository.user.UserRepository
-import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.BeforeEach
+import com.hjj.apiserver.application.port.input.user.command.CheckUserNickNameDuplicateCommand
+import com.hjj.apiserver.application.port.input.user.command.RegisterUserCommand
+import com.hjj.apiserver.application.port.out.user.GetCredentialPort
+import com.hjj.apiserver.application.port.out.user.GetUserPort
+import com.hjj.apiserver.application.port.out.user.ReadUserTokenPort
+import com.hjj.apiserver.application.port.out.user.WriteCredentialPort
+import com.hjj.apiserver.application.port.out.user.WriteUserLogPort
+import com.hjj.apiserver.application.port.out.user.WriteUserPort
+import com.hjj.apiserver.application.port.out.user.WriteUserTokenPort
+import com.hjj.apiserver.application.service.UserService
+import com.hjj.apiserver.common.JwtProvider
+import com.hjj.apiserver.common.exception.AlreadyExistsUserException
+import com.hjj.apiserver.domain.user.Credential
+import com.hjj.apiserver.domain.user.CredentialState
+import com.hjj.apiserver.domain.user.Provider
+import com.hjj.apiserver.domain.user.Role
+import com.hjj.apiserver.domain.user.User
+import com.hjj.apiserver.utils.MockitoTestUtil
+import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.transaction.annotation.Transactional
-import javax.persistence.EntityManager
+import org.junit.jupiter.api.assertDoesNotThrow
+import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.InjectMocks
+import org.mockito.Mock
+import org.mockito.Mockito
+import org.mockito.junit.jupiter.MockitoExtension
+import org.springframework.dao.DataIntegrityViolationException
+import org.springframework.security.crypto.password.PasswordEncoder
+import java.time.Clock
 
-@SpringBootTest
-@Transactional
-class UserServiceTest @Autowired constructor(
-    private val userService: UserService,
-    private val userRepository: UserRepository,
-    private val entityManager: EntityManager,
-    private val jwtTokenProvider: JwtTokenProvider,
-) {
+@ExtendWith(MockitoExtension::class)
+class UserServiceTest {
+    @InjectMocks
+    lateinit var userService: UserService
 
-    @BeforeEach
-    fun clean() {
-        entityManager.createNativeQuery(
-            "SET REFERENTIAL_INTEGRITY FALSE; " +
-                    "TRUNCATE TABLE tb_category; " +
-                    "TRUNCATE TABLE tb_account_book_user; " +
-                    "TRUNCATE TABLE tb_account_book; " +
-                    "TRUNCATE TABLE tb_purchase; " +
-                    "TRUNCATE TABLE tb_user; " +
-                    "TRUNCATE TABLE tb_card; " +
-                    "SET REFERENTIAL_INTEGRITY TRUE; "
-        ).executeUpdate()
-    }
+    @Mock
+    lateinit var getUserPort: GetUserPort
+
+    @Mock
+    lateinit var getCredentialPort: GetCredentialPort
+
+    @Mock
+    lateinit var writeCredentialPort: WriteCredentialPort
+
+    @Mock
+    lateinit var writeUserPort: WriteUserPort
+
+    @Mock
+    lateinit var passwordEncoder: PasswordEncoder
+
+    @Mock
+    lateinit var writeUserLogPort: WriteUserLogPort
+
+    @Mock
+    lateinit var writeUserTokenPort: WriteUserTokenPort
+
+    @Mock
+    lateinit var jwtProvider: JwtProvider
+
+    @Mock
+    lateinit var readUserTokenPort: ReadUserTokenPort
+
+    @Mock
+    lateinit var clock: Clock
 
     @Test
-    @DisplayName("중복 닉네임 체크가 정상 작동한다.")
-    fun existsNickName(){
+    @DisplayName("닉네임이 이미 존재하는 경우")
+    fun existsNickName_when_alreadyExistsNickName_then_true() {
         // given
-        val request = UserSignUpRequest("testUser12", "뜨끔이당", "testUser@naver.com", "testPassword12#$")
-        val savedUser = userService.signUp(request)
+        val newNickName = "이미 존재하는 닉네임"
+        val checkUserNickNameDuplicateCommand = CheckUserNickNameDuplicateCommand(User.createGuestUser(), newNickName)
+
+        Mockito.`when`(getUserPort.findExistsUserNickName(newNickName)).thenReturn(true)
 
         // when
-        val existsNickName = userService.existsNickName(currentUserInfo = null, nickName = "뜨끔이당")
+        val existsNickNameResponse = userService.existsNickName(checkUserNickNameDuplicateCommand)
 
         // then
-        assertThat(existsNickName).isFalse
-
+        Assertions.assertThat(existsNickNameResponse).isEqualTo(true)
     }
 
     @Test
-    @DisplayName("중복 아이디 체크가 정상 작동한다.")
-    fun existsUserId(){
+    @DisplayName("닉네임이 존재하지 않는 경우")
+    fun existsNickName_when_notExistsNickName_then_true() {
         // given
-        val request = UserSignUpRequest("testUser12", "뜨끔이당", "testUser@naver.com", "testPassword12#$")
-        val savedUser = userService.signUp(request)
+        val newNickName = "존재하지 않는 닉네임"
+        val checkUserNickNameDuplicateCommand = CheckUserNickNameDuplicateCommand(User.createGuestUser(), newNickName)
+
+        Mockito.`when`(getUserPort.findExistsUserNickName(newNickName)).thenReturn(false)
 
         // when
-        val existsUserId = userService.existsUserId("testUser12")
+        val existsNickNameResponse = userService.existsNickName(checkUserNickNameDuplicateCommand)
 
         // then
-        assertThat(existsUserId).isFalse
-
+        Assertions.assertThat(existsNickNameResponse).isEqualTo(false)
     }
 
     @Test
-    @DisplayName("회원가입")
-    fun signUpTest(){
+    @DisplayName("변경하려는 닉네임과 현재 닉네임이 동일한 경우")
+    fun existsNickName_when_currentNickNameEqualsNewNickName_then_true() {
         // given
-        val request = UserSignUpRequest("testUser12", "뜨끔이당", "testUser@naver.com", "testPassword12#$")
+        val newNickName = "이미 존재하는 닉네임"
+        val user = User(nickName = newNickName, role = Role.USER)
+        val checkUserNickNameDuplicateCommand = CheckUserNickNameDuplicateCommand(user, newNickName)
 
         // when
-        val savedUser = userService.signUp(request)
+        val existsNickNameResponse = userService.existsNickName(checkUserNickNameDuplicateCommand)
 
-
-        //then
-        val foundUser = userRepository.findByUserId("testUser12")
-        assertThat(foundUser!!.nickName).isEqualTo("뜨끔이당")
-        assertThat(foundUser!!.userEmail).isEqualTo("testUser@naver.com")
+        // then
+        Assertions.assertThat(existsNickNameResponse).isEqualTo(true)
     }
 
     @Test
-    @DisplayName("일반 로그인이 정상 작동한다.")
-    fun signInTest(){
-        // given
-        val request = UserSignUpRequest("testUser12", "뜨끔이당", "testUser@naver.com", "testPassword12#$")
-        userService.signUp(request)
-
-        // when
-        val signIn = userService.signIn(
-            UserSignInRequest(
-                userId = request.userId,
-                userPw = request.userPw
+    @DisplayName("회원가입이 정상적으로 성공된다.")
+    fun signUp_success_general_user() {
+        // Given
+        val registerUserCommand =
+            RegisterUserCommand(
+                userId = "generalUser",
+                nickName = "사이트유저",
+                userEmail = "test@Test.com",
+                userPw = "testPassword12#$!",
+                provider = Provider.GENERAL,
             )
-        )
-
-        // then
-        assertThat(signIn.userId).isEqualTo(request.userId)
-        assertThat(signIn.nickName).isEqualTo(request.nickName)
-        assertThat(signIn.userEmail).isEqualTo(request.userEmail)
-        assertThat(signIn.picture).isNull()
-        assertThat(signIn.provider).isNull()
-        assertThat(jwtTokenProvider.validateToken(signIn.accessToken)).isTrue
-    }
-
-    @Test
-    @DisplayName("토큰 재발급이 정상 작동한다.")
-    fun reIssueTokenTest(){
-        // given
-        val request = UserSignUpRequest("testUser12", "뜨끔이당", "testUser@naver.com", "testPassword12#$")
-        userService.signUp(request)
-        val signIn = userService.signIn(
-            UserSignInRequest(
-                userId = request.userId,
-                userPw = request.userPw
+        val savedUser =
+            User(
+                userNo = 1L,
+                nickName = registerUserCommand.nickName,
+                userEmail = registerUserCommand.userEmail,
+                userPw = registerUserCommand.userPw,
             )
-        )
-
-        // when
-        val reIssueToken = userService.reIssueToken(signIn.refreshToken)
-
-        // then
-        assertThat(jwtTokenProvider.validateToken(reIssueToken.accessToken)).isTrue
-        assertThat(jwtTokenProvider.validateToken(reIssueToken.refreshToken)).isTrue
-
-    }
-
-    @Test
-    @DisplayName("사용자 정보가 정상 수정된다.")
-    fun modifyUserTest(){
-        // given
-        val request = UserSignUpRequest("testUser12", "뜨끔이당", "testUser@naver.com", "testPassword12#$")
-        val savedUser = userService.signUp(request)
-
-        // when
-        val modifyUser = userService.modifyUser(
-            savedUser.userNo!!, UserModifyRequest(
-                nickName = "변경닉네임",
-                userEmail = "change@email.co.kr",
-                userPw = "testPassword12#$"
+        val savedCredential =
+            Credential(
+                credentialNo = 1L,
+                userId = registerUserCommand.userId,
+                credentialEmail = registerUserCommand.userEmail,
+                provider = Provider.GENERAL,
+                user = savedUser,
+                state = CredentialState.CONNECTED,
             )
-        )
 
-        // then
-        assertThat(modifyUser.nickName).isEqualTo("변경닉네임")
-        assertThat(modifyUser.userEmail).isEqualTo("change@email.co.kr")
+        Mockito.`when`(writeUserPort.registerUser(MockitoTestUtil.any(User::class.java))).thenReturn(savedUser)
+        Mockito.`when`(
+            writeCredentialPort.registerCredential(MockitoTestUtil.any(Credential::class.java)),
+        ).thenReturn(savedCredential)
+        Mockito.`when`(passwordEncoder.encode(registerUserCommand.userPw)).thenReturn("enCryptedPassword")
 
+        // When && Then
+        assertDoesNotThrow { userService.signUp(registerUserCommand) }
     }
 
     @Test
-    @DisplayName("사용자 정보가 정상 조회된다.")
-    fun findUser(){
-        // given
-        val request = UserSignUpRequest("testUser12", "뜨끔이당", "testUser@naver.com", "testPassword12#$")
-        val savedUser = userService.signUp(request)
+    @DisplayName("동일한 닉네임또는 Credential이 존재하여 insert실패 한 경우 가입이 실패한다.")
+    fun signUp_fail_when_duplicateNickName_user_then_throw_already_exists_user_exception() {
+        // Given
+        val registerUserCommand =
+            RegisterUserCommand(
+                userId = "generalUser",
+                nickName = "사이트유저",
+                userEmail = "test@Test.com",
+                userPw = "testPassword12#$!",
+                provider = Provider.GENERAL,
+            )
+        val savedUser =
+            User(
+                userNo = 1L,
+                nickName = registerUserCommand.nickName,
+                userEmail = registerUserCommand.userEmail,
+                userPw = registerUserCommand.userPw,
+            )
 
-        // when
-        val userDetailResponse = userService.findUser(savedUser.userNo!!)
+        Mockito.`when`(writeUserPort.registerUser(MockitoTestUtil.any(User::class.java))).thenThrow(
+            DataIntegrityViolationException::class.java,
+        )
+        Mockito.`when`(passwordEncoder.encode(registerUserCommand.userPw)).thenReturn("enCryptedPassword")
 
-        // then
-        assertThat(userDetailResponse!!.userId).isEqualTo(request.userId)
-        assertThat(userDetailResponse!!.nickName).isEqualTo(request.nickName)
-        assertThat(userDetailResponse!!.userEmail).isEqualTo("testUser@naver.com")
+        // When && Then
+        Assertions.assertThatThrownBy { userService.signUp(registerUserCommand) }
+            .isInstanceOf(AlreadyExistsUserException::class.java)
     }
 }

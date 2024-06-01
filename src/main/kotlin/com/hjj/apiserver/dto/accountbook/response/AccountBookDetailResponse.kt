@@ -1,28 +1,39 @@
 package com.hjj.apiserver.dto.accountbook.response
 
+import com.fasterxml.jackson.annotation.JsonFormat
 import com.hjj.apiserver.domain.accountbook.AccountRole
-import java.time.LocalDateTime
+import com.hjj.apiserver.domain.card.Card
+import com.hjj.apiserver.domain.card.CardType
+import com.hjj.apiserver.dto.category.CategoryDto
+import java.time.ZonedDateTime
 
-class AccountBookDetailResponse(
+data class AccountBookDetailResponse(
     var accountBookNo: Long,
     var accountBookName: String,
     var accountBookDesc: String,
     var accountRole: AccountRole = AccountRole.GUEST,
-    var createdDate: LocalDateTime,
+    @field:JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    var createdAt: ZonedDateTime,
     var cards: List<CardDetail> = listOf(),
-    var categories: List<CategoryDetail> = listOf(),
+    var categories: List<CategoryDto> = listOf(),
 ) {
-    class CardDetail(
+    data class CardDetail(
         var cardNo: Long,
         var cardName: String,
-    )
-
-    class CategoryDetail(
-        var categoryNo: Long?,
-        var categoryName: String?,
-        var categoryIcon: String?,
-        var childCategories: List<ChildrenCategory>? = mutableListOf()
-    )
+        var cardType: CardType,
+        var cardDesc: String,
+    ) {
+        companion object {
+            fun of(card: Card): CardDetail {
+                return CardDetail(
+                    cardNo = card.cardNo!!,
+                    cardName = card.cardName,
+                    cardType = card.cardType,
+                    cardDesc = card.cardDesc,
+                )
+            }
+        }
+    }
 
     class ChildrenCategory(
         var categoryNo: Long?,

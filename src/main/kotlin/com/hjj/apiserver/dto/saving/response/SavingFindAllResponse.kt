@@ -1,7 +1,5 @@
 package com.hjj.apiserver.dto.saving.response
 
-import com.hjj.apiserver.domain.bank.BankType
-
 class SavingFindAllResponse(
     var finCoSubmDay: String? = null,
     var dclsStrtDay: String? = null,
@@ -22,9 +20,8 @@ class SavingFindAllResponse(
     var calTel: String? = null,
     var hompUrl: String? = null,
     var dclsChrgMan: String? = null,
-    var options: List<Option> = listOf()
+    var options: List<Option> = listOf(),
 ) {
-
     class Option(
         var intrRate2: Double? = null,
         var intrRate: Double? = null,

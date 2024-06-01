@@ -4,4 +4,7 @@ enum class AccountRole {
     OWNER,
     MEMBER,
     GUEST,
+    ;
+
+    fun hasReadPermission(): Boolean = (this == MEMBER || this == OWNER)
 }

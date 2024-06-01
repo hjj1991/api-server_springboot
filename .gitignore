@@ -35,3 +35,7 @@ out/
 
 ### VS Code ###
 .vscode/
+/db/data/
+.env
+/src/main/resources/static/docs/index.html
+/src/main/resources/static/swagger-ui/openapi3.yaml

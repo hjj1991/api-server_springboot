@@ -1,11 +1,11 @@
 package com.hjj.apiserver.repository.category
 
 import com.hjj.apiserver.domain.accountbook.AccountRole
-import com.hjj.apiserver.domain.accountbook.QAccountBookUser.accountBookUser
+import com.hjj.apiserver.domain.accountbook.QAccountBookUser.Companion.accountBookUser
 import com.hjj.apiserver.domain.category.Category
 import com.hjj.apiserver.domain.category.QCategory
-import com.hjj.apiserver.domain.category.QCategory.category
-import com.hjj.apiserver.dto.category.response.CategoryFindAllResponse
+import com.hjj.apiserver.domain.category.QCategory.Companion.category
+import com.hjj.apiserver.dto.category.CategoryDto
 import com.querydsl.core.group.GroupBy.groupBy
 import com.querydsl.core.group.GroupBy.list
 import com.querydsl.core.types.Projections
@@ -15,7 +15,10 @@ import com.querydsl.jpa.impl.JPAQueryFactory
 class CategoryRepositoryImpl(
     private val jpaQueryFactory: JPAQueryFactory,
 ) : CategoryRepositoryCustom {
-    override fun findCategories(userNo: Long, accountBookNo: Long): List<CategoryFindAllResponse.Categories> {
+    override fun findCategories(
+        userNo: Long,
+        accountBookNo: Long,
+    ): List<CategoryDto> {
         val childCategory = QCategory("childrenCategory")
         return jpaQueryFactory
             .selectFrom(category)
@@ -28,13 +31,15 @@ class CategoryRepositoryImpl(
                                 .from(accountBookUser)
                                 .where(
                                     accountBookUser.accountBook.accountBookNo.eq(accountBookNo)
-                                        .and(accountBookUser.user.userNo.eq(userNo))
-                                        .and(accountBookUser.accountRole.ne(AccountRole.GUEST))
-                                )
-                        )
+                                        .and(accountBookUser.userEntity.userNo.eq(userNo))
+                                        .and(accountBookUser.accountRole.ne(AccountRole.GUEST)),
+                                ),
+                        ),
                     )
+                    .and(category.isDelete.isFalse)
+                    .and(childCategory.isNull.or(childCategory.isDelete.isFalse)),
             )
-            .distinct()
+            .orderBy(category.categoryNo.asc())
             .transform(
                 groupBy(
                     category.categoryNo,
@@ -44,7 +49,7 @@ class CategoryRepositoryImpl(
                     category.accountBook.accountBookNo,
                 ).list(
                     Projections.constructor(
-                        CategoryFindAllResponse.Categories::class.java,
+                        CategoryDto::class.java,
                         category.categoryNo,
                         category.categoryName,
                         category.categoryDesc,
@@ -52,21 +57,26 @@ class CategoryRepositoryImpl(
                         category.accountBook.accountBookNo,
                         list(
                             Projections.constructor(
-                                CategoryFindAllResponse.ChildCategory::class.java,
+                                CategoryDto.ChildCategory::class.java,
                                 childCategory.categoryNo,
                                 childCategory.categoryName,
                                 childCategory.categoryDesc,
                                 childCategory.categoryIcon,
                                 childCategory.accountBook.accountBookNo,
                                 childCategory.parentCategory.categoryNo,
-                            ).skipNulls()
-                        )
-                    )
-                )
+                            ).skipNulls(),
+                        ),
+                    ),
+                ),
             )
     }
 
-    override fun findCategoryByAccountRole(categoryNo: Long, accountBookNo: Long, userNo: Long, accountRoles: Set<AccountRole>): Category? {
+    override fun findCategoryByAccountRole(
+        categoryNo: Long,
+        accountBookNo: Long,
+        userNo: Long,
+        accountRoles: Set<AccountRole>,
+    ): Category? {
         val parentCategory = QCategory("parentCategory")
         return jpaQueryFactory.select(category)
             .from(category)
@@ -78,15 +88,30 @@ class CategoryRepositoryImpl(
                             JPAExpressions.select(accountBookUser.accountBook.accountBookNo)
                                 .from(accountBookUser)
                                 .where(
-                                    accountBookUser.user.userNo.eq(userNo),
+                                    accountBookUser.userEntity.userNo.eq(userNo),
                                     accountBookUser.accountBook.accountBookNo.eq(accountBookNo)
-                                        .and(accountBookUser.accountRole.`in`(accountRoles))
-                                )
-                        )
-                    )
-
+                                        .and(accountBookUser.accountRole.`in`(accountRoles)),
+                                ),
+                        ),
+                    ).and(category.isDelete.isFalse),
             ).fetchOne()
     }
 
-
+    override fun findCategoryByCategoryNo(
+        userNo: Long,
+        categoryNo: Long,
+    ): Category? {
+        val childCategory = QCategory("childrenCategory")
+        return jpaQueryFactory
+            .select(category)
+            .from(category)
+            .leftJoin(category.childCategories, childCategory)
+            .join(category.accountBook, accountBookUser.accountBook)
+            .where(
+                accountBookUser.userEntity.userNo.eq(userNo),
+                category.accountBook.isDelete.isFalse,
+                category.isDelete.isFalse,
+                category.categoryNo.eq(categoryNo),
+            ).fetchOne()
+    }
 }

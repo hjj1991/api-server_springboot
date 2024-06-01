@@ -5,8 +5,6 @@ class NaverProfileResponse(
     val message: String,
     val response: Response,
 ) {
-
-
     class Response(
         val id: String,
         val nickname: String,
@@ -18,7 +16,7 @@ class NaverProfileResponse(
         val profile_image: String? = null,
     )
 
-    fun isFail():Boolean{
+    fun isFail(): Boolean {
         return this.message != "success"
     }
 }

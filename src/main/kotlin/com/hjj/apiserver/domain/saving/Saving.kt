@@ -2,67 +2,72 @@ package com.hjj.apiserver.domain.saving
 
 import com.hjj.apiserver.domain.BaseTimeEntity
 import com.hjj.apiserver.domain.bank.Bank
-import javax.persistence.*
+import jakarta.persistence.Column
+import jakarta.persistence.ConstraintMode
+import jakarta.persistence.Entity
+import jakarta.persistence.FetchType
+import jakarta.persistence.ForeignKey
+import jakarta.persistence.Id
+import jakarta.persistence.IdClass
+import jakarta.persistence.JoinColumn
+import jakarta.persistence.ManyToOne
+import jakarta.persistence.OneToMany
+import jakarta.persistence.Table
 
 @Entity
 @Table(name = "tb_saving")
 @IdClass(SavingPK::class)
 class Saving(
-
-    @Id //금융상품코드
+    @Id // 금융상품코드
     @Column(length = 50)
     val finPrdtCd: String? = null,
-
-    @Id //금융회사코드
+    @Id // 금융회사코드
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "finCoNo", columnDefinition = "VARCHAR(20)", foreignKey = ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    @JoinColumn(
+        name = "finCoNo",
+        columnDefinition = "VARCHAR(20)",
+        foreignKey = ForeignKey(ConstraintMode.NO_CONSTRAINT),
+    )
     val bank: Bank? = null,
-
-
-    @Column //최고한도
+    // 최고한도
+    @Column
     val maxLimit: Long? = null,
-
-    @Column(columnDefinition = "varchar(2000)") //우대조건
+    // 우대조건
+    @Column(columnDefinition = "varchar(2000)")
     val spclCnd: String? = null,
-
-    @Column(columnDefinition = "varchar(2000)") //만기 후 이자율
+    // 만기 후 이자율
+    @Column(columnDefinition = "varchar(2000)")
     val mtrtInt: String? = null,
-
-    @Column //가입대상
+    // 가입대상
+    @Column
     val joinMember: String? = null,
-
-    @Column //가입방법
+    // 가입방법
+    @Column
     val joinWay: String? = null,
-
-    @Column //가입제한 EX) 1:제한없음, 2:서민전용, 3일부제한
+    // 가입제한 EX) 1:제한없음, 2:서민전용, 3일부제한
+    @Column
     val joinDeny: String? = null,
-
-    @Column //금융회사명
+    // 금융회사명
+    @Column
     val korCoNm: String? = null,
-
-    @Column //금융상품명
+    // 금융상품명
+    @Column
     val finPrdtNm: String? = null,
-
-    @Column //기타 유의사항
+    // 기타 유의사항
+    @Column
     val etcNote: String? = null,
-
-    @Column //공시 제출일[YYYYMM]
+    // 공시 제출일[YYYYMM]
+    @Column
     val dclsMonth: String? = null,
-
-    @Column //금융회사 제출일 [YYYYMMDDHH24MI]
+    // 금융회사 제출일 [YYYYMMDDHH24MI]
+    @Column
     val finCoSubmDay: String? = null,
-
     @Column
     val dclsStrtDay: String? = null,
-
     @Column
     val dclsEndDay: String? = null,
-
     @Column
     val enable: Int = 1,
-
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "saving")
-    val savingOptions: MutableList<SavingOption> = mutableListOf()
-
-) : BaseTimeEntity(){
-}
+    val savingOptions: MutableList<SavingOption> = mutableListOf(),
+) : BaseTimeEntity()
