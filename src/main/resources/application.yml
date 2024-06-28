@@ -59,9 +59,9 @@ spring:
     hibernate:
       ddl-auto: none
   datasource:
-    url: jdbc:mariadb://localhost:3306/api_server?serverTimezone=Asia/Seoul&useUnicode=true&characterEncoding=utf-8
-    username: root
-    password: 1234567
+    url: ${values.spring.datasource.url}
+    username: ${db-credentials.username}
+    password: ${db-credentials.password}
 decorator:
   datasource:
     p6spy:
