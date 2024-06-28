@@ -24,6 +24,10 @@ jobs:
     - name: Build with Gradle
       run: ./gradlew build
 
+    - name: Extract branch version
+      id: extract_version
+      run: echo "::set-output name=version::$(echo $GITHUB_REF | sed -n 's#refs/heads/releases-##p')"
+
     - name: 도커 빌더 생성 및 부팅
       uses: docker/setup-buildx-action@v2
 
@@ -40,5 +44,5 @@ jobs:
         file: Dockerfile
         platforms: linux/arm64/v8
         push: true
-        tags: ${{ secrets.DOCKERHUB_USERNAME }}/sundry-ninja:latest
+        tags: ${{ secrets.DOCKERHUB_USERNAME }}/sundry-ninja:${{ steps.extract_version.outputs.version }}
 
