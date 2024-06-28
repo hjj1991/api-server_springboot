@@ -60,8 +60,8 @@ spring:
       ddl-auto: none
   datasource:
     url: ${values.spring.datasource.url}
-    username: ${db-credentials.username}
-    password: ${db-credentials.password}
+    username: ${SECRET_USERNAME}
+    password: ${SECRET_PASSWORD}
 decorator:
   datasource:
     p6spy:
