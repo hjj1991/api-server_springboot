@@ -146,4 +146,8 @@ tasks {
         version = "0.0.1"
         format = "yaml"
     }
+
+    jar {
+        enabled = false
+    }
 }
