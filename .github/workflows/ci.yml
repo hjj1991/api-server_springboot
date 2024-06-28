@@ -35,6 +35,6 @@ jobs:
         NAME: hjj1991 # 계정 명
         REPO: sundry-ninja # 레포 이름
       run: |
-        docker build -t $REPO .
+        docker buildx build --platform linux/arm64,linux/amd64 -t $REPO .
         docker tag $REPO:latest $NAME/$REPO:latest
         docker push $NAME/$REPO:latest
