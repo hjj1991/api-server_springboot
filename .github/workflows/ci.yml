@@ -3,7 +3,7 @@ name: Kotlin CI with Gradle
 on:
   push:
     branches:
-      - 'releases/**'
+      - 'releases-**'
 
 jobs:
   build:
