@@ -71,9 +71,3 @@ logging:
     root: info
     c: error
     com.hjj.apiserver: info
-server:
-  port: 443
-  ssl:
-    key-store: /app/keystore.p12
-    key-store-type: PKCS12
-    key-store-password: None
