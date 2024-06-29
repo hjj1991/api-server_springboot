@@ -45,6 +45,9 @@ jobs:
                   push: true
                   tags: ${{ secrets.DOCKERHUB_USERNAME }}/sundry-ninja:${{ env.version }}
 
+        outputs:
+            version: ${{ steps.extract_version.outputs.version }}
+
     update-helm-chart:
         runs-on: ubuntu-latest
         needs: build
