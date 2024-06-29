@@ -64,7 +64,7 @@ dependencies {
     implementation("commons-io:commons-io:2.11.0")
     implementation("org.seleniumhq.selenium:selenium-java:4.3.0")
     implementation("com.cwbase:logback-redis-appender:1.1.6")
-    implementation("org.mariadb.jdbc:mariadb-java-client:3.1.4")
+    implementation("com.mysql:mysql-connector-j:8.4.0")
     implementation("javax.xml.bind:jaxb-api:2.3.0")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
@@ -72,6 +72,8 @@ dependencies {
     implementation("com.querydsl:querydsl-jpa:5.0.0:jakarta")
     implementation("com.querydsl:querydsl-core:5.0.0")
     implementation("io.github.microutils:kotlin-logging:4.0.0-beta-2")
+    implementation("com.github.ben-manes.caffeine:caffeine:3.1.8")
+
 
     kapt("com.querydsl:querydsl-apt:5.0.0:jakarta")
     kapt("com.querydsl:querydsl-kotlin-codegen:5.0.0")
