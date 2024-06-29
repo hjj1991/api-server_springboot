@@ -65,6 +65,7 @@ dependencies {
     implementation("org.seleniumhq.selenium:selenium-java:4.3.0")
     implementation("com.cwbase:logback-redis-appender:1.1.6")
     implementation("com.mysql:mysql-connector-j:8.4.0")
+    implementation("org.mariadb.jdbc:mariadb-java-client:3.4.0")
     implementation("javax.xml.bind:jaxb-api:2.3.0")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
