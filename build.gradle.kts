@@ -74,7 +74,6 @@ dependencies {
     implementation("io.github.microutils:kotlin-logging:4.0.0-beta-2")
     implementation("com.github.ben-manes.caffeine:caffeine:3.1.8")
 
-
     kapt("com.querydsl:querydsl-apt:5.0.0:jakarta")
     kapt("com.querydsl:querydsl-kotlin-codegen:5.0.0")
     kapt("org.springframework.boot:spring-boot-configuration-processor")
