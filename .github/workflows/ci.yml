@@ -43,7 +43,7 @@ jobs:
                   file: Dockerfile
                   platforms: linux/arm64/v8
                   push: true
-                  tags: ${{ secrets.DOCKERHUB_USERNAME }}/sundry-ninja:${{ env.version }}
+                  tags: ${{ secrets.DOCKERHUB_USERNAME }}/sundry-ninja:${{ steps.extract_version.outputs.version }}
         outputs:
             version: ${{ steps.extract_version.outputs.version }}
 
