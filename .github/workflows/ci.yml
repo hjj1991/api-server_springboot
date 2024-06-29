@@ -25,7 +25,7 @@ jobs:
 
             - name: Extract branch version
               id: extract_version
-              run: echo "VERSION=$(echo $GITHUB_REF | sed -n 's#refs/heads/releases-##p')" >> $GITHUB_ENV
+              run: echo "version=$(echo $GITHUB_REF | sed -n 's#refs/heads/releases-##p')" >> $GITHUB_ENV
 
             - name: 도커 빌더 생성 및 부팅
               uses: docker/setup-buildx-action@v2
@@ -43,7 +43,7 @@ jobs:
                   file: Dockerfile
                   platforms: linux/arm64/v8
                   push: true
-                  tags: ${{ secrets.DOCKERHUB_USERNAME }}/sundry-ninja:${{ env.VERSION }}
+                  tags: ${{ secrets.DOCKERHUB_USERNAME }}/sundry-ninja:${{ env.version }}
 
     update-helm-chart:
         runs-on: ubuntu-latest
@@ -58,7 +58,7 @@ jobs:
 
             - name: Update Helm values.yaml
               run: |
-                  sed -i 's/tag: .*/tag: '"${{ env.VERSION }}"'/' helm-charts/api-server/values.yaml
+                  sed -i 's/tag: .*/tag: '"${{ needs.build.outputs.version }}"'/' helm-charts/api-server/values.yaml
 
             - name: Commit changes
               run: |
@@ -66,5 +66,5 @@ jobs:
                   git config user.name "github-actions[bot]"
                   git config user.email "github-actions[bot]@users.noreply.github.com"
                   git add api-server/values.yaml
-                  git commit -m "Update image tag to ${{ env.VERSION }}"
+                  git commit -m "Update image tag to ${{ needs.build.outputs.version }}"
                   git push
