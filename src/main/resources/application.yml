@@ -57,7 +57,7 @@ spring:
       on-profile: prod
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: update
   datasource:
     url: ${SPRING_DATASOURCE_URL}
     username: ${SECRET_USERNAME}
