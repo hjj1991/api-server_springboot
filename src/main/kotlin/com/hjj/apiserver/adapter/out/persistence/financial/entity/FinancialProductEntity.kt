@@ -21,10 +21,13 @@ import jakarta.persistence.OneToMany
 import jakarta.persistence.Table
 
 @Entity
-@Table(name = "financial_product", indexes = [
-    Index(columnList = "financialProductCode"),
-    Index(columnList = "financialProductName"),
-])
+@Table(
+    name = "financial_product",
+    indexes = [
+        Index(columnList = "financialProductCode"),
+        Index(columnList = "financialProductName"),
+    ],
+)
 class FinancialProductEntity(
     financialProductId: Long = 0L,
     financialProductCode: String,

@@ -13,11 +13,14 @@ import jakarta.persistence.Index
 import jakarta.persistence.Table
 
 @Entity
-@Table(name = "financial_company", indexes = [
-    Index(columnList = "financialCompanyCode"),
-    Index(columnList = "companyName"),
+@Table(
+    name = "financial_company",
+    indexes = [
+        Index(columnList = "financialCompanyCode"),
+        Index(columnList = "companyName"),
 
-])
+    ],
+)
 class FinancialCompanyEntity(
     financialCompanyId: Long = 0L,
     financialCompanyCode: String,
