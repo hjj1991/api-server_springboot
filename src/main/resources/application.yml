@@ -11,25 +11,56 @@ spring:
           batch_size: 100
         format_sql: true
         default_batch_fetch_size: 100
-#    show-sql: true
+    open-in-view: false
+  #    show-sql: true
   jwt:
     secret: testTokenspaeratkgspeokrtgpaeokrgpaejrgoaeijrgoaeijrgfndkbjnrstghjsrteghjoaeorigjaeorigj
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
-
-#    org:
-#      hibernate:
-#        SQL: debug
-server:
-  port: 8080
+  output:
+    ansi:
+      enabled: always
+  threads:
+    virtual:
+      enabled: true
   servlet:
     multipart:
-      maxFileSize: 10MB
-      maxRequestSize: 30MB
+      max-file-size: 4024KB
+      max-request-size: 4024KB
+server:
+  port: 8080
+  shutdown: graceful
+  compression:
+    enabled: true
+    min-response-size: 65536
   error:
     whitelabel:
       enabled: false
+management:
+  endpoint:
+    health:
+      group:
+        readiness:
+          additional-path: server:/readyz
+          include: ping, db
+          status:
+            http-mapping:
+              up: 200
+              unknown: 503
+              down: 503
+              out_of_service: 503
+        liveness:
+          additional-path: server:/livez
+          include:
+            - ping
+          status:
+            http-mapping:
+              up: 200
+              unknown: 503
+              down: 503
+              out_of_service: 503
+
 
 --- #local
 spring:
