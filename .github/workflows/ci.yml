@@ -60,7 +60,7 @@ jobs:
 
             - name: Update Helm values.yaml
               run: |
-                  sed -i '0,/^image:/ { n; s/^  tag: .*/  tag: '"${{ needs.build.outputs.version }}"'/; }' helm-charts/api-server/values.yaml
+                  sed -i '0,/tag: .*$/s/tag: .*$/tag: '"${{ needs.build.outputs.version }}"'/' helm-charts/api-server/values.yaml
 
             - name: Commit changes
               run: |
