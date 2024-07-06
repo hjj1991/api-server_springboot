@@ -11,13 +11,19 @@ import jakarta.persistence.FetchType
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
+import jakarta.persistence.Index
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.Table
 import java.math.BigDecimal
 
 @Entity
-@Table(name = "financial_product_option")
+@Table(
+    name = "financial_product_option",
+    indexes = [
+        Index(columnList = "financialProductId"),
+    ],
+)
 class FinancialProductOptionEntity(
     financialProductOptionId: Long = 0L,
     interestRateType: InterestRateType,

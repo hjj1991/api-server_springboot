@@ -24,6 +24,7 @@ import jakarta.persistence.Table
 @Table(
     name = "financial_product",
     indexes = [
+        Index(columnList = "financialCompanyId"),
         Index(columnList = "financialProductCode"),
         Index(columnList = "financialProductName"),
     ],
