@@ -1,7 +1,7 @@
 package com.hjj.apiserver.dto.purchase.request
 
 import com.fasterxml.jackson.annotation.JsonFormat
-import com.hjj.apiserver.adapter.out.persistence.user.UserEntity
+import com.hjj.apiserver.adapter.out.persistence.user.entity.UserEntity
 import com.hjj.apiserver.domain.accountbook.AccountBook
 import com.hjj.apiserver.domain.card.Card
 import com.hjj.apiserver.domain.category.Category

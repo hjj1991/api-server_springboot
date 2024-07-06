@@ -1,5 +1,8 @@
 package com.hjj.apiserver.adapter.out.persistence.user
 
+import com.hjj.apiserver.adapter.out.persistence.user.entity.UserLogEntity
+import com.hjj.apiserver.adapter.out.persistence.user.repository.UserLogRepository
+import com.hjj.apiserver.adapter.out.persistence.user.repository.UserRepository
 import com.hjj.apiserver.application.port.out.user.WriteUserLogPort
 import com.hjj.apiserver.common.PersistenceAdapter
 import com.hjj.apiserver.converter.UserLogMapper

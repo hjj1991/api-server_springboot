@@ -1,6 +1,6 @@
 package com.hjj.apiserver.repository.accountbook
 
-import com.hjj.apiserver.adapter.out.persistence.user.QUserEntity.Companion.userEntity
+import com.hjj.apiserver.adapter.out.persistence.user.entity.QUserEntity.Companion.userEntity
 import com.hjj.apiserver.domain.accountbook.AccountRole
 import com.hjj.apiserver.domain.accountbook.QAccountBook.Companion.accountBook
 import com.hjj.apiserver.domain.accountbook.QAccountBookUser

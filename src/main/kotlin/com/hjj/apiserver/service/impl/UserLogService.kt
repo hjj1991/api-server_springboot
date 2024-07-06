@@ -1,7 +1,7 @@
 package com.hjj.apiserver.service.impl
 
-import com.hjj.apiserver.adapter.out.persistence.user.UserLogEntity
-import com.hjj.apiserver.adapter.out.persistence.user.UserLogRepository
+import com.hjj.apiserver.adapter.out.persistence.user.entity.UserLogEntity
+import com.hjj.apiserver.adapter.out.persistence.user.repository.UserLogRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 

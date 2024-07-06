@@ -1,6 +1,6 @@
 package com.hjj.apiserver.service
 
-import com.hjj.apiserver.adapter.out.persistence.user.UserEntity
+import com.hjj.apiserver.adapter.out.persistence.user.entity.UserEntity
 import com.hjj.apiserver.common.ErrConst
 import com.hjj.apiserver.common.exception.AccountBookAccessDeniedException
 import com.hjj.apiserver.common.exception.AccountBookNotFoundException

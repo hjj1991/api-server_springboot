@@ -1,7 +1,7 @@
 package com.hjj.apiserver.service
 
-import com.hjj.apiserver.adapter.out.persistence.user.UserEntity
-import com.hjj.apiserver.adapter.out.persistence.user.UserRepository
+import com.hjj.apiserver.adapter.out.persistence.user.entity.UserEntity
+import com.hjj.apiserver.adapter.out.persistence.user.repository.UserRepository
 import com.hjj.apiserver.common.exception.CardNotFoundException
 import com.hjj.apiserver.domain.card.Card
 import com.hjj.apiserver.domain.card.CardType

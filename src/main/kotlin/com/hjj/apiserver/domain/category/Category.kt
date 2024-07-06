@@ -1,6 +1,6 @@
 package com.hjj.apiserver.domain.category
 
-import com.hjj.apiserver.domain.BaseEntity
+import com.hjj.apiserver.adapter.out.persistence.BaseEntity
 import com.hjj.apiserver.domain.accountbook.AccountBook
 import com.hjj.apiserver.domain.purchase.Purchase
 import jakarta.persistence.CascadeType

@@ -1,6 +1,6 @@
 package com.hjj.apiserver.dto.user
 
-import com.hjj.apiserver.adapter.out.persistence.user.UserEntity
+import com.hjj.apiserver.adapter.out.persistence.user.entity.UserEntity
 import com.hjj.apiserver.domain.user.Provider
 import org.springframework.security.crypto.password.PasswordEncoder
 

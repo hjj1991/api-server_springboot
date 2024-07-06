@@ -1,7 +1,7 @@
 package com.hjj.apiserver.repository
 
-import com.hjj.apiserver.adapter.out.persistence.user.UserEntity
-import com.hjj.apiserver.adapter.out.persistence.user.UserRepository
+import com.hjj.apiserver.adapter.out.persistence.user.entity.UserEntity
+import com.hjj.apiserver.adapter.out.persistence.user.repository.UserRepository
 import com.hjj.apiserver.config.DataSourceConfiguration
 import com.hjj.apiserver.config.TestConfiguration
 import com.hjj.apiserver.config.TestMariaDBContainer

@@ -1,7 +1,7 @@
 package com.hjj.apiserver.domain.card
 
-import com.hjj.apiserver.adapter.out.persistence.user.UserEntity
-import com.hjj.apiserver.domain.BaseEntity
+import com.hjj.apiserver.adapter.out.persistence.BaseEntity
+import com.hjj.apiserver.adapter.out.persistence.user.entity.UserEntity
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType

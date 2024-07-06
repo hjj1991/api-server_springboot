@@ -1,6 +1,6 @@
 package com.hjj.apiserver.service.impl
 
-import com.hjj.apiserver.adapter.out.persistence.user.UserRepository
+import com.hjj.apiserver.adapter.out.persistence.user.repository.UserRepository
 import com.hjj.apiserver.common.exception.CardNotFoundException
 import com.hjj.apiserver.dto.card.reqeust.CardAddRequest
 import com.hjj.apiserver.dto.card.reqeust.CardModifyRequest

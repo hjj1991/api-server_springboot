@@ -1,7 +1,7 @@
 package com.hjj.apiserver.service.impl
 
-import com.hjj.apiserver.adapter.out.persistence.user.UserEntity
-import com.hjj.apiserver.adapter.out.persistence.user.UserRepository
+import com.hjj.apiserver.adapter.out.persistence.user.entity.UserEntity
+import com.hjj.apiserver.adapter.out.persistence.user.repository.UserRepository
 import com.hjj.apiserver.domain.user.Provider
 import com.hjj.apiserver.dto.user.UserAttribute
 import org.springframework.stereotype.Service

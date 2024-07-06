@@ -1,6 +1,6 @@
 package com.hjj.apiserver.domain.bank
 
-import com.hjj.apiserver.domain.BaseTimeEntity
+import com.hjj.apiserver.adapter.out.persistence.BaseTimeEntity
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType

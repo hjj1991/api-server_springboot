@@ -1,6 +1,6 @@
 package com.hjj.apiserver.service.impl
 
-import com.hjj.apiserver.adapter.out.persistence.user.UserRepository
+import com.hjj.apiserver.adapter.out.persistence.user.repository.UserRepository
 import com.hjj.apiserver.common.exception.UserNotFoundException
 import com.hjj.apiserver.dto.user.CurrentUserInfo
 import org.springframework.cache.annotation.Cacheable

@@ -1,6 +1,6 @@
 package com.hjj.apiserver.converter
 
-import com.hjj.apiserver.adapter.out.persistence.user.UserEntity
+import com.hjj.apiserver.adapter.out.persistence.user.entity.UserEntity
 import com.hjj.apiserver.domain.user.User
 import org.springframework.stereotype.Component
 

@@ -1,5 +1,8 @@
 package com.hjj.apiserver.adapter.out.persistence.user
 
+import com.hjj.apiserver.adapter.out.persistence.user.entity.CredentialEntity
+import com.hjj.apiserver.adapter.out.persistence.user.repository.CredentialRepository
+import com.hjj.apiserver.adapter.out.persistence.user.repository.UserRepository
 import com.hjj.apiserver.application.port.out.user.GetCredentialPort
 import com.hjj.apiserver.application.port.out.user.WriteCredentialPort
 import com.hjj.apiserver.common.PersistenceAdapter

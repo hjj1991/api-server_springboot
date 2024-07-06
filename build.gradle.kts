@@ -1,10 +1,9 @@
-import org.jetbrains.kotlin.gradle.plugin.mpp.pm20.util.archivesName
 
 val restdocsApiSpecVersion = "0.18.2"
 
 plugins {
     val restdocsApiSpecVersion = "0.18.2"
-    val kotlinPluginVersion = "1.9.22"
+    val kotlinPluginVersion = "2.0.0"
     kotlin("jvm") version kotlinPluginVersion
     kotlin("plugin.spring") version kotlinPluginVersion
     kotlin("plugin.jpa") version kotlinPluginVersion
@@ -98,6 +97,10 @@ dependencies {
 //  spring rest docs를 swagger와 함께 쓰기 위해 주석처리
 val snippetsDir by extra { file("build/generated-snippets") }
 
+tasks.withType<JavaCompile> {
+    options.annotationProcessorPath = configurations.kapt.get()
+}
+
 tasks {
     test {
         outputs.dir(snippetsDir)
@@ -131,7 +134,6 @@ tasks {
 
     build {
         dependsOn(copyHTML, registerOpenapi3)
-        archivesName.set("api-server")
         version = ""
     }
 

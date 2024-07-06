@@ -1,5 +1,7 @@
 package com.hjj.apiserver.adapter.out.persistence.user
 
+import com.hjj.apiserver.adapter.out.persistence.user.entity.UserEntity
+import com.hjj.apiserver.adapter.out.persistence.user.repository.UserRepository
 import com.hjj.apiserver.application.port.out.user.GetUserPort
 import com.hjj.apiserver.application.port.out.user.WriteUserPort
 import com.hjj.apiserver.common.PersistenceAdapter

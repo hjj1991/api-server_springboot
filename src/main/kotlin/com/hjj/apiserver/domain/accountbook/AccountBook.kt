@@ -1,6 +1,6 @@
 package com.hjj.apiserver.domain.accountbook
 
-import com.hjj.apiserver.domain.BaseEntity
+import com.hjj.apiserver.adapter.out.persistence.BaseEntity
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue

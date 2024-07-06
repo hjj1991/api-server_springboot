@@ -1,8 +1,8 @@
 package com.hjj.apiserver.persistence
 
-import com.hjj.apiserver.adapter.out.persistence.user.UserEntity
 import com.hjj.apiserver.adapter.out.persistence.user.UserLogPersistenceAdapter
-import com.hjj.apiserver.adapter.out.persistence.user.UserRepository
+import com.hjj.apiserver.adapter.out.persistence.user.entity.UserEntity
+import com.hjj.apiserver.adapter.out.persistence.user.repository.UserRepository
 import com.hjj.apiserver.application.port.out.user.WriteUserLogPort
 import com.hjj.apiserver.config.DataSourceConfiguration
 import com.hjj.apiserver.config.TestConfiguration

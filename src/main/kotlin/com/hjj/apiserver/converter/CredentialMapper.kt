@@ -1,6 +1,6 @@
 package com.hjj.apiserver.converter
 
-import com.hjj.apiserver.adapter.out.persistence.user.CredentialEntity
+import com.hjj.apiserver.adapter.out.persistence.user.entity.CredentialEntity
 import com.hjj.apiserver.domain.user.Credential
 import org.springframework.stereotype.Component
 
