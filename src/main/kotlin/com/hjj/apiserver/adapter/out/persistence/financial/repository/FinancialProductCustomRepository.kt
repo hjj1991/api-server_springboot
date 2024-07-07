@@ -10,7 +10,6 @@ import com.querydsl.core.types.OrderSpecifier
 import com.querydsl.core.types.Path
 import com.querydsl.core.types.dsl.PathBuilder
 import com.querydsl.jpa.impl.JPAQueryFactory
-import org.hibernate.Hibernate
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
@@ -34,9 +33,11 @@ class FinancialProductCustomRepository(
                 .innerJoin(qFinancialProduct.financialCompanyEntity, qFinancialCompany)
                 .fetchJoin()
                 .innerJoin(qFinancialProduct.financialProductOptionEntities, qFinancialProductOption)
+                .fetchJoin()
                 .where(financialProductSearchCondition.toPredicate())
                 .offset(pageable.offset)
                 .limit(pageable.pageSize.toLong())
+                .distinct()
 
         pageable.sort.forEach { order ->
             val pathBuilder = PathBuilder(qFinancialProduct.type, qFinancialProduct.metadata)
@@ -57,10 +58,6 @@ class FinancialProductCustomRepository(
                 }
             jpaQuery.orderBy(OrderSpecifier(sort, path))
         }
-
-        val financialProductEntities = jpaQuery.fetch()
-
-        financialProductEntities.forEach { it.financialProductOptionEntities.forEach { Hibernate.initialize(it) } }
 
         val content = jpaQuery.fetch()
 
