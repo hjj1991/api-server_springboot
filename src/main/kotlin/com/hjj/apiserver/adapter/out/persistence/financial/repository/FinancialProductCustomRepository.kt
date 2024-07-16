@@ -63,10 +63,9 @@ class FinancialProductCustomRepository(
         content.forEach { financialProductEntity ->
             financialProductEntity.financialProductOptionEntities =
                 financialProductEntity.financialProductOptionEntities.filter {
-                    if (financialProductSearchCondition.depositPeriodMonths != null)
-                        {
-                            it.depositPeriodMonths == financialProductSearchCondition.depositPeriodMonths
-                        } else {
+                    if (financialProductSearchCondition.depositPeriodMonths != null) {
+                        it.depositPeriodMonths == financialProductSearchCondition.depositPeriodMonths
+                    } else {
                         true
                     }
                 }.toMutableList()
