@@ -60,13 +60,17 @@ class FinancialProductCustomRepository(
 
         val content = jpaQuery.fetch()
 
-        content.forEach{financialProductEntity ->
-            financialProductEntity.financialProductOptionEntities = financialProductEntity.financialProductOptionEntities.filter {
-                if(financialProductSearchCondition.depositPeriodMonths != null){
-                    it.depositPeriodMonths == financialProductSearchCondition.depositPeriodMonths
-                } else {true}
-            }.toMutableList()
-             }
+        content.forEach { financialProductEntity ->
+            financialProductEntity.financialProductOptionEntities =
+                financialProductEntity.financialProductOptionEntities.filter {
+                    if (financialProductSearchCondition.depositPeriodMonths != null)
+                        {
+                            it.depositPeriodMonths == financialProductSearchCondition.depositPeriodMonths
+                        } else {
+                        true
+                    }
+                }.toMutableList()
+        }
 
         val hasNext =
             jpaQuery.clone()
