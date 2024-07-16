@@ -33,7 +33,6 @@ class FinancialProductCustomRepository(
                 .innerJoin(qFinancialProduct.financialCompanyEntity, qFinancialCompany)
                 .fetchJoin()
                 .innerJoin(qFinancialProduct.financialProductOptionEntities, qFinancialProductOption)
-                .fetchJoin()
                 .where(financialProductSearchCondition.toPredicate())
                 .offset(pageable.offset)
                 .limit(pageable.pageSize.toLong())
@@ -60,6 +59,14 @@ class FinancialProductCustomRepository(
         }
 
         val content = jpaQuery.fetch()
+
+        content.forEach{financialProductEntity ->
+            financialProductEntity.financialProductOptionEntities = financialProductEntity.financialProductOptionEntities.filter {
+                if(financialProductSearchCondition.depositPeriodMonths != null){
+                    it.depositPeriodMonths == financialProductSearchCondition.depositPeriodMonths
+                } else {true}
+            }.toMutableList()
+             }
 
         val hasNext =
             jpaQuery.clone()

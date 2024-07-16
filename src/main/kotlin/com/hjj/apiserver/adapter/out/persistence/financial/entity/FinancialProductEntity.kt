@@ -105,5 +105,4 @@ class FinancialProductEntity(
 
     @OneToMany(mappedBy = "financialProductEntity", cascade = [CascadeType.ALL], orphanRemoval = true)
     var financialProductOptionEntities: MutableList<FinancialProductOptionEntity> = financialProductOptionEntities
-        protected set
 }
