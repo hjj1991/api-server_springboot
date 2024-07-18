@@ -11,7 +11,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 class WebMvcConfiguration : WebMvcConfigurer {
     override fun addCorsMappings(registry: CorsRegistry) {
         registry.addMapping("/**")
-            .allowedOrigins("http://localhost:3000", "https://sundry.ninja", "https://sundry.pages.dev")
+            .allowedOrigins("http://localhost:3000", "https://sundry.ninja", "https://sundry.pages.dev", "https://cash.sundry.ninja")
             .allowedMethods("GET", "POST", "OPTIONS", "PUT", "DELETE", "PATCH")
             .allowCredentials(false)
             .maxAge(3600)
