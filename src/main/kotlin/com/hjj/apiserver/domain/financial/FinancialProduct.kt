@@ -66,6 +66,6 @@ class FinancialProduct(
 
     var financialCompany: FinancialCompany? = financialCompany
 
-    var financialProductOptionEntities: MutableList<FinancialProductOption> = financialProductOptions
+    var financialProductOptions: MutableList<FinancialProductOption> = financialProductOptions
         private set
 }

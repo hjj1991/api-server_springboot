@@ -1,10 +1,9 @@
 package com.hjj.apiserver.config
 
-import org.springframework.boot.test.context.TestConfiguration
 import org.testcontainers.containers.MariaDBContainer
 import org.testcontainers.junit.jupiter.Container
 
-@TestConfiguration("TestMariaDBContainer")
+// @TestConfiguration("TestMariaDBContainer")
 class TestMariaDBContainer {
     companion object {
         @Container

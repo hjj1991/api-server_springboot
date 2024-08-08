@@ -6,7 +6,7 @@ import com.hjj.apiserver.adapter.out.persistence.user.repository.UserRepository
 import com.hjj.apiserver.application.port.out.user.WriteUserLogPort
 import com.hjj.apiserver.config.DataSourceConfiguration
 import com.hjj.apiserver.config.TestConfiguration
-import com.hjj.apiserver.config.TestMariaDBContainer
+import com.hjj.apiserver.config.TestMySqlDBContainer
 import com.hjj.apiserver.converter.UserLogMapper
 import com.hjj.apiserver.converter.UserMapper
 import com.hjj.apiserver.domain.user.LogType
@@ -21,7 +21,7 @@ import org.springframework.context.annotation.Import
 
 @DataJpaTest
 @Import(
-    TestMariaDBContainer::class,
+    TestMySqlDBContainer::class,
     DataSourceConfiguration::class,
     TestConfiguration::class,
     UserLogPersistenceAdapter::class,

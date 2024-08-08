@@ -89,6 +89,7 @@ dependencies {
     testImplementation("com.epages:restdocs-api-spec-mockmvc:$restdocsApiSpecVersion")
 
     testImplementation("org.testcontainers:mariadb:1.18.0")
+    testImplementation("org.testcontainers:mysql:1.20.1")
     testImplementation("org.testcontainers:junit-jupiter:1.18.0")
 
     runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.5")

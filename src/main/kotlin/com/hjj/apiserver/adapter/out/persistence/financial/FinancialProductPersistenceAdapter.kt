@@ -46,11 +46,7 @@ class FinancialProductPersistenceAdapter(
             )
 
         return Pair(
-            financialProductEntitiesWithPaginationInfo.first.map { financialProductEntity ->
-                this.financialProductMapper.mapToDomainEntity(financialProductEntity = financialProductEntity).apply {
-                    financialCompany = financialCompanyMapper.mapToDomainEntity(financialProductEntity.financialCompanyEntity)
-                }
-            },
+            financialProductEntitiesWithPaginationInfo.first,
             financialProductEntitiesWithPaginationInfo.second,
         )
     }

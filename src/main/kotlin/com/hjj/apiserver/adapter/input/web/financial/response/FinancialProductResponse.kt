@@ -40,7 +40,7 @@ data class FinancialProductResponse(
                 dclsStartDay = financialProduct.dclsStartDay,
                 dclsEndDay = financialProduct.dclsEndDay,
                 financialCompany = FinancialCompanyResponse.from(financialProduct.financialCompany!!),
-                financialProductOptions = financialProduct.financialProductOptionEntities.map { FinancialProductOptionResponse.from(it) },
+                financialProductOptions = financialProduct.financialProductOptions.map { FinancialProductOptionResponse.from(it) },
             )
     }
 }

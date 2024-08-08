@@ -7,7 +7,7 @@ import com.hjj.apiserver.application.port.out.user.WriteCredentialPort
 import com.hjj.apiserver.application.port.out.user.WriteUserPort
 import com.hjj.apiserver.config.DataSourceConfiguration
 import com.hjj.apiserver.config.TestConfiguration
-import com.hjj.apiserver.config.TestMariaDBContainer
+import com.hjj.apiserver.config.TestMySqlDBContainer
 import com.hjj.apiserver.converter.CredentialMapper
 import com.hjj.apiserver.converter.UserMapper
 import com.hjj.apiserver.domain.user.Credential
@@ -24,7 +24,7 @@ import org.springframework.context.annotation.Import
 
 @DataJpaTest
 @Import(
-    TestMariaDBContainer::class,
+    TestMySqlDBContainer::class,
     DataSourceConfiguration::class,
     TestConfiguration::class,
     CredentialPersistenceAdapter::class,

@@ -13,16 +13,15 @@ import java.util.concurrent.TimeUnit
 @Configuration
 class CacheConfig {
     @Bean(name = ["caffeineCacheManager"])
-    fun cacheManager(): CacheManager {
-        val caffeineCacheManager = CaffeineCacheManager()
-        caffeineCacheManager.setCaffeine(
-            Caffeine.newBuilder()
-                .initialCapacity(200)
-                .maximumSize(500)
-                .expireAfterWrite(JwtProvider.REFRESH_TOKEN_VALID_MILLISECONDS, TimeUnit.MILLISECONDS)
-                .weakKeys()
-                .recordStats(),
-        )
-        return caffeineCacheManager
-    }
+    fun cacheManager(): CacheManager =
+        CaffeineCacheManager().apply {
+            setCaffeine(
+                Caffeine.newBuilder()
+                    .initialCapacity(200)
+                    .maximumSize(500)
+                    .expireAfterWrite(JwtProvider.REFRESH_TOKEN_VALID_MILLISECONDS, TimeUnit.MILLISECONDS)
+                    .weakKeys()
+                    .recordStats(),
+            )
+        }
 }

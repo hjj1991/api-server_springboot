@@ -9,13 +9,13 @@ import org.springframework.context.annotation.DependsOn
 @TestConfiguration
 class DataSourceConfiguration {
     @Bean
-    @DependsOn("TestMariaDBContainer")
+    @DependsOn("TestMySqlDBContainer")
     fun dataSource(): HikariDataSource {
         return DataSourceBuilder.create()
             .type(HikariDataSource::class.java)
-            .url(TestMariaDBContainer.container.jdbcUrl)
-            .username(TestMariaDBContainer.container.username)
-            .password(TestMariaDBContainer.container.password)
+            .url(TestMySqlDBContainer.container.jdbcUrl)
+            .username(TestMySqlDBContainer.container.username)
+            .password(TestMySqlDBContainer.container.password)
             .build()
     }
 }
