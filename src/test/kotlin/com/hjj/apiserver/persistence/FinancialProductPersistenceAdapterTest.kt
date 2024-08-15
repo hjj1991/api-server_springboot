@@ -17,6 +17,7 @@ import com.hjj.apiserver.domain.financial.FinancialProductType
 import com.hjj.apiserver.domain.financial.InterestRateType
 import com.hjj.apiserver.domain.financial.JoinRestriction
 import com.hjj.apiserver.repository.BaseRepositoryTest
+import jakarta.persistence.EntityManager
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -44,6 +45,9 @@ class FinancialProductPersistenceAdapterTest : BaseRepositoryTest() {
 
     @Autowired
     private lateinit var financialProductOptionRepository: FinancialProductOptionRepository
+
+    @Autowired
+    private lateinit var entityManager: EntityManager
 
     @Test
     fun findFinancialProductsWithPaginationInfo_success() {
@@ -88,6 +92,8 @@ class FinancialProductPersistenceAdapterTest : BaseRepositoryTest() {
             )
         financialProductOptionRepository.save(financialProductOptionEntity1)
 
+        entityManager.clear()
+
         // When
         val financialProducts =
             getFinancialProductPort.findFinancialProductsWithPaginationInfo(
@@ -119,13 +125,13 @@ class FinancialProductPersistenceAdapterTest : BaseRepositoryTest() {
         assertThat(financialProduct.dclsEndDay).isEqualTo("20220930")
         assertThat(financialProduct.financialSubmitDay).isEqualTo("20220910")
         assertThat(financialProduct.financialCompany?.companyName).isEqualTo("우리은행")
-//        assertThat(financialProduct.financialProductOptions).hasSize(1)
-//
-//        val financialProductOption = financialProduct.financialProductOptions.first()
-//        assertThat(financialProductOption.interestRateType).isEqualTo(InterestRateType.SIMPLE)
-//        assertThat(financialProductOption.depositPeriodMonths).isEqualTo("3")
-//        assertThat(financialProductOption.baseInterestRate).isEqualTo(BigDecimal.valueOf(3.00))
-//        assertThat(financialProductOption.maximumInterestRate).isEqualTo(BigDecimal.valueOf(3.4))
+        assertThat(financialProduct.financialProductOptions).hasSize(1)
+
+        val financialProductOption = financialProduct.financialProductOptions.first()
+        assertThat(financialProductOption.interestRateType).isEqualTo(InterestRateType.SIMPLE)
+        assertThat(financialProductOption.depositPeriodMonths).isEqualTo("3")
+        assertThat(financialProductOption.baseInterestRate?.compareTo(BigDecimal.valueOf(3.00))).isEqualTo(0)
+        assertThat(financialProductOption.maximumInterestRate?.compareTo(BigDecimal.valueOf(3.4))).isEqualTo(0)
     }
 
     @Test
@@ -229,6 +235,8 @@ class FinancialProductPersistenceAdapterTest : BaseRepositoryTest() {
             )
         financialProductOptionRepository.saveAll(listOf(financialProductOptionEntity3, financialProductOptionEntity4))
 
+        entityManager.clear()
+
         // When
         val financialProducts =
             getFinancialProductPort.findFinancialProductsWithPaginationInfo(
@@ -260,12 +268,12 @@ class FinancialProductPersistenceAdapterTest : BaseRepositoryTest() {
         assertThat(financialProduct.dclsEndDay).isEqualTo("20220930")
         assertThat(financialProduct.financialSubmitDay).isEqualTo("20220910")
         assertThat(financialProduct.financialCompany?.companyName).isEqualTo("우리은행")
-//        assertThat(financialProduct.financialProductOptions).hasSize(1)
-//
-//        val financialProductOption = financialProduct.financialProductOptions.first()
-//        assertThat(financialProductOption.interestRateType).isEqualTo(InterestRateType.SIMPLE)
-//        assertThat(financialProductOption.depositPeriodMonths).isEqualTo("3")
-//        assertThat(financialProductOption.baseInterestRate).isEqualTo(BigDecimal.valueOf(3.00))
-//        assertThat(financialProductOption.maximumInterestRate).isEqualTo(BigDecimal.valueOf(3.4))
+        assertThat(financialProduct.financialProductOptions).hasSize(2)
+
+        val financialProductOption = financialProduct.financialProductOptions.first()
+        assertThat(financialProductOption.interestRateType).isEqualTo(InterestRateType.SIMPLE)
+        assertThat(financialProductOption.depositPeriodMonths).isEqualTo("3")
+        assertThat(financialProductOption.baseInterestRate?.compareTo(BigDecimal.valueOf(3.00))).isEqualTo(0)
+        assertThat(financialProductOption.maximumInterestRate?.compareTo(BigDecimal.valueOf(3.4))).isEqualTo(0)
     }
 }
