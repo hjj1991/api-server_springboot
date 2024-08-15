@@ -1,18 +1,15 @@
 package com.hjj.apiserver.adapter.input.web.financial.response
 
 import com.hjj.apiserver.domain.financial.FinancialProduct
-import com.hjj.apiserver.domain.financial.FinancialProductType
-import com.hjj.apiserver.domain.financial.JoinRestriction
 
 data class FinancialProductResponse(
     val financialProductId: Long,
-    val financialProductCode: String,
     val financialProductName: String,
     val joinWay: String?,
     val postMaturityInterestRate: String?,
     val specialCondition: String?,
-    val joinRestriction: JoinRestriction,
-    val financialProductType: FinancialProductType?,
+    val joinRestriction: String,
+    val financialProductType: String,
     val joinMember: String,
     val additionalNotes: String,
     val maxLimit: Long?,
@@ -26,13 +23,12 @@ data class FinancialProductResponse(
         fun from(financialProduct: FinancialProduct) =
             FinancialProductResponse(
                 financialProductId = financialProduct.financialProductId,
-                financialProductCode = financialProduct.financialProductCode,
                 financialProductName = financialProduct.financialProductName,
                 joinWay = financialProduct.joinWay,
                 postMaturityInterestRate = financialProduct.postMaturityInterestRate,
                 specialCondition = financialProduct.specialCondition,
-                joinRestriction = financialProduct.joinRestriction,
-                financialProductType = financialProduct.financialProductType,
+                joinRestriction = financialProduct.joinRestriction.description,
+                financialProductType = financialProduct.financialProductType.description,
                 joinMember = financialProduct.joinMember,
                 additionalNotes = financialProduct.additionalNotes,
                 maxLimit = financialProduct.maxLimit,

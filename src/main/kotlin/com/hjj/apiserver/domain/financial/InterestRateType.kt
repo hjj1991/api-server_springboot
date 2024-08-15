@@ -1,6 +1,6 @@
 package com.hjj.apiserver.domain.financial
 
-enum class InterestRateType(private val code: String, private val description: String) {
+enum class InterestRateType(val code: String, val description: String) {
     SIMPLE("S", "단리"),
     COMPOUND("M", "복리"),
     ;

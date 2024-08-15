@@ -1,6 +1,6 @@
 package com.hjj.apiserver.domain.financial
 
-enum class JoinRestriction(private val code: Int, private val description: String) {
+enum class JoinRestriction(val code: Int, val description: String) {
     NO_RESTRICTION(1, "제한없음"),
     LOW_INCOME_ONLY(2, "서민전용"),
     PARTIALLY_RESTRICTED(3, "일부제한"),

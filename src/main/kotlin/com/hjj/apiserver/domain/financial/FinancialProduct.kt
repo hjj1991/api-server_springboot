@@ -40,7 +40,7 @@ class FinancialProduct(
     var joinRestriction: JoinRestriction = joinRestriction
         private set
 
-    var financialProductType: FinancialProductType? = financialProductType
+    var financialProductType: FinancialProductType = financialProductType
         private set
 
     var joinMember: String = joinMember
