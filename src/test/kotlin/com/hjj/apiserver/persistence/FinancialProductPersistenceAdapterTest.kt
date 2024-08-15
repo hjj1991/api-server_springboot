@@ -95,16 +95,7 @@ class FinancialProductPersistenceAdapterTest {
                 baseInterestRate = BigDecimal.valueOf(3.00),
                 maximumInterestRate = BigDecimal.valueOf(3.4),
             )
-        val financialProductOptionEntity2 =
-            FinancialProductOptionEntity(
-                financialProductEntity = financialProductEntity,
-                interestRateType = InterestRateType.SIMPLE,
-                reserveType = null,
-                depositPeriodMonths = "6",
-                baseInterestRate = BigDecimal.valueOf(3.00),
-                maximumInterestRate = BigDecimal.valueOf(3.4),
-            )
-        financialProductOptionRepository.saveAll(listOf(financialProductOptionEntity1, financialProductOptionEntity2))
+        financialProductOptionRepository.save(financialProductOptionEntity1)
 
         // When
         val financialProducts =

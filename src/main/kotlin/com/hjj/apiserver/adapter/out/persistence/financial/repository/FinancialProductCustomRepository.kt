@@ -13,13 +13,11 @@ import com.querydsl.jpa.impl.JPAQueryFactory
 import org.hibernate.Hibernate
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository
-import org.springframework.transaction.annotation.Transactional
 
 @Repository
 class FinancialProductCustomRepository(
     private val jpaQueryFactory: JPAQueryFactory,
 ) {
-    @Transactional(readOnly = true)
     fun fetchFinancialProductsWithPaginationInfo(
         financialProductSearchCondition: FinancialProductSearchCondition,
         pageable: Pageable,
