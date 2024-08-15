@@ -4,7 +4,7 @@ import com.hjj.apiserver.adapter.out.persistence.user.entity.UserEntity
 import com.hjj.apiserver.adapter.out.persistence.user.repository.UserRepository
 import com.hjj.apiserver.config.DataSourceConfiguration
 import com.hjj.apiserver.config.TestConfiguration
-import com.hjj.apiserver.config.TestMariaDBContainer
+import com.hjj.apiserver.config.TestMySqlDBContainer
 import com.hjj.apiserver.domain.user.Role
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
@@ -12,7 +12,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.context.annotation.Import
 
 @DataJpaTest
-@Import(TestMariaDBContainer::class, DataSourceConfiguration::class, TestConfiguration::class)
+@Import(TestMySqlDBContainer::class, DataSourceConfiguration::class, TestConfiguration::class)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class BaseRepositoryTest {
     @Autowired
