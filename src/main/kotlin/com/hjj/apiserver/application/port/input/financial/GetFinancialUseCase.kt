@@ -16,4 +16,6 @@ interface GetFinancialUseCase {
         depositPeriodMonths: String?,
         pageable: Pageable,
     ): Pair<List<FinancialProduct>, Boolean>
+
+    fun getFinancialProduct(financialProductId: Long): FinancialProduct
 }

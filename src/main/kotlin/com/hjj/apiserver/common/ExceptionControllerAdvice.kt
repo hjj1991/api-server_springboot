@@ -6,6 +6,7 @@ import com.hjj.apiserver.common.exception.DuplicatedNickNameException
 import com.hjj.apiserver.common.exception.DuplicatedUserIdException
 import com.hjj.apiserver.common.exception.ExistedSocialUserException
 import com.hjj.apiserver.common.exception.UserNotFoundException
+import com.hjj.apiserver.common.exception.financial.FinancialProductNotFoundException
 import jakarta.servlet.http.HttpServletRequest
 import mu.two.KotlinLogging
 import org.springframework.http.HttpStatus
@@ -68,6 +69,12 @@ class ExceptionControllerAdvice {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     protected fun accountBookNotFoundException(request: HttpServletRequest): ApiError {
         return ApiError(ErrConst.ERR_CODE0010)
+    }
+
+    @ExceptionHandler(FinancialProductNotFoundException::class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    protected fun financialProductNotFoundException(request: HttpServletRequest): ApiError {
+        return ApiError(ErrConst.ERR_CODE0012)
     }
 
     @ExceptionHandler(MethodArgumentNotValidException::class)

@@ -78,6 +78,7 @@ class WebSecurityConfiguration(
                         AntPathRequestMatcher("/livez"),
                         AntPathRequestMatcher("/readyz"),
                         AntPathRequestMatcher("/v1/financials"),
+                        AntPathRequestMatcher("/v1/financialProducts/**"),
                     ).permitAll() // 가입 및 인증 주소는 누구나 접근가능
                     .anyRequest().hasRole("USER")
             }

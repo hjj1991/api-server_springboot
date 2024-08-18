@@ -4,17 +4,21 @@ import com.hjj.apiserver.adapter.out.persistence.financial.converter.FinancialCo
 import com.hjj.apiserver.adapter.out.persistence.financial.converter.FinancialProductMapper
 import com.hjj.apiserver.adapter.out.persistence.financial.dto.FinancialProductSearchCondition
 import com.hjj.apiserver.adapter.out.persistence.financial.repository.FinancialProductCustomRepository
+import com.hjj.apiserver.adapter.out.persistence.financial.repository.FinancialProductRepository
 import com.hjj.apiserver.application.port.out.financial.GetFinancialProductPort
 import com.hjj.apiserver.common.PersistenceAdapter
+import com.hjj.apiserver.common.exception.financial.FinancialProductNotFoundException
 import com.hjj.apiserver.domain.financial.FinancialGroupType
 import com.hjj.apiserver.domain.financial.FinancialProduct
 import com.hjj.apiserver.domain.financial.FinancialProductType
 import com.hjj.apiserver.domain.financial.JoinRestriction
 import org.springframework.data.domain.Pageable
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.transaction.annotation.Transactional
 
 @PersistenceAdapter
 class FinancialProductPersistenceAdapter(
+    val financialProductRepository: FinancialProductRepository,
     val financialProductCustomRepository: FinancialProductCustomRepository,
     val financialCompanyMapper: FinancialCompanyMapper,
     val financialProductMapper: FinancialProductMapper,
@@ -53,5 +57,17 @@ class FinancialProductPersistenceAdapter(
             },
             financialProductEntitiesWithPaginationInfo.second,
         )
+    }
+
+    @Transactional(readOnly = true)
+    override fun findFinancialProduct(financialProductId: Long): FinancialProduct {
+        val financialProductEntity = (
+            this.financialProductRepository.findByIdOrNull(financialProductId)
+                ?: throw FinancialProductNotFoundException(message = "FinancialProduct not found financialProductId: $financialProductId")
+        )
+
+        return this.financialProductMapper.mapToDomainEntity(financialProductEntity = financialProductEntity).apply {
+            financialCompany = financialCompanyMapper.mapToDomainEntity(financialProductEntity.financialCompanyEntity)
+        }
     }
 }

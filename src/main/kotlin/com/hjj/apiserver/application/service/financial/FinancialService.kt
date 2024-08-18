@@ -31,4 +31,7 @@ class FinancialService(
             depositPeriodMonths = depositPeriodMonths,
             pageable = pageable,
         )
+
+    override fun getFinancialProduct(financialProductId: Long): FinancialProduct =
+        this.getFinancialProductPort.findFinancialProduct(financialProductId = financialProductId)
 }

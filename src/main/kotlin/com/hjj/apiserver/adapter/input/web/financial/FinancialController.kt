@@ -10,6 +10,7 @@ import org.springframework.data.domain.Slice
 import org.springframework.data.domain.SliceImpl
 import org.springframework.data.web.PageableDefault
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
@@ -45,5 +46,13 @@ class FinancialController(
             pageable,
             financialProductsWithPaginationInfo.second,
         )
+    }
+
+    @GetMapping("v1/financialProducts/{financialProductId}")
+    fun getFinancialProduct(
+        @PathVariable financialProductId: Long,
+    ): FinancialProductResponse {
+        val financialProduct = this.getFinancialUseCase.getFinancialProduct(financialProductId = financialProductId)
+        return FinancialProductResponse.from(financialProduct)
     }
 }

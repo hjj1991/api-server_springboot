@@ -16,4 +16,6 @@ interface GetFinancialProductPort {
         depositPeriodMonths: String?,
         pageable: Pageable,
     ): Pair<List<FinancialProduct>, Boolean>
+
+    fun findFinancialProduct(financialProductId: Long): FinancialProduct
 }
