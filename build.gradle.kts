@@ -93,6 +93,7 @@ dependencies {
 
     testImplementation("org.testcontainers:mariadb:1.18.0")
     testImplementation("org.testcontainers:mysql:1.20.1")
+    testImplementation("com.redis:testcontainers-redis:2.2.2")
     testImplementation("org.testcontainers:junit-jupiter:1.18.0")
 
     runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.5")
