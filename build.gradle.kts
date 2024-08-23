@@ -55,6 +55,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
     implementation("org.springframework.boot:spring-boot-starter-oauth2-authorization-server")
     implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
+    implementation("org.springframework.boot:spring-boot-starter-data-redis")
     implementation("com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.9.0")
     implementation("org.modelmapper:modelmapper:3.1.1")
     implementation("io.jsonwebtoken:jjwt-api:0.12.5")
@@ -74,7 +75,9 @@ dependencies {
     implementation("com.querydsl:querydsl-core:5.0.0")
     implementation("io.github.microutils:kotlin-logging:4.0.0-beta-2")
     implementation("com.github.ben-manes.caffeine:caffeine:3.1.8")
+    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
+    kapt("org.springframework.boot:spring-boot-configuration-processor")
     kapt("com.querydsl:querydsl-apt:5.0.0:jakarta")
     kapt("com.querydsl:querydsl-kotlin-codegen:5.0.0")
     kapt("org.springframework.boot:spring-boot-configuration-processor")
@@ -90,6 +93,7 @@ dependencies {
 
     testImplementation("org.testcontainers:mariadb:1.18.0")
     testImplementation("org.testcontainers:mysql:1.20.1")
+    testImplementation("com.redis:testcontainers-redis:2.2.2")
     testImplementation("org.testcontainers:junit-jupiter:1.18.0")
 
     runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.5")
