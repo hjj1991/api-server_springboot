@@ -12,6 +12,7 @@ import mu.two.KotlinLogging
 import org.modelmapper.ModelMapper
 import org.modelmapper.convention.MatchingStrategies
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.data.domain.AuditorAware
@@ -29,6 +30,7 @@ import java.time.Clock
 import java.util.Optional
 import java.util.function.Consumer
 
+@ConfigurationPropertiesScan
 @EnableJpaAuditing
 @Configuration
 class ApplicationConfig(

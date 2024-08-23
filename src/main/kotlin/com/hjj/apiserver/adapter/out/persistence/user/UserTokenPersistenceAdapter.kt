@@ -4,11 +4,12 @@ import com.hjj.apiserver.application.port.out.user.ReadUserTokenPort
 import com.hjj.apiserver.application.port.out.user.WriteUserTokenPort
 import com.hjj.apiserver.common.PersistenceAdapter
 import com.hjj.apiserver.common.exception.TokenNotFoundException
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.cache.CacheManager
 
 @PersistenceAdapter
 class UserTokenPersistenceAdapter(
-    private val cacheManager: CacheManager,
+    @Qualifier("caffeineCacheManager")private val cacheManager: CacheManager,
 ) : WriteUserTokenPort, ReadUserTokenPort {
     override fun registerUserToken(
         userNo: Long,
