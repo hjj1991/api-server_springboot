@@ -1,0 +1,211 @@
+openapi: 3.0.1
+info:
+  title: restdocs-swagger API Documentation
+  description: Spring REST Docs with SwaggerUI.
+  version: 0.0.1
+servers:
+- url: http://localhost:8080
+tags: []
+paths:
+  /users/signin:
+    post:
+      tags:
+      - 유저 관리 API
+      summary: 로그인이 정상적으로 성공한 경우
+      description: 로그인이 정상적으로 성공한 경우
+      operationId: '로그인이 '
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/users-signup486549215'
+            examples:
+              로그인이 정상적으로 성공한 경우:
+                value: |-
+                  {
+                    "userId" : "1234,",
+                    "userPw" : "<PASSWORD>"
+                  }
+              로그인이 실패한 경우:
+                value: |-
+                  {
+                    "userId" : "1234,",
+                    "userPw" : "<PASSWORD>"
+                  }
+      responses:
+        "200":
+          description: "200"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/users-signin1601884849'
+              examples:
+                로그인이 정상적으로 성공한 경우:
+                  value: |-
+                    {
+                      "nickName" : "nickName",
+                      "picture" : null,
+                      "accessToken" : "accessToken",
+                      "refreshToken" : "refreshToken"
+                    }
+        "400":
+          description: "400"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/users-signup-289588754'
+              examples:
+                로그인이 실패한 경우:
+                  value: |-
+                    {
+                      "errCode" : "ERR_CODE0001",
+                      "message" : "사용자가 없습니다."
+                    }
+  /users/signup:
+    post:
+      tags:
+      - 유저 관리 API
+      summary: 이미 존재하는 사용자인 경우
+      description: 이미 존재하는 사용자인 경우
+      operationId: 이미 존재하는 사용자인 경우정상적으로 일반 회원가입 완료된 경우
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/users-signup486549215'
+            examples:
+              이미 존재하는 사용자인 경우:
+                value: |-
+                  {
+                    "userId" : "1234,",
+                    "nickName" : "nickName",
+                    "userEmail" : "test@example.com",
+                    "userPw" : "1354135"
+                  }
+              정상적으로 일반 회원가입 완료된 경우:
+                value: |-
+                  {
+                    "userId" : "1234,",
+                    "nickName" : "nickName",
+                    "userEmail" : "test@example.com",
+                    "userPw" : "1354135"
+                  }
+      responses:
+        "400":
+          description: "400"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/users-signup-289588754'
+              examples:
+                이미 존재하는 사용자인 경우:
+                  value: |-
+                    {
+                      "errCode" : "ERR_CODE0006",
+                      "message" : "가입한 계정이 존재합니다."
+                    }
+        "201":
+          description: "201"
+  /users/exists-id/{userId}:
+    get:
+      tags:
+      - 유저 관리 API
+      summary: 아이디가 존재하는 경우
+      description: 아이디가 존재하는 경우
+      operationId: 아이디가 존재하지 않는 경우유저 아이디가 존재하는 경우
+      parameters:
+      - name: userId
+        in: path
+        description: ""
+        required: true
+        schema:
+          type: string
+      responses:
+        "400":
+          description: "400"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/users-exists-nickname-nickName-915444540'
+              examples:
+                유저 아이디가 존재하는 경우:
+                  value: |-
+                    {
+                      "errCode" : "ERR_CODE0002",
+                      "message" : "해당 사용자가 존재합니다.",
+                      "data" : null
+                    }
+        "204":
+          description: "204"
+  /users/exists-nickname/{nickName}:
+    get:
+      tags:
+      - 유저 관리 API
+      summary: 닉네임 존재하지 않는 경우
+      description: 닉네임 존재하지 않는 경우
+      operationId: 닉네임 존재하
+      parameters:
+      - name: nickName
+        in: path
+        description: ""
+        required: true
+        schema:
+          type: string
+      - name: Authorization
+        in: header
+        description: Bearer JWT토큰값
+        required: false
+        schema:
+          type: string
+        example: Bearer aergaeaerg
+      responses:
+        "204":
+          description: "204"
+        "400":
+          description: "400"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/users-exists-nickname-nickName-915444540'
+              examples:
+                닉네임 존재하는 경우:
+                  value: |-
+                    {
+                      "errCode" : "ERR_CODE0003",
+                      "message" : "해당 닉네임이 존재합니다.",
+                      "data" : null
+                    }
+components:
+  schemas:
+    users-signup-289588754:
+      type: object
+      properties:
+        errCode:
+          type: string
+          description: 에러 코드
+        message:
+          type: string
+          description: 에러 메시지
+    users-exists-nickname-nickName-915444540:
+      type: object
+      properties:
+        errCode:
+          type: string
+          description: 에러코드
+        message:
+          type: string
+          description: 에러메시지
+    users-signin1601884849:
+      type: object
+      properties:
+        nickName:
+          type: string
+          description: 닉네임
+        accessToken:
+          type: string
+          description: 액세스 토큰
+        refreshToken:
+          type: string
+          description: 리프레쉬 토큰
+    users-signup486549215:
+      type: object

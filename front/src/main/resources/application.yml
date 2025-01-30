@@ -1,0 +1,62 @@
+spring:
+  profiles:
+    active: local
+  threads:
+    virtual:
+      enabled: true
+server:
+  port: 8080
+  shutdown: graceful
+  compression:
+    enabled: true
+    min-response-size: 65536
+  error:
+    whitelabel:
+      enabled: false
+management:
+  endpoint:
+    health:
+      group:
+        readiness:
+          additional-path: server:/readyz
+          include: ping, db, redis
+          status:
+            http-mapping:
+              up: 200
+              unknown: 503
+              down: 503
+              out_of_service: 503
+        liveness:
+          additional-path: server:/livez
+          include:
+            - ping
+          status:
+            http-mapping:
+              up: 200
+              unknown: 503
+              down: 503
+              out_of_service: 503
+
+
+--- #local
+spring:
+  config:
+    activate:
+      on-profile: local
+logging:
+  level:
+    root: info
+
+--- #prod
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+decorator:
+  datasource:
+    p6spy:
+      enable-logging: false
+logging:
+  level:
+    root: info
