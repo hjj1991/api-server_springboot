@@ -1,8 +1,7 @@
-package com.hjj.apiserver.adapter.out.persistence.financial.entity
+package ninja.sundry.financial.adapter.out.persistence.financial.entity
 
-import com.hjj.apiserver.adapter.out.persistence.BaseTimeEntity
-import com.hjj.apiserver.domain.financial.InterestRateType
-import com.hjj.apiserver.domain.financial.ReserveType
+import domain.financial.InterestRateType
+import domain.financial.ReserveType
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
@@ -15,6 +14,7 @@ import jakarta.persistence.Index
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.Table
+import ninja.sundry.financial.adapter.out.persistence.BaseTimeEntity
 import java.math.BigDecimal
 
 @Entity

@@ -1,5 +1,3 @@
-import com.google.protobuf.gradle.id
-
 plugins {
 	kotlin("jvm")
 	kotlin("plugin.spring")
@@ -21,9 +19,20 @@ repositories {
 	mavenCentral()
 }
 
+
+extra["springGrpcVersion"] = "0.3.0"
+
+
 dependencies {
     implementation(project(":core")) // core 모듈 의존성 추가
 
+    implementation("io.grpc:grpc-services")
+    implementation("org.jetbrains.kotlin:kotlin-reflect")
+    implementation("org.springframework.grpc:spring-grpc-spring-boot-starter")
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
+    testImplementation("org.springframework.grpc:spring-grpc-test")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 	implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
 	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
 
@@ -32,35 +41,7 @@ dependencies {
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
-// gRPC 자동 코드 생성 설정
-protobuf {
-    // Protobuf 컴파일러를 지정하여 .proto 파일을 컴파일합니다.
-    protoc {
-        artifact = "com.google.protobuf:protoc:4.29.3"
-    }
 
-    // gRPC 플러그인을 설정하여 Protobuf 파일로부터 gRPC 관련 코드를 생성합니다.
-    plugins {
-        id("grpc") {
-            artifact = "io.grpc:protoc-gen-grpc-java:1.70.0"
-        }
-        id("grpckt") {
-            artifact = "io.grpc:protoc-gen-grpc-kotlin:1.70.0:jdk8@jar"
-        }
-    }
-    // 모든 프로토콜 버퍼 작업에 대해 gRPC 플러그인을 적용합니다.
-    generateProtoTasks {
-        all().forEach { generateProtoTask ->
-            generateProtoTask.plugins {
-                id("grpc")
-                id("grpckt")
-            }
-            generateProtoTask.builtins {
-                id("kotlin")
-            }
-        }
-    }
-}
 
 kotlin {
 	compilerOptions {
@@ -73,3 +54,4 @@ tasks.withType<Test> {
 }
 
 tasks.register("prepareKotlinBuildScriptModel"){}
+

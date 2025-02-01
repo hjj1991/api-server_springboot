@@ -1,4 +1,4 @@
-package com.hjj.apiserver.config
+package ninja.sundry.financial.config
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonTypeInfo
@@ -6,10 +6,8 @@ import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.github.benmanes.caffeine.cache.Caffeine
-import com.hjj.apiserver.common.JwtProvider
 import org.springframework.cache.CacheManager
 import org.springframework.cache.annotation.EnableCaching
 import org.springframework.cache.caffeine.CaffeineCacheManager
@@ -51,7 +49,7 @@ class CacheConfig(
                 Caffeine.newBuilder()
                     .initialCapacity(200)
                     .maximumSize(500)
-                    .expireAfterWrite(JwtProvider.REFRESH_TOKEN_VALID_MILLISECONDS, TimeUnit.MILLISECONDS)
+                    .expireAfterWrite(4000, TimeUnit.MILLISECONDS)
                     .weakKeys()
                     .recordStats(),
             )
@@ -81,7 +79,6 @@ class CacheConfig(
         GenericJackson2JsonRedisSerializer(
             ObjectMapper()
                 .registerModules(
-                    JavaTimeModule(),
                     KotlinModule.Builder().build(),
                 )
                 .setSerializationInclusion(JsonInclude.Include.ALWAYS)

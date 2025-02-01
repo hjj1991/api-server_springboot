@@ -1,4 +1,4 @@
-package com.hjj.apiserver.common.exception.financial
+package ninja.sundry.financial.common.exception.financial
 
 class FinancialProductNotFoundException : RuntimeException {
     constructor() : super()

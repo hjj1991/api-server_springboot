@@ -42,26 +42,30 @@ subprojects {
     apply(plugin = "kotlin")
     apply(plugin = "kotlin-spring") //all-open
     apply(plugin = "kotlin-jpa")
+    apply(plugin = "com.google.protobuf")
+
+    extra["springGrpcVersion"] = "0.3.0"
+
+    dependencyManagement {
+        imports {
+            mavenBom("org.springframework.grpc:spring-grpc-dependencies:${property("springGrpcVersion")}")
+        }
+    }
 
     dependencies {
-        implementation("org.springframework.boot:spring-boot-starter-webflux")
         implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
         implementation("org.jetbrains.kotlin:kotlin-reflect")
 
-        // gRPC & Protobuf
-        implementation("io.grpc:grpc-netty-shaded:1.70.0")
-        implementation("io.grpc:grpc-protobuf:1.70.0")
-        implementation("io.grpc:grpc-stub:1.70.0")
-        implementation("com.google.protobuf:protobuf-java:4.29.3")
-        implementation("com.google.protobuf:protobuf-kotlin:4.29.3")
+        implementation("io.grpc:grpc-services")
+        implementation("org.jetbrains.kotlin:kotlin-reflect")
+        implementation("org.springframework.grpc:spring-grpc-spring-boot-starter")
 
-        // gRPC Kotlin
-        implementation("io.grpc:grpc-kotlin-stub:1.4.1")
         implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.1")
 
         testImplementation("org.springframework.boot:spring-boot-starter-test")
-
-
+        testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
+        testImplementation("org.springframework.grpc:spring-grpc-test")
+        testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     }
 
     repositories {

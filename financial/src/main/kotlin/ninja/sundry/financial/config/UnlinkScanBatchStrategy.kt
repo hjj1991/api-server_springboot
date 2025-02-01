@@ -1,4 +1,4 @@
-package com.hjj.apiserver.config
+package ninja.sundry.financial.config
 
 import org.springframework.data.redis.cache.BatchStrategy
 import org.springframework.data.redis.connection.RedisConnection

@@ -1,4 +1,4 @@
-package com.hjj.apiserver.domain.financial
+package domain.financial
 
 class FinancialCompany(
     financialCompanyId: Long = 0L,

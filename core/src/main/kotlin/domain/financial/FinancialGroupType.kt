@@ -1,4 +1,4 @@
-package com.hjj.apiserver.domain.financial
+package domain.financial
 
 enum class FinancialGroupType(val financialGroupCode: String, val title: String) {
     BANK("020000", "은행"),

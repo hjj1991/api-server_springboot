@@ -1,14 +1,15 @@
-package com.hjj.apiserver.adapter.out.persistence.financial.dto
+package ninja.sundry.financial.adapter.out.persistence.financial.dto
 
-import com.hjj.apiserver.adapter.out.persistence.financial.entity.QFinancialCompanyEntity
-import com.hjj.apiserver.adapter.out.persistence.financial.entity.QFinancialProductEntity
-import com.hjj.apiserver.adapter.out.persistence.financial.entity.QFinancialProductOptionEntity
-import com.hjj.apiserver.domain.financial.FinancialGroupType
-import com.hjj.apiserver.domain.financial.FinancialProductType
-import com.hjj.apiserver.domain.financial.JoinRestriction
+
 import com.querydsl.core.BooleanBuilder
 import com.querydsl.core.types.Predicate
 import com.querydsl.core.types.dsl.BooleanExpression
+import domain.financial.FinancialGroupType
+import domain.financial.FinancialProductType
+import domain.financial.JoinRestriction
+import ninja.sundry.financial.adapter.out.persistence.financial.entity.QFinancialCompanyEntity
+import ninja.sundry.financial.adapter.out.persistence.financial.entity.QFinancialProductEntity
+import ninja.sundry.financial.adapter.out.persistence.financial.entity.QFinancialProductOptionEntity
 
 class FinancialProductSearchCondition(
     val financialGroupType: FinancialGroupType?,

@@ -1,4 +1,4 @@
-package com.hjj.apiserver.domain.financial
+package domain.financial
 
 enum class InterestRateType(val code: String, val description: String) {
     SIMPLE("S", "단리"),

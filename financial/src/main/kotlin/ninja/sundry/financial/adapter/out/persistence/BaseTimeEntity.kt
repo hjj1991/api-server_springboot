@@ -1,4 +1,4 @@
-package com.hjj.apiserver.adapter.out.persistence
+package ninja.sundry.financial.adapter.out.persistence
 
 import jakarta.persistence.MappedSuperclass
 import jakarta.persistence.PrePersist

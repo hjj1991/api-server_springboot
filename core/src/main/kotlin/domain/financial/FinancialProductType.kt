@@ -1,4 +1,4 @@
-package com.hjj.apiserver.domain.financial
+package domain.financial
 
 enum class FinancialProductType(val description: String) {
     SAVINGS("예금"),

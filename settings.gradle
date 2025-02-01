@@ -1,5 +1,2 @@
 rootProject.name = 'api-server'
-include 'financial'
-include 'front'
-include 'core'
-
+include("core", "front", "financial")

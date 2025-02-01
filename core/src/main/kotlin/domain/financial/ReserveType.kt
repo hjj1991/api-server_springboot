@@ -1,4 +1,4 @@
-package com.hjj.apiserver.domain.financial
+package domain.financial
 
 enum class ReserveType(val code: String, val description: String) {
     FLEXIBLE("F", "자유적립식"),

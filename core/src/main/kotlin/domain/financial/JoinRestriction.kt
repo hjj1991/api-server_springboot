@@ -1,4 +1,4 @@
-package com.hjj.apiserver.domain.financial
+package domain.financial
 
 enum class JoinRestriction(val code: Int, val description: String) {
     NO_RESTRICTION(1, "제한없음"),

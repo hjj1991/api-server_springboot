@@ -1,4 +1,4 @@
-package com.hjj.apiserver.config
+package ninja.sundry.financial.config
 
 import org.springframework.cache.interceptor.KeyGenerator
 import org.springframework.context.annotation.Bean

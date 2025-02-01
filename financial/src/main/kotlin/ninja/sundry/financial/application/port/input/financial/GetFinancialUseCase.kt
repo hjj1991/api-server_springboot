@@ -1,9 +1,9 @@
-package com.hjj.apiserver.application.port.input.financial
+package ninja.sundry.financial.application.port.input.financial
 
-import com.hjj.apiserver.domain.financial.FinancialGroupType
-import com.hjj.apiserver.domain.financial.FinancialProduct
-import com.hjj.apiserver.domain.financial.FinancialProductType
-import com.hjj.apiserver.domain.financial.JoinRestriction
+import domain.financial.FinancialGroupType
+import domain.financial.FinancialProduct
+import domain.financial.FinancialProductType
+import domain.financial.JoinRestriction
 import org.springframework.data.domain.Pageable
 
 interface GetFinancialUseCase {

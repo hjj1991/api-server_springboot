@@ -1,8 +1,8 @@
-package com.hjj.apiserver.adapter.out.persistence.financial.entity
+package ninja.sundry.financial.adapter.out.persistence.financial.entity
 
-import com.hjj.apiserver.adapter.out.persistence.BaseTimeEntity
-import com.hjj.apiserver.domain.financial.FinancialProductType
-import com.hjj.apiserver.domain.financial.JoinRestriction
+import ninja.sundry.financial.adapter.out.persistence.BaseTimeEntity
+import domain.financial.FinancialProductType
+import domain.financial.JoinRestriction
 import jakarta.persistence.CascadeType
 import jakarta.persistence.Column
 import jakarta.persistence.ConstraintMode

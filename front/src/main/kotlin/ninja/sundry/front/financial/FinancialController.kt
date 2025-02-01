@@ -1,5 +1,11 @@
 package ninja.sundry.front.financial
 
+import domain.financial.FinancialGroupType
+import domain.financial.FinancialProductType
+import domain.financial.JoinRestriction
+import model.SliceResponse
+import ninja.sundry.front.financial.model.response.FinancialProductResponse
+import org.springframework.grpc.server.service.GrpcService
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
@@ -7,7 +13,9 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/v1/financials")
-class FinancialController {
+@GrpcService
+class FinancialController(
+) {
 
     @GetMapping
     suspend fun getFinancials(
@@ -19,20 +27,8 @@ class FinancialController {
         @RequestParam(required = false) depositPeriodMonths: String?,
         @RequestParam(defaultValue = "0") page: Int,
         @RequestParam(defaultValue = "20") size: Int,
-    ): List<FinancialProductResponse> {
-        val pageable = PageRequest.of(page, size)
+    ): SliceResponse<FinancialProductResponse> {
 
-        val (financialProducts, hasNext) =
-            getFinancialUseCase.getFinancialsWithPaginationInfo(
-                financialGroupType = financialGroupType,
-                companyName = companyName,
-                joinRestriction = joinRestriction,
-                financialProductType = financialProductType,
-                financialProductName = financialProductName,
-                depositPeriodMonths = depositPeriodMonths,
-                pageable = pageable
-            )
-
-        return financialProducts.map { FinancialProductResponse.from(it) }
+        TODO()
     }
 }

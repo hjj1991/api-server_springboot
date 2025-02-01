@@ -1,4 +1,4 @@
-package com.hjj.apiserver.common.component
+package ninja.sundry.financial.common.component
 
 import jakarta.validation.ConstraintViolation
 import jakarta.validation.ConstraintViolationException

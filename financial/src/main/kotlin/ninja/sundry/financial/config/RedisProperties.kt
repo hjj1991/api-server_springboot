@@ -1,4 +1,4 @@
-package com.hjj.apiserver.config
+package ninja.sundry.financial.config
 
 import org.springframework.boot.context.properties.ConfigurationProperties
 

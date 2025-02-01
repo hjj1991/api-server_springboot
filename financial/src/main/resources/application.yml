@@ -13,30 +13,16 @@ spring:
         default_batch_fetch_size: 100
     open-in-view: false
   #    show-sql: true
-  jwt:
-    secret: testTokenspaeratkgspeokrtgpaeokrgpaejrgoaeijrgoaeijrgfndkbjnrstghjsrteghjoaeorigjaeorigj
-  mvc:
-    pathmatch:
-      matching-strategy: ant_path_matcher
+
   output:
     ansi:
       enabled: always
   threads:
     virtual:
       enabled: true
-  servlet:
-    multipart:
-      max-file-size: 4024KB
-      max-request-size: 4024KB
-server:
-  port: 8080
-  shutdown: graceful
-  compression:
-    enabled: true
-    min-response-size: 65536
-  error:
-    whitelabel:
-      enabled: false
+  grpc:
+    server:
+      port: 9090
 management:
   endpoint:
     health:
@@ -86,8 +72,6 @@ decorator:
 logging:
   level:
     root: info
-    c: error
-    com.hjj.apiserver: debug
 
 --- #prod
 spring:

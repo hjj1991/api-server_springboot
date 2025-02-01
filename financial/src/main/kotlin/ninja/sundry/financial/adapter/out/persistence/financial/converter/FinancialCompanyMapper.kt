@@ -1,7 +1,7 @@
-package com.hjj.apiserver.adapter.out.persistence.financial.converter
+package ninja.sundry.financial.adapter.out.persistence.financial.converter
 
-import com.hjj.apiserver.adapter.out.persistence.financial.entity.FinancialCompanyEntity
-import com.hjj.apiserver.domain.financial.FinancialCompany
+import domain.financial.FinancialCompany
+import ninja.sundry.financial.adapter.out.persistence.financial.entity.FinancialCompanyEntity
 import org.springframework.stereotype.Component
 
 @Component

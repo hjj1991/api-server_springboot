@@ -1,4 +1,4 @@
-package com.hjj.apiserver.common
+package ninja.sundry.financial.common
 
 import org.springframework.stereotype.Component
 

@@ -1,4 +1,4 @@
-package com.hjj.apiserver.config
+package ninja.sundry.financial.config
 
 import com.p6spy.engine.common.ConnectionInformation
 import com.p6spy.engine.event.JdbcEventListener

@@ -1,7 +1,6 @@
-package com.hjj.apiserver.adapter.out.persistence.financial.entity
+package ninja.sundry.financial.adapter.out.persistence.financial.entity
 
-import com.hjj.apiserver.adapter.out.persistence.BaseTimeEntity
-import com.hjj.apiserver.domain.financial.FinancialGroupType
+import domain.financial.FinancialGroupType
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
@@ -11,6 +10,7 @@ import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.Index
 import jakarta.persistence.Table
+import ninja.sundry.financial.adapter.out.persistence.BaseTimeEntity
 
 @Entity
 @Table(

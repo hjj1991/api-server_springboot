@@ -1,15 +1,15 @@
-package com.hjj.apiserver.adapter.out.persistence.financial.repository
+package ninja.sundry.financial.adapter.out.persistence.financial.repository
 
-import com.hjj.apiserver.adapter.out.persistence.financial.dto.FinancialProductSearchCondition
-import com.hjj.apiserver.adapter.out.persistence.financial.entity.FinancialProductEntity
-import com.hjj.apiserver.adapter.out.persistence.financial.entity.QFinancialCompanyEntity
-import com.hjj.apiserver.adapter.out.persistence.financial.entity.QFinancialProductEntity
-import com.hjj.apiserver.adapter.out.persistence.financial.entity.QFinancialProductOptionEntity
 import com.querydsl.core.types.Order
 import com.querydsl.core.types.OrderSpecifier
 import com.querydsl.core.types.Path
 import com.querydsl.core.types.dsl.PathBuilder
 import com.querydsl.jpa.impl.JPAQueryFactory
+import ninja.sundry.financial.adapter.out.persistence.financial.dto.FinancialProductSearchCondition
+import ninja.sundry.financial.adapter.out.persistence.financial.entity.FinancialProductEntity
+import ninja.sundry.financial.adapter.out.persistence.financial.entity.QFinancialCompanyEntity
+import ninja.sundry.financial.adapter.out.persistence.financial.entity.QFinancialProductEntity
+import ninja.sundry.financial.adapter.out.persistence.financial.entity.QFinancialProductOptionEntity
 import org.hibernate.Hibernate
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository

@@ -1,0 +1,61 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "ninja.sundry.core.grpc";
+option java_outer_classname = "FinancialProto";
+
+service FinancialProductService {
+    rpc GetFinancialProducts(FinancialProductRequest) returns (FinancialProductResponse);
+}
+
+message FinancialProductRequest {
+    optional string financialGroupType = 1;
+    optional string companyName = 2;
+    optional string joinRestriction = 3;
+    optional string financialProductType = 4;
+    optional string financialProductName = 5;
+    optional string depositPeriodMonths = 6;
+    optional int32 page = 7;
+    optional int32 size = 8;
+}
+
+message FinancialProductResponse {
+    repeated FinancialProduct content = 1;
+    int32 size = 2;
+    int32 number = 3;
+}
+
+message FinancialProduct {
+    int32 financialProductId = 1;
+    string financialProductName = 2;
+    string joinWay = 3;
+    string postMaturityInterestRate = 4;
+    string specialCondition = 5;
+    string joinRestriction = 6;
+    string financialProductType = 7;
+    string joinMember = 8;
+    string additionalNotes = 9;
+    string maxLimit = 10;
+    string dclsMonth = 11;
+    string dclsStartDay = 12;
+    string dclsEndDay = 13;
+    FinancialCompany financialCompany = 14;
+    repeated FinancialProductOption financialProductOptions = 15;
+}
+
+message FinancialCompany {
+    string dclsMonth = 1;
+    string companyName = 2;
+    string dclsChrgMan = 3;
+    string hompUrl = 4;
+    string calTel = 5;
+    string financialGroupType = 6;
+}
+
+message FinancialProductOption {
+    string interestRateType = 1;
+    string reserveType = 2;
+    string depositPeriodMonths = 3;
+    float baseInterestRate = 4;
+    float maximumInterestRate = 5;
+}
