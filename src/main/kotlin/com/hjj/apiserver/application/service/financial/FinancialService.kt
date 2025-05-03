@@ -38,29 +38,31 @@ class FinancialService(
         depositPeriodMonths: String?,
         pageable: Pageable,
     ): Slice<FinancialProductResponse> {
-        val searchCondition = FinancialProductSearchCondition(
-            financialGroupType = financialGroupType,
-            companyName = companyName,
-            joinRestriction = joinRestriction,
-            financialProductType = financialProductType,
-            financialProductName = financialProductName,
-            depositPeriodMonths = depositPeriodMonths,
-        )
-        val financialProducts = this.getFinancialProductPort.findFinancialProductsByCondition(
-            financialProductSearchCondition = searchCondition,
-            pageable = pageable,
-        )
-        val hasNext = this.getFinancialProductPort.existsNextPageByCondition(
-            financialProductSearchCondition = searchCondition,
-            pageable = pageable
-        )
+        val searchCondition =
+            FinancialProductSearchCondition(
+                financialGroupType = financialGroupType,
+                companyName = companyName,
+                joinRestriction = joinRestriction,
+                financialProductType = financialProductType,
+                financialProductName = financialProductName,
+                depositPeriodMonths = depositPeriodMonths,
+            )
+        val financialProducts =
+            this.getFinancialProductPort.findFinancialProductsByCondition(
+                financialProductSearchCondition = searchCondition,
+                pageable = pageable,
+            )
+        val hasNext =
+            this.getFinancialProductPort.existsNextPageByCondition(
+                financialProductSearchCondition = searchCondition,
+                pageable = pageable,
+            )
         return SliceImpl(
             financialProducts.map(FinancialProductResponse::from),
             pageable,
-            hasNext
+            hasNext,
         )
     }
-
 
     @Cacheable(
         cacheManager = CacheConfig.REDIS_CACHE_MANAGER,

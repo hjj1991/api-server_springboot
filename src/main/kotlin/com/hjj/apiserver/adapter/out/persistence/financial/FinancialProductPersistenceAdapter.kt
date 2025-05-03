@@ -20,7 +20,6 @@ class FinancialProductPersistenceAdapter(
     val financialCompanyMapper: FinancialCompanyMapper,
     val financialProductMapper: FinancialProductMapper,
 ) : GetFinancialProductPort {
-
     override fun findFinancialProductsByCondition(
         financialProductSearchCondition: FinancialProductSearchCondition,
         pageable: Pageable,
@@ -36,18 +35,19 @@ class FinancialProductPersistenceAdapter(
                 financialCompany = financialCompanyMapper.mapToDomainEntity(financialProductEntity.financialCompanyEntity)
             }
         }
-
     }
 
-    override fun existsNextPageByCondition(financialProductSearchCondition: FinancialProductSearchCondition, pageable: Pageable): Boolean =
-        this.financialProductCustomRepository.existsNextPageByCondition(financialProductSearchCondition, pageable)
+    override fun existsNextPageByCondition(
+        financialProductSearchCondition: FinancialProductSearchCondition,
+        pageable: Pageable,
+    ): Boolean = this.financialProductCustomRepository.existsNextPageByCondition(financialProductSearchCondition, pageable)
 
     @Transactional(readOnly = true)
     override fun findFinancialProduct(financialProductId: Long): FinancialProduct {
         val financialProductEntity = (
             this.financialProductRepository.findByIdOrNull(financialProductId)
                 ?: throw FinancialProductNotFoundException(message = "FinancialProduct not found financialProductId: $financialProductId")
-            )
+        )
 
         return this.financialProductMapper.mapToDomainEntity(financialProductEntity = financialProductEntity).apply {
             financialCompany = financialCompanyMapper.mapToDomainEntity(financialProductEntity.financialCompanyEntity)

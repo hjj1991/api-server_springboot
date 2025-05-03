@@ -10,7 +10,10 @@ interface GetFinancialProductPort {
         pageable: Pageable,
     ): List<FinancialProduct>
 
-    fun existsNextPageByCondition(financialProductSearchCondition: FinancialProductSearchCondition, pageable: Pageable): Boolean
+    fun existsNextPageByCondition(
+        financialProductSearchCondition: FinancialProductSearchCondition,
+        pageable: Pageable,
+    ): Boolean
 
     fun findFinancialProduct(financialProductId: Long): FinancialProduct
 }

@@ -28,12 +28,13 @@ class FinancialProductCustomRepository(
      */
     fun findByCondition(
         condition: FinancialProductSearchCondition,
-        pageable: Pageable
+        pageable: Pageable,
     ): List<FinancialProductEntity> {
-        val base = buildBaseQuery(condition)
-            .offset(pageable.offset)
-            .limit(pageable.pageSize.toLong())
-            .distinct()
+        val base =
+            buildBaseQuery(condition)
+                .offset(pageable.offset)
+                .limit(pageable.pageSize.toLong())
+                .distinct()
 
         applySorting(base, pageable)
 
@@ -47,43 +48,44 @@ class FinancialProductCustomRepository(
      */
     fun existsNextPageByCondition(
         condition: FinancialProductSearchCondition,
-        pageable: Pageable
+        pageable: Pageable,
     ): Boolean {
-        val hasNext = buildBaseQuery(condition)
-            .offset(pageable.offset + pageable.pageSize)
-            .limit(1)
-            .distinct()
-            .fetchFirst() != null
+        val hasNext =
+            buildBaseQuery(condition)
+                .offset(pageable.offset + pageable.pageSize)
+                .limit(1)
+                .distinct()
+                .fetchFirst() != null
         return hasNext
     }
 
     /**
      * 공통 쿼리 빌더
      */
-    private fun buildBaseQuery(
-        condition: FinancialProductSearchCondition
-    ): JPAQuery<FinancialProductEntity> = jpaQueryFactory
-        .selectFrom(product)
-        .innerJoin(product.financialCompanyEntity, company).fetchJoin()
-        .innerJoin(product.financialProductOptionEntities, option)
-        .where(condition.toPredicate())
+    private fun buildBaseQuery(condition: FinancialProductSearchCondition): JPAQuery<FinancialProductEntity> =
+        jpaQueryFactory
+            .selectFrom(product)
+            .innerJoin(product.financialCompanyEntity, company).fetchJoin()
+            .innerJoin(product.financialProductOptionEntities, option)
+            .where(condition.toPredicate())
 
     /**
      * 정렬 적용
      */
     private fun applySorting(
         query: JPAQuery<*>,
-        pageable: Pageable
+        pageable: Pageable,
     ) {
         pageable.sort.forEach { order ->
             val pathBuilder = PathBuilder(product.type, product.metadata)
-            val path = when (order.property) {
-                "companyName" -> company.companyName as Path<Comparable<*>>
-                "depositPeriodMonths" -> option.depositPeriodMonths as Path<Comparable<*>>
-                "baseInterestRate" -> option.baseInterestRate as Path<Comparable<*>>
-                "maximumInterestRate" -> option.maximumInterestRate as Path<Comparable<*>>
-                else -> pathBuilder.get(order.property) as Path<Comparable<*>>
-            }
+            val path =
+                when (order.property) {
+                    "companyName" -> company.companyName as Path<Comparable<*>>
+                    "depositPeriodMonths" -> option.depositPeriodMonths as Path<Comparable<*>>
+                    "baseInterestRate" -> option.baseInterestRate as Path<Comparable<*>>
+                    "maximumInterestRate" -> option.maximumInterestRate as Path<Comparable<*>>
+                    else -> pathBuilder.get(order.property) as Path<Comparable<*>>
+                }
             val direction = if (order.isAscending) Order.ASC else Order.DESC
             query.orderBy(OrderSpecifier(direction, path))
         }
