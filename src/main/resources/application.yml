@@ -28,6 +28,10 @@ spring:
     multipart:
       max-file-size: 4024KB
       max-request-size: 4024KB
+  jackson:
+    deserialization:
+      fail-on-null-for-primitives: false
+      fail-on-null-creator-properties: false
 server:
   port: 8080
   shutdown: graceful

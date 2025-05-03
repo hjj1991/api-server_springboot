@@ -9,8 +9,6 @@ import com.querydsl.jpa.impl.JPAQueryFactory
 import jakarta.annotation.PostConstruct
 import jakarta.persistence.EntityManager
 import mu.two.KotlinLogging
-import org.modelmapper.ModelMapper
-import org.modelmapper.convention.MatchingStrategies
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan
 import org.springframework.context.annotation.Bean
@@ -47,13 +45,6 @@ class ApplicationConfig(
     @Bean
     fun passwordEncoder(): PasswordEncoder {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder()
-    }
-
-    @Bean
-    fun modelMapper(): ModelMapper {
-        val modelMapper = ModelMapper()
-        modelMapper.configuration.matchingStrategy = MatchingStrategies.STRICT
-        return modelMapper
     }
 
     @Bean

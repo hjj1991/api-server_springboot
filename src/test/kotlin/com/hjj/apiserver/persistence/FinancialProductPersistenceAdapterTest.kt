@@ -50,7 +50,7 @@ class FinancialProductPersistenceAdapterTest : BaseRepositoryTest() {
     private lateinit var entityManager: EntityManager
 
     @Test
-    fun findFinancialProductsWithPaginationInfo_success() {
+    fun findFinancialProductsByCondition_success() {
         // Given
         val financialCompanyEntity =
             FinancialCompanyEntity(
@@ -135,7 +135,7 @@ class FinancialProductPersistenceAdapterTest : BaseRepositoryTest() {
     }
 
     @Test
-    fun findFinancialProductsWithPaginationInfo_success_by_sort() {
+    fun findFinancialProductsByCondition_success_by_sort() {
         // Given
         val financialCompanyEntity =
             FinancialCompanyEntity(
