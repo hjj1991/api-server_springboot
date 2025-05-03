@@ -4,6 +4,7 @@ import com.hjj.apiserver.adapter.out.persistence.financial.FinancialProductPersi
 import com.hjj.apiserver.adapter.out.persistence.financial.converter.FinancialCompanyMapper
 import com.hjj.apiserver.adapter.out.persistence.financial.converter.FinancialProductMapper
 import com.hjj.apiserver.adapter.out.persistence.financial.converter.FinancialProductOptionMapper
+import com.hjj.apiserver.adapter.out.persistence.financial.dto.FinancialProductSearchCondition
 import com.hjj.apiserver.adapter.out.persistence.financial.entity.FinancialCompanyEntity
 import com.hjj.apiserver.adapter.out.persistence.financial.entity.FinancialProductEntity
 import com.hjj.apiserver.adapter.out.persistence.financial.entity.FinancialProductOptionEntity
@@ -96,20 +97,21 @@ class FinancialProductPersistenceAdapterTest : BaseRepositoryTest() {
 
         // When
         val financialProducts =
-            getFinancialProductPort.findFinancialProductsWithPaginationInfo(
-                financialGroupType = FinancialGroupType.BANK,
-                companyName = "우리은행",
-                joinRestriction = JoinRestriction.NO_RESTRICTION,
-                financialProductType = FinancialProductType.SAVINGS,
-                financialProductName = "첫적금",
-                depositPeriodMonths = null,
+            getFinancialProductPort.findFinancialProductsByCondition(
+                FinancialProductSearchCondition(
+                    financialGroupType = FinancialGroupType.BANK,
+                    companyName = "우리은행",
+                    joinRestriction = JoinRestriction.NO_RESTRICTION,
+                    financialProductType = FinancialProductType.SAVINGS,
+                    financialProductName = "첫적금",
+                    depositPeriodMonths = null,
+                ),
                 pageable = PageRequest.of(0, 10),
             )
         // Then
-        assertThat(financialProducts.first).hasSize(1)
-        assertThat(financialProducts.second).isFalse()
+        assertThat(financialProducts).hasSize(1)
 
-        val financialProduct = financialProducts.first.first()
+        val financialProduct = financialProducts.first()
         assertThat(financialProduct.financialProductCode).isEqualTo("WR0001B")
         assertThat(financialProduct.financialProductName).isEqualTo("첫적금")
         assertThat(financialProduct.joinWay).isEqualTo("일반")
@@ -239,20 +241,21 @@ class FinancialProductPersistenceAdapterTest : BaseRepositoryTest() {
 
         // When
         val financialProducts =
-            getFinancialProductPort.findFinancialProductsWithPaginationInfo(
-                financialGroupType = FinancialGroupType.BANK,
-                companyName = null,
-                joinRestriction = JoinRestriction.NO_RESTRICTION,
-                financialProductType = FinancialProductType.SAVINGS,
-                financialProductName = null,
-                depositPeriodMonths = "3",
+            getFinancialProductPort.findFinancialProductsByCondition(
+                FinancialProductSearchCondition(
+                    financialGroupType = FinancialGroupType.BANK,
+                    companyName = null,
+                    joinRestriction = JoinRestriction.NO_RESTRICTION,
+                    financialProductType = FinancialProductType.SAVINGS,
+                    financialProductName = null,
+                    depositPeriodMonths = "3",
+                ),
                 pageable = PageRequest.of(0, 10, Sort.by(listOf(Sort.Order(Sort.Direction.ASC, "maximumInterestRate")))),
             )
         // Then
-        assertThat(financialProducts.first).hasSize(2)
-        assertThat(financialProducts.second).isFalse()
+        assertThat(financialProducts).hasSize(2)
 
-        val financialProduct = financialProducts.first.first()
+        val financialProduct = financialProducts.first()
         assertThat(financialProduct.financialProductCode).isEqualTo("WR0001B")
         assertThat(financialProduct.financialProductName).isEqualTo("첫적금")
         assertThat(financialProduct.joinWay).isEqualTo("일반")
