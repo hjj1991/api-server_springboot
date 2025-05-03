@@ -1,14 +1,15 @@
 syntax = "proto3";
+import "google/protobuf/wrappers.proto";
 
 option java_multiple_files = true;
 option java_package = "ninja.sundry.core.grpc";
 option java_outer_classname = "FinancialProto";
 
 service FinancialProductService {
-    rpc GetFinancialProducts(FinancialProductRequest) returns (FinancialProductResponse);
+    rpc GetFinancialProducts(FinancialProductGrpcRequest) returns (FinancialProductGrpcResponse);
 }
 
-message FinancialProductRequest {
+message FinancialProductGrpcRequest {
     optional string financialGroupType = 1;
     optional string companyName = 2;
     optional string joinRestriction = 3;
@@ -19,43 +20,46 @@ message FinancialProductRequest {
     optional int32 size = 8;
 }
 
-message FinancialProductResponse {
-    repeated FinancialProduct content = 1;
+message FinancialProductGrpcResponse {
+    repeated FinancialProductGrpc content = 1;
     int32 size = 2;
     int32 number = 3;
+    int32 numberOfElements = 4;
+    bool first = 5;
+    bool last = 6;
 }
 
-message FinancialProduct {
-    int32 financialProductId = 1;
+message FinancialProductGrpc {
+    int64 financialProductId = 1;
     string financialProductName = 2;
     string joinWay = 3;
-    string postMaturityInterestRate = 4;
-    string specialCondition = 5;
+    google.protobuf.StringValue postMaturityInterestRate = 4;
+    google.protobuf.StringValue specialCondition = 5;
     string joinRestriction = 6;
     string financialProductType = 7;
     string joinMember = 8;
     string additionalNotes = 9;
-    string maxLimit = 10;
-    string dclsMonth = 11;
-    string dclsStartDay = 12;
-    string dclsEndDay = 13;
-    FinancialCompany financialCompany = 14;
-    repeated FinancialProductOption financialProductOptions = 15;
+    google.protobuf.Int64Value maxLimit = 10;
+    google.protobuf.StringValue dclsMonth = 11;
+    google.protobuf.StringValue dclsStartDay = 12;
+    google.protobuf.StringValue dclsEndDay = 13;
+    FinancialCompanyGrpc financialCompany = 14;
+    repeated FinancialProductOptionGrpc financialProductOptions = 15;
 }
 
-message FinancialCompany {
+message FinancialCompanyGrpc {
     string dclsMonth = 1;
     string companyName = 2;
-    string dclsChrgMan = 3;
-    string hompUrl = 4;
-    string calTel = 5;
+    google.protobuf.StringValue dclsChrgMan = 3;
+    google.protobuf.StringValue hompUrl = 4;
+    google.protobuf.StringValue calTel = 5;
     string financialGroupType = 6;
 }
 
-message FinancialProductOption {
+message FinancialProductOptionGrpc {
     string interestRateType = 1;
-    string reserveType = 2;
+    google.protobuf.StringValue reserveType = 2;
     string depositPeriodMonths = 3;
-    float baseInterestRate = 4;
-    float maximumInterestRate = 5;
+    google.protobuf.DoubleValue baseInterestRate = 4;
+    google.protobuf.DoubleValue maximumInterestRate = 5;
 }

@@ -1,49 +1,55 @@
 package ninja.sundry.financial.adapter.input.grpc.converter
 
+import com.google.protobuf.DoubleValue
+import com.google.protobuf.Int64Value
+import com.google.protobuf.StringValue
 import domain.financial.FinancialCompany
 import domain.financial.FinancialProduct
 import domain.financial.FinancialProductOption
+import ninja.sundry.core.grpc.FinancialCompanyGrpc
+import ninja.sundry.core.grpc.FinancialProductGrpc
+import ninja.sundry.core.grpc.FinancialProductOptionGrpc
 
 object FinancialMapper {
 
-    fun FinancialProduct.toGrpc(): ninja.sundry.core.grpc.FinancialProduct {
-        return ninja.sundry.core.grpc.FinancialProduct.newBuilder()
-            .setFinancialProductId(this.financialProductId.toInt())
+    fun FinancialProduct.toFinancialProductGrpc(): FinancialProductGrpc {
+        return FinancialProductGrpc.newBuilder()
+            .setFinancialProductId(this.financialProductId)
             .setFinancialProductName(this.financialProductName)
             .setJoinWay(this.joinWay)
-            .setPostMaturityInterestRate(this.postMaturityInterestRate)
-            .setSpecialCondition(this.specialCondition ?: "")
+            .setPostMaturityInterestRate(StringValue.of(this.postMaturityInterestRate)?: StringValue.newBuilder().build())
+            .setSpecialCondition(StringValue.of(this.specialCondition)?: StringValue.newBuilder().build())
             .setJoinRestriction(this.joinRestriction.name)  // Enum을 문자열로 변환
             .setFinancialProductType(this.financialProductType.name)
             .setJoinMember(this.joinMember)
             .setAdditionalNotes(this.additionalNotes)
-            .setMaxLimit(this.maxLimit?.toString() ?: "")
-            .setDclsMonth(this.dclsMonth ?: "")
-            .setDclsStartDay(this.dclsStartDay ?: "")
-            .setDclsEndDay(this.dclsEndDay ?: "")
-            .setFinancialCompany(this.financialCompany?.toGrpc() ?: ninja.sundry.core.grpc.FinancialCompany.getDefaultInstance())
-            .addAllFinancialProductOptions(this.financialProductOptions.map { it.toGrpc() })
+            .setMaxLimit(this.maxLimit?.let { Int64Value.of(it) } ?: Int64Value.newBuilder().build())
+            .setDclsMonth(this.dclsMonth?.let { StringValue.of(it) ?: StringValue.newBuilder().build()  })
+            .setDclsStartDay(this.dclsStartDay?.let { StringValue.of(it) ?: StringValue.newBuilder().build() })
+            .setDclsEndDay(this.dclsEndDay?.let { StringValue.of(it) } ?: StringValue.newBuilder().build())
+            .setFinancialCompany(this.financialCompany?.toFinancialCompanyGrpc() ?: FinancialCompanyGrpc.getDefaultInstance())
+            .addAllFinancialProductOptions(this.financialProductOptions.map { it.toFinancialProductOptionGrpc() })
             .build()
     }
 
-    fun FinancialCompany.toGrpc(): ninja.sundry.core.grpc.FinancialCompany {
-        return ninja.sundry.core.grpc.FinancialCompany.newBuilder()
+    fun FinancialCompany.toFinancialCompanyGrpc(): FinancialCompanyGrpc {
+        return FinancialCompanyGrpc.newBuilder()
             .setDclsMonth(this.dclsMonth)
             .setCompanyName(this.companyName)
-            .setDclsChrgMan(this.dclsChrgMan)
-            .setHompUrl(this.hompUrl)
-            .setCalTel(this.calTel)
+            .setDclsChrgMan(StringValue.of(this.dclsChrgMan) ?: StringValue.newBuilder().build())
+            .setHompUrl(StringValue.of(this.hompUrl) ?: StringValue.newBuilder().build())
+            .setCalTel(StringValue.of(this.calTel) ?: StringValue.newBuilder().build())
             .setFinancialGroupType(this.financialGroupType.name)
             .build()
     }
 
-    fun FinancialProductOption.toGrpc(): ninja.sundry.core.grpc.FinancialProductOption {
-        return ninja.sundry.core.grpc.FinancialProductOption.newBuilder()
+    fun FinancialProductOption.toFinancialProductOptionGrpc(): FinancialProductOptionGrpc {
+        return FinancialProductOptionGrpc.newBuilder()
             .setInterestRateType(this.interestRateType.name)
-            .setReserveType(this.reserveType?.name ?: "")
+            .setReserveType(this.reserveType?.let { StringValue.of(it.name) } ?:  StringValue.newBuilder().build())
             .setDepositPeriodMonths(this.depositPeriodMonths)
-            .setBaseInterestRate(this.baseInterestRate?.toFloat() ?: 0f)
-            .setMaximumInterestRate(this.maximumInterestRate?.toFloat() ?: 0f)
+            .setBaseInterestRate(this.baseInterestRate?.let { DoubleValue.of(it.toDouble()) } ?: DoubleValue.newBuilder().build())
+            .setMaximumInterestRate(this.maximumInterestRate?.let { DoubleValue.of(it.toDouble()) ?: DoubleValue.newBuilder().build() })
             .build()
     }
 }

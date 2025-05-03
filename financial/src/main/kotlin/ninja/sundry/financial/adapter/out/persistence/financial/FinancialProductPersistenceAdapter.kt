@@ -1,7 +1,5 @@
 package ninja.sundry.financial.adapter.out.persistence.financial
 
-import ninja.sundry.financial.adapter.out.persistence.financial.repository.FinancialProductCustomRepository
-import ninja.sundry.financial.adapter.out.persistence.financial.repository.FinancialProductRepository
 import domain.financial.FinancialGroupType
 import domain.financial.FinancialProduct
 import domain.financial.FinancialProductType
@@ -9,6 +7,8 @@ import domain.financial.JoinRestriction
 import ninja.sundry.financial.adapter.out.persistence.financial.converter.FinancialCompanyMapper
 import ninja.sundry.financial.adapter.out.persistence.financial.converter.FinancialProductMapper
 import ninja.sundry.financial.adapter.out.persistence.financial.dto.FinancialProductSearchCondition
+import ninja.sundry.financial.adapter.out.persistence.financial.repository.FinancialProductCustomRepository
+import ninja.sundry.financial.adapter.out.persistence.financial.repository.FinancialProductRepository
 import ninja.sundry.financial.application.port.out.financial.GetFinancialProductPort
 import ninja.sundry.financial.common.PersistenceAdapter
 import ninja.sundry.financial.common.exception.financial.FinancialProductNotFoundException
@@ -23,8 +23,8 @@ class FinancialProductPersistenceAdapter(
     val financialCompanyMapper: FinancialCompanyMapper,
     val financialProductMapper: FinancialProductMapper,
 ) : GetFinancialProductPort {
-    @Transactional(readOnly = true)
-    override fun findFinancialProductsWithPaginationInfo(
+
+    override fun findFinancialProductsWithPagination(
         financialGroupType: FinancialGroupType?,
         companyName: String?,
         joinRestriction: JoinRestriction?,
@@ -32,7 +32,7 @@ class FinancialProductPersistenceAdapter(
         financialProductName: String?,
         depositPeriodMonths: String?,
         pageable: Pageable,
-    ): Pair<List<FinancialProduct>, Boolean> {
+    ): List<FinancialProduct> {
         val financialProductSearchCondition =
             FinancialProductSearchCondition(
                 financialGroupType = financialGroupType,
@@ -43,19 +43,41 @@ class FinancialProductPersistenceAdapter(
                 depositPeriodMonths = depositPeriodMonths,
             )
 
-        val financialProductEntitiesWithPaginationInfo =
-            this.financialProductCustomRepository.fetchFinancialProductsWithPaginationInfo(
+        val financialProductEntitiesWithPagination =
+            this.financialProductCustomRepository.findFinancialProductsWithPagination(
                 financialProductSearchCondition = financialProductSearchCondition,
                 pageable = pageable,
             )
 
-        return Pair(
-            financialProductEntitiesWithPaginationInfo.first.map { financialProductEntity ->
-                this.financialProductMapper.mapToDomainEntity(financialProductEntity = financialProductEntity).apply {
-                    financialCompany = financialCompanyMapper.mapToDomainEntity(financialProductEntity.financialCompanyEntity)
-                }
-            },
-            financialProductEntitiesWithPaginationInfo.second,
+        return financialProductEntitiesWithPagination.map { financialProductEntity ->
+            this.financialProductMapper.mapToDomainEntity(financialProductEntity = financialProductEntity).apply {
+                financialCompany = financialCompanyMapper.mapToDomainEntity(financialProductEntity.financialCompanyEntity)
+            }
+        }
+
+    }
+
+    override fun hasNextFinancialProductsWithPagination(
+        financialGroupType: FinancialGroupType?,
+        companyName: String?,
+        joinRestriction: JoinRestriction?,
+        financialProductType: FinancialProductType?,
+        financialProductName: String?,
+        depositPeriodMonths: String?,
+        pageable: Pageable,
+    ): Boolean {
+        val financialProductSearchCondition =
+            FinancialProductSearchCondition(
+                financialGroupType = financialGroupType,
+                companyName = companyName,
+                joinRestriction = joinRestriction,
+                financialProductType = financialProductType,
+                financialProductName = financialProductName,
+                depositPeriodMonths = depositPeriodMonths,
+            )
+        return this.financialProductCustomRepository.hasNextFinancialProductsWithPagination(
+            financialProductSearchCondition = financialProductSearchCondition,
+            pageable = pageable,
         )
     }
 
@@ -64,7 +86,7 @@ class FinancialProductPersistenceAdapter(
         val financialProductEntity = (
             this.financialProductRepository.findByIdOrNull(financialProductId)
                 ?: throw FinancialProductNotFoundException(message = "FinancialProduct not found financialProductId: $financialProductId")
-        )
+            )
 
         return this.financialProductMapper.mapToDomainEntity(financialProductEntity = financialProductEntity).apply {
             financialCompany = financialCompanyMapper.mapToDomainEntity(financialProductEntity.financialCompanyEntity)
