@@ -82,8 +82,6 @@ dependencies {
     kapt("com.querydsl:querydsl-kotlin-codegen:5.0.0")
     kapt("org.springframework.boot:spring-boot-configuration-processor")
 
-    developmentOnly("org.springframework.boot:spring-boot-devtools")
-
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.security:spring-security-test")
 

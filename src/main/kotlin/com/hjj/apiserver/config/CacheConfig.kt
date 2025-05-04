@@ -1,6 +1,7 @@
 package com.hjj.apiserver.config
 
 import com.fasterxml.jackson.annotation.JsonInclude
+import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
@@ -8,6 +9,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.hjj.apiserver.common.JwtProvider
+import com.hjj.apiserver.domain.financial.FinancialProduct
 import org.springframework.cache.CacheManager
 import org.springframework.cache.annotation.EnableCaching
 import org.springframework.cache.caffeine.CaffeineCacheManager
@@ -21,8 +23,7 @@ import org.springframework.data.redis.connection.RedisConnectionFactory
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration
 import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory
-import org.springframework.data.redis.core.RedisTemplate
-import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer
+import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer
 import org.springframework.data.redis.serializer.RedisSerializationContext
 import org.springframework.data.redis.serializer.RedisSerializer
 import org.springframework.data.redis.serializer.StringRedisSerializer
@@ -60,35 +61,30 @@ class CacheConfig(
     @Bean(name = [REDIS_CACHE_MANAGER])
     fun redisCacheManager(
         redisConnectionFactory: RedisConnectionFactory,
-        redisSerializer: RedisSerializer<Any>,
     ): CacheManager =
         RedisCacheManagerBuilder.fromCacheWriter(
             RedisCacheWriter.nonLockingRedisCacheWriter(
                 redisConnectionFactory,
                 UnlinkScanBatchStrategy(batchSize = redisProperties.batchSize),
             ),
-        ).cacheDefaults(this.createRedisCacheConfiguration(redisSerializer = redisSerializer))
+        ).cacheDefaults(this.createRedisCacheConfiguration(Jackson2JsonRedisSerializer(Any::class.java)))
             .withInitialCacheConfigurations(
                 mapOf(
-                    FINANCIAL_PRODUCTS to this.createRedisCacheConfiguration(redisSerializer = redisSerializer, redisTtl = 300L),
-                    FINANCIAL_PRODUCTS_EXISTS_NEXT_PAGE to this.createRedisCacheConfiguration(redisSerializer = redisSerializer, redisTtl = 300L),
+                    FINANCIAL_PRODUCTS to this.createRedisCacheConfiguration(
+                        typeReferenceJackson2JsonRedisSerializer(object : TypeReference<List<FinancialProduct>>() {}),
+                        redisTtl = 300L
+                    ),
+                    FINANCIAL_PRODUCTS_EXISTS_NEXT_PAGE to this.createRedisCacheConfiguration(
+                        Jackson2JsonRedisSerializer(Boolean::class.java), redisTtl = 300L
+                    ),
+                    FINANCIAL_PRODUCT to this.createRedisCacheConfiguration(
+                        Jackson2JsonRedisSerializer(FinancialProduct::class.java), redisTtl = 300L
+                    )
+
                 ),
             )
             .transactionAware()
             .build()
-
-    @Bean
-    fun redisSerializer(): RedisSerializer<Any> =
-        GenericJackson2JsonRedisSerializer(
-            ObjectMapper()
-                .registerModules(
-                    JavaTimeModule(),
-                    KotlinModule.Builder().build(),
-                )
-                .setSerializationInclusion(JsonInclude.Include.ALWAYS)
-                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-                .enable(SerializationFeature.INDENT_OUTPUT),
-        )
 
     @Bean
     fun redisConnectionFactory(): LettuceConnectionFactory =
@@ -99,25 +95,30 @@ class CacheConfig(
             LettuceClientConfiguration.builder().commandTimeout(Duration.ofMillis(redisProperties.commandTimeout)).build(),
         )
 
-    @Bean
-    fun redisTemplate(
-        connectionFactory: LettuceConnectionFactory,
-        redisSerializer: RedisSerializer<Any>,
-    ): RedisTemplate<String, Any> {
-        val keySerializer = StringRedisSerializer()
-        return RedisTemplate<String, Any>().apply {
-            setConnectionFactory(connectionFactory)
-            setKeySerializer(keySerializer)
-            setValueSerializer(redisSerializer)
-        }
+    private fun <T> typeReferenceJackson2JsonRedisSerializer(typeReference: TypeReference<T>): Jackson2JsonRedisSerializer<T> {
+        val mapper = ObjectMapper()
+            .registerModules(
+                JavaTimeModule(),
+                KotlinModule.Builder().build()
+            )
+            .setSerializationInclusion(JsonInclude.Include.ALWAYS)
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+            .enable(SerializationFeature.INDENT_OUTPUT)
+
+        val javaType = mapper.typeFactory.constructType(typeReference)
+        return Jackson2JsonRedisSerializer(mapper, javaType)
     }
 
     private fun createRedisCacheConfiguration(
-        redisSerializer: RedisSerializer<Any>,
+        serializer: RedisSerializer<*>,
         redisTtl: Long = DEFAULT_TTL,
     ): RedisCacheConfiguration =
         RedisCacheConfiguration.defaultCacheConfig()
-            .entryTtl(Duration.ofMinutes(redisTtl))
-            .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(StringRedisSerializer()))
-            .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(redisSerializer))
+            .entryTtl(Duration.ofSeconds(redisTtl))
+            .serializeKeysWith(
+                RedisSerializationContext.SerializationPair.fromSerializer(StringRedisSerializer())
+            )
+            .serializeValuesWith(
+                RedisSerializationContext.SerializationPair.fromSerializer(serializer)
+            )
 }
