@@ -59,9 +59,7 @@ class CacheConfig(
 
     @Primary
     @Bean(name = [REDIS_CACHE_MANAGER])
-    fun redisCacheManager(
-        redisConnectionFactory: RedisConnectionFactory,
-    ): CacheManager =
+    fun redisCacheManager(redisConnectionFactory: RedisConnectionFactory): CacheManager =
         RedisCacheManagerBuilder.fromCacheWriter(
             RedisCacheWriter.nonLockingRedisCacheWriter(
                 redisConnectionFactory,
@@ -70,17 +68,19 @@ class CacheConfig(
         ).cacheDefaults(this.createRedisCacheConfiguration(Jackson2JsonRedisSerializer(Any::class.java)))
             .withInitialCacheConfigurations(
                 mapOf(
-                    FINANCIAL_PRODUCTS to this.createRedisCacheConfiguration(
-                        typeReferenceJackson2JsonRedisSerializer(object : TypeReference<List<FinancialProduct>>() {}),
-                        redisTtl = 300L
-                    ),
-                    FINANCIAL_PRODUCTS_EXISTS_NEXT_PAGE to this.createRedisCacheConfiguration(
-                        Jackson2JsonRedisSerializer(Boolean::class.java), redisTtl = 300L
-                    ),
-                    FINANCIAL_PRODUCT to this.createRedisCacheConfiguration(
-                        Jackson2JsonRedisSerializer(FinancialProduct::class.java), redisTtl = 300L
-                    )
-
+                    FINANCIAL_PRODUCTS to
+                        this.createRedisCacheConfiguration(
+                            typeReferenceJackson2JsonRedisSerializer(object : TypeReference<List<FinancialProduct>>() {}),
+                            redisTtl = 300L,
+                        ),
+                    FINANCIAL_PRODUCTS_EXISTS_NEXT_PAGE to
+                        this.createRedisCacheConfiguration(
+                            Jackson2JsonRedisSerializer(Boolean::class.java), redisTtl = 300L,
+                        ),
+                    FINANCIAL_PRODUCT to
+                        this.createRedisCacheConfiguration(
+                            Jackson2JsonRedisSerializer(FinancialProduct::class.java), redisTtl = 300L,
+                        ),
                 ),
             )
             .transactionAware()
@@ -96,14 +96,15 @@ class CacheConfig(
         )
 
     private fun <T> typeReferenceJackson2JsonRedisSerializer(typeReference: TypeReference<T>): Jackson2JsonRedisSerializer<T> {
-        val mapper = ObjectMapper()
-            .registerModules(
-                JavaTimeModule(),
-                KotlinModule.Builder().build()
-            )
-            .setSerializationInclusion(JsonInclude.Include.ALWAYS)
-            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-            .enable(SerializationFeature.INDENT_OUTPUT)
+        val mapper =
+            ObjectMapper()
+                .registerModules(
+                    JavaTimeModule(),
+                    KotlinModule.Builder().build(),
+                )
+                .setSerializationInclusion(JsonInclude.Include.ALWAYS)
+                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+                .enable(SerializationFeature.INDENT_OUTPUT)
 
         val javaType = mapper.typeFactory.constructType(typeReference)
         return Jackson2JsonRedisSerializer(mapper, javaType)
@@ -116,9 +117,9 @@ class CacheConfig(
         RedisCacheConfiguration.defaultCacheConfig()
             .entryTtl(Duration.ofSeconds(redisTtl))
             .serializeKeysWith(
-                RedisSerializationContext.SerializationPair.fromSerializer(StringRedisSerializer())
+                RedisSerializationContext.SerializationPair.fromSerializer(StringRedisSerializer()),
             )
             .serializeValuesWith(
-                RedisSerializationContext.SerializationPair.fromSerializer(serializer)
+                RedisSerializationContext.SerializationPair.fromSerializer(serializer),
             )
 }
