@@ -4,15 +4,10 @@ import com.hjj.apiserver.adapter.input.web.financial.response.FinancialProductRe
 import com.hjj.apiserver.adapter.out.persistence.financial.dto.FinancialProductSearchCondition
 import com.hjj.apiserver.application.port.input.financial.GetFinancialUseCase
 import com.hjj.apiserver.application.port.out.financial.GetFinancialProductPort
-import com.hjj.apiserver.config.CacheConfig
-import com.hjj.apiserver.config.CacheConfig.Companion.FINANCIAL_PRODUCT
-import com.hjj.apiserver.config.CacheConfig.Companion.FINANCIAL_PRODUCTS
-import com.hjj.apiserver.config.CacheKeyConfig
 import com.hjj.apiserver.domain.financial.FinancialGroupType
 import com.hjj.apiserver.domain.financial.FinancialProduct
 import com.hjj.apiserver.domain.financial.FinancialProductType
 import com.hjj.apiserver.domain.financial.JoinRestriction
-import org.springframework.cache.annotation.Cacheable
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Slice
 import org.springframework.data.domain.SliceImpl
@@ -23,11 +18,6 @@ import org.springframework.transaction.annotation.Transactional
 class FinancialService(
     private val getFinancialProductPort: GetFinancialProductPort,
 ) : GetFinancialUseCase {
-    @Cacheable(
-        cacheManager = CacheConfig.REDIS_CACHE_MANAGER,
-        cacheNames = [FINANCIAL_PRODUCTS],
-        keyGenerator = CacheKeyConfig.PARAMS_LOCAL_DATE,
-    )
     @Transactional(readOnly = true)
     override fun getFinancialsWithPaginationInfo(
         financialGroupType: FinancialGroupType?,
@@ -64,11 +54,6 @@ class FinancialService(
         )
     }
 
-    @Cacheable(
-        cacheManager = CacheConfig.REDIS_CACHE_MANAGER,
-        cacheNames = [FINANCIAL_PRODUCT],
-        keyGenerator = CacheKeyConfig.PARAMS_LOCAL_DATE,
-    )
     override fun getFinancialProduct(financialProductId: Long): FinancialProduct =
         this.getFinancialProductPort.findFinancialProduct(financialProductId = financialProductId)
 }

@@ -1,11 +1,9 @@
 package com.hjj.apiserver.config
 
 import com.fasterxml.jackson.annotation.JsonInclude
-import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
-import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.github.benmanes.caffeine.cache.Caffeine
@@ -41,6 +39,7 @@ class CacheConfig(
         const val CAFFEINE_CACHE_MANAGER = "caffeineCacheManager"
         const val REDIS_CACHE_MANAGER = "redisCacheManager"
         const val FINANCIAL_PRODUCTS = "financialProducts"
+        const val FINANCIAL_PRODUCTS_EXISTS_NEXT_PAGE = "financialProductsExistsNextPage"
         const val FINANCIAL_PRODUCT = "financialProduct"
     }
 
@@ -70,7 +69,10 @@ class CacheConfig(
             ),
         ).cacheDefaults(this.createRedisCacheConfiguration(redisSerializer = redisSerializer))
             .withInitialCacheConfigurations(
-                mapOf(FINANCIAL_PRODUCTS to this.createRedisCacheConfiguration(redisSerializer = redisSerializer, redisTtl = 300L)),
+                mapOf(
+                    FINANCIAL_PRODUCTS to this.createRedisCacheConfiguration(redisSerializer = redisSerializer, redisTtl = 300L),
+                    FINANCIAL_PRODUCTS_EXISTS_NEXT_PAGE to this.createRedisCacheConfiguration(redisSerializer = redisSerializer, redisTtl = 300L),
+                ),
             )
             .transactionAware()
             .build()
@@ -85,11 +87,7 @@ class CacheConfig(
                 )
                 .setSerializationInclusion(JsonInclude.Include.ALWAYS)
                 .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-                .activateDefaultTyping(
-                    BasicPolymorphicTypeValidator.builder().allowIfSubType(Any::class.java).build(),
-                    ObjectMapper.DefaultTyping.EVERYTHING,
-                    JsonTypeInfo.As.PROPERTY,
-                ).enable(SerializationFeature.INDENT_OUTPUT),
+                .enable(SerializationFeature.INDENT_OUTPUT),
         )
 
     @Bean

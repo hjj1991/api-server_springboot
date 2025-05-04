@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component
 @Component
 class FinancialProductMapper(
     private val financialProductOptionMapper: FinancialProductOptionMapper,
+    private val financialCompanyMapper: FinancialCompanyMapper,
 ) {
     fun mapToDomainEntity(financialProductEntity: FinancialProductEntity): FinancialProduct =
         FinancialProduct(
@@ -26,7 +27,7 @@ class FinancialProductMapper(
             dclsStartDay = financialProductEntity.dclsStartDay,
             dclsEndDay = financialProductEntity.dclsEndDay,
             financialSubmitDay = financialProductEntity.financialSubmitDay,
-            financialCompany = null,
+            financialCompany = financialCompanyMapper.mapToDomainEntity(financialProductEntity.financialCompanyEntity),
             financialProductOptions =
                 financialProductEntity.financialProductOptionEntities.map {
                     this.financialProductOptionMapper.mapToDomainEntity(it)

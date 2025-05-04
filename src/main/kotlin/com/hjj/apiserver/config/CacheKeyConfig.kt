@@ -16,8 +16,6 @@ class CacheKeyConfig {
     @Bean(PARAMS_LOCAL_DATE)
     fun paramsLocalDateCacheKey(): KeyGenerator =
         KeyGenerator { _, _, params ->
-            "${params.joinToString(
-                ",",
-            )}-${ZonedDateTime.now(ZoneId.of("Asia/Seoul")).toLocalDate().format(DateTimeFormatter.ISO_LOCAL_DATE)}"
+            "${ZonedDateTime.now(ZoneId.of("Asia/Seoul")).toLocalDate().format(DateTimeFormatter.ISO_LOCAL_DATE)}"
         }
 }

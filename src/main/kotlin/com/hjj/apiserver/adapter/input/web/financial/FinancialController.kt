@@ -17,8 +17,8 @@ import org.springframework.web.bind.annotation.RestController
 class FinancialController(
     private val getFinancialUseCase: GetFinancialUseCase,
 ) {
-    @GetMapping("v1/financials")
-    fun getFinancials(
+    @GetMapping("/financial-products")
+    fun getFinancialProducts(
         @RequestParam(required = false) financialGroupType: FinancialGroupType?,
         @RequestParam(required = false) companyName: String?,
         @RequestParam(required = false) joinRestriction: JoinRestriction?,
@@ -37,7 +37,7 @@ class FinancialController(
             pageable = pageable,
         )
 
-    @GetMapping("v1/financialProducts/{financialProductId}")
+    @GetMapping("/financial-products/{financialProductId}")
     fun getFinancialProduct(
         @PathVariable financialProductId: Long,
     ): FinancialProductResponse {
