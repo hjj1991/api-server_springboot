@@ -1,10 +1,11 @@
 package com.hjj.apiserver.domain.user
 
-enum class Role(
-    val key: String,
-    val title: String,
-) {
-    GUEST("ROLE_GUEST", "손님"),
-    USER("ROLE_USER", "일반사용자"),
-    ADMIN("ROLE_ADMIN", "관리자"),
-}
+import java.time.Clock
+import java.time.ZonedDateTime
+
+data class Role(
+    val id: Long = 0L,
+    val roleType: RoleType,
+    val createdAt: ZonedDateTime = ZonedDateTime.now(Clock.systemUTC()),
+    val modifiedAt: ZonedDateTime = ZonedDateTime.now(Clock.systemUTC())
+)

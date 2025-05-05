@@ -1,66 +1,68 @@
 package com.hjj.apiserver.adapter.out.persistence.user.entity
 
 import com.hjj.apiserver.adapter.out.persistence.BaseTimeEntity
-import com.hjj.apiserver.domain.card.Card
-import com.hjj.apiserver.domain.purchase.Purchase
-import com.hjj.apiserver.domain.user.Role
+import com.hjj.apiserver.domain.user.User
 import jakarta.persistence.CascadeType
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
-import jakarta.persistence.EnumType
-import jakarta.persistence.Enumerated
 import jakarta.persistence.FetchType
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
-import jakarta.persistence.Index
 import jakarta.persistence.OneToMany
 import jakarta.persistence.Table
+import java.time.ZonedDateTime
 
 @Entity
-@Table(
-    name = "tb_user",
-    indexes = [
-        Index(name = "idx_nick_name", columnList = "nick_name"),
-        Index(name = "user_email", columnList = "user_email"),
-    ],
-)
+@Table(name = "user")
 class UserEntity(
-    userNo: Long = 0L,
+    username: String?,
+    password: String?,
     nickName: String,
     userEmail: String? = null,
-    userPw: String? = null,
-    picture: String? = null,
-    purchaseList: MutableList<Purchase> = mutableListOf(),
-    cards: MutableList<Card> = mutableListOf(),
-    role: Role = Role.USER,
+    pictureUrl: String? = null,
+    snsAccounts: MutableSet<SnsAccountEntity> = mutableSetOf(),
+    deletedAt: ZonedDateTime? = null,
 ) : BaseTimeEntity() {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var userNo: Long = userNo
+    var id: Long = 0L
+        protected set
 
-    @Column(length = 20, unique = true)
-    var nickName: String = nickName
-
-    @Column(length = 200)
-    var userEmail: String? = userEmail
-
-    @Column(length = 300)
-    var userPw: String? = userPw
+    @Column(unique = true)
+    var username: String? = username
+        protected set
 
     @Column
-    var picture: String? = picture
+    var password: String? = password
+        protected set
 
-    @OneToMany(cascade = [CascadeType.ALL], mappedBy = "userEntity", fetch = FetchType.LAZY)
-    val purchaseList: MutableList<Purchase> = purchaseList
+    @Column(nullable = false)
+    var nickName: String = nickName
+        protected set
 
-    @OneToMany(cascade = [CascadeType.ALL], mappedBy = "userEntity", fetch = FetchType.LAZY)
-    val cards: MutableList<Card> = cards
+    @Column
+    var userEmail: String? = userEmail
+        protected set
 
-    @Column(columnDefinition = "char(1) default 'N'", nullable = false, insertable = false)
-    var deleteYn: Char = 'N'
+    @Column
+    var pictureUrl: String? = pictureUrl
+        protected set
 
-    @Column(nullable = false, columnDefinition = "varchar(20) default 'USER'")
-    @Enumerated(EnumType.STRING)
-    var role: Role = role
+    @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
+    var snsAccounts: MutableSet<SnsAccountEntity> = snsAccounts
+        protected set
+
+    @Column
+    var deletedAt: ZonedDateTime? = deletedAt
+        protected set
 }
+
+fun User.toUserEntity() =
+    UserEntity(
+        this.username,
+        this.password,
+        this.nickName,
+        this.userEmail,
+        this.pictureUrl
+    )

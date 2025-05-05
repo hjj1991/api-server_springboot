@@ -6,7 +6,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory
 class UserRepositoryImpl(
     private val jpaQueryFactory: JPAQueryFactory,
 ) : UserRepositoryCustom {
-    override fun findExistsUserNickName(nickName: String): Boolean {
+    override fun existsByUserNickName(nickName: String): Boolean {
         return jpaQueryFactory.selectOne()
             .from(userEntity)
             .where(userEntity.nickName.eq(nickName)).fetchOne() != null

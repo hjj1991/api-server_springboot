@@ -5,7 +5,7 @@ import com.hjj.apiserver.adapter.out.persistence.user.repository.UserRepository
 import com.hjj.apiserver.config.DataSourceConfiguration
 import com.hjj.apiserver.config.TestConfiguration
 import com.hjj.apiserver.config.TestMySqlDBContainer
-import com.hjj.apiserver.domain.user.Role
+import com.hjj.apiserver.domain.user.RoleType
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
@@ -21,12 +21,12 @@ class BaseRepositoryTest {
     fun createUser(
         userId: String = "testId",
         nickName: String = "tsetNickName",
-        role: Role = Role.USER,
+        roleType: RoleType = RoleType.USER,
     ): UserEntity {
         val userEntity =
             UserEntity(
                 nickName = nickName,
-                role = role,
+                roleType = roleType,
             )
         return userRepository.save(userEntity)
     }

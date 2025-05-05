@@ -7,7 +7,7 @@ import com.hjj.apiserver.config.DataSourceConfiguration
 import com.hjj.apiserver.config.TestConfiguration
 import com.hjj.apiserver.config.TestMySqlDBContainer
 import com.hjj.apiserver.converter.UserMapper
-import com.hjj.apiserver.domain.user.Role
+import com.hjj.apiserver.domain.user.RoleType
 import com.hjj.apiserver.domain.user.User
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
@@ -33,7 +33,7 @@ class UserPersistenceAdapterTest {
     lateinit var writeUserPort: WriteUserPort
 
     @Test
-    fun registerUserTest_success() {
+    fun insertUserTest_success() {
         // Given
         val user =
             User(
@@ -41,11 +41,11 @@ class UserPersistenceAdapterTest {
                 userEmail = "test@example.com",
                 userPw = "abc",
                 picture = "haha",
-                role = Role.USER,
+                role = RoleType.USER,
             )
 
         // When
-        val savedUser = writeUserPort.registerUser(user)
+        val savedUser = writeUserPort.insertUser(user)
 
         // Then
         Assertions.assertThat(savedUser.userNo).isNotEqualTo(0L)
@@ -60,10 +60,10 @@ class UserPersistenceAdapterTest {
         // Given
         val nickName = "alreadyNickName"
         val user = User(nickName = nickName)
-        writeUserPort.registerUser(user)
+        writeUserPort.insertUser(user)
 
         // When
-        val existsUserNickName = getUserPort.findExistsUserNickName(nickName)
+        val existsUserNickName = getUserPort.existsUserNickName(nickName)
 
         // Then
         Assertions.assertThat(existsUserNickName).isEqualTo(true)
@@ -75,7 +75,7 @@ class UserPersistenceAdapterTest {
         val nickName = "notExistsNickName"
 
         // When
-        val existsUserNickName = getUserPort.findExistsUserNickName(nickName)
+        val existsUserNickName = getUserPort.existsUserNickName(nickName)
 
         // Then
         Assertions.assertThat(existsUserNickName).isEqualTo(false)

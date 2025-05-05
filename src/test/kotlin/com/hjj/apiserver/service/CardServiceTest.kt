@@ -9,7 +9,6 @@ import com.hjj.apiserver.dto.card.reqeust.CardAddRequest
 import com.hjj.apiserver.dto.card.reqeust.CardModifyRequest
 import com.hjj.apiserver.dto.card.response.CardFindAllResponse
 import com.hjj.apiserver.repository.card.CardRepository
-import com.hjj.apiserver.service.impl.CardService
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.assertj.core.groups.Tuple

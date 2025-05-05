@@ -3,43 +3,12 @@
     <include resource="org/springframework/boot/logging/logback/defaults.xml" />
     <include resource="org/springframework/boot/logging/logback/console-appender.xml" />
 
-    <appender name="redis" class="com.cwbase.logback.RedisAppender">
-        <host>192.168.28.131</host> <!-- redis가 설치된 호스트IP -->
-        <port>6379</port>           <!-- redis사용 포트 -->
-        <key>logstash</key>
-        <type>appapi-local</type>   <!-- 그전시간에 logstash_writer의 권한 설정때 작성한 Indices 값 -->
-        <source>SLOT-1</source>
-    </appender>
-
-
     <!--  Appenders -->
     <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <Pattern>%d %5p [%c] %m%n</Pattern>
         </encoder>
     </appender>
-
-    <!-- 변수 지정 -->
-    <property name="LOG_DIR" value="/log" />
-    <property name="LOG_PATH_NAME" value="${LOG_DIR}/data.log" />
-
-    <!-- FILE Appender -->
-    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${LOG_PATH_NAME}</file>
-        <!-- 일자별로 로그파일 적용하기 -->
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${LOG_PATH_NAME}.%d{yyyyMMdd}.log</fileNamePattern>
-            <maxHistory>60</maxHistory> <!-- 일자별 백업파일의 보관기간 -->
-        </rollingPolicy>
-        <encoder>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%-5p] [%F]%M\(%L\) : %m%n</pattern>
-        </encoder>
-    </appender>
-
-    <appender name="redisAsync" class="ch.qos.logback.classic.AsyncAppender">
-        <appender-ref ref="redis" />
-    </appender>
-
 
 
     <springProfile name="local">

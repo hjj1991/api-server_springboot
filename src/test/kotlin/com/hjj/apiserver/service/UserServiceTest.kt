@@ -5,17 +5,16 @@ import com.hjj.apiserver.application.port.input.user.command.RegisterUserCommand
 import com.hjj.apiserver.application.port.out.user.GetCredentialPort
 import com.hjj.apiserver.application.port.out.user.GetUserPort
 import com.hjj.apiserver.application.port.out.user.ReadUserTokenPort
-import com.hjj.apiserver.application.port.out.user.WriteCredentialPort
 import com.hjj.apiserver.application.port.out.user.WriteUserLogPort
 import com.hjj.apiserver.application.port.out.user.WriteUserPort
 import com.hjj.apiserver.application.port.out.user.WriteUserTokenPort
 import com.hjj.apiserver.application.service.UserService
 import com.hjj.apiserver.common.JwtProvider
 import com.hjj.apiserver.common.exception.AlreadyExistsUserException
-import com.hjj.apiserver.domain.user.Credential
-import com.hjj.apiserver.domain.user.CredentialState
+import com.hjj.apiserver.domain.user.SnsAccount
+import com.hjj.apiserver.domain.user.SnsAccountStatusType
 import com.hjj.apiserver.domain.user.Provider
-import com.hjj.apiserver.domain.user.Role
+import com.hjj.apiserver.domain.user.RoleType
 import com.hjj.apiserver.domain.user.User
 import com.hjj.apiserver.utils.MockitoTestUtil
 import org.assertj.core.api.Assertions
@@ -73,7 +72,7 @@ class UserServiceTest {
         val newNickName = "이미 존재하는 닉네임"
         val checkUserNickNameDuplicateCommand = CheckUserNickNameDuplicateCommand(User.createGuestUser(), newNickName)
 
-        Mockito.`when`(getUserPort.findExistsUserNickName(newNickName)).thenReturn(true)
+        Mockito.`when`(getUserPort.existsUserNickName(newNickName)).thenReturn(true)
 
         // when
         val existsNickNameResponse = userService.existsNickName(checkUserNickNameDuplicateCommand)
@@ -89,7 +88,7 @@ class UserServiceTest {
         val newNickName = "존재하지 않는 닉네임"
         val checkUserNickNameDuplicateCommand = CheckUserNickNameDuplicateCommand(User.createGuestUser(), newNickName)
 
-        Mockito.`when`(getUserPort.findExistsUserNickName(newNickName)).thenReturn(false)
+        Mockito.`when`(getUserPort.existsUserNickName(newNickName)).thenReturn(false)
 
         // when
         val existsNickNameResponse = userService.existsNickName(checkUserNickNameDuplicateCommand)
@@ -103,7 +102,7 @@ class UserServiceTest {
     fun existsNickName_when_currentNickNameEqualsNewNickName_then_true() {
         // given
         val newNickName = "이미 존재하는 닉네임"
-        val user = User(nickName = newNickName, role = Role.USER)
+        val user = User(nickName = newNickName, role = RoleType.USER)
         val checkUserNickNameDuplicateCommand = CheckUserNickNameDuplicateCommand(user, newNickName)
 
         // when
@@ -132,20 +131,20 @@ class UserServiceTest {
                 userEmail = registerUserCommand.userEmail,
                 userPw = registerUserCommand.userPw,
             )
-        val savedCredential =
-            Credential(
+        val savedSnsAccount =
+            SnsAccount(
                 credentialNo = 1L,
                 userId = registerUserCommand.userId,
                 credentialEmail = registerUserCommand.userEmail,
                 provider = Provider.GENERAL,
                 user = savedUser,
-                state = CredentialState.CONNECTED,
+                state = SnsAccountStatusType.CONNECTED,
             )
 
-        Mockito.`when`(writeUserPort.registerUser(MockitoTestUtil.any(User::class.java))).thenReturn(savedUser)
+        Mockito.`when`(writeUserPort.insertUser(MockitoTestUtil.any(User::class.java))).thenReturn(savedUser)
         Mockito.`when`(
-            writeCredentialPort.registerCredential(MockitoTestUtil.any(Credential::class.java)),
-        ).thenReturn(savedCredential)
+            writeCredentialPort.registerCredential(MockitoTestUtil.any(SnsAccount::class.java)),
+        ).thenReturn(savedSnsAccount)
         Mockito.`when`(passwordEncoder.encode(registerUserCommand.userPw)).thenReturn("enCryptedPassword")
 
         // When && Then
@@ -172,7 +171,7 @@ class UserServiceTest {
                 userPw = registerUserCommand.userPw,
             )
 
-        Mockito.`when`(writeUserPort.registerUser(MockitoTestUtil.any(User::class.java))).thenThrow(
+        Mockito.`when`(writeUserPort.insertUser(MockitoTestUtil.any(User::class.java))).thenThrow(
             DataIntegrityViolationException::class.java,
         )
         Mockito.`when`(passwordEncoder.encode(registerUserCommand.userPw)).thenReturn("enCryptedPassword")

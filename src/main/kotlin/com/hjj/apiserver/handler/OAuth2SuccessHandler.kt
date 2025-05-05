@@ -1,7 +1,6 @@
 package com.hjj.apiserver.handler
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.hjj.apiserver.application.service.UserService
 import com.hjj.apiserver.dto.oauth2.OAuth2UserAttribute
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
@@ -14,7 +13,6 @@ import org.springframework.ws.transport.http.HttpTransportConstants
 
 @Component
 class OAuth2SuccessHandler(
-    private val userService: UserService,
     private val objectMapper: ObjectMapper,
     @Value("\${front.redirect-uri.host}") private val redirectHost: String,
     @Value("\${front.redirect-uri.path.signin}") private val redirectPathSignIn: String,

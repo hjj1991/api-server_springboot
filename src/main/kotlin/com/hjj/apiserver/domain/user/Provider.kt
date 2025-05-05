@@ -3,7 +3,6 @@ package com.hjj.apiserver.domain.user
 import org.springframework.util.StringUtils
 
 enum class Provider {
-    GENERAL,
     NAVER,
     KAKAO,
     ;

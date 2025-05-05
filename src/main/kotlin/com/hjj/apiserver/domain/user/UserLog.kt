@@ -1,14 +1,12 @@
 package com.hjj.apiserver.domain.user
 
-class UserLog(
-    userLogNo: Long = 0L,
-    logType: LogType,
-    user: User,
-) {
-    var userLogNo: Long = userLogNo
-        private set
-    var logType: LogType = logType
-        private set
-    var user: User = user
-        private set
-}
+import java.time.Clock
+import java.time.ZonedDateTime
+
+data class UserLog(
+    val id: Long = 0L,
+    val logType: LogType,
+    val userId: Long,
+    val createdAt: ZonedDateTime = ZonedDateTime.now(Clock.systemUTC()),
+    val modifiedAt: ZonedDateTime = ZonedDateTime.now(Clock.systemUTC())
+)

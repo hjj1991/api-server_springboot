@@ -6,84 +6,65 @@ import com.hjj.apiserver.adapter.input.web.user.request.UserSignUpRequest
 import com.hjj.apiserver.adapter.input.web.user.response.UserReIssueTokenResponse
 import com.hjj.apiserver.adapter.input.web.user.response.UserSignInResponse
 import com.hjj.apiserver.application.port.input.user.GetUserUseCase
-import com.hjj.apiserver.application.port.input.user.UserCredentialUseCase
 import com.hjj.apiserver.application.port.input.user.WriteUserUseCase
-import com.hjj.apiserver.application.port.input.user.command.CheckUserNickNameDuplicateCommand
-import com.hjj.apiserver.application.port.input.user.command.RegisterUserCommand
-import com.hjj.apiserver.application.port.input.user.command.SignInUserCommand
-import com.hjj.apiserver.common.exception.DuplicatedNickNameException
-import com.hjj.apiserver.common.exception.DuplicatedUserIdException
-import com.hjj.apiserver.domain.user.Provider
-import com.hjj.apiserver.domain.user.User
-import com.hjj.apiserver.util.AuthUser
 import jakarta.validation.Valid
+import jakarta.validation.constraints.Pattern
 import mu.two.KotlinLogging
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.http.HttpStatus
-import org.springframework.http.MediaType
+import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.ModelAttribute
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
 
+@Validated
 @RestController
 class UserController(
     private val getUserUseCase: GetUserUseCase,
     private val writeUserUseCase: WriteUserUseCase,
-    @field:Qualifier("generalUserCredentialService")
-    private val userCredentialUseCase: UserCredentialUseCase,
 ) {
     private val log = KotlinLogging.logger {}
 
-    @GetMapping("/users/exists-nickname/{nickName}")
+    @GetMapping("/users/nicknames/{nickName}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun checkUserNickNameDuplicate(
-        @AuthUser authUser: User,
-        @PathVariable("nickName") nickName: String,
+        @PathVariable("nickName")
+        @Pattern(
+            regexp = "^[가-힣a-zA-Z0-9]{2,10}$",
+            message = "닉네임은 공백 제외 한글·영문·숫자 2~10자여야 합니다."
+        )
+        nickName: String,
     ) {
-        val command = CheckUserNickNameDuplicateCommand(authUser, nickName)
-        if (getUserUseCase.existsNickName(command)) {
-            throw DuplicatedNickNameException()
-        }
+        getUserUseCase.existsUserNickName(nickName)
     }
 
-    @GetMapping("/users/exists-id/{userId}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    fun checkUserIdDuplicate(
-        @PathVariable("userId") userId: String,
-    ) {
-        if (userCredentialUseCase.existsUserId(userId)) {
-            throw DuplicatedUserIdException()
-        }
-    }
+//    @GetMapping("/users/exists-id/{userId}")
+//    @ResponseStatus(HttpStatus.NO_CONTENT)
+//    fun checkUserIdDuplicate(
+//        @PathVariable("userId") userId: String,
+//    ) {
+//        if (userCredentialUseCase.existsUserId(userId)) {
+//            throw DuplicatedUserIdException()
+//        }
+//    }
 
-    @PostMapping("/users/signup")
+    @PostMapping("/users/sign-up")
     @ResponseStatus(HttpStatus.CREATED)
     fun signUp(
-        @Valid @RequestBody request: UserSignUpRequest,
+        @Valid @RequestBody userSignUpRequest: UserSignUpRequest,
     ) {
-        val registerUserCommand =
-            RegisterUserCommand(request.userId, request.nickName, request.userEmail, request.userPw, Provider.GENERAL)
-        writeUserUseCase.signUp(registerUserCommand)
+        writeUserUseCase.signUp(userSignUpRequest)
     }
 
-    @PostMapping("/test", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
-    fun test(
-        @ModelAttribute request: UserSignInRequest,
-    ) {
-        println(request.userId)
-        println(request)
-    }
-
-    @PostMapping("/users/signin")
+    @PostMapping("/users/sign-in")
     fun signIn(
-        @Valid @RequestBody request: UserSignInRequest,
+        @Valid @RequestBody userSignInRequest: UserSignInRequest,
+        @RequestHeader(value = "User-Agent", required = false) userAgent: String?
     ): UserSignInResponse {
-        val signInUserCommand = SignInUserCommand(request.userId, request.userPw, provider = Provider.GENERAL)
-        return writeUserUseCase.signIn(signInUserCommand)
+        return writeUserUseCase.signIn(userSignInRequest, userAgent)
     }
 
     @PostMapping("/users/oauth/reissue-token")

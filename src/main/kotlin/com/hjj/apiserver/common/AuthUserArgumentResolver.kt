@@ -20,9 +20,9 @@ class AuthUserArgumentResolver : HandlerMethodArgumentResolver {
         webRequest: NativeWebRequest,
         binderFactory: WebDataBinderFactory?,
     ): Any {
-        if (SecurityContextHolder.getContext().authentication.principal == "anonymousUser") {
-            return User.createGuestUser()
-        }
+//        if (SecurityContextHolder.getContext().authentication.principal == "anonymousUser") {
+//            return User.createGuestUser()
+//        }
         return SecurityContextHolder.getContext().authentication.principal as User
     }
 }

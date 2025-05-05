@@ -1,6 +1,6 @@
 package com.hjj.apiserver.dto.user
 
-import com.hjj.apiserver.domain.user.Role
+import com.hjj.apiserver.domain.user.RoleType
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
@@ -10,10 +10,10 @@ class CurrentUserInfo(
     val userId: String? = null,
     val nickName: String? = null,
     val userNo: Long,
-    val role: Role,
+    val roleType: RoleType,
 ) : UserDetails {
     override fun getAuthorities(): MutableCollection<out GrantedAuthority> {
-        return arrayListOf(SimpleGrantedAuthority(this.role.key))
+        return arrayListOf(SimpleGrantedAuthority(this.roleType.code))
     }
 
     override fun getPassword(): String = ""

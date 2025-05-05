@@ -82,14 +82,6 @@ class Purchase(
         category.purchasesList.add(this)
     }
 
-    // 연관관계 편의 메서드
-    fun changeUser(userEntity: UserEntity) {
-        this.userEntity.purchaseList.remove(this)
-
-        this.userEntity = userEntity
-        userEntity.purchaseList.add(this)
-    }
-
     fun updatePurchase(
         request: PurchaseModifyRequest,
         card: Card?,

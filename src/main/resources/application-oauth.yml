@@ -1,6 +1,9 @@
 spring:
   security:
     oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://sundry.ninja
       client:
         registration:
           kakao:

@@ -21,6 +21,8 @@ enum class ErrConst(
     ERR_CODE0012("해당 지출 또는 수입 내역이 존재하지 않습니다."),
     ERR_CODE0013("로그인이 필요합니다. 로그인 해주세요."),
     ERR_CODE0014("존재하지 않는 상품입니다."),
+    ERR_CODE0015("존재하지 않는 유저 권한입니다."),
+    ERR_CODE0016("잘못된 요청 값입니다."),
     ERR_CODE9999("서버 에러입니다."),
     ;
 
@@ -30,7 +32,7 @@ enum class ErrConst(
     ) {
         @PostConstruct
         fun postConstruct() {
-            ErrConst.values().forEach { it.msg = messageSource.getMessage(it.name, null, Locale.KOREA) }
+            ErrConst.entries.forEach { it.msg = messageSource.getMessage(it.name, null, Locale.KOREA) }
         }
     }
 }

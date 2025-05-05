@@ -1,6 +1,5 @@
 package com.hjj.apiserver.config
 
-import com.hjj.apiserver.common.AuthUserArgumentResolver
 import org.springframework.context.annotation.Configuration
 import org.springframework.web.method.support.HandlerMethodArgumentResolver
 import org.springframework.web.servlet.config.annotation.CorsRegistry
@@ -23,6 +22,6 @@ class WebMvcConfiguration : WebMvcConfigurer {
     }
 
     override fun addArgumentResolvers(resolvers: MutableList<HandlerMethodArgumentResolver>) {
-        resolvers.add(AuthUserArgumentResolver())
+//        resolvers.add(AuthUserArgumentResolver())
     }
 }

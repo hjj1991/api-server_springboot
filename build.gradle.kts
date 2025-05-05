@@ -58,16 +58,11 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
     implementation("com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.9.0")
     implementation("org.modelmapper:modelmapper:3.1.1")
-    implementation("io.jsonwebtoken:jjwt-api:0.12.5")
     implementation("io.springfox:springfox-boot-starter:3.0.0")
-    implementation("org.imgscalr:imgscalr-lib:4.2")
     implementation("com.google.firebase:firebase-admin:9.1.1")
     implementation("commons-io:commons-io:2.11.0")
-    implementation("org.seleniumhq.selenium:selenium-java:4.3.0")
-    implementation("com.cwbase:logback-redis-appender:1.1.6")
     implementation("com.mysql:mysql-connector-j:8.4.0")
     implementation("org.mariadb.jdbc:mariadb-java-client:3.4.0")
-    implementation("javax.xml.bind:jaxb-api:2.3.0")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.14.2")
@@ -94,8 +89,6 @@ dependencies {
     testImplementation("com.redis:testcontainers-redis:2.2.2")
     testImplementation("org.testcontainers:junit-jupiter:1.18.0")
 
-    runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.5")
-    runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.5")
 }
 //  spring rest docs를 swagger와 함께 쓰기 위해 주석처리
 val snippetsDir by extra { file("build/generated-snippets") }

@@ -1,16 +1,14 @@
 package com.hjj.apiserver.persistence
 
-import com.hjj.apiserver.adapter.out.persistence.user.UserLogPersistenceAdapter
 import com.hjj.apiserver.adapter.out.persistence.user.entity.UserEntity
 import com.hjj.apiserver.adapter.out.persistence.user.repository.UserRepository
 import com.hjj.apiserver.application.port.out.user.WriteUserLogPort
 import com.hjj.apiserver.config.DataSourceConfiguration
 import com.hjj.apiserver.config.TestConfiguration
 import com.hjj.apiserver.config.TestMySqlDBContainer
-import com.hjj.apiserver.converter.UserLogMapper
 import com.hjj.apiserver.converter.UserMapper
 import com.hjj.apiserver.domain.user.LogType
-import com.hjj.apiserver.domain.user.Role
+import com.hjj.apiserver.domain.user.RoleType
 import com.hjj.apiserver.domain.user.UserLog
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
@@ -40,11 +38,11 @@ class UserLogPersistenceAdapterTest {
     private lateinit var userRepository: UserRepository
 
     @Test
-    fun registerUserLog_success() {
+    fun insertUserLog_success() {
         // Given
         val savedUserEntity =
             userRepository.save(
-                UserEntity(nickName = "테스트닉네임", userEmail = "test@test.com", userPw = "<PASSWORD>", role = Role.USER),
+                UserEntity(nickName = "테스트닉네임", userEmail = "test@test.com", userPw = "<PASSWORD>", roleType = RoleType.USER),
             )
         val user = userMapper.mapToDomainEntity(savedUserEntity)
         val userLog =
@@ -54,7 +52,7 @@ class UserLogPersistenceAdapterTest {
             )
 
         // When
-        val registerUserLog = writeUserLogPort.registerUserLog(userLog)
+        val registerUserLog = writeUserLogPort.insertUserLog(userLog)
         // Then
         Assertions.assertThat(registerUserLog.userLogNo).isNotEqualTo(0L)
         Assertions.assertThat(registerUserLog.logType).isEqualTo(userLog.logType)

@@ -1,19 +1,16 @@
 package com.hjj.apiserver.persistence
 
-import com.hjj.apiserver.adapter.out.persistence.user.CredentialPersistenceAdapter
 import com.hjj.apiserver.adapter.out.persistence.user.UserPersistenceAdapter
 import com.hjj.apiserver.application.port.out.user.GetCredentialPort
-import com.hjj.apiserver.application.port.out.user.WriteCredentialPort
 import com.hjj.apiserver.application.port.out.user.WriteUserPort
 import com.hjj.apiserver.config.DataSourceConfiguration
 import com.hjj.apiserver.config.TestConfiguration
 import com.hjj.apiserver.config.TestMySqlDBContainer
-import com.hjj.apiserver.converter.CredentialMapper
 import com.hjj.apiserver.converter.UserMapper
-import com.hjj.apiserver.domain.user.Credential
-import com.hjj.apiserver.domain.user.CredentialState
+import com.hjj.apiserver.domain.user.SnsAccount
+import com.hjj.apiserver.domain.user.SnsAccountStatusType
 import com.hjj.apiserver.domain.user.Provider
-import com.hjj.apiserver.domain.user.Role
+import com.hjj.apiserver.domain.user.RoleType
 import com.hjj.apiserver.domain.user.User
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
@@ -46,45 +43,45 @@ class CredentialPersistenceAdapterTest {
     @Test
     fun registerCredential_success() {
         // Given
-        val user = User(nickName = "테스트닉네임", userEmail = "test@test.com", userPw = "<PASSWORD>", role = Role.USER)
-        val savedUser = writeUserPort.registerUser(user)
-        val credential =
-            Credential(
+        val user = User(nickName = "테스트닉네임", userEmail = "test@test.com", userPw = "<PASSWORD>", role = RoleType.USER)
+        val savedUser = writeUserPort.insertUser(user)
+        val snsAccount =
+            SnsAccount(
                 userId = "tester",
                 credentialEmail = "tester@tester.com",
                 provider = Provider.GENERAL,
                 user = savedUser,
-                state = CredentialState.CONNECTED,
+                state = SnsAccountStatusType.CONNECTED,
             )
         // When
-        val registerCredential = writeCredentialPort.registerCredential(credential)
+        val registerCredential = writeCredentialPort.registerCredential(snsAccount)
         // Then
         Assertions.assertThat(registerCredential.credentialNo).isNotEqualTo(0L)
-        Assertions.assertThat(registerCredential.userId).isEqualTo(credential.userId)
-        Assertions.assertThat(registerCredential.credentialEmail).isEqualTo(credential.credentialEmail)
-        Assertions.assertThat(registerCredential.provider).isEqualTo(credential.provider)
-        Assertions.assertThat(registerCredential.user).isEqualTo(credential.user)
+        Assertions.assertThat(registerCredential.userId).isEqualTo(snsAccount.userId)
+        Assertions.assertThat(registerCredential.credentialEmail).isEqualTo(snsAccount.credentialEmail)
+        Assertions.assertThat(registerCredential.provider).isEqualTo(snsAccount.provider)
+        Assertions.assertThat(registerCredential.user).isEqualTo(snsAccount.user)
     }
 
     @Test
     fun findExistsCredentialByUserIdAndProvider_success() {
         // Given
-        val user = User(nickName = "테스트닉네임", userEmail = "test@test.com", userPw = "<PASSWORD>", role = Role.USER)
-        val savedUser = writeUserPort.registerUser(user)
-        val credential =
-            Credential(
+        val user = User(nickName = "테스트닉네임", userEmail = "test@test.com", userPw = "<PASSWORD>", role = RoleType.USER)
+        val savedUser = writeUserPort.insertUser(user)
+        val snsAccount =
+            SnsAccount(
                 userId = "tester",
                 credentialEmail = "tester@tester.com",
                 provider = Provider.GENERAL,
                 user = savedUser,
-                state = CredentialState.CONNECTED,
+                state = SnsAccountStatusType.CONNECTED,
             )
-        writeCredentialPort.registerCredential(credential)
+        writeCredentialPort.registerCredential(snsAccount)
         // When
         val existsCredentialByUserIdAndProvider =
             getCredentialPort.findExistsCredentialByUserIdAndProvider(
-                credential.userId,
-                credential.provider,
+                snsAccount.userId,
+                snsAccount.provider,
             )
         // Then
         Assertions.assertThat(existsCredentialByUserIdAndProvider).isEqualTo(true)
@@ -93,21 +90,21 @@ class CredentialPersistenceAdapterTest {
     @Test
     fun findExistsCredentialByUserIdAndProvider_fail_when_equalUserIdAndNotEqualProvider_then_false() {
         // Given
-        val user = User(nickName = "테스트닉네임", userEmail = "test@test.com", userPw = "<PASSWORD>", role = Role.USER)
-        val savedUser = writeUserPort.registerUser(user)
-        val credential =
-            Credential(
+        val user = User(nickName = "테스트닉네임", userEmail = "test@test.com", userPw = "<PASSWORD>", role = RoleType.USER)
+        val savedUser = writeUserPort.insertUser(user)
+        val snsAccount =
+            SnsAccount(
                 userId = "tester",
                 credentialEmail = "tester@tester.com",
                 provider = Provider.NAVER,
                 user = savedUser,
-                state = CredentialState.CONNECTED,
+                state = SnsAccountStatusType.CONNECTED,
             )
-        writeCredentialPort.registerCredential(credential)
+        writeCredentialPort.registerCredential(snsAccount)
         // When
         val existsCredentialByUserIdAndProvider =
             getCredentialPort.findExistsCredentialByUserIdAndProvider(
-                credential.userId,
+                snsAccount.userId,
                 Provider.GENERAL,
             )
         // Then

@@ -8,5 +8,5 @@ interface UserRepository : JpaRepository<UserEntity, Long>, UserRepositoryCustom
 //    fun findByRefreshToken(refreshToken: String): UserEntity?
 //    fun findByProviderAndProviderId(provider: Provider, providerId: String): UserEntity?
     fun findByNickName(nickName: String): UserEntity?
-//    fun existsByProviderIdAndProviderAndDeleteYn(providerId: String, provider: Provider, deletedYn: Char = 'N'): Boolean
+    fun findByUsername(username: String): UserEntity?
 }
