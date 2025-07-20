@@ -25,6 +25,7 @@ class FinancialController(
         @RequestParam(required = false) financialProductType: FinancialProductType?,
         @RequestParam(required = false) financialProductName: String?,
         @RequestParam(required = false) depositPeriodMonths: String?,
+        @RequestParam(required = false) query: String?,
         @PageableDefault(page = 0, size = 20) pageable: Pageable,
     ): Slice<FinancialProductResponse> =
         this.getFinancialUseCase.getFinancialsWithPaginationInfo(
@@ -34,6 +35,7 @@ class FinancialController(
             financialProductType = financialProductType,
             financialProductName = financialProductName,
             depositPeriodMonths = depositPeriodMonths,
+            query = query,
             pageable = pageable,
         )
 

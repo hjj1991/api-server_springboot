@@ -1,15 +1,13 @@
-package com.hjj.apiserver.application.port.input.financial
+package com.hjj.apiserver.application.port.out.financial
 
-import com.hjj.apiserver.adapter.input.web.financial.response.FinancialProductResponse
 import com.hjj.apiserver.domain.financial.FinancialGroupType
-import com.hjj.apiserver.domain.financial.FinancialProduct
 import com.hjj.apiserver.domain.financial.FinancialProductType
 import com.hjj.apiserver.domain.financial.JoinRestriction
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Slice
 
-interface GetFinancialUseCase {
-    fun getFinancialsWithPaginationInfo(
+interface SearchFinancialProductPort {
+    fun searchFinancialProducts(
         financialGroupType: FinancialGroupType?,
         companyName: String?,
         joinRestriction: JoinRestriction?,
@@ -18,7 +16,5 @@ interface GetFinancialUseCase {
         depositPeriodMonths: String?,
         query: String?,
         pageable: Pageable,
-    ): Slice<FinancialProductResponse>
-
-    fun getFinancialProduct(financialProductId: Long): FinancialProduct
+    ): Slice<Long>
 }

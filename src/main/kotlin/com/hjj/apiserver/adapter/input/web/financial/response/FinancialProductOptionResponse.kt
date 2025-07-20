@@ -1,5 +1,6 @@
 package com.hjj.apiserver.adapter.input.web.financial.response
 
+import com.hjj.apiserver.adapter.out.persistence.financial.document.FinancialProductDocument
 import com.hjj.apiserver.domain.financial.FinancialProductOption
 import java.math.BigDecimal
 
@@ -18,6 +19,16 @@ data class FinancialProductOptionResponse(
                 depositPeriodMonths = financialProductOption.depositPeriodMonths,
                 baseInterestRate = financialProductOption.baseInterestRate,
                 maximumInterestRate = financialProductOption.maximumInterestRate,
+            )
+        }
+
+        fun from(option: FinancialProductDocument.Option): FinancialProductOptionResponse {
+            return FinancialProductOptionResponse(
+                interestRateType = option.interestRateType,
+                reserveType = option.reserveType,
+                depositPeriodMonths = option.depositPeriodMonths,
+                baseInterestRate = option.initRate.toBigDecimal(),
+                maximumInterestRate = option.maxRate.toBigDecimal(),
             )
         }
     }

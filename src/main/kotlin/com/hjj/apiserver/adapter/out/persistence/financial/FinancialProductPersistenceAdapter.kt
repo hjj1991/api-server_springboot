@@ -68,4 +68,11 @@ class FinancialProductPersistenceAdapter(
 
         return this.financialProductMapper.mapToDomainEntity(financialProductEntity = financialProductEntity)
     }
+
+    override fun findFinancialProductsByIds(ids: List<Long>): List<FinancialProduct> {
+        val financialProductEntities = this.financialProductRepository.findAllById(ids)
+        return financialProductEntities.map { financialProductEntity ->
+            this.financialProductMapper.mapToDomainEntity(financialProductEntity = financialProductEntity)
+        }
+    }
 }

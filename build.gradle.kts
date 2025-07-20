@@ -59,7 +59,6 @@ dependencies {
     implementation("com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.9.0")
     implementation("org.modelmapper:modelmapper:3.1.1")
     implementation("io.springfox:springfox-boot-starter:3.0.0")
-    implementation("com.google.firebase:firebase-admin:9.1.1")
     implementation("commons-io:commons-io:2.11.0")
     implementation("com.mysql:mysql-connector-j:8.4.0")
     implementation("org.mariadb.jdbc:mariadb-java-client:3.4.0")
@@ -70,6 +69,7 @@ dependencies {
     implementation("com.querydsl:querydsl-core:5.0.0")
     implementation("io.github.microutils:kotlin-logging:4.0.0-beta-2")
     implementation("com.github.ben-manes.caffeine:caffeine:3.1.8")
+    implementation("org.springframework.boot:spring-boot-starter-data-elasticsearch")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
     kapt("org.springframework.boot:spring-boot-configuration-processor")

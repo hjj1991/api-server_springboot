@@ -1,11 +1,15 @@
 package com.hjj.apiserver.adapter.out.persistence.financial.entity
 
+import com.hjj.apiserver.adapter.out.persistence.BaseEntity
 import com.hjj.apiserver.adapter.out.persistence.BaseTimeEntity
+import com.hjj.apiserver.adapter.out.persistence.financial.converter.FloatArrayConverter
 import com.hjj.apiserver.domain.financial.FinancialProductType
 import com.hjj.apiserver.domain.financial.JoinRestriction
+import com.hjj.apiserver.domain.financial.ProductStatus
 import jakarta.persistence.CascadeType
 import jakarta.persistence.Column
 import jakarta.persistence.ConstraintMode
+import jakarta.persistence.Convert
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
 import jakarta.persistence.Enumerated
@@ -16,6 +20,7 @@ import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.Index
 import jakarta.persistence.JoinColumn
+import jakarta.persistence.Lob
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.OneToMany
 import jakarta.persistence.Table
@@ -41,11 +46,14 @@ class FinancialProductEntity(
     joinMember: String,
     additionalNotes: String,
     maxLimit: Long? = null,
-    dclsMonth: String? = null,
-    dclsStartDay: String? = null,
+    dclsMonth: String,
+    dclsStartDay: String,
     dclsEndDay: String? = null,
-    financialSubmitDay: String? = null,
+    financialSubmitDay: String,
     financialCompanyEntity: FinancialCompanyEntity,
+    status: ProductStatus,
+    productContentHash: String? = null,
+    embeddingVector: FloatArray? = null,
     financialProductOptionEntities: MutableList<FinancialProductOptionEntity> = mutableListOf(),
 ) : BaseTimeEntity() {
     @Id
@@ -63,9 +71,11 @@ class FinancialProductEntity(
     var joinWay: String? = joinWay
         protected set
 
+    @Lob
     var postMaturityInterestRate: String? = postMaturityInterestRate
         protected set
 
+    @Lob
     var specialCondition: String? = specialCondition
         protected set
 
@@ -80,22 +90,36 @@ class FinancialProductEntity(
     var joinMember: String = joinMember
         protected set
 
+    @Lob
     var additionalNotes: String = additionalNotes
         protected set
 
     var maxLimit: Long? = maxLimit
         protected set
 
-    var dclsMonth: String? = dclsMonth
+    var dclsMonth: String = dclsMonth
         protected set
 
-    var dclsStartDay: String? = dclsStartDay
+    var dclsStartDay: String = dclsStartDay
         protected set
 
     var dclsEndDay: String? = dclsEndDay
         protected set
 
-    var financialSubmitDay: String? = financialSubmitDay
+    var financialSubmitDay: String = financialSubmitDay
+        protected set
+
+    @Enumerated(EnumType.STRING)
+    var status: ProductStatus = status
+        protected set
+
+    @Column(length = 255) // SHA-256 hash is 64 characters long
+    var productContentHash: String? = productContentHash
+        protected set
+
+    @Lob
+@Convert(converter = FloatArrayConverter::class)
+    var embeddingVector: FloatArray? = embeddingVector
         protected set
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -105,4 +129,12 @@ class FinancialProductEntity(
 
     @OneToMany(mappedBy = "financialProductEntity", cascade = [CascadeType.ALL], orphanRemoval = true)
     var financialProductOptionEntities: MutableList<FinancialProductOptionEntity> = financialProductOptionEntities
+
+    fun updateEmbeddingVector(embeddingVector: FloatArray) {
+        this.embeddingVector = embeddingVector
+    }
+
+    fun updateProductContentHash(productContentHash: String) {
+        this.productContentHash = productContentHash
+    }
 }

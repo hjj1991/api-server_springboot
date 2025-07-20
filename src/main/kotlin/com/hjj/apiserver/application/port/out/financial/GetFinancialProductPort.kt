@@ -16,4 +16,6 @@ interface GetFinancialProductPort {
     ): Boolean
 
     fun findFinancialProduct(financialProductId: Long): FinancialProduct
+
+    fun findFinancialProductsByIds(ids: List<Long>): List<FinancialProduct>
 }
