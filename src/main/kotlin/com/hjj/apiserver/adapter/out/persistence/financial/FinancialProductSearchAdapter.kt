@@ -36,7 +36,7 @@ class FinancialProductSearchAdapter(
             criteria = criteria.and("financialGroupType").`is`(it.name)
         }
         companyName?.let {
-            criteria = criteria.and("companyName").matches(it)
+            criteria = criteria.and("companyName").`is`(it)
         }
         joinRestriction?.let {
             criteria = criteria.and("joinRestriction").`is`(it.name)
