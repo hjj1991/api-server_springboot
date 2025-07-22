@@ -27,7 +27,6 @@ class FinancialService(
         financialProductType: FinancialProductType?,
         financialProductName: String?,
         depositPeriodMonths: String?,
-        query: String?,
         pageable: Pageable,
     ): Slice<FinancialProductResponse> {
         val financialProductIds = searchFinancialProductPort.searchFinancialProducts(
@@ -37,7 +36,6 @@ class FinancialService(
             financialProductType = financialProductType,
             financialProductName = financialProductName,
             depositPeriodMonths = depositPeriodMonths,
-            query = query,
             pageable = pageable,
         )
 

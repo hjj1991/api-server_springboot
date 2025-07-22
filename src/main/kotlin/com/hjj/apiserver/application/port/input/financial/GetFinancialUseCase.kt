@@ -16,7 +16,6 @@ interface GetFinancialUseCase {
         financialProductType: FinancialProductType?,
         financialProductName: String?,
         depositPeriodMonths: String?,
-        query: String?,
         pageable: Pageable,
     ): Slice<FinancialProductResponse>
 

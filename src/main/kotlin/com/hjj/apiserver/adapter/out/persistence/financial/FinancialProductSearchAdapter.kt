@@ -1,17 +1,21 @@
 package com.hjj.apiserver.adapter.out.persistence.financial
 
+import co.elastic.clients.elasticsearch._types.SortMode
+import co.elastic.clients.elasticsearch._types.SortOptions
+import co.elastic.clients.elasticsearch._types.SortOrder
+import co.elastic.clients.elasticsearch._types.query_dsl.Query
 import com.hjj.apiserver.adapter.out.persistence.financial.document.FinancialProductDocument
 import com.hjj.apiserver.application.port.out.financial.SearchFinancialProductPort
 import com.hjj.apiserver.domain.financial.FinancialGroupType
 import com.hjj.apiserver.domain.financial.FinancialProductType
 import com.hjj.apiserver.domain.financial.JoinRestriction
+import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Slice
 import org.springframework.data.domain.SliceImpl
+import org.springframework.data.elasticsearch.client.elc.NativeQuery
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations
 import org.springframework.data.elasticsearch.core.SearchHitSupport
-import org.springframework.data.elasticsearch.core.query.Criteria
-import org.springframework.data.elasticsearch.core.query.CriteriaQuery
 import org.springframework.stereotype.Component
 
 @Component
@@ -25,46 +29,76 @@ class FinancialProductSearchAdapter(
         financialProductType: FinancialProductType?,
         financialProductName: String?,
         depositPeriodMonths: String?,
-        query: String?,
         pageable: Pageable,
     ): Slice<Long> {
-        // 1) var 로 선언
-        var criteria = Criteria()
+        val queries = mutableListOf<Query>()
 
-        // 2) 각 조건 재할당
         financialGroupType?.let {
-            criteria = criteria.and("financialGroupType").`is`(it.name)
+            queries.add(Query.Builder().term { t -> t.field("financialGroupType").value(it.name) }.build())
         }
         companyName?.let {
-            criteria = criteria.and("companyName").`is`(it)
+            queries.add(Query.Builder().match { m -> m.field("companyName").query(it) }.build())
         }
         joinRestriction?.let {
-            criteria = criteria.and("joinRestriction").`is`(it.name)
+            queries.add(Query.Builder().term { t -> t.field("joinRestriction").value(it.name) }.build())
         }
         financialProductType?.let {
-            criteria = criteria.and("financialProductType").`is`(it.name)
+            queries.add(Query.Builder().term { t -> t.field("financialProductType").value(it.name) }.build())
         }
         financialProductName?.let {
-            criteria = criteria.and("productName").matches(it)
+            queries.add(Query.Builder().match { m -> m.field("productName").query(it) }.build())
         }
         depositPeriodMonths?.let {
-            // nested 필터도 동일하게 재할당
-            criteria = criteria.and("options.depositPeriodMonths").`is`(it)
+            queries.add(
+                Query.Builder().nested { n ->
+                    n.path("options")
+                        .query { q -> q.term { t -> t.field("options.depositPeriodMonths").value(it) } }
+                }.build(),
+            )
         }
 
-        if (!query.isNullOrBlank()) {
-            val q = Criteria.where("productName").matches(query)
-                .or("companyName").matches(query)
-                .or("specialCondition").matches(query)
-                .or("joinWay").matches(query)
-                .or("etcNote").matches(query)
-            criteria = criteria.and(q)
+        val boolQuery = Query.Builder().bool { b -> b.must(queries) }.build()
+
+        val sortOptions =
+            pageable.sort.map { order ->
+                val field = order.property
+                val direction = if (order.isAscending) SortOrder.Asc else SortOrder.Desc
+
+                if (field.startsWith("options.")) {
+                    SortOptions.Builder().field {
+                        it.field(field)
+                            .order(direction)
+                            .mode(SortMode.Max)
+                            .nested { nested ->
+                                nested.path("options").filter { f -> f.matchAll { m -> m } }
+                            }
+                    }.build()
+                } else {
+                    val sortField = when (field) {
+                        "productName", "companyName" -> "$field.keyword"
+                        else -> field
+                    }
+                    SortOptions.Builder().field { it.field(sortField).order(direction) }.build()
+                }
+            }.toList()
+
+        // Manually handle pagination to avoid sort conflicts with withPageable
+        val pageRequest = PageRequest.of(pageable.pageNumber, pageable.pageSize)
+
+        val nativeQueryBuilder =
+            NativeQuery.builder()
+                .withQuery(if (queries.isEmpty()) Query.Builder().matchAll { m -> m }.build() else boolQuery)
+                .withPageable(pageRequest) // Use pageable without sort info
+
+        if (sortOptions.isNotEmpty()) {
+            nativeQueryBuilder.withSort(sortOptions)
         }
 
-        // 3) 최종 쿼리 실행
-        val springDataQuery = CriteriaQuery(criteria, pageable)
-        val searchHits = elasticsearchOperations.search(springDataQuery, FinancialProductDocument::class.java)
+        val nativeQuery = nativeQueryBuilder.build()
+
+        val searchHits = elasticsearchOperations.search(nativeQuery, FinancialProductDocument::class.java)
         val ids = searchHits.map { it.content.financialProductId }.toList()
+        // Important: Use the original pageable for the Slice response
         val hasNext = SearchHitSupport.searchPageFor(searchHits, pageable).hasNext()
 
         return SliceImpl(ids, pageable, hasNext)

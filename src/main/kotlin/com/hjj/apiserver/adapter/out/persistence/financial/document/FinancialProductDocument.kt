@@ -7,6 +7,8 @@ import com.hjj.apiserver.domain.financial.ProductStatus
 import org.springframework.data.elasticsearch.annotations.Document
 import org.springframework.data.elasticsearch.annotations.Field
 import org.springframework.data.elasticsearch.annotations.FieldType
+import org.springframework.data.elasticsearch.annotations.InnerField
+import org.springframework.data.elasticsearch.annotations.MultiField
 
 @Document(indexName = "financial_product", createIndex = false)
 data class FinancialProductDocument(
@@ -15,10 +17,16 @@ data class FinancialProductDocument(
     @Field(type = FieldType.Long)
     val financialProductId: Long,
 
-    @Field(type = FieldType.Text, analyzer = "nori")
+    @MultiField(
+        mainField = Field(type = FieldType.Text, analyzer = "nori"),
+        otherFields = [InnerField(suffix = "keyword", type = FieldType.Keyword)],
+    )
     val productName: String,
 
-    @Field(type = FieldType.Text, analyzer = "nori")
+    @MultiField(
+        mainField = Field(type = FieldType.Text, analyzer = "nori"),
+        otherFields = [InnerField(suffix = "keyword", type = FieldType.Keyword)],
+    )
     val companyName: String,
 
     @Field(type = FieldType.Keyword)

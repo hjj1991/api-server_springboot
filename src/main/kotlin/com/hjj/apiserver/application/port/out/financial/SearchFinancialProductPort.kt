@@ -14,7 +14,6 @@ interface SearchFinancialProductPort {
         financialProductType: FinancialProductType?,
         financialProductName: String?,
         depositPeriodMonths: String?,
-        query: String?,
         pageable: Pageable,
     ): Slice<Long>
 }
