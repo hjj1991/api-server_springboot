@@ -39,7 +39,7 @@ data class FinancialProductDocument(
     val specialCondition: String,
 
     @Field(type = FieldType.Text, analyzer = "nori")
-    val joinWay: String,
+    val joinWay: String?,
 
     @Field(type = FieldType.Text, analyzer = "nori")
     val etcNote: String,
