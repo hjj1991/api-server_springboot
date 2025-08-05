@@ -112,7 +112,9 @@ spring:
     hibernate:
       ddl-auto: update
   elasticsearch:
-    uris: localhost:9200
+    uris: ${ES_URL:http://localhost:9200}
+    username: elastic
+    password: ${ES_PASSWORD}
   datasource:
     url: ${SPRING_DATASOURCE_URL}
     username: ${SECRET_USERNAME}
