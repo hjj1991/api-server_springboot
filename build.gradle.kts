@@ -9,7 +9,7 @@ plugins {
     kotlin("plugin.jpa") version kotlinPluginVersion
     kotlin("plugin.allopen") version kotlinPluginVersion
     kotlin("kapt") version kotlinPluginVersion
-    id("org.jlleitschuh.gradle.ktlint") version "12.1.0"
+//    id("org.jlleitschuh.gradle.ktlint") version "12.1.0"
     id("org.springframework.boot") version "3.2.2"
     id("io.spring.dependency-management") version "1.1.4"
     id("com.ewerk.gradle.plugins.querydsl") version "1.0.10"
@@ -34,13 +34,13 @@ repositories {
     mavenCentral()
 }
 
-ktlint {
-    debug.set(false)
-    verbose.set(false)
-    outputToConsole.set(true)
-    ignoreFailures.set(false)
-    enableExperimentalRules.set(false)
-}
+//ktlint {
+//    debug.set(false)
+//    verbose.set(false)
+//    outputToConsole.set(true)
+//    ignoreFailures.set(false)
+//    enableExperimentalRules.set(false)
+//}
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
