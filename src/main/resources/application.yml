@@ -110,7 +110,7 @@ spring:
       batch-size: ${SPRING_REDIS_BATCH_SIZE:1000}
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
   elasticsearch:
     uris: ${ES_URL:http://localhost:9200}
     username: elastic
