@@ -111,6 +111,8 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
+  elasticsearch:
+    uris: localhost:9200
   datasource:
     url: ${SPRING_DATASOURCE_URL}
     username: ${SECRET_USERNAME}
