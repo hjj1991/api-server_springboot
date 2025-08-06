@@ -9,6 +9,7 @@ import com.hjj.apiserver.application.port.out.financial.SearchFinancialProductPo
 import com.hjj.apiserver.domain.financial.FinancialGroupType
 import com.hjj.apiserver.domain.financial.FinancialProductType
 import com.hjj.apiserver.domain.financial.JoinRestriction
+import com.hjj.apiserver.dto.financial.ProductSearchResponse
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Slice
@@ -17,10 +18,12 @@ import org.springframework.data.elasticsearch.client.elc.NativeQuery
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations
 import org.springframework.data.elasticsearch.core.SearchHitSupport
 import org.springframework.stereotype.Component
+import org.springframework.web.reactive.function.client.WebClient
 
 @Component
 class FinancialProductSearchAdapter(
     private val elasticsearchOperations: ElasticsearchOperations,
+    private val nlpWebClient: WebClient,
 ) : SearchFinancialProductPort {
     override fun searchFinancialProducts(
         financialGroupType: FinancialGroupType?,
@@ -102,5 +105,17 @@ class FinancialProductSearchAdapter(
         val hasNext = SearchHitSupport.searchPageFor(searchHits, pageable).hasNext()
 
         return SliceImpl(ids, pageable, hasNext)
+    }
+
+    override fun searchFinancialProduct(query: String): ProductSearchResponse {
+        return nlpWebClient.get()
+            .uri {
+                it.path("/products/search")
+                    .queryParam("query", query)
+                    .build()
+            }
+            .retrieve()
+            .bodyToMono(ProductSearchResponse::class.java)
+            .block()!!
     }
 }
