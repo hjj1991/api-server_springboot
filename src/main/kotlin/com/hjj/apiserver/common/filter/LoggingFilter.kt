@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import mu.two.KotlinLogging
 import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
 import org.springframework.util.StreamUtils
 import org.springframework.util.StringUtils
@@ -24,7 +25,13 @@ class LoggingFilter : Filter {
         response: ServletResponse,
         filterChain: FilterChain,
     ) {
-        val contentCachingRequestWrapper = ContentCachingRequestWrapper(request as HttpServletRequest)
+        val httpRequest = request as HttpServletRequest
+        if (httpRequest.requestURI.startsWith("/financial-products/search/stream")) {
+            filterChain.doFilter(request, response)
+            return
+        }
+
+        val contentCachingRequestWrapper = ContentCachingRequestWrapper(httpRequest)
         val contentCachingResponseWrapper = ContentCachingResponseWrapper(response as HttpServletResponse)
         logRequest(contentCachingRequestWrapper)
         filterChain.doFilter(contentCachingRequestWrapper, contentCachingResponseWrapper)
@@ -54,12 +61,18 @@ class LoggingFilter : Filter {
             val queryString = request.queryString
             val formattedQueryString = if (StringUtils.hasText(queryString)) "?$queryString" else ""
             val status = response.status
-            val responseBody = getResponseBody(response)
+            val contentType = response.contentType
+
             val logMessage =
-                if (responseBody.isEmpty()) {
-                    "SNT | $method $requestURI$formattedQueryString | $status"
+                if (contentType != null && contentType.contains(MediaType.TEXT_EVENT_STREAM_VALUE, ignoreCase = true)) {
+                    "SNT | $method $requestURI$formattedQueryString | $status | (Streaming response - body not logged)"
                 } else {
-                    "SNT | $method $requestURI$formattedQueryString | $status | body = $responseBody"
+                    val responseBody = getResponseBody(response)
+                    if (responseBody.isEmpty()) {
+                        "SNT | $method $requestURI$formattedQueryString | $status"
+                    } else {
+                        "SNT | $method $requestURI$formattedQueryString | $status | body = $responseBody"
+                    }
                 }
             if (status < HttpStatus.INTERNAL_SERVER_ERROR.value()) {
                 log.info { logMessage }

@@ -18,6 +18,10 @@ plugins {
     id("com.palantir.docker") version "0.35.0"
 }
 
+kotlin {
+    jvmToolchain(21)
+}
+
 val asciidoctorExt: Configuration by configurations.creating
 
 // plugins, dependencies와 같은 Level (즉 build.gradle 최상단)

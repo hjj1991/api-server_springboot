@@ -3,6 +3,7 @@ package com.hjj.apiserver.adapter.input.web.financial
 import com.hjj.apiserver.adapter.input.web.financial.response.FinancialProductResponse
 import com.hjj.apiserver.application.port.input.financial.GetFinancialUseCase
 import com.hjj.apiserver.application.port.input.financial.SearchFinancialProductUseCase
+import com.hjj.apiserver.application.port.input.financial.StreamFinancialProductSearchUseCase
 import com.hjj.apiserver.domain.financial.FinancialGroupType
 import com.hjj.apiserver.domain.financial.FinancialProductType
 import com.hjj.apiserver.domain.financial.JoinRestriction
@@ -11,15 +12,18 @@ import io.swagger.v3.oas.annotations.Operation
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Slice
 import org.springframework.data.web.PageableDefault
+import org.springframework.http.MediaType.TEXT_EVENT_STREAM_VALUE
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter
 
 @RestController
 class FinancialController(
     private val getFinancialUseCase: GetFinancialUseCase,
     private val searchFinancialProductUseCase: SearchFinancialProductUseCase,
+    private val streamFinancialProductSearchUseCase: StreamFinancialProductSearchUseCase,
 ) {
     @GetMapping("/financial-products")
     fun getFinancialProducts(
@@ -54,4 +58,11 @@ class FinancialController(
     fun searchFinancialProducts(@RequestParam query: String): FinancialProductSearchResponse {
         return searchFinancialProductUseCase.searchFinancialProduct(query)
     }
+
+    @Operation(summary = "자연어 금융상품 검색(스트리밍)", description = "자연어 쿼리를 사용하여 금융 상품을 검색합니다.")
+    @GetMapping("/financial-products/search/stream", produces = [TEXT_EVENT_STREAM_VALUE])
+    fun searchFinancialProductsStream(@RequestParam query: String): SseEmitter {
+        return streamFinancialProductSearchUseCase.searchFinancialProduct(query)
+    }
+
 }

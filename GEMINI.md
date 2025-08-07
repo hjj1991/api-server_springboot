@@ -62,3 +62,8 @@ This project is a comprehensive personal finance management API server built wit
 3.  The `openapi3` Gradle task converts these snippets into a single `openapi3.yaml` file.
 4.  The `build` process copies this `openapi3.yaml` to `src/main/resources/static/swagger-ui/`.
 5.  When the application is running, the API documentation can be accessed via the integrated Swagger UI, typically at `/swagger-ui/index.html`.
+
+## 8. Development Workflow
+When implementing new features, especially those involving external system integrations, it is crucial to follow the architectural guidelines.
+
+For detailed instructions and the standard development process, please refer to the `docs/DEVELOPMENT_GUIDELINES.md` file.
