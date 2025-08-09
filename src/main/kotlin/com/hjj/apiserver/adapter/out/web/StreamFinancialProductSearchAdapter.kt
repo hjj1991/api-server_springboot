@@ -27,8 +27,15 @@ class StreamFinancialProductSearchAdapter(
     private val sseTaskScheduler: ThreadPoolTaskScheduler,
 ) : StreamFinancialProductSearchPort {
 
+    companion object {
+        private const val EMITTER_TIMEOUT_MS = 60_000L
+        private const val HEARTBEAT_INTERVAL_SECONDS = 15L
+        private const val BACKPRESSURE_BUFFER_SIZE = 256
+        private const val KEEPALIVE_COMMENT = "keepalive"
+    }
+
     override fun searchFinancialProduct(query: String): SseEmitter {
-        val emitter = SseEmitter(60000L)
+        val emitter = SseEmitter(EMITTER_TIMEOUT_MS)
 
         // 업스트림 플럭스 생성
         val flux: Flux<ServerSentEvent<String>> = webClient.get()
@@ -36,7 +43,7 @@ class StreamFinancialProductSearchAdapter(
             .accept(MediaType.TEXT_EVENT_STREAM)
             .retrieve()
             .bodyToFlux(object : ParameterizedTypeReference<ServerSentEvent<String>>() {})
-            .onBackpressureBuffer(256)
+            .onBackpressureBuffer(BACKPRESSURE_BUFFER_SIZE)
             .subscribeOn(Schedulers.boundedElastic())
             .doOnError { error ->
                 log.error(error) { "Upstream SSE error for query: $query" }
@@ -46,12 +53,12 @@ class StreamFinancialProductSearchAdapter(
         val heartbeatFuture = sseTaskScheduler.scheduleAtFixedRate(
             {
                 try {
-                    emitter.send(SseEmitter.event().comment("keepalive"))
+                    emitter.send(SseEmitter.event().comment(KEEPALIVE_COMMENT))
                 } catch (_: Exception) {
                     // 연결이 끊어졌을 때는 무시
                 }
             },
-            Duration.ofSeconds(15)
+            Duration.ofSeconds(HEARTBEAT_INTERVAL_SECONDS)
         )
 
         // 스트림 구독
@@ -69,22 +76,19 @@ class StreamFinancialProductSearchAdapter(
     private fun handleSseEvent(emitter: SseEmitter, sse: ServerSentEvent<String>) {
         try {
             val data = sse.data()
-            
+
             // 로그는 전체 데이터를 다 보여줌
             log.debug { "Received SSE event: event=${sse.event()}, id=${sse.id()}, data=$data" }
-            
+
             if (data.isNullOrBlank()) {
                 log.debug { "Skipping empty SSE event" }
                 return
             }
 
-            // 데이터 전처리: 줄바꿈과 마크다운 정리
-            val processedData = formatForFrontend(data)
-            
             val eventBuilder = SseEmitter.event().apply {
                 sse.event()?.let { name(it) }
                 sse.id()?.let { id(it) }
-                data(processedData)
+                data(data)
             }
 
             emitter.send(eventBuilder)
@@ -97,33 +101,16 @@ class StreamFinancialProductSearchAdapter(
         }
     }
 
-    /**
-     * 프론트엔드에서 제대로 표시될 수 있도록 텍스트 포맷 정리
-     */
-    private fun formatForFrontend(data: String): String {
-        return data
-            // 줄바꿈 정규화만
-            .replace("\r\n", "\n")
-            .replace("\r", "\n")
-            .replace("```", "\n```")
-        
-            // 문장 끝에만 줄바꿈 추가 (마크다운 구조는 건드리지 않음)
-            .replace(Regex("([.!?])(?![\\s\n])")) { "${it.value}\n" }
-        
-            // 연속된 줄바꿈 정리
-            .replace(Regex("\n{3,}"), "\n\n")
-        
-            .trim()
-}
-
     private fun handleError(emitter: SseEmitter, error: Throwable) {
         when (error) {
             is WebClientResponseException -> {
                 log.error { "HTTP error from upstream: ${error.statusCode} - ${error.responseBodyAsString}" }
             }
+
             is WebClientRequestException -> {
                 log.error { "Request error to upstream: ${error.message}" }
             }
+
             else -> {
                 log.error(error) { "Upstream SSE stream error" }
             }
@@ -132,8 +119,16 @@ class StreamFinancialProductSearchAdapter(
     }
 
     private fun handleCompletion(emitter: SseEmitter) {
-        log.debug { "Upstream SSE stream completed successfully" }
-        emitter.complete()
+        log.debug { "Upstream SSE stream completed successfully. Sending [DONE] event." }
+        try {
+            // 1. 클라이언트에게 "[DONE]" 메시지를 보내 대화가 끝났음을 알립니다.
+            emitter.send(SseEmitter.event().name("message").data("[DONE]"))
+        } catch (e: IOException) {
+            log.warn(e) { "Failed to send [DONE] event to the client." }
+        } finally {
+            // 2. "[DONE]" 메시지를 보낸 후, 연결을 정상적으로 종료합니다.
+            emitter.complete()
+        }
     }
 
     private fun setupEmitterCallbacks(
