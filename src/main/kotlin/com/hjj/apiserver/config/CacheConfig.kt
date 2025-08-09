@@ -75,16 +75,31 @@ class CacheConfig(
                         ),
                     FINANCIAL_PRODUCTS_EXISTS_NEXT_PAGE to
                         this.createRedisCacheConfiguration(
-                            Jackson2JsonRedisSerializer(Boolean::class.java), redisTtl = 300L,
+                            jackson2JsonRedisSerializer(Boolean::class.java), redisTtl = 300L,
                         ),
                     FINANCIAL_PRODUCT to
                         this.createRedisCacheConfiguration(
-                            Jackson2JsonRedisSerializer(FinancialProduct::class.java), redisTtl = 300L,
+                            jackson2JsonRedisSerializer(FinancialProduct::class.java), redisTtl = 300L,
                         ),
                 ),
             )
             .transactionAware()
             .build()
+
+    private fun <T> jackson2JsonRedisSerializer(clazz: Class<T>): Jackson2JsonRedisSerializer<T> {
+        val mapper =
+            ObjectMapper()
+                .registerModules(
+                    JavaTimeModule(),
+                    KotlinModule.Builder().build(),
+                )
+                .setSerializationInclusion(JsonInclude.Include.ALWAYS)
+                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+                .enable(SerializationFeature.INDENT_OUTPUT)
+
+        val javaType = mapper.typeFactory.constructType(clazz)
+        return Jackson2JsonRedisSerializer(mapper, javaType)
+    }
 
     @Bean
     fun redisConnectionFactory(): LettuceConnectionFactory =
