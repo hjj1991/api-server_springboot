@@ -58,9 +58,9 @@ This project is a comprehensive personal finance management API server built wit
 
 ## 7. API Documentation Workflow
 1.  Tests annotated with `@AutoConfigureRestDocs` are executed (`./gradlew test`).
-2.  **Spring REST Docs** captures request/response details and creates AsciiDoc snippets in `build/generated-snippets`.
-3.  The `openapi3` Gradle task converts these snippets into a single `openapi3.yaml` file.
-4.  The `build` process copies this `openapi3.yaml` to `src/main/resources/static/swagger-ui/`.
+2.  **springdoc-openapi** generates OpenAPI spec at runtime from controllers and schema metadata.
+3.  OpenAPI spec is exposed at `/v3/api-docs`.
+4.  Swagger UI is served at `/swagger-ui/index.html`.
 5.  When the application is running, the API documentation can be accessed via the integrated Swagger UI, typically at `/swagger-ui/index.html`.
 
 ## 8. Development Workflow

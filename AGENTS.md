@@ -1,3 +1,18 @@
+## SESSION ONBOARDING (READ FIRST)
+
+When starting a new session in this repository, apply these rules first:
+
+1. Read `AGENTS.md` and `docs/DEVELOPMENT_GUIDELINES.md` before making changes.
+2. Enforce core coding rules:
+   - No magic values in code (use constants or config properties).
+   - Environment-dependent values must be centralized in config with env overrides.
+   - API error responses must follow RFC9457 `ProblemDetail` with `ErrConst` as source of truth.
+3. Follow hexagonal boundaries strictly:
+   - `adapter -> application(port/service) -> domain`
+   - Do not leak adapter or persistence types into application ports/services.
+4. For every code change, run related tests first, then final verification with `./gradlew test` or `./gradlew build`.
+5. Treat generated artifacts as build-managed unless explicitly requested to modify.
+
 # PROJECT KNOWLEDGE BASE
 
 **Generated:** 2026-02-15 15:09:51 +0900
@@ -45,7 +60,7 @@ Use path-level map below for navigation:
 ## CONVENTIONS
 - Follow explicit Hexagonal sequence from `docs/DEVELOPMENT_GUIDELINES.md`: input port -> output port -> service -> adapter -> controller wiring.
 - Runtime code is Kotlin-first; Gradle Kotlin DSL is used (`build.gradle.kts`).
-- `build` includes docs pipeline (`asciidoctor`, `openapi3`, copy to `src/main/resources/static/swagger-ui`).
+- API docs are served by `springdoc-openapi` at runtime (`/v3/api-docs`, `/swagger-ui/index.html`).
 - Test profile uses Testcontainers JDBC (`jdbc:tc:postgresql`) from `src/test/resources/application.yml`.
 
 ## ANTI-PATTERNS (THIS PROJECT)
@@ -56,7 +71,7 @@ Use path-level map below for navigation:
 
 ## UNIQUE STYLES
 - Mixed operational assets in-repo: application source + mounted DB state for local docker.
-- API docs are generated from tests and copied into static swagger assets during build.
+- API docs are served by `springdoc-openapi` at runtime (`/v3/api-docs`, `/swagger-ui/index.html`).
 - Security stack is hybrid: form/JWT/OAuth2/resource-server patterns coexist.
 
 ## COMMANDS
@@ -69,6 +84,5 @@ docker compose up -d
 ```
 
 ## NOTES
-- `system.properties` pins runtime for some deploy targets (`java.runtime.version=17`) while Gradle toolchain is 21.
-- `src/test/kotlin` is currently empty in this snapshot; tests are config-first and may be added later.
+- `system.properties` and Gradle toolchain are aligned to OpenJDK 25.
 - Use nearest AGENTS.md precedence: check child docs before editing files in those directories.

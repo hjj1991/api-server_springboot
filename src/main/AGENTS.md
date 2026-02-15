@@ -16,17 +16,17 @@
 | Persistence adapters | `src/main/kotlin/com/hjj/apiserver/adapter/out/persistence` | entities/repositories/converters |
 | Runtime profiles | `src/main/resources/application.yml` | local/prod split + redis + datasource |
 | OAuth providers | `src/main/resources/application-oauth.yml` | kakao/naver and redirect config |
-| Generated swagger assets | `src/main/resources/static/swagger-ui` | updated by build pipeline |
+| OpenAPI docs (runtime) | `/v3/api-docs`, `/swagger-ui/index.html` | served by springdoc |
 
 ## CONVENTIONS
 - Prefer small, boundary-safe changes: port interface first, then service, then adapter/controller.
 - Keep exception types under `common/exception` and map them through `ExceptionControllerAdvice`.
-- Treat `src/main/resources/static/swagger-ui` as build-managed output.
+- Prefer runtime OpenAPI from springdoc over checked-in static swagger assets.
 
 ## ANTI-PATTERNS
 - Do not hardcode production credentials in `application.yml` or `application-oauth.yml`.
 - Do not bypass service/use-case ports by wiring persistence details into web adapters.
-- Do not manually tweak swagger static output without regenerating via Gradle tasks.
+- Do not reintroduce static OpenAPI copy pipelines when springdoc runtime docs are the source of truth.
 
 ## COMMANDS
 ```bash

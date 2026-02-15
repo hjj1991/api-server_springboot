@@ -1,6 +1,4 @@
 
-val restdocsApiSpecVersion = "0.19.4"
-
 buildscript {
     repositories {
         mavenCentral()
@@ -11,7 +9,6 @@ buildscript {
 }
 
 plugins {
-    val restdocsApiSpecVersion = "0.19.4"
     val kotlinPluginVersion = "2.2.21"
     kotlin("jvm") version kotlinPluginVersion
     kotlin("plugin.spring") version kotlinPluginVersion
@@ -21,8 +18,6 @@ plugins {
 //    id("org.jlleitschuh.gradle.ktlint") version "12.1.0"
     id("org.springframework.boot") version "4.0.2"
     id("io.spring.dependency-management") version "1.1.7"
-    id("org.asciidoctor.jvm.convert") version "4.0.5"
-    id("com.epages.restdocs-api-spec") version restdocsApiSpecVersion
 }
 
 apply(plugin = "com.palantir.docker")
@@ -33,8 +28,6 @@ kotlin {
         jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_24)
     }
 }
-
-val asciidoctorExt: Configuration by configurations.creating
 
 // plugins, dependencies와 같은 Level (즉 build.gradle 최상단)
 allOpen {
@@ -88,18 +81,11 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.security:spring-security-test")
 
-    asciidoctorExt("org.springframework.restdocs:spring-restdocs-asciidoctor:4.0.0")
-    testImplementation("org.springframework.restdocs:spring-restdocs-mockmvc")
-    testImplementation("com.epages:restdocs-api-spec-mockmvc:$restdocsApiSpecVersion")
-
     testImplementation("org.testcontainers:postgresql:1.21.4")
     testImplementation("com.redis:testcontainers-redis:2.2.4")
     testImplementation("org.testcontainers:junit-jupiter:1.21.4")
 
 }
-//  spring rest docs를 swagger와 함께 쓰기 위해 주석처리
-val snippetsDir by extra { file("build/generated-snippets") }
-
 tasks.withType<JavaCompile> {
     options.release.set(24)
     options.annotationProcessorPath = configurations.kapt.get()
@@ -107,53 +93,7 @@ tasks.withType<JavaCompile> {
 
 tasks {
     test {
-        outputs.dir(snippetsDir)
         useJUnitPlatform()
-    }
-    asciidoctor {
-        dependsOn(test)
-        setSourceDir(snippetsDir)
-        configurations("asciidoctorExt")
-    }
-
-    val copyHTML =
-        register("copyHTML") {
-            dependsOn("asciidoctor")
-            delete(file("src/main/resources/static/docs"))
-            copy {
-                from(file("${layout.buildDirectory.get()}/docs/asciidoc"))
-                into(file("src/main/resources/static/docs"))
-            }
-        }
-
-    val registerOpenapi3 =
-        register("registerOpenapi3") {
-            delete(file("src/main/resources/static/swagger-ui/openapi3.yaml")) // 기존 OAS 파일 삭제
-            copy {
-                from(file("${layout.buildDirectory.get()}/api-spec/openapi3.yaml")) // 복제할 OAS 파일 지정
-                into(file("src/main/resources/static/swagger-ui/")) // 타겟 디렉터리로 파일 복제
-            }
-            dependsOn("openapi3")
-        }
-
-    build {
-        dependsOn(copyHTML, registerOpenapi3)
-        version = ""
-    }
-
-    bootJar {
-        dependsOn(asciidoctor, copyHTML, registerOpenapi3)
-        from(asciidoctor.get().outputDir) {
-            into(file("src/main/resources/static/docs"))
-        }
-    }
-
-    openapi3 {
-        setServer("http://localhost:8080")
-        title = "restdocs-swagger API Documentation"
-        description = "Spring REST Docs with SwaggerUI."
-        version = "0.0.1"
-        format = "yaml"
     }
 
     jar {
