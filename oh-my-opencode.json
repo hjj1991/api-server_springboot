@@ -1,0 +1,14 @@
+{
+  "lsp": {
+    "kotlin-ls": {
+      "command": [
+        "kotlin-lsp",
+        "--stdio"
+      ],
+      "extensions": [
+        ".kt",
+        ".kts"
+      ]
+    }
+  }
+}

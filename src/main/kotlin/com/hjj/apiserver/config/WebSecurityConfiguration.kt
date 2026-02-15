@@ -1,6 +1,7 @@
 package com.hjj.apiserver.config
 
 import com.hjj.apiserver.common.CustomAuthenticationEntryPoint
+import com.hjj.apiserver.common.CustomAccessDeniedHandler
 import com.hjj.apiserver.common.CustomAuthorizationRequestResolver
 import com.nimbusds.jose.jwk.source.ImmutableSecret
 import org.springframework.beans.factory.annotation.Value
@@ -21,7 +22,6 @@ import org.springframework.security.oauth2.jwt.NimbusJwtEncoder
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter
 import org.springframework.security.web.SecurityFilterChain
-import org.springframework.security.web.access.AccessDeniedHandlerImpl
 import org.springframework.security.web.util.matcher.RequestMatcher
 import org.springframework.web.cors.CorsUtils
 import java.nio.charset.StandardCharsets
@@ -33,6 +33,7 @@ class WebSecurityConfiguration(
     @Value("\${spring.jwt.secret}")
     private val jwtSecret: String,
     private val customAuthenticationEntryPoint: CustomAuthenticationEntryPoint,
+    private val customAccessDeniedHandler: CustomAccessDeniedHandler,
 //    private val customOauth2UserService: CustomOauth2UserService,
     private val clientRegistrationRepository: ClientRegistrationRepository,
 ) {
@@ -78,8 +79,6 @@ class WebSecurityConfiguration(
                         "/docs/**",
                         "/webjars/**",
                         "/main*",
-                        "/deposit*",
-                        "/saving*",
                         "/test",
                         "/h2-console/**",
                         "/livez",
@@ -89,7 +88,7 @@ class WebSecurityConfiguration(
                     ).permitAll() // 가입 및 인증 주소는 누구나 접근가능
                     .anyRequest().hasRole("USER")
             }
-            .exceptionHandling { exceptionHandling -> exceptionHandling.accessDeniedHandler(AccessDeniedHandlerImpl()) }
+            .exceptionHandling { exceptionHandling -> exceptionHandling.accessDeniedHandler(customAccessDeniedHandler) }
             .exceptionHandling { exceptionHandling ->
                 exceptionHandling.authenticationEntryPoint(
                     customAuthenticationEntryPoint,

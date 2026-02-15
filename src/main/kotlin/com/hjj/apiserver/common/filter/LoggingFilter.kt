@@ -1,5 +1,6 @@
 package com.hjj.apiserver.common.filter
 
+import com.hjj.apiserver.common.ErrorResponseConstants
 import jakarta.servlet.Filter
 import jakarta.servlet.FilterChain
 import jakarta.servlet.ServletRequest
@@ -26,7 +27,7 @@ class LoggingFilter : Filter {
         filterChain: FilterChain,
     ) {
         val httpRequest = request as HttpServletRequest
-        if (httpRequest.requestURI.startsWith("/financial-products/search/stream")) {
+        if (httpRequest.requestURI.startsWith(ErrorResponseConstants.FINANCIAL_STREAM_URI_PREFIX)) {
             filterChain.doFilter(request, response)
             return
         }

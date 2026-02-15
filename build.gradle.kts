@@ -29,6 +29,9 @@ apply(plugin = "com.palantir.docker")
 
 kotlin {
     jvmToolchain(25)
+    compilerOptions {
+        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_24)
+    }
 }
 
 val asciidoctorExt: Configuration by configurations.creating
@@ -60,25 +63,19 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-validation")
-    implementation("org.springframework.boot:spring-boot-starter-web-services")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-webflux")
     implementation("org.springframework.boot:spring-boot-starter-cache")
-    implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
     implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
-    implementation("org.springframework.boot:spring-boot-starter-oauth2-authorization-server")
     implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
     implementation("com.github.gavlyukovskiy:p6spy-spring-boot-starter:2.0.0")
-    implementation("org.modelmapper:modelmapper:3.2.6")
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.1")
     implementation("commons-io:commons-io:2.21.0")
     runtimeOnly("org.postgresql:postgresql")
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.21.0")
     implementation("com.querydsl:querydsl-jpa:5.1.0:jakarta")
-    implementation("com.querydsl:querydsl-core:5.1.0")
     implementation("io.github.microutils:kotlin-logging:4.0.0-beta-2")
     implementation("com.github.ben-manes.caffeine:caffeine:3.2.3")
     implementation("org.springframework.boot:spring-boot-starter-data-elasticsearch")
@@ -87,7 +84,6 @@ dependencies {
     kapt("org.springframework.boot:spring-boot-configuration-processor")
     kapt("com.querydsl:querydsl-apt:5.1.0:jakarta")
     kapt("com.querydsl:querydsl-kotlin-codegen:5.1.0")
-    kapt("org.springframework.boot:spring-boot-configuration-processor")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.security:spring-security-test")

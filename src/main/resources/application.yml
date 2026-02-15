@@ -16,6 +16,8 @@ spring:
   jwt:
     secret: testTokenspaeratkgspeokrtgpaeokrgpaejrgoaeijrgoaeijrgfndkbjnrstghjsrteghjoaeorigjaeorigj
   mvc:
+    problemdetails:
+      enabled: true
     pathmatch:
       matching-strategy: ant_path_matcher
   output:
@@ -41,6 +43,9 @@ server:
   error:
     whitelabel:
       enabled: false
+app:
+  error-response:
+    problem-type-base-uri: ${PROBLEM_TYPE_BASE_URI:https://api.hjj.com/problems}
 management:
   endpoint:
     health:
