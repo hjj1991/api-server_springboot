@@ -11,8 +11,8 @@ class ScheduleTaskConfig {
     fun sseTaskScheduler(): ThreadPoolTaskScheduler {
         return ThreadPoolTaskScheduler().apply {
             poolSize = 2
-            threadNamePrefix = "sse-heartbeat-"
-            isDaemon = true
+            setThreadNamePrefix("sse-heartbeat-")
+            setDaemon(true)
             setRemoveOnCancelPolicy(true) // 취소된 작업 큐에서 빨리 제거
             initialize()
         }

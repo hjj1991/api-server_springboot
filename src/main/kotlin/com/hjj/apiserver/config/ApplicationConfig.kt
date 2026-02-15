@@ -1,6 +1,5 @@
 package com.hjj.apiserver.config
 
-import com.hjj.apiserver.dto.user.CurrentUserInfo
 import com.querydsl.jpa.JPQLTemplates
 import com.querydsl.jpa.impl.JPAQueryFactory
 import jakarta.persistence.EntityManager
@@ -52,11 +51,6 @@ class ApplicationConfig : AuditorAware<Long> {
     }
 
     override fun getCurrentAuditor(): Optional<Long> {
-        val authentication = SecurityContextHolder.getContext().authentication
-        if (null == authentication || !authentication.isAuthenticated || authentication.principal == "anonymousUser") {
-            return Optional.empty()
-        }
-        val currentUserInfo = authentication.principal as CurrentUserInfo
-        return Optional.of(currentUserInfo.userNo)
+        return Optional.empty()
     }
 }

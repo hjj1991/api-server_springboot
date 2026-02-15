@@ -8,7 +8,6 @@ import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.github.benmanes.caffeine.cache.Caffeine
-import com.hjj.apiserver.common.JwtProvider
 import com.hjj.apiserver.domain.financial.FinancialProduct
 import org.springframework.cache.CacheManager
 import org.springframework.cache.annotation.EnableCaching
@@ -51,7 +50,7 @@ class CacheConfig(
                 Caffeine.newBuilder()
                     .initialCapacity(200)
                     .maximumSize(500)
-                    .expireAfterWrite(JwtProvider.REFRESH_TOKEN_VALID_MILLISECONDS, TimeUnit.MILLISECONDS)
+                    .expireAfterWrite(1000L * 3600 * 24 * 14, TimeUnit.MILLISECONDS)
                     .weakKeys()
                     .recordStats(),
             )
@@ -86,7 +85,7 @@ class CacheConfig(
             .transactionAware()
             .build()
 
-    private fun <T> jackson2JsonRedisSerializer(clazz: Class<T>): Jackson2JsonRedisSerializer<T> {
+    private fun <T : Any> jackson2JsonRedisSerializer(clazz: Class<T>): Jackson2JsonRedisSerializer<T> {
         val mapper =
             ObjectMapper()
                 .registerModules(
@@ -110,7 +109,7 @@ class CacheConfig(
             LettuceClientConfiguration.builder().commandTimeout(Duration.ofMillis(redisProperties.commandTimeout)).build(),
         )
 
-    private fun <T> typeReferenceJackson2JsonRedisSerializer(typeReference: TypeReference<T>): Jackson2JsonRedisSerializer<T> {
+    private fun <T : Any> typeReferenceJackson2JsonRedisSerializer(typeReference: TypeReference<T>): Jackson2JsonRedisSerializer<T> {
         val mapper =
             ObjectMapper()
                 .registerModules(

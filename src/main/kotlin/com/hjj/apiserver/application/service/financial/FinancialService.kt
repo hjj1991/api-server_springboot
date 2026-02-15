@@ -1,6 +1,5 @@
 package com.hjj.apiserver.application.service.financial
 
-import com.hjj.apiserver.adapter.input.web.financial.response.FinancialProductResponse
 import com.hjj.apiserver.application.port.input.financial.GetFinancialUseCase
 import com.hjj.apiserver.application.port.input.financial.SearchFinancialProductUseCase
 import com.hjj.apiserver.application.port.out.financial.GetFinancialProductPort
@@ -30,7 +29,7 @@ class FinancialService(
         financialProductName: String?,
         depositPeriodMonths: String?,
         pageable: Pageable,
-    ): Slice<FinancialProductResponse> {
+    ): Slice<FinancialProduct> {
         val financialProductIds = searchFinancialProductPort.searchFinancialProducts(
             financialGroupType = financialGroupType,
             companyName = companyName,
@@ -47,7 +46,7 @@ class FinancialService(
 
 
         return SliceImpl(
-            sortedFinancialProducts.map { FinancialProductResponse.from(it) },
+            sortedFinancialProducts,
             pageable,
             financialProductIds.hasNext(),
         )

@@ -31,7 +31,7 @@ class LoggingFilter : Filter {
             return
         }
 
-        val contentCachingRequestWrapper = ContentCachingRequestWrapper(httpRequest)
+        val contentCachingRequestWrapper = ContentCachingRequestWrapper(httpRequest, 1024 * 1024)
         val contentCachingResponseWrapper = ContentCachingResponseWrapper(response as HttpServletResponse)
         logRequest(contentCachingRequestWrapper)
         filterChain.doFilter(contentCachingRequestWrapper, contentCachingResponseWrapper)

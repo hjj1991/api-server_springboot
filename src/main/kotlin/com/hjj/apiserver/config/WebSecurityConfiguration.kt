@@ -1,10 +1,7 @@
 package com.hjj.apiserver.config
 
 import com.hjj.apiserver.common.CustomAuthenticationEntryPoint
-import com.hjj.apiserver.common.CustomAuthorizationCodeTokenResponseClient
 import com.hjj.apiserver.common.CustomAuthorizationRequestResolver
-import com.hjj.apiserver.common.JwtProvider
-import com.hjj.apiserver.handler.OAuth2SuccessHandler
 import com.nimbusds.jose.jwk.source.ImmutableSecret
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
@@ -25,7 +22,6 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.access.AccessDeniedHandlerImpl
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher
 import org.springframework.security.web.util.matcher.RequestMatcher
 import org.springframework.web.cors.CorsUtils
 import java.nio.charset.StandardCharsets
@@ -38,7 +34,6 @@ class WebSecurityConfiguration(
     private val jwtSecret: String,
     private val customAuthenticationEntryPoint: CustomAuthenticationEntryPoint,
 //    private val customOauth2UserService: CustomOauth2UserService,
-    private val oAuth2SuccessHandler: OAuth2SuccessHandler,
     private val clientRegistrationRepository: ClientRegistrationRepository,
 ) {
     @Bean
@@ -57,7 +52,7 @@ class WebSecurityConfiguration(
                             setJwtGrantedAuthoritiesConverter { jwt: Jwt ->
                                 // roles 클레임을 ROLE_ 접두어 권한으로 변환
                                 JwtGrantedAuthoritiesConverter().apply {
-                                    setAuthoritiesClaimName(JwtProvider.CLAIM_ROLES)
+                                    setAuthoritiesClaimName("roles")
                                     setAuthorityPrefix("ROLE_")
                                 }.convert(jwt)
                             }
@@ -70,42 +65,27 @@ class WebSecurityConfiguration(
                     endPoint.authorizationRequestResolver(
                         CustomAuthorizationRequestResolver(this.clientRegistrationRepository),
                     )
-                }.tokenEndpoint { tokenEndpoint ->
-                    tokenEndpoint.accessTokenResponseClient(
-                        CustomAuthorizationCodeTokenResponseClient(),
-                    )
                 }
 //                    .userInfoEndpoint { userEndPoint -> userEndPoint.userService(customOauth2UserService) }
 //                    .successHandler(oAuth2SuccessHandler)
             }
             .authorizeHttpRequests { authorizeHttpRequests ->
-                authorizeHttpRequests.requestMatchers(
-                    RequestMatcher {
-                        CorsUtils.isPreFlightRequest(it)
-                    },
-                ).permitAll()
+                authorizeHttpRequests.requestMatchers(RequestMatcher { CorsUtils.isPreFlightRequest(it) }).permitAll()
                     .requestMatchers(
-                        AntPathRequestMatcher("/static/**"),
-                        AntPathRequestMatcher("/swagger-ui/swagger-ui.html"),
-                        AntPathRequestMatcher("/swagger-ui/**"),
-                        AntPathRequestMatcher("/docs/**"),
-                        AntPathRequestMatcher("/webjars/**"),
-                        AntPathRequestMatcher("/users/exists**/**"),
-                        AntPathRequestMatcher("/main*"),
-                        AntPathRequestMatcher("/deposit*"),
-                        AntPathRequestMatcher("/saving*"),
-                        AntPathRequestMatcher("/users/sign-up"),
-                        AntPathRequestMatcher("/users/sign-in"),
-                        AntPathRequestMatcher("/users/nicknames/**"),
-                        AntPathRequestMatcher("/user/social/signup"),
-                        AntPathRequestMatcher("/user/oauth/token"),
-                        AntPathRequestMatcher("/user/profile*"),
-                        AntPathRequestMatcher("/test"),
-                        AntPathRequestMatcher("/h2-console/**"),
-                        AntPathRequestMatcher("/livez"),
-                        AntPathRequestMatcher("/readyz"),
-                        AntPathRequestMatcher("/financial-products"),
-                        AntPathRequestMatcher("/financial-products/**"),
+                        "/static/**",
+                        "/swagger-ui/swagger-ui.html",
+                        "/swagger-ui/**",
+                        "/docs/**",
+                        "/webjars/**",
+                        "/main*",
+                        "/deposit*",
+                        "/saving*",
+                        "/test",
+                        "/h2-console/**",
+                        "/livez",
+                        "/readyz",
+                        "/financial-products",
+                        "/financial-products/**",
                     ).permitAll() // 가입 및 인증 주소는 누구나 접근가능
                     .anyRequest().hasRole("USER")
             }

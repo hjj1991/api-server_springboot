@@ -10,7 +10,7 @@ import java.io.ByteArrayInputStream
 
 private val log = KotlinLogging.logger {}
 
-class CustomContentCachingRequestWrapper(request: HttpServletRequest) : ContentCachingRequestWrapper(request) {
+class CustomContentCachingRequestWrapper(request: HttpServletRequest) : ContentCachingRequestWrapper(request, 1024 * 1024) {
     private val inputStream = IOUtils.toByteArray(super.getInputStream())
     private lateinit var multipartParameterNames: Set<String>
 

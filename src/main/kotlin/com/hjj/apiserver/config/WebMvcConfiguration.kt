@@ -21,7 +21,5 @@ class WebMvcConfiguration : WebMvcConfigurer {
         registry.addResourceHandler("/**").addResourceLocations("classpath:/static/")
     }
 
-    override fun addArgumentResolvers(resolvers: MutableList<HandlerMethodArgumentResolver>) {
-//        resolvers.add(AuthUserArgumentResolver())
-    }
+    override fun addArgumentResolvers(resolvers: MutableList<HandlerMethodArgumentResolver>) {}
 }

@@ -11,6 +11,7 @@ import com.hjj.apiserver.dto.financial.FinancialProductSearchResponse
 import io.swagger.v3.oas.annotations.Operation
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Slice
+import org.springframework.data.domain.SliceImpl
 import org.springframework.data.web.PageableDefault
 import org.springframework.http.MediaType.TEXT_EVENT_STREAM_VALUE
 import org.springframework.web.bind.annotation.GetMapping
@@ -35,15 +36,22 @@ class FinancialController(
         @RequestParam(required = false) depositPeriodMonths: String?,
         @PageableDefault(page = 0, size = 20) pageable: Pageable,
     ): Slice<FinancialProductResponse> =
-        this.getFinancialUseCase.getFinancialsWithPaginationInfo(
-            financialGroupType = financialGroupType,
-            companyName = companyName,
-            joinRestriction = joinRestriction,
-            financialProductType = financialProductType,
-            financialProductName = financialProductName,
-            depositPeriodMonths = depositPeriodMonths,
-            pageable = pageable,
-        )
+        this.getFinancialUseCase
+            .getFinancialsWithPaginationInfo(
+                financialGroupType = financialGroupType,
+                companyName = companyName,
+                joinRestriction = joinRestriction,
+                financialProductType = financialProductType,
+                financialProductName = financialProductName,
+                depositPeriodMonths = depositPeriodMonths,
+                pageable = pageable,
+            ).let { financialProducts ->
+                SliceImpl(
+                    financialProducts.content.map { FinancialProductResponse.from(it) },
+                    financialProducts.pageable,
+                    financialProducts.hasNext(),
+                )
+            }
 
     @GetMapping("/financial-products/{financialProductId}")
     fun getFinancialProduct(

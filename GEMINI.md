@@ -12,7 +12,7 @@ This project is a comprehensive personal finance management API server built wit
   - Spring Data JPA
   - **QueryDSL `5.0.0`**: For type-safe database queries.
   - **P6Spy**: For SQL query logging in development environments.
-- **Database**: MySQL / MariaDB
+- **Database**: PostgreSQL
 - **Authentication**: 
   - Spring Security
   - JWT (JSON Web Token) with Refresh Token rotation strategy.
@@ -46,7 +46,7 @@ This project is a comprehensive personal finance management API server built wit
 ## 5. Testing Strategy
 - **Frameworks**: JUnit 5, Mockito, and Spring Boot's testing support.
 - **Integration Testing**: The project heavily relies on **Testcontainers** for high-fidelity integration tests. It spins up real Docker containers for:
-  - `MariaDB` / `MySQL`
+  - `PostgreSQL`
   - `Redis`
 - This ensures that tests run in an environment that is almost identical to production, verifying the interaction with the database and cache.
 - **API Documentation Tests**: Tests in the `controller` package are also used to generate API documentation snippets via Spring REST Docs.

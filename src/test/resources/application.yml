@@ -10,7 +10,7 @@ spring:
       command-timeout: 5000
       batch-size: 1000
   datasource:
-    url: jdbc:tc:mariadb:10.11:///test
+    url: jdbc:tc:postgresql:16:///test
     username: test
     password: test
     driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver

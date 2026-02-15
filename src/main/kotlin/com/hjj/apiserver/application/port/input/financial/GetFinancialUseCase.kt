@@ -1,6 +1,5 @@
 package com.hjj.apiserver.application.port.input.financial
 
-import com.hjj.apiserver.adapter.input.web.financial.response.FinancialProductResponse
 import com.hjj.apiserver.domain.financial.FinancialGroupType
 import com.hjj.apiserver.domain.financial.FinancialProduct
 import com.hjj.apiserver.domain.financial.FinancialProductType
@@ -17,7 +16,7 @@ interface GetFinancialUseCase {
         financialProductName: String?,
         depositPeriodMonths: String?,
         pageable: Pageable,
-    ): Slice<FinancialProductResponse>
+    ): Slice<FinancialProduct>
 
     fun getFinancialProduct(financialProductId: Long): FinancialProduct
 }

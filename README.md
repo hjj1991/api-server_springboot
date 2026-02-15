@@ -8,7 +8,7 @@
 <img src="https://img.shields.io/badge/Kotlin-7F52FF?style=for-the-badge&logo=kotlin&logoColor=white">
 <img src="https://img.shields.io/badge/JAVA-007396?style=for-the-badge&logo=OpenJDK&logoColor=white">
 <img src="https://img.shields.io/badge/Spring-6DB33F?style=for-the-badge&logo=Spring&logoColor=white">
-<img src="https://img.shields.io/badge/mariaDB-003545?style=for-the-badge&logo=mariaDB&logoColor=white">
+<img src="https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white">
 <img src="https://img.shields.io/badge/apache tomcat-F8DC75?style=for-the-badge&logo=apachetomcat&logoColor=white">
 <img src="https://img.shields.io/badge/github-181717?style=for-the-badge&logo=github&logoColor=white">
 <img src="https://img.shields.io/badge/jenkins-D24939?style=for-the-badge&logo=jenkins&logoColor=white">
@@ -57,4 +57,3 @@
 |미정|공유 가계부| 사용자간의 초대를 통한 가계부 공유작성
 |미정|공유 가계부 권한 적용| 공유 가계부내의 권한을 추가하여 권한 별 기능 접근 추가
 |미정|가계부 초대 및 알림 기능| 로그인 중인 사용자의 경우 Socket통신을 통하여 실시간으로 <br/>가계부 초대/수락/거절 상태를 사용자에게 알림을 주도록 구현
-
