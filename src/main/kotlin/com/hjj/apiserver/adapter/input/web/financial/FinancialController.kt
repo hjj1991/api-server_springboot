@@ -1,38 +1,36 @@
 package com.hjj.apiserver.adapter.input.web.financial
 
 import com.hjj.apiserver.adapter.input.web.financial.response.FinancialProductResponse
+import com.hjj.apiserver.adapter.input.web.ApiVersionConstants
 import com.hjj.apiserver.application.port.input.financial.GetFinancialUseCase
-import com.hjj.apiserver.application.port.input.financial.SearchFinancialProductUseCase
-import com.hjj.apiserver.application.port.input.financial.StreamFinancialProductSearchUseCase
 import com.hjj.apiserver.domain.financial.FinancialGroupType
 import com.hjj.apiserver.domain.financial.FinancialProductType
 import com.hjj.apiserver.domain.financial.JoinRestriction
-import com.hjj.apiserver.dto.financial.FinancialProductSearchResponse
-import io.swagger.v3.oas.annotations.Operation
+import com.hjj.apiserver.domain.financial.ProductStatus
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Slice
 import org.springframework.data.domain.SliceImpl
 import org.springframework.data.web.PageableDefault
-import org.springframework.http.MediaType.TEXT_EVENT_STREAM_VALUE
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter
 
 @RestController
+@RequestMapping("/financial-products")
 class FinancialController(
     private val getFinancialUseCase: GetFinancialUseCase,
-    private val searchFinancialProductUseCase: SearchFinancialProductUseCase,
-    private val streamFinancialProductSearchUseCase: StreamFinancialProductSearchUseCase,
 ) {
-    @GetMapping("/financial-products")
-    fun getFinancialProducts(
+    @GetMapping(headers = [ApiVersionConstants.HEADER_V1])
+    fun listFinancialProducts(
         @RequestParam(required = false) financialGroupType: FinancialGroupType?,
         @RequestParam(required = false) companyName: String?,
         @RequestParam(required = false) joinRestriction: JoinRestriction?,
         @RequestParam(required = false) financialProductType: FinancialProductType?,
         @RequestParam(required = false) financialProductName: String?,
+        @RequestParam(required = false) query: String?,
+        @RequestParam(defaultValue = DEFAULT_PRODUCT_STATUS) status: ProductStatus,
         @RequestParam(required = false) depositPeriodMonths: String?,
         @PageableDefault(page = 0, size = 20) pageable: Pageable,
     ): Slice<FinancialProductResponse> =
@@ -43,6 +41,8 @@ class FinancialController(
                 joinRestriction = joinRestriction,
                 financialProductType = financialProductType,
                 financialProductName = financialProductName,
+                query = query,
+                status = status,
                 depositPeriodMonths = depositPeriodMonths,
                 pageable = pageable,
             ).let { financialProducts ->
@@ -53,24 +53,15 @@ class FinancialController(
                 )
             }
 
-    @GetMapping("/financial-products/{financialProductId}")
-    fun getFinancialProduct(
+    @GetMapping("/{financialProductId}", headers = [ApiVersionConstants.HEADER_V1])
+    fun getFinancialProductById(
         @PathVariable financialProductId: Long,
     ): FinancialProductResponse {
         val financialProduct = this.getFinancialUseCase.getFinancialProduct(financialProductId = financialProductId)
         return FinancialProductResponse.from(financialProduct)
     }
 
-    @Operation(summary = "자연어 금융상품 검색", description = "자연어 쿼리를 사용하여 금융 상품을 검색합니다.")
-    @GetMapping("/financial-products/search")
-    fun searchFinancialProducts(@RequestParam query: String): FinancialProductSearchResponse {
-        return searchFinancialProductUseCase.searchFinancialProduct(query)
+    private companion object {
+        const val DEFAULT_PRODUCT_STATUS = "ACTIVE"
     }
-
-    @Operation(summary = "자연어 금융상품 검색(스트리밍)", description = "자연어 쿼리를 사용하여 금융 상품을 검색합니다.")
-    @GetMapping("/financial-products/search/stream", produces = [TEXT_EVENT_STREAM_VALUE])
-    fun searchFinancialProductsStream(@RequestParam query: String): SseEmitter {
-        return streamFinancialProductSearchUseCase.searchFinancialProduct(query)
-    }
-
 }

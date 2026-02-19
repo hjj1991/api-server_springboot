@@ -84,8 +84,6 @@ spring:
       connect-timeout: 1000
       command-timeout: 5000
       batch-size: 1000
-  elasticsearch:
-    uris: localhost:9200
   datasource:
     url: jdbc:postgresql://localhost:5432/api_server
     username: postgres
@@ -120,10 +118,6 @@ spring:
   jpa:
     hibernate:
       ddl-auto: none
-  elasticsearch:
-    uris: ${ES_URL:http://localhost:9200}
-    username: elastic
-    password: ${ES_PASSWORD}
   datasource:
     url: ${SPRING_DATASOURCE_URL}
     username: ${SECRET_USERNAME}

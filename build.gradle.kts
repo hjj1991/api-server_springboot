@@ -71,7 +71,6 @@ dependencies {
     implementation("com.querydsl:querydsl-jpa:5.1.0:jakarta")
     implementation("io.github.microutils:kotlin-logging:4.0.0-beta-2")
     implementation("com.github.ben-manes.caffeine:caffeine:3.2.3")
-    implementation("org.springframework.boot:spring-boot-starter-data-elasticsearch")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
     kapt("org.springframework.boot:spring-boot-configuration-processor")

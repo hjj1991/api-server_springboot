@@ -1,8 +1,6 @@
 package com.hjj.apiserver.adapter.input.web.financial
 
 import com.hjj.apiserver.application.port.input.financial.GetFinancialUseCase
-import com.hjj.apiserver.application.port.input.financial.SearchFinancialProductUseCase
-import com.hjj.apiserver.application.port.input.financial.StreamFinancialProductSearchUseCase
 import com.hjj.apiserver.common.ApiProblemFactory
 import com.hjj.apiserver.common.ExceptionControllerAdvice
 import com.hjj.apiserver.common.exception.financial.FinancialProductNotFoundException
@@ -15,7 +13,6 @@ import com.hjj.apiserver.domain.financial.FinancialProductType
 import com.hjj.apiserver.domain.financial.InterestRateType
 import com.hjj.apiserver.domain.financial.JoinRestriction
 import com.hjj.apiserver.domain.financial.ReserveType
-import com.hjj.apiserver.dto.financial.FinancialProductSearchResponse
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito
@@ -25,23 +22,16 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter
 import java.math.BigDecimal
 
 class FinancialControllerTest {
     private lateinit var mockMvc: MockMvc
 
     private val getFinancialUseCase: GetFinancialUseCase = Mockito.mock(GetFinancialUseCase::class.java)
-    private val searchFinancialProductUseCase: SearchFinancialProductUseCase = Mockito.mock(SearchFinancialProductUseCase::class.java)
-    private val streamFinancialProductSearchUseCase: StreamFinancialProductSearchUseCase = Mockito.mock(StreamFinancialProductSearchUseCase::class.java)
 
     @BeforeEach
     fun setUp() {
         Mockito.reset(getFinancialUseCase)
-        Mockito.reset(searchFinancialProductUseCase)
-        Mockito.reset(streamFinancialProductSearchUseCase)
-
-        Mockito.`when`(streamFinancialProductSearchUseCase.searchFinancialProduct(Mockito.anyString())).thenReturn(SseEmitter())
 
         val errorResponseProperties = ErrorResponseProperties().apply {
             problemTypeBaseUri = "https://api.test.local/problems"
@@ -51,8 +41,6 @@ class FinancialControllerTest {
             MockMvcBuilders.standaloneSetup(
                 FinancialController(
                     getFinancialUseCase = getFinancialUseCase,
-                    searchFinancialProductUseCase = searchFinancialProductUseCase,
-                    streamFinancialProductSearchUseCase = streamFinancialProductSearchUseCase,
                 ),
             )
                 .setControllerAdvice(ExceptionControllerAdvice(ApiProblemFactory(errorResponseProperties)))
@@ -63,7 +51,10 @@ class FinancialControllerTest {
     fun `금융상품 단건 조회 성공`() {
         Mockito.`when`(getFinancialUseCase.getFinancialProduct(1L)).thenReturn(sampleProduct())
 
-        mockMvc.perform(get("/financial-products/{financialProductId}", 1L))
+        mockMvc.perform(
+            get("/financial-products/{financialProductId}", 1L)
+                .header("API-Version", "1.0"),
+        )
             .andExpect(status().isOk)
             .andExpect(content().contentType("application/json"))
             .andExpect(jsonPath("$.financialProductId").value(1))
@@ -76,21 +67,13 @@ class FinancialControllerTest {
     fun `금융상품 단건 조회 실패시 ProblemDetail 반환`() {
         Mockito.`when`(getFinancialUseCase.getFinancialProduct(999L)).thenThrow(FinancialProductNotFoundException())
 
-        mockMvc.perform(get("/financial-products/{financialProductId}", 999L))
+        mockMvc.perform(
+            get("/financial-products/{financialProductId}", 999L)
+                .header("API-Version", "1.0"),
+        )
             .andExpect(status().isNotFound)
             .andExpect(jsonPath("$.code").value("ERR_CODE0014"))
             .andExpect(jsonPath("$.status").value(404))
-    }
-
-    @Test
-    fun `자연어 검색 성공`() {
-        Mockito.`when`(searchFinancialProductUseCase.searchFinancialProduct("예금 추천"))
-            .thenReturn(FinancialProductSearchResponse(displayResponse = "추천 결과"))
-
-        mockMvc.perform(get("/financial-products/search").param("query", "예금 추천"))
-            .andExpect(status().isOk)
-            .andExpect(content().contentType("application/json"))
-            .andExpect(jsonPath("$.displayResponse").value("추천 결과"))
     }
 
     private fun sampleProduct(): FinancialProduct {

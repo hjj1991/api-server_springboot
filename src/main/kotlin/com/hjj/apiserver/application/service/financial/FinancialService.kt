@@ -1,14 +1,13 @@
 package com.hjj.apiserver.application.service.financial
 
 import com.hjj.apiserver.application.port.input.financial.GetFinancialUseCase
-import com.hjj.apiserver.application.port.input.financial.SearchFinancialProductUseCase
 import com.hjj.apiserver.application.port.out.financial.GetFinancialProductPort
 import com.hjj.apiserver.application.port.out.financial.SearchFinancialProductPort
 import com.hjj.apiserver.domain.financial.FinancialGroupType
 import com.hjj.apiserver.domain.financial.FinancialProduct
 import com.hjj.apiserver.domain.financial.FinancialProductType
 import com.hjj.apiserver.domain.financial.JoinRestriction
-import com.hjj.apiserver.dto.financial.FinancialProductSearchResponse
+import com.hjj.apiserver.domain.financial.ProductStatus
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Slice
 import org.springframework.data.domain.SliceImpl
@@ -19,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional
 class FinancialService(
     private val getFinancialProductPort: GetFinancialProductPort,
     private val searchFinancialProductPort: SearchFinancialProductPort,
-) : GetFinancialUseCase, SearchFinancialProductUseCase {
+) : GetFinancialUseCase {
     @Transactional(readOnly = true)
     override fun getFinancialsWithPaginationInfo(
         financialGroupType: FinancialGroupType?,
@@ -27,6 +26,8 @@ class FinancialService(
         joinRestriction: JoinRestriction?,
         financialProductType: FinancialProductType?,
         financialProductName: String?,
+        query: String?,
+        status: ProductStatus,
         depositPeriodMonths: String?,
         pageable: Pageable,
     ): Slice<FinancialProduct> {
@@ -36,6 +37,8 @@ class FinancialService(
             joinRestriction = joinRestriction,
             financialProductType = financialProductType,
             financialProductName = financialProductName,
+            query = query,
+            status = status,
             depositPeriodMonths = depositPeriodMonths,
             pageable = pageable,
         )
@@ -54,9 +57,4 @@ class FinancialService(
 
     override fun getFinancialProduct(financialProductId: Long): FinancialProduct =
         this.getFinancialProductPort.findFinancialProduct(financialProductId = financialProductId)
-
-    override fun searchFinancialProduct(query: String): FinancialProductSearchResponse {
-        val result = searchFinancialProductPort.searchFinancialProduct(query)
-        return FinancialProductSearchResponse(displayResponse = result.displayResponse)
-    }
 }

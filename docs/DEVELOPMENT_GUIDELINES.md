@@ -23,6 +23,16 @@
    - 에러 코드는 `ErrConst`를 단일 소스로 사용하고, 상태코드/메시지 매핑을 분산하지 않습니다.
    - 인증/인가/전역 예외 모두 동일한 에러 포맷(`application/problem+json`)을 유지합니다.
 
+4. **Controller 규칙 표준화**
+   - 모든 컨트롤러는 클래스 상단에 `@RequestMapping("/resource-base")`를 선언하고, 메서드에는 하위 경로만 선언합니다.
+   - 컨트롤러의 응답 타입은 반드시 `*Response` postfix 클래스를 사용합니다.
+   - 내부 계층(application/service/adapter-out) 전용 `*Dto`를 컨트롤러에서 직접 반환하지 않습니다.
+   - 버전 헤더 조건은 문자열 하드코딩 대신 공통 상수(`ApiVersionConstants.HEADER_V1`)를 사용합니다.
+   - 컨트롤러 함수명은 동사+리소스 패턴으로 통일합니다.
+     - 조회 목록: `list<ResourcePlural>`
+     - 단건 조회: `get<Resource>ById`
+     - 생성/트리거: `create<Resource>`, `trigger<Action>`
+
 ### 헥사고날 아키텍처 기반 테스트 규약
 
 레이어가 아니라 **경계(Port/Adapter) 기준**으로 테스트를 작성합니다.
