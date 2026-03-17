@@ -24,6 +24,7 @@ import jakarta.persistence.Lob
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.OneToMany
 import jakarta.persistence.Table
+import java.time.OffsetDateTime
 
 @Entity
 @Table(
@@ -52,6 +53,7 @@ class FinancialProductEntity(
     financialSubmitDay: String,
     financialCompanyEntity: FinancialCompanyEntity,
     status: ProductStatus,
+    lastSeenAt: OffsetDateTime? = null,
     productContentHash: String? = null,
     embeddingVector: FloatArray? = null,
     financialProductOptionEntities: MutableList<FinancialProductOptionEntity> = mutableListOf(),
@@ -111,6 +113,9 @@ class FinancialProductEntity(
 
     @Enumerated(EnumType.STRING)
     var status: ProductStatus = status
+        protected set
+
+    var lastSeenAt: OffsetDateTime? = lastSeenAt
         protected set
 
     @Column(length = 255) // SHA-256 hash is 64 characters long

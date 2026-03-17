@@ -97,9 +97,6 @@ logging:
     root: info
     c: error
     com.hjj.apiserver: debug
-nlp:
-  api:
-    url: http://localhost:8000
 
 
 --- #prod
@@ -131,7 +128,3 @@ logging:
     root: info
     c: error
     com.hjj.apiserver: info
-
-nlp:
-  api:
-    url: http://python-api-server.default.svc.cluster.local:8000

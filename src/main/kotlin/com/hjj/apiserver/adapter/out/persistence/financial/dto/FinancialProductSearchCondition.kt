@@ -10,6 +10,7 @@ import com.hjj.apiserver.domain.financial.ProductStatus
 import com.querydsl.core.BooleanBuilder
 import com.querydsl.core.types.Predicate
 import com.querydsl.core.types.dsl.BooleanExpression
+import com.querydsl.core.types.dsl.Expressions
 
 class FinancialProductSearchCondition(
     val financialGroupType: FinancialGroupType?,
@@ -61,10 +62,30 @@ class FinancialProductSearchCondition(
     }
 
     private fun matchQuery(query: String): BooleanExpression {
-        val companyNameMatched = QFinancialCompanyEntity.financialCompanyEntity.companyName.containsIgnoreCase(query)
-        val productNameMatched = QFinancialProductEntity.financialProductEntity.financialProductName.containsIgnoreCase(query)
-        val specialConditionMatched = QFinancialProductEntity.financialProductEntity.specialCondition.containsIgnoreCase(query)
-        return companyNameMatched.or(productNameMatched).or(specialConditionMatched)
+        val normalizedQuery = query.trim()
+
+        val productFullTextMatched =
+            Expressions.booleanTemplate(
+                """
+                to_tsvector(
+                    'simple',
+                    coalesce({0}, '') || ' ' || coalesce({1}, '') || ' ' || coalesce({2}, '')
+                ) @@ websearch_to_tsquery('simple', {3})
+                """.trimIndent(),
+                QFinancialProductEntity.financialProductEntity.financialProductName,
+                QFinancialProductEntity.financialProductEntity.specialCondition,
+                QFinancialProductEntity.financialProductEntity.additionalNotes,
+                normalizedQuery,
+            )
+
+        val companyNameTrigramMatched =
+            Expressions.booleanTemplate(
+                "{0} % {1}",
+                QFinancialCompanyEntity.financialCompanyEntity.companyName,
+                normalizedQuery,
+            )
+
+        return productFullTextMatched.or(companyNameTrigramMatched)
     }
 
     private fun equalDepositPeriodMonths(depositPeriodMonths: String): BooleanExpression {
