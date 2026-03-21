@@ -28,7 +28,7 @@ class FinancialProductSearchAdapter(
         depositPeriodMonths: String?,
         pageable: Pageable,
     ): Slice<Long> {
-        val pageRequest = PageRequest.of(pageable.pageNumber, pageable.pageSize)
+        val pageRequest = PageRequest.of(pageable.pageNumber, pageable.pageSize, pageable.sort)
         val condition =
             FinancialProductSearchCondition(
                 financialGroupType = financialGroupType,
@@ -41,9 +41,9 @@ class FinancialProductSearchAdapter(
                 depositPeriodMonths = depositPeriodMonths,
             )
 
-        val entities = financialProductCustomRepository.findByCondition(condition, pageRequest)
+        val financialProductIds = financialProductCustomRepository.findByCondition(condition, pageRequest)
         val hasNext = financialProductCustomRepository.existsNextPageByCondition(condition, pageRequest)
 
-        return SliceImpl(entities.map { it.financialProductId }, pageable, hasNext)
+        return SliceImpl(financialProductIds, pageable, hasNext)
     }
 }

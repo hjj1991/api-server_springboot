@@ -1,3 +1,4 @@
+CREATE EXTENSION IF NOT EXISTS pg_trgm;
 CREATE EXTENSION IF NOT EXISTS vector;
 
 CREATE TABLE IF NOT EXISTS financial_company (
@@ -56,6 +57,18 @@ CREATE TABLE IF NOT EXISTS financial_product_option (
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     modified_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
+CREATE INDEX IF NOT EXISTS ix_fin_company__company_name_trgm
+    ON financial_company USING gin (company_name gin_trgm_ops);
+
+CREATE INDEX IF NOT EXISTS ix_fin_product__product_name_trgm
+    ON financial_product USING gin (financial_product_name gin_trgm_ops);
+
+CREATE INDEX IF NOT EXISTS ix_fin_product__special_condition_trgm
+    ON financial_product USING gin (special_condition gin_trgm_ops);
+
+CREATE INDEX IF NOT EXISTS ix_fin_product__additional_notes_trgm
+    ON financial_product USING gin (additional_notes gin_trgm_ops);
 
 CREATE TABLE IF NOT EXISTS financial_product_history (
     observed_at TIMESTAMPTZ NOT NULL,

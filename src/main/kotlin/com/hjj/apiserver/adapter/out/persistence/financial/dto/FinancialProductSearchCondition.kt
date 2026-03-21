@@ -8,9 +8,11 @@ import com.hjj.apiserver.domain.financial.FinancialProductType
 import com.hjj.apiserver.domain.financial.JoinRestriction
 import com.hjj.apiserver.domain.financial.ProductStatus
 import com.querydsl.core.BooleanBuilder
+import com.querydsl.core.types.Expression
 import com.querydsl.core.types.Predicate
 import com.querydsl.core.types.dsl.BooleanExpression
 import com.querydsl.core.types.dsl.Expressions
+import com.querydsl.jpa.JPAExpressions
 
 class FinancialProductSearchCondition(
     val financialGroupType: FinancialGroupType?,
@@ -63,35 +65,58 @@ class FinancialProductSearchCondition(
 
     private fun matchQuery(query: String): BooleanExpression {
         val normalizedQuery = query.trim()
+        val product = QFinancialProductEntity.financialProductEntity
+        val company = QFinancialCompanyEntity.financialCompanyEntity
 
-        val productFullTextMatched =
-            Expressions.booleanTemplate(
-                """
-                to_tsvector(
-                    'simple',
-                    coalesce({0}, '') || ' ' || coalesce({1}, '') || ' ' || coalesce({2}, '')
-                ) @@ websearch_to_tsquery('simple', {3})
-                """.trimIndent(),
-                QFinancialProductEntity.financialProductEntity.financialProductName,
-                QFinancialProductEntity.financialProductEntity.specialCondition,
-                QFinancialProductEntity.financialProductEntity.additionalNotes,
-                normalizedQuery,
-            )
+        val companyNameSimilarityMatched = similarityMatched(company.companyName, normalizedQuery)
+        val productNameSimilarityMatched = similarityMatched(product.financialProductName, normalizedQuery)
+        val specialConditionSimilarityMatched = similarityMatched(product.specialCondition, normalizedQuery)
+        val additionalNotesSimilarityMatched = similarityMatched(product.additionalNotes, normalizedQuery)
 
-        val companyNameTrigramMatched =
-            Expressions.booleanTemplate(
-                "{0} % {1}",
-                QFinancialCompanyEntity.financialCompanyEntity.companyName,
-                normalizedQuery,
-            )
+        val companyNameContainsMatched = company.companyName.containsIgnoreCase(normalizedQuery)
+        val productNameContainsMatched = product.financialProductName.containsIgnoreCase(normalizedQuery)
+        val specialConditionContainsMatched = product.specialCondition.containsIgnoreCase(normalizedQuery)
+        val additionalNotesContainsMatched = product.additionalNotes.containsIgnoreCase(normalizedQuery)
 
-        return productFullTextMatched.or(companyNameTrigramMatched)
+        return companyNameSimilarityMatched
+            .or(productNameSimilarityMatched)
+            .or(specialConditionSimilarityMatched)
+            .or(additionalNotesSimilarityMatched)
+            .or(companyNameContainsMatched)
+            .or(productNameContainsMatched)
+            .or(specialConditionContainsMatched)
+            .or(additionalNotesContainsMatched)
     }
 
     private fun equalDepositPeriodMonths(depositPeriodMonths: String): BooleanExpression {
         val parsedDepositPeriodMonths = checkNotNull(depositPeriodMonths.toIntOrNull()) {
             "depositPeriodMonths must be validated before persistence filtering."
         }
-        return QFinancialProductOptionEntity.financialProductOptionEntity.depositPeriodMonths.eq(parsedDepositPeriodMonths)
+        val filteringOption = QFinancialProductOptionEntity("filteringOption")
+        return Expressions.booleanTemplate(
+            "exists ({0})",
+            JPAExpressions
+                .selectOne()
+                .from(filteringOption)
+                .where(
+                    filteringOption.financialProductEntity.eq(QFinancialProductEntity.financialProductEntity)
+                        .and(filteringOption.depositPeriodMonths.eq(parsedDepositPeriodMonths)),
+                ),
+        )
+    }
+
+    private fun similarityMatched(
+        expression: Expression<String>,
+        normalizedQuery: String,
+    ): BooleanExpression =
+        Expressions.booleanTemplate(
+            "function('similarity', coalesce({0}, ''), {1}) >= {2}",
+            expression,
+            normalizedQuery,
+            MIN_SIMILARITY_THRESHOLD,
+        )
+
+    private companion object {
+        const val MIN_SIMILARITY_THRESHOLD = 0.2
     }
 }

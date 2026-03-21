@@ -82,7 +82,7 @@ class FinancialProductSearchIntegrationTest {
             .andExpect(jsonPath("$.content[0].dclsStartDay").value("2026-03-01"))
             .andExpect(jsonPath("$.content[0].financialProductOptions[0].depositPeriodMonths").value("12"))
             .andExpect(jsonPath("$.content[0].financialProductOptions[0].baseInterestRate").value(3.12345))
-            .andExpect(jsonPath("$.content[0].financialProductOptions[0].maximumInterestRate").value(3.56789))
+            .andExpect(jsonPath("$.content[0].financialProductOptions[0].maximumInterestRate").value(4.10000))
     }
 
     @Test
@@ -114,6 +114,33 @@ class FinancialProductSearchIntegrationTest {
             .andExpect(jsonPath("$.financialCompany.companyName").value("테스트은행"))
     }
 
+    @Test
+    fun `최고 금리순 정렬은 상품별 최고 금리 기준으로 적용된다`() {
+        mockMvc.perform(
+            get("/financial-products")
+                .header("API-Version", "1.0")
+                .param("sort", "maximumInterestRate,desc")
+                .param("size", "10"),
+        )
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.content[0].financialProductName").value("테스트 상품 12"))
+            .andExpect(jsonPath("$.content[1].financialProductName").value("테스트 상품 24"))
+            .andExpect(jsonPath("$.content[2].financialProductName").value("테스트 상품 null"))
+    }
+
+    @Test
+    fun `통합 검색 q 는 상품명과 우대 조건을 함께 검색한다`() {
+        mockMvc.perform(
+            get("/financial-products")
+                .header("API-Version", "1.0")
+                .param("q", "급여")
+                .param("size", "10"),
+        )
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.content.length()").value(1))
+            .andExpect(jsonPath("$.content[0].financialProductName").value("테스트 상품 24"))
+    }
+
     private fun seedProducts() {
         val company =
             financialCompanyRepository.saveAndFlush(
@@ -125,9 +152,37 @@ class FinancialProductSearchIntegrationTest {
                 ),
             )
 
-        financialProductRepository.saveAndFlush(createProduct(company, "PRD-12", 12))
-        financialProductRepository.saveAndFlush(createProduct(company, "PRD-24", 24))
-        financialProductRepository.saveAndFlush(createProduct(company, "PRD-NULL", 12, "테스트 상품 null", null))
+        financialProductRepository.saveAndFlush(
+            createProduct(
+                company = company,
+                code = "PRD-12",
+                depositPeriodMonths = 12,
+                maximumInterestRate = BigDecimal("4.10000"),
+                additionalOptionRates =
+                    listOf(
+                        OptionRate(periodMonths = 24, baseRate = BigDecimal("3.00000"), maximumRate = BigDecimal("3.40000")),
+                    ),
+            ),
+        )
+        financialProductRepository.saveAndFlush(
+            createProduct(
+                company = company,
+                code = "PRD-24",
+                depositPeriodMonths = 24,
+                maximumInterestRate = BigDecimal("3.80000"),
+                specialCondition = "급여 이체 시 우대",
+            ),
+        )
+        financialProductRepository.saveAndFlush(
+            createProduct(
+                company = company,
+                code = "PRD-NULL",
+                depositPeriodMonths = 12,
+                financialProductName = "테스트 상품 null",
+                financialSubmitDay = null,
+                maximumInterestRate = BigDecimal("3.20000"),
+            ),
+        )
     }
 
     private fun createProduct(
@@ -136,6 +191,10 @@ class FinancialProductSearchIntegrationTest {
         depositPeriodMonths: Int,
         financialProductName: String = "테스트 상품 $depositPeriodMonths",
         financialSubmitDay: OffsetDateTime? = OffsetDateTime.parse("2026-03-01T00:00:00Z"),
+        baseInterestRate: BigDecimal = BigDecimal("3.12345"),
+        maximumInterestRate: BigDecimal = BigDecimal("3.56789"),
+        specialCondition: String = "우대조건",
+        additionalOptionRates: List<OptionRate> = emptyList(),
     ): FinancialProductEntity {
         val product =
             FinancialProductEntity(
@@ -143,7 +202,7 @@ class FinancialProductSearchIntegrationTest {
                 financialProductName = financialProductName,
                 joinWay = "영업점",
                 postMaturityInterestRate = "만기 후 1%",
-                specialCondition = "우대조건",
+                specialCondition = specialCondition,
                 joinRestriction = JoinRestriction.NO_RESTRICTION,
                 financialProductType = FinancialProductType.SAVINGS,
                 joinMember = "개인",
@@ -163,13 +222,33 @@ class FinancialProductSearchIntegrationTest {
                 interestRateType = InterestRateType.SIMPLE,
                 reserveType = ReserveType.FIXED,
                 depositPeriodMonths = depositPeriodMonths,
-                baseInterestRate = BigDecimal("3.12345"),
-                maximumInterestRate = BigDecimal("3.56789"),
+                baseInterestRate = baseInterestRate,
+                maximumInterestRate = maximumInterestRate,
                 financialProductEntity = product,
             )
         product.financialProductOptionEntities.add(option)
+
+        additionalOptionRates.forEach { optionRate ->
+            product.financialProductOptionEntities.add(
+                FinancialProductOptionEntity(
+                    interestRateType = InterestRateType.SIMPLE,
+                    reserveType = ReserveType.FLEXIBLE,
+                    depositPeriodMonths = optionRate.periodMonths,
+                    baseInterestRate = optionRate.baseRate,
+                    maximumInterestRate = optionRate.maximumRate,
+                    financialProductEntity = product,
+                ),
+            )
+        }
+
         return product
     }
+
+    private data class OptionRate(
+        val periodMonths: Int,
+        val baseRate: BigDecimal,
+        val maximumRate: BigDecimal,
+    )
 
     companion object {
         @Container
