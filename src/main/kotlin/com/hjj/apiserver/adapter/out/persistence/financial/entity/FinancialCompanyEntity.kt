@@ -16,8 +16,8 @@ import jakarta.persistence.Table
 @Table(
     name = "financial_company",
     indexes = [
-        Index(name = "ix_financial_company__financial_company_code", columnList = "financial_company_code"),
-        Index(name = "ix_financial_company__company_name", columnList = "company_name"),
+        Index(name = "ix_fin_company__company_code", columnList = "financial_company_code"),
+        Index(name = "ix_fin_company__company_name", columnList = "company_name"),
     ],
 )
 class FinancialCompanyEntity(

@@ -21,9 +21,9 @@ import java.math.BigDecimal
 @Table(
     name = "financial_product_option",
     indexes = [
-        Index(name = "ix_financial_product_option__financial_product_id", columnList = "financial_product_id"),
+        Index(name = "ix_fin_product_option__product_id", columnList = "financial_product_id"),
         Index(
-            name = "ix_financial_product_option__financial_product_id_deposit_period_months_interest_rate_type_reserve_type",
+            name = "ix_fin_product_option__product_id_period_m_rate_t_reserve_t",
             columnList = "financial_product_id,deposit_period_months,interest_rate_type,reserve_type",
         ),
     ],

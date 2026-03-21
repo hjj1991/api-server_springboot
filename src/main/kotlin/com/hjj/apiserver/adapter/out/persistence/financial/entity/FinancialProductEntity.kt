@@ -29,11 +29,11 @@ import java.time.OffsetDateTime
 @Table(
     name = "financial_product",
     indexes = [
-        Index(name = "ix_financial_product__financial_company_id", columnList = "financial_company_id"),
-        Index(name = "ix_financial_product__financial_product_code", columnList = "financial_product_code"),
-        Index(name = "ix_financial_product__financial_product_name", columnList = "financial_product_name"),
+        Index(name = "ix_fin_product__company_id", columnList = "financial_company_id"),
+        Index(name = "ix_fin_product__product_code", columnList = "financial_product_code"),
+        Index(name = "ix_fin_product__product_name", columnList = "financial_product_name"),
         Index(
-            name = "ix_financial_product__financial_product_type_status_last_seen_at",
+            name = "ix_fin_product__product_type_status_last_seen_at",
             columnList = "financial_product_type,status,last_seen_at",
         ),
     ],

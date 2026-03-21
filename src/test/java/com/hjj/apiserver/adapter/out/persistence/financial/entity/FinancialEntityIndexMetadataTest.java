@@ -17,9 +17,9 @@ class FinancialEntityIndexMetadataTest {
         assertIndexes(
                 FinancialCompanyEntity.class,
                 Map.of(
-                        "ix_financial_company__financial_company_code",
+                        "ix_fin_company__company_code",
                         "financial_company_code",
-                        "ix_financial_company__company_name",
+                        "ix_fin_company__company_name",
                         "company_name"));
     }
 
@@ -28,13 +28,13 @@ class FinancialEntityIndexMetadataTest {
         assertIndexes(
                 FinancialProductEntity.class,
                 Map.of(
-                        "ix_financial_product__financial_company_id",
+                        "ix_fin_product__company_id",
                         "financial_company_id",
-                        "ix_financial_product__financial_product_code",
+                        "ix_fin_product__product_code",
                         "financial_product_code",
-                        "ix_financial_product__financial_product_name",
+                        "ix_fin_product__product_name",
                         "financial_product_name",
-                        "ix_financial_product__financial_product_type_status_last_seen_at",
+                        "ix_fin_product__product_type_status_last_seen_at",
                         "financial_product_type,status,last_seen_at"));
     }
 
@@ -43,9 +43,9 @@ class FinancialEntityIndexMetadataTest {
         assertIndexes(
                 FinancialProductOptionEntity.class,
                 Map.of(
-                        "ix_financial_product_option__financial_product_id",
+                        "ix_fin_product_option__product_id",
                         "financial_product_id",
-                        "ix_financial_product_option__financial_product_id_deposit_period_months_interest_rate_type_reserve_type",
+                        "ix_fin_product_option__product_id_period_m_rate_t_reserve_t",
                         "financial_product_id,deposit_period_months,interest_rate_type,reserve_type"));
     }
 

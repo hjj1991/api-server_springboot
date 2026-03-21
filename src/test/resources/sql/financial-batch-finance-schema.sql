@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS financial_company (
     source_payload TEXT,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     modified_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    CONSTRAINT uq_financial_company_code UNIQUE (financial_company_code)
+    CONSTRAINT uq_fin_company__company_code UNIQUE (financial_company_code)
 );
 
 CREATE TABLE IF NOT EXISTS financial_product (
@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS financial_product (
     source_payload TEXT,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     modified_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    CONSTRAINT uq_financial_product_natural UNIQUE (
+    CONSTRAINT uq_fin_product__company_id_product_code_product_type UNIQUE (
         financial_company_id, financial_product_code, financial_product_type
     )
 );
