@@ -16,12 +16,14 @@ import com.hjj.apiserver.domain.financial.ReserveType
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito
+import org.springframework.data.web.PageableHandlerMethodArgumentResolver
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
+import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean
 import java.math.BigDecimal
 
 class FinancialControllerTest {
@@ -43,6 +45,12 @@ class FinancialControllerTest {
                     getFinancialUseCase = getFinancialUseCase,
                 ),
             )
+                .setCustomArgumentResolvers(PageableHandlerMethodArgumentResolver())
+                .setValidator(
+                    LocalValidatorFactoryBean().apply {
+                        afterPropertiesSet()
+                    },
+                )
                 .setControllerAdvice(ExceptionControllerAdvice(ApiProblemFactory(errorResponseProperties)))
                 .build()
     }
@@ -74,6 +82,21 @@ class FinancialControllerTest {
             .andExpect(status().isNotFound)
             .andExpect(jsonPath("$.code").value("ERR_CODE0014"))
             .andExpect(jsonPath("$.status").value(404))
+    }
+
+    @Test
+    fun `기간 필터가 숫자가 아니면 400 ProblemDetail 반환하고 조회를 막는다`() {
+        mockMvc.perform(
+            get("/financial-products")
+                .header("API-Version", "1.0")
+                .param("depositPeriodMonths", "12개월"),
+        )
+            .andExpect(status().isBadRequest)
+            .andExpect(jsonPath("$.code").value("ERR_CODE0016"))
+            .andExpect(jsonPath("$.status").value(400))
+            .andExpect(jsonPath("$.details[0].field").value("depositPeriodMonths"))
+
+        Mockito.verifyNoInteractions(getFinancialUseCase)
     }
 
     private fun sampleProduct(): FinancialProduct {

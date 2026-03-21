@@ -1,12 +1,10 @@
 package com.hjj.apiserver.adapter.input.web.financial
 
 import com.hjj.apiserver.adapter.input.web.ApiVersionConstants
+import com.hjj.apiserver.adapter.input.web.financial.request.FinancialProductListRequest
 import com.hjj.apiserver.adapter.input.web.financial.response.FinancialProductResponse
 import com.hjj.apiserver.application.port.input.financial.GetFinancialUseCase
-import com.hjj.apiserver.domain.financial.FinancialGroupType
-import com.hjj.apiserver.domain.financial.FinancialProductType
-import com.hjj.apiserver.domain.financial.JoinRestriction
-import com.hjj.apiserver.domain.financial.ProductStatus
+import jakarta.validation.Valid
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Slice
 import org.springframework.data.domain.SliceImpl
@@ -25,26 +23,19 @@ class FinancialController(
 ) {
     @GetMapping(headers = [ApiVersionConstants.HEADER_V1])
     fun listFinancialProducts(
-        @RequestParam(required = false) financialGroupType: FinancialGroupType?,
-        @RequestParam(required = false) companyName: String?,
-        @RequestParam(required = false) joinRestriction: JoinRestriction?,
-        @RequestParam(required = false) financialProductType: FinancialProductType?,
-        @RequestParam(required = false) financialProductName: String?,
-        @RequestParam(name = "q", required = false) q: String?,
-        @RequestParam(defaultValue = DEFAULT_PRODUCT_STATUS) status: ProductStatus,
-        @RequestParam(required = false) depositPeriodMonths: String?,
+        @Valid request: FinancialProductListRequest,
         @PageableDefault(page = 0, size = 20, sort = [DEFAULT_SORT_FIELD], direction = Sort.Direction.DESC) pageable: Pageable,
     ): Slice<FinancialProductResponse> =
         this.getFinancialUseCase
             .getFinancialsWithPaginationInfo(
-                financialGroupType = financialGroupType,
-                companyName = companyName,
-                joinRestriction = joinRestriction,
-                financialProductType = financialProductType,
-                financialProductName = financialProductName,
-                query = q,
-                status = status,
-                depositPeriodMonths = depositPeriodMonths,
+                financialGroupType = request.financialGroupType,
+                companyName = request.companyName,
+                joinRestriction = request.joinRestriction,
+                financialProductType = request.financialProductType,
+                financialProductName = request.financialProductName,
+                query = request.q,
+                status = request.status,
+                depositPeriodMonths = request.depositPeriodMonths,
                 pageable = pageable,
             ).let { financialProducts ->
                 SliceImpl(
@@ -63,7 +54,6 @@ class FinancialController(
     }
 
     private companion object {
-        const val DEFAULT_PRODUCT_STATUS = "ACTIVE"
         const val DEFAULT_SORT_FIELD = "lastSeenAt"
     }
 }

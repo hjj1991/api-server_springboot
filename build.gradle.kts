@@ -69,6 +69,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.21.0")
     implementation("com.querydsl:querydsl-jpa:5.1.0:jakarta")
+    implementation("org.hibernate.orm:hibernate-vector")
     implementation("io.github.microutils:kotlin-logging:4.0.0-beta-2")
     implementation("com.github.ben-manes.caffeine:caffeine:3.2.3")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
