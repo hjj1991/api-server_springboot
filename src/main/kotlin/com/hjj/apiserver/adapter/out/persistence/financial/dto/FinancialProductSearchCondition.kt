@@ -89,6 +89,8 @@ class FinancialProductSearchCondition(
     }
 
     private fun equalDepositPeriodMonths(depositPeriodMonths: String): BooleanExpression {
-        return QFinancialProductOptionEntity.financialProductOptionEntity.depositPeriodMonths.eq(depositPeriodMonths)
+        val parsedDepositPeriodMonths = depositPeriodMonths.toIntOrNull()
+            ?: return Expressions.asBoolean(false).isTrue
+        return QFinancialProductOptionEntity.financialProductOptionEntity.depositPeriodMonths.eq(parsedDepositPeriodMonths)
     }
 }

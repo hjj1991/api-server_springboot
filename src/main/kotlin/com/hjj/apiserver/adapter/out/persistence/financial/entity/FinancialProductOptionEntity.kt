@@ -28,7 +28,7 @@ class FinancialProductOptionEntity(
     financialProductOptionId: Long = 0L,
     interestRateType: InterestRateType,
     reserveType: ReserveType?,
-    depositPeriodMonths: String,
+    depositPeriodMonths: Int,
     baseInterestRate: BigDecimal?,
     maximumInterestRate: BigDecimal?,
     financialProductEntity: FinancialProductEntity,
@@ -46,7 +46,8 @@ class FinancialProductOptionEntity(
     var reserveType: ReserveType? = reserveType
         protected set
 
-    var depositPeriodMonths: String = depositPeriodMonths
+    @Column(columnDefinition = "smallint")
+    var depositPeriodMonths: Int = depositPeriodMonths
         protected set
 
     @Column(precision = 5, scale = 2)

@@ -12,7 +12,7 @@ class FinancialProductOptionMapper {
             financialProduct = null,
             interestRateType = financialProductOptionEntity.interestRateType,
             reserveType = financialProductOptionEntity.reserveType,
-            depositPeriodMonths = financialProductOptionEntity.depositPeriodMonths,
+            depositPeriodMonths = financialProductOptionEntity.depositPeriodMonths.toString(),
             baseInterestRate = financialProductOptionEntity.baseInterestRate,
             maximumInterestRate = financialProductOptionEntity.maximumInterestRate,
         )

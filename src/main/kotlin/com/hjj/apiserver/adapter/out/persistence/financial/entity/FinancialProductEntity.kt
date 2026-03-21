@@ -1,15 +1,12 @@
 package com.hjj.apiserver.adapter.out.persistence.financial.entity
 
-import com.hjj.apiserver.adapter.out.persistence.BaseEntity
 import com.hjj.apiserver.adapter.out.persistence.BaseTimeEntity
-import com.hjj.apiserver.adapter.out.persistence.financial.converter.FloatArrayConverter
 import com.hjj.apiserver.domain.financial.FinancialProductType
 import com.hjj.apiserver.domain.financial.JoinRestriction
 import com.hjj.apiserver.domain.financial.ProductStatus
 import jakarta.persistence.CascadeType
 import jakarta.persistence.Column
 import jakarta.persistence.ConstraintMode
-import jakarta.persistence.Convert
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
 import jakarta.persistence.Enumerated
@@ -20,10 +17,11 @@ import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.Index
 import jakarta.persistence.JoinColumn
-import jakarta.persistence.Lob
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.OneToMany
 import jakarta.persistence.Table
+import org.hibernate.annotations.JdbcTypeCode
+import org.hibernate.type.SqlTypes
 import java.time.OffsetDateTime
 
 @Entity
@@ -70,14 +68,15 @@ class FinancialProductEntity(
     var financialProductName: String = financialProductName
         protected set
 
+    @Column(columnDefinition = "text")
     var joinWay: String? = joinWay
         protected set
 
-    @Lob
+    @Column(columnDefinition = "text")
     var postMaturityInterestRate: String? = postMaturityInterestRate
         protected set
 
-    @Lob
+    @Column(columnDefinition = "text")
     var specialCondition: String? = specialCondition
         protected set
 
@@ -89,10 +88,11 @@ class FinancialProductEntity(
     var financialProductType: FinancialProductType = financialProductType
         protected set
 
+    @Column(columnDefinition = "text")
     var joinMember: String = joinMember
         protected set
 
-    @Lob
+    @Column(columnDefinition = "text")
     var additionalNotes: String = additionalNotes
         protected set
 
@@ -122,8 +122,8 @@ class FinancialProductEntity(
     var productContentHash: String? = productContentHash
         protected set
 
-    @Lob
-@Convert(converter = FloatArrayConverter::class)
+    @JdbcTypeCode(SqlTypes.VECTOR)
+    @Column(columnDefinition = "vector(768)")
     var embeddingVector: FloatArray? = embeddingVector
         protected set
 
