@@ -1,0 +1,51 @@
+name: Commit Message Check
+
+on:
+    pull_request:
+    push:
+
+jobs:
+    validate-commit-messages:
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
+            - name: Prepare validator
+              run: chmod +x .githooks/commit-msg scripts/verify_commit_message.sh
+
+            - name: Validate commit messages
+              env:
+                  EVENT_NAME: ${{ github.event_name }}
+                  BASE_SHA: ${{ github.event.pull_request.base.sha }}
+                  HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+                  BEFORE_SHA: ${{ github.event.before }}
+                  CURRENT_SHA: ${{ github.sha }}
+              run: |
+                  set -euo pipefail
+
+                  if [ "$EVENT_NAME" = "pull_request" ]; then
+                      range="$BASE_SHA..$HEAD_SHA"
+                  elif [ -n "${BEFORE_SHA:-}" ] && [ "$BEFORE_SHA" != "0000000000000000000000000000000000000000" ]; then
+                      range="$BEFORE_SHA..$CURRENT_SHA"
+                  else
+                      range="$CURRENT_SHA"
+                  fi
+
+                  if [[ "$range" == *".."* ]]; then
+                      commits="$(git rev-list --reverse "$range")"
+                  else
+                      commits="$range"
+                  fi
+
+                  if [ -z "$commits" ]; then
+                      commits="$CURRENT_SHA"
+                  fi
+
+                  for sha in $commits; do
+                      echo "Checking commit $sha"
+                      git log -1 --pretty=%B "$sha" > /tmp/commit-message.txt
+                      ./scripts/verify_commit_message.sh /tmp/commit-message.txt
+                  done
