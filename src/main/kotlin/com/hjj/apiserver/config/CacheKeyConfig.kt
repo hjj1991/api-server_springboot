@@ -16,6 +16,19 @@ class CacheKeyConfig {
     @Bean(PARAMS_LOCAL_DATE)
     fun paramsLocalDateCacheKey(): KeyGenerator =
         KeyGenerator { _, _, params ->
-            "${ZonedDateTime.now(ZoneId.of("Asia/Seoul")).toLocalDate().format(DateTimeFormatter.ISO_LOCAL_DATE)}"
+            val datePrefix = ZonedDateTime.now(ZoneId.of("Asia/Seoul")).toLocalDate().format(DateTimeFormatter.ISO_LOCAL_DATE)
+            val paramsSuffix =
+                params.joinToString(separator = "|") { param ->
+                    when (param) {
+                        is Array<*> -> param.contentDeepToString()
+                        else -> param?.toString() ?: "null"
+                    }
+                }
+
+            if (paramsSuffix.isBlank()) {
+                datePrefix
+            } else {
+                "$datePrefix|$paramsSuffix"
+            }
         }
 }
