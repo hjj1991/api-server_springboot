@@ -82,10 +82,12 @@ class FinancialProductEntity(
         protected set
 
     @Enumerated(EnumType.STRING)
+    @Column(length = 50)
     var joinRestriction: JoinRestriction = joinRestriction
         protected set
 
     @Enumerated(EnumType.STRING)
+    @Column(length = 50)
     var financialProductType: FinancialProductType = financialProductType
         protected set
 
@@ -100,6 +102,7 @@ class FinancialProductEntity(
     var maxLimit: Long? = maxLimit
         protected set
 
+    @Column(length = 6)
     var dclsMonth: String = dclsMonth
         protected set
 
@@ -116,19 +119,25 @@ class FinancialProductEntity(
         protected set
 
     @Enumerated(EnumType.STRING)
+    @Column(length = 20)
     var status: ProductStatus = status
         protected set
 
+    @Column(columnDefinition = "timestamptz")
     var lastSeenAt: OffsetDateTime? = lastSeenAt
         protected set
 
-    @Column(length = 255) // SHA-256 hash is 64 characters long
+    @Column(length = 64)
     var productContentHash: String? = productContentHash
         protected set
 
     @JdbcTypeCode(SqlTypes.VECTOR)
     @Column(columnDefinition = "vector(768)")
     var embeddingVector: FloatArray? = embeddingVector
+        protected set
+
+    @Column(columnDefinition = "text")
+    var sourcePayload: String? = null
         protected set
 
     @ManyToOne(fetch = FetchType.LAZY)

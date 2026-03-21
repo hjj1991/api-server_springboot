@@ -39,10 +39,12 @@ class FinancialProductOptionEntity(
         protected set
 
     @Enumerated(EnumType.STRING)
+    @Column(length = 50)
     var interestRateType: InterestRateType = interestRateType
         protected set
 
     @Enumerated(EnumType.STRING)
+    @Column(length = 50)
     var reserveType: ReserveType? = reserveType
         protected set
 
@@ -56,6 +58,10 @@ class FinancialProductOptionEntity(
 
     @Column(precision = 8, scale = 5)
     var maximumInterestRate: BigDecimal? = maximumInterestRate
+        protected set
+
+    @Column(columnDefinition = "text")
+    var sourcePayload: String? = null
         protected set
 
     @ManyToOne(fetch = FetchType.LAZY)

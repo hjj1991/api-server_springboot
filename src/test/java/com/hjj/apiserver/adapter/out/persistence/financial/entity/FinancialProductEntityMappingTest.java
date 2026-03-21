@@ -20,6 +20,7 @@ class FinancialProductEntityMappingTest {
         assertTextColumn("specialCondition");
         assertTextColumn("joinMember");
         assertTextColumn("additionalNotes");
+        assertTextColumn("sourcePayload");
     }
 
     @Test
@@ -41,6 +42,11 @@ class FinancialProductEntityMappingTest {
         Field dclsStartDay = FinancialProductEntity.class.getDeclaredField("dclsStartDay");
         Field dclsEndDay = FinancialProductEntity.class.getDeclaredField("dclsEndDay");
         Field financialSubmitDay = FinancialProductEntity.class.getDeclaredField("financialSubmitDay");
+        Field productContentHash = FinancialProductEntity.class.getDeclaredField("productContentHash");
+        Field dclsMonth = FinancialProductEntity.class.getDeclaredField("dclsMonth");
+        Field joinRestriction = FinancialProductEntity.class.getDeclaredField("joinRestriction");
+        Field financialProductType = FinancialProductEntity.class.getDeclaredField("financialProductType");
+        Field status = FinancialProductEntity.class.getDeclaredField("status");
 
         assertThat(dclsStartDay.getType()).isEqualTo(LocalDate.class);
         assertThat(dclsEndDay.getType()).isEqualTo(LocalDate.class);
@@ -48,6 +54,11 @@ class FinancialProductEntityMappingTest {
         assertThat(dclsStartDay.getAnnotation(Column.class).columnDefinition()).isEqualTo("date");
         assertThat(dclsEndDay.getAnnotation(Column.class).columnDefinition()).isEqualTo("date");
         assertThat(financialSubmitDay.getAnnotation(Column.class).columnDefinition()).isEqualTo("timestamptz");
+        assertThat(dclsMonth.getAnnotation(Column.class).length()).isEqualTo(6);
+        assertThat(productContentHash.getAnnotation(Column.class).length()).isEqualTo(64);
+        assertThat(joinRestriction.getAnnotation(Column.class).length()).isEqualTo(50);
+        assertThat(financialProductType.getAnnotation(Column.class).length()).isEqualTo(50);
+        assertThat(status.getAnnotation(Column.class).length()).isEqualTo(20);
     }
 
     private void assertTextColumn(String fieldName) throws NoSuchFieldException {

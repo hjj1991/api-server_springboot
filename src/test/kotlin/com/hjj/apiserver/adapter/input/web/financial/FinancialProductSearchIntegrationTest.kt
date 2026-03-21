@@ -1,6 +1,5 @@
 package com.hjj.apiserver.adapter.input.web.financial
 
-import com.github.dockerjava.api.command.InspectContainerResponse
 import com.hjj.apiserver.adapter.out.persistence.financial.entity.FinancialCompanyEntity
 import com.hjj.apiserver.adapter.out.persistence.financial.entity.FinancialProductEntity
 import com.hjj.apiserver.adapter.out.persistence.financial.entity.FinancialProductOptionEntity
@@ -16,6 +15,8 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.jdbc.core.JdbcTemplate
+import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator
 import org.springframework.test.context.DynamicPropertyRegistry
 import org.springframework.test.context.DynamicPropertySource
 import org.springframework.test.web.servlet.MockMvc
@@ -30,12 +31,14 @@ import org.testcontainers.junit.jupiter.Testcontainers
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.OffsetDateTime
+import javax.sql.DataSource
+import org.springframework.core.io.ClassPathResource
 
 @Testcontainers
 @SpringBootTest(
     properties = [
         "spring.profiles.active=test",
-        "spring.jpa.hibernate.ddl-auto=create-drop",
+        "spring.jpa.hibernate.ddl-auto=none",
     ],
 )
 class FinancialProductSearchIntegrationTest {
@@ -50,11 +53,17 @@ class FinancialProductSearchIntegrationTest {
     @Autowired
     private lateinit var financialProductRepository: FinancialProductRepository
 
+    @Autowired
+    private lateinit var jdbcTemplate: JdbcTemplate
+
+    @Autowired
+    private lateinit var dataSource: DataSource
+
     @BeforeEach
     fun setUp() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build()
-        financialProductRepository.deleteAll()
-        financialCompanyRepository.deleteAll()
+        ResourceDatabasePopulator(ClassPathResource("sql/financial-batch-finance-schema.sql")).execute(dataSource)
+        jdbcTemplate.execute("TRUNCATE TABLE financial_product_option, financial_product, financial_company RESTART IDENTITY CASCADE")
         seedProducts()
     }
 
@@ -114,6 +123,7 @@ class FinancialProductSearchIntegrationTest {
                 financialCompanyEntity = company,
                 status = ProductStatus.ACTIVE,
                 lastSeenAt = OffsetDateTime.parse("2026-03-21T00:00:00Z"),
+                productContentHash = "a".repeat(64),
             )
         val option =
             FinancialProductOptionEntity(
@@ -132,24 +142,7 @@ class FinancialProductSearchIntegrationTest {
         @Container
         @JvmStatic
         val postgres: PostgreSQLContainer<*> =
-            object : PostgreSQLContainer<Nothing>("pgvector/pgvector:pg16") {
-                override fun containerIsStarted(containerInfo: InspectContainerResponse) {
-                    super.containerIsStarted(containerInfo)
-                    val result =
-                        execInContainer(
-                            "psql",
-                            "-U",
-                            username,
-                            "-d",
-                            databaseName,
-                            "-c",
-                            "CREATE EXTENSION IF NOT EXISTS vector",
-                        )
-                    check(result.exitCode == 0) {
-                        "Failed to create vector extension: ${result.stderr}"
-                    }
-                }
-            }
+            PostgreSQLContainer<Nothing>("pgvector/pgvector:pg16")
                 .apply {
                     withDatabaseName("api_server_test")
                     withUsername("postgres")

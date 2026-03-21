@@ -27,6 +27,15 @@ class FinancialProductOptionEntityMappingTest {
         assertPrecision(maximumInterestRate);
     }
 
+    @Test
+    void 옵션_source_payload는_text로_매핑한다() throws NoSuchFieldException {
+        Field field = FinancialProductOptionEntity.class.getDeclaredField("sourcePayload");
+        Column column = field.getAnnotation(Column.class);
+
+        assertThat(column).isNotNull();
+        assertThat(column.columnDefinition()).isEqualTo("text");
+    }
+
     private void assertPrecision(Field field) {
         Column column = field.getAnnotation(Column.class);
 

@@ -40,6 +40,7 @@ class FinancialCompanyEntity(
     var financialCompanyCode: String = financialCompanyCode
         protected set
 
+    @Column(length = 6)
     var dclsMonth: String = dclsMonth
         protected set
 
@@ -49,13 +50,20 @@ class FinancialCompanyEntity(
     var dclsChrgMan: String? = dclsChrgMan
         protected set
 
+    @Column(length = 1024)
     var hompUrl: String? = hompUrl
         protected set
 
+    @Column(length = 100)
     var calTel: String? = calTel
         protected set
 
     @Enumerated(EnumType.STRING)
+    @Column(length = 50)
     var financialGroupType: FinancialGroupType = financialGroupType
+        protected set
+
+    @Column(columnDefinition = "text")
+    var sourcePayload: String? = null
         protected set
 }
