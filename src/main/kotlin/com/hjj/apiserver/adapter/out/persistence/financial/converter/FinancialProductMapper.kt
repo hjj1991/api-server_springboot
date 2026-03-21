@@ -24,9 +24,9 @@ class FinancialProductMapper(
             additionalNotes = financialProductEntity.additionalNotes,
             maxLimit = financialProductEntity.maxLimit,
             dclsMonth = financialProductEntity.dclsMonth,
-            dclsStartDay = financialProductEntity.dclsStartDay,
-            dclsEndDay = financialProductEntity.dclsEndDay,
-            financialSubmitDay = financialProductEntity.financialSubmitDay,
+            dclsStartDay = financialProductEntity.dclsStartDay.toString(),
+            dclsEndDay = financialProductEntity.dclsEndDay?.toString(),
+            financialSubmitDay = financialProductEntity.financialSubmitDay.toString(),
             financialCompany = financialCompanyMapper.mapToDomainEntity(financialProductEntity.financialCompanyEntity),
             financialProductOptions =
                 financialProductEntity.financialProductOptionEntities.map {
@@ -51,9 +51,9 @@ class FinancialProductMapper(
             additionalNotes = financialProductEntity.additionalNotes,
             maxLimit = financialProductEntity.maxLimit,
             dclsMonth = financialProductEntity.dclsMonth,
-            dclsStartDay = financialProductEntity.dclsStartDay,
-            dclsEndDay = financialProductEntity.dclsEndDay,
-            financialSubmitDay = financialProductEntity.financialSubmitDay,
+            dclsStartDay = financialProductEntity.dclsStartDay.toString(),
+            dclsEndDay = financialProductEntity.dclsEndDay?.toString(),
+            financialSubmitDay = financialProductEntity.financialSubmitDay.toString(),
             financialCompany = null,
             financialProductOptions = financialProductOptions.toMutableList(),
         )

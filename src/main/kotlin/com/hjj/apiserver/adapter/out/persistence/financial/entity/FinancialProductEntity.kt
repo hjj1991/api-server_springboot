@@ -22,6 +22,7 @@ import jakarta.persistence.OneToMany
 import jakarta.persistence.Table
 import org.hibernate.annotations.JdbcTypeCode
 import org.hibernate.type.SqlTypes
+import java.time.LocalDate
 import java.time.OffsetDateTime
 
 @Entity
@@ -46,9 +47,9 @@ class FinancialProductEntity(
     additionalNotes: String,
     maxLimit: Long? = null,
     dclsMonth: String,
-    dclsStartDay: String,
-    dclsEndDay: String? = null,
-    financialSubmitDay: String,
+    dclsStartDay: LocalDate,
+    dclsEndDay: LocalDate? = null,
+    financialSubmitDay: OffsetDateTime,
     financialCompanyEntity: FinancialCompanyEntity,
     status: ProductStatus,
     lastSeenAt: OffsetDateTime? = null,
@@ -102,13 +103,16 @@ class FinancialProductEntity(
     var dclsMonth: String = dclsMonth
         protected set
 
-    var dclsStartDay: String = dclsStartDay
+    @Column(columnDefinition = "date")
+    var dclsStartDay: LocalDate = dclsStartDay
         protected set
 
-    var dclsEndDay: String? = dclsEndDay
+    @Column(columnDefinition = "date")
+    var dclsEndDay: LocalDate? = dclsEndDay
         protected set
 
-    var financialSubmitDay: String = financialSubmitDay
+    @Column(columnDefinition = "timestamptz")
+    var financialSubmitDay: OffsetDateTime = financialSubmitDay
         protected set
 
     @Enumerated(EnumType.STRING)

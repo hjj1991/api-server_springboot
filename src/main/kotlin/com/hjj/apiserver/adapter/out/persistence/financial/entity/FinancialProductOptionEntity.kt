@@ -50,11 +50,11 @@ class FinancialProductOptionEntity(
     var depositPeriodMonths: Int = depositPeriodMonths
         protected set
 
-    @Column(precision = 5, scale = 2)
+    @Column(precision = 8, scale = 5)
     var baseInterestRate: BigDecimal? = baseInterestRate
         protected set
 
-    @Column(precision = 5, scale = 2)
+    @Column(precision = 8, scale = 5)
     var maximumInterestRate: BigDecimal? = maximumInterestRate
         protected set
 

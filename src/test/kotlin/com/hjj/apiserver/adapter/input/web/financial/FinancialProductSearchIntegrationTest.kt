@@ -28,6 +28,7 @@ import org.testcontainers.containers.PostgreSQLContainer
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
 import java.math.BigDecimal
+import java.time.LocalDate
 import java.time.OffsetDateTime
 
 @Testcontainers
@@ -68,7 +69,10 @@ class FinancialProductSearchIntegrationTest {
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.content.length()").value(1))
             .andExpect(jsonPath("$.content[0].financialProductName").value("테스트 상품 12"))
+            .andExpect(jsonPath("$.content[0].dclsStartDay").value("2026-03-01"))
             .andExpect(jsonPath("$.content[0].financialProductOptions[0].depositPeriodMonths").value("12"))
+            .andExpect(jsonPath("$.content[0].financialProductOptions[0].baseInterestRate").value(3.12345))
+            .andExpect(jsonPath("$.content[0].financialProductOptions[0].maximumInterestRate").value(3.56789))
     }
 
     private fun seedProducts() {
@@ -104,9 +108,9 @@ class FinancialProductSearchIntegrationTest {
                 additionalNotes = "비고",
                 maxLimit = 1000000,
                 dclsMonth = "202603",
-                dclsStartDay = "2026-03-01",
-                dclsEndDay = "2026-03-31",
-                financialSubmitDay = "2026-03-01T00:00:00Z",
+                dclsStartDay = LocalDate.parse("2026-03-01"),
+                dclsEndDay = LocalDate.parse("2026-03-31"),
+                financialSubmitDay = OffsetDateTime.parse("2026-03-01T00:00:00Z"),
                 financialCompanyEntity = company,
                 status = ProductStatus.ACTIVE,
                 lastSeenAt = OffsetDateTime.parse("2026-03-21T00:00:00Z"),
@@ -116,8 +120,8 @@ class FinancialProductSearchIntegrationTest {
                 interestRateType = InterestRateType.SIMPLE,
                 reserveType = ReserveType.FIXED,
                 depositPeriodMonths = depositPeriodMonths,
-                baseInterestRate = BigDecimal("3.10"),
-                maximumInterestRate = BigDecimal("3.50"),
+                baseInterestRate = BigDecimal("3.12345"),
+                maximumInterestRate = BigDecimal("3.56789"),
                 financialProductEntity = product,
             )
         product.financialProductOptionEntities.add(option)

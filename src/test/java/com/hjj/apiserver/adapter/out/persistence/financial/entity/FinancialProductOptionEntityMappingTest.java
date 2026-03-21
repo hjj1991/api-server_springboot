@@ -17,4 +17,21 @@ class FinancialProductOptionEntityMappingTest {
         assertThat(column).isNotNull();
         assertThat(column.columnDefinition()).isEqualTo("smallint");
     }
+
+    @Test
+    void 금리_컬럼은_numeric_8_5_정밀도에_맞게_매핑한다() throws NoSuchFieldException {
+        Field baseInterestRate = FinancialProductOptionEntity.class.getDeclaredField("baseInterestRate");
+        Field maximumInterestRate = FinancialProductOptionEntity.class.getDeclaredField("maximumInterestRate");
+
+        assertPrecision(baseInterestRate);
+        assertPrecision(maximumInterestRate);
+    }
+
+    private void assertPrecision(Field field) {
+        Column column = field.getAnnotation(Column.class);
+
+        assertThat(column).isNotNull();
+        assertThat(column.precision()).isEqualTo(8);
+        assertThat(column.scale()).isEqualTo(5);
+    }
 }
