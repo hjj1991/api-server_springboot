@@ -16,9 +16,8 @@ import jakarta.persistence.Table
 @Table(
     name = "financial_company",
     indexes = [
-        Index(columnList = "financialCompanyCode"),
-        Index(columnList = "companyName"),
-
+        Index(name = "ix_financial_company__financial_company_code", columnList = "financial_company_code"),
+        Index(name = "ix_financial_company__company_name", columnList = "company_name"),
     ],
 )
 class FinancialCompanyEntity(
@@ -36,34 +35,36 @@ class FinancialCompanyEntity(
     var financialCompanyId: Long = financialCompanyId
         protected set
 
-    @Column(length = 20, unique = true)
+    @Column(name = "financial_company_code", length = 20, unique = true)
     var financialCompanyCode: String = financialCompanyCode
         protected set
 
-    @Column(length = 6)
+    @Column(name = "dcls_month", length = 6)
     var dclsMonth: String = dclsMonth
         protected set
 
+    @Column(name = "company_name")
     var companyName: String = companyName
         protected set
 
+    @Column(name = "dcls_chrg_man")
     var dclsChrgMan: String? = dclsChrgMan
         protected set
 
-    @Column(length = 1024)
+    @Column(name = "homp_url", length = 1024)
     var hompUrl: String? = hompUrl
         protected set
 
-    @Column(length = 100)
+    @Column(name = "cal_tel", length = 100)
     var calTel: String? = calTel
         protected set
 
     @Enumerated(EnumType.STRING)
-    @Column(length = 50)
+    @Column(name = "financial_group_type", length = 50)
     var financialGroupType: FinancialGroupType = financialGroupType
         protected set
 
-    @Column(columnDefinition = "text")
+    @Column(name = "source_payload", columnDefinition = "text")
     var sourcePayload: String? = null
         protected set
 }

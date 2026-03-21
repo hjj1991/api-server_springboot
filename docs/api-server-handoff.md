@@ -93,12 +93,12 @@ API 기본 조회 규칙:
 ### 6.2 `financial_product_rate_history` 적재 규칙
 - product history를 적재하는 경우에만 함께 적재한다.
 - insert 충돌키:
-  - `(observed_at, financial_product_id, interest_rate_type, deposit_period_months)`
+  - `(observed_at, financial_product_id, financial_product_option_id)`
 - 충돌 시 `DO UPDATE`로 upsert 처리한다.
+- option payload를 `payload(JSONB)`에도 함께 저장한다.
 
 주의:
-- `reserve_type`은 충돌키에 포함되지 않는다.
-- 따라서 같은 키 조합에서 `reserve_type`이 달라지면 최신값으로 update될 수 있다.
+- 같은 상품/기간/금리유형이라도 `financial_product_option_id`가 다르면 별도 이력으로 보존된다.
 
 ### 6.3 `observed_at` semantics
 - `observed_at`은 writer chunk 처리 시점(`OffsetDateTime.now()`)이다.

@@ -21,7 +21,11 @@ import java.math.BigDecimal
 @Table(
     name = "financial_product_option",
     indexes = [
-        Index(columnList = "financialProductId"),
+        Index(name = "ix_financial_product_option__financial_product_id", columnList = "financial_product_id"),
+        Index(
+            name = "ix_financial_product_option__financial_product_id_deposit_period_months_interest_rate_type_reserve_type",
+            columnList = "financial_product_id,deposit_period_months,interest_rate_type,reserve_type",
+        ),
     ],
 )
 class FinancialProductOptionEntity(
@@ -39,33 +43,33 @@ class FinancialProductOptionEntity(
         protected set
 
     @Enumerated(EnumType.STRING)
-    @Column(length = 50)
+    @Column(name = "interest_rate_type", length = 50)
     var interestRateType: InterestRateType = interestRateType
         protected set
 
     @Enumerated(EnumType.STRING)
-    @Column(length = 50)
+    @Column(name = "reserve_type", length = 50)
     var reserveType: ReserveType? = reserveType
         protected set
 
-    @Column(columnDefinition = "smallint")
+    @Column(name = "deposit_period_months", columnDefinition = "smallint")
     var depositPeriodMonths: Int = depositPeriodMonths
         protected set
 
-    @Column(precision = 8, scale = 5)
+    @Column(name = "base_interest_rate", precision = 8, scale = 5)
     var baseInterestRate: BigDecimal? = baseInterestRate
         protected set
 
-    @Column(precision = 8, scale = 5)
+    @Column(name = "maximum_interest_rate", precision = 8, scale = 5)
     var maximumInterestRate: BigDecimal? = maximumInterestRate
         protected set
 
-    @Column(columnDefinition = "text")
+    @Column(name = "source_payload", columnDefinition = "text")
     var sourcePayload: String? = null
         protected set
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "financialProductId")
+    @JoinColumn(name = "financial_product_id")
     var financialProductEntity: FinancialProductEntity = financialProductEntity
         protected set
 }

@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS financial_company (
     source_payload TEXT,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     modified_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    CONSTRAINT uq_financial_company_code UNIQUE (financial_company_code)
+    CONSTRAINT uq_financial_company__financial_company_code UNIQUE (financial_company_code)
 );
 
 CREATE TABLE IF NOT EXISTS financial_company_area (
@@ -52,7 +52,7 @@ CREATE TABLE IF NOT EXISTS financial_product (
     source_payload TEXT,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     modified_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    CONSTRAINT uq_financial_product_natural UNIQUE (
+    CONSTRAINT uq_financial_product__financial_company_id_financial_product_code_financial_product_type UNIQUE (
         financial_company_id, financial_product_code, financial_product_type
     )
 );
@@ -71,7 +71,7 @@ CREATE TABLE IF NOT EXISTS financial_product_option (
     source_payload TEXT,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     modified_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    CONSTRAINT uq_financial_product_option_natural
+    CONSTRAINT uq_financial_product_option__financial_product_id_interest_rate_type_reserve_type_deposit_period_months
         UNIQUE NULLS NOT DISTINCT (
             financial_product_id,
             interest_rate_type,
@@ -80,13 +80,13 @@ CREATE TABLE IF NOT EXISTS financial_product_option (
         )
 );
 
-CREATE INDEX IF NOT EXISTS idx_financial_company_name_trgm
+CREATE INDEX IF NOT EXISTS ix_financial_company__company_name_trgm
     ON financial_company USING gin (company_name gin_trgm_ops);
 
-CREATE INDEX IF NOT EXISTS idx_financial_product_active_seen
+CREATE INDEX IF NOT EXISTS ix_financial_product__financial_product_type_status_last_seen_at
     ON financial_product (financial_product_type, status, last_seen_at);
 
-CREATE INDEX IF NOT EXISTS idx_financial_product_fts
+CREATE INDEX IF NOT EXISTS ix_financial_product__fts
     ON financial_product USING gin (
         to_tsvector(
             'simple',
@@ -96,7 +96,7 @@ CREATE INDEX IF NOT EXISTS idx_financial_product_fts
         )
     );
 
-CREATE INDEX IF NOT EXISTS idx_financial_product_option_rate
+CREATE INDEX IF NOT EXISTS ix_financial_product_option__financial_product_id_deposit_period_months_interest_rate_type_reserve_type
     ON financial_product_option (
         financial_product_id,
         deposit_period_months,
@@ -125,14 +125,14 @@ SELECT create_hypertable(
 CREATE TABLE IF NOT EXISTS financial_product_rate_history (
     observed_at TIMESTAMPTZ NOT NULL,
     financial_product_id BIGINT NOT NULL,
-    financial_product_option_id BIGINT,
+    financial_product_option_id BIGINT NOT NULL,
     interest_rate_type VARCHAR(50) NOT NULL,
     reserve_type VARCHAR(50),
     deposit_period_months SMALLINT NOT NULL,
     base_interest_rate NUMERIC(8,5),
     maximum_interest_rate NUMERIC(8,5),
     payload JSONB,
-    PRIMARY KEY (observed_at, financial_product_id, interest_rate_type, deposit_period_months)
+    PRIMARY KEY (observed_at, financial_product_id, financial_product_option_id)
 );
 
 SELECT create_hypertable(
@@ -141,10 +141,16 @@ SELECT create_hypertable(
     if_not_exists => TRUE
 );
 
-CREATE INDEX IF NOT EXISTS idx_financial_product_history_payload
+CREATE INDEX IF NOT EXISTS ix_financial_product_history__financial_product_id_observed_at_desc
+    ON financial_product_history (financial_product_id, observed_at DESC);
+
+CREATE INDEX IF NOT EXISTS ix_financial_product_history__payload_gin
     ON financial_product_history USING gin (payload jsonb_path_ops);
 
-CREATE INDEX IF NOT EXISTS idx_financial_product_rate_history_payload
+CREATE INDEX IF NOT EXISTS ix_financial_product_rate_history__financial_product_id_observed_at_desc
+    ON financial_product_rate_history (financial_product_id, observed_at DESC);
+
+CREATE INDEX IF NOT EXISTS ix_financial_product_rate_history__payload_gin
     ON financial_product_rate_history USING gin (payload jsonb_path_ops);
 
 SELECT add_retention_policy('financial_product_history', INTERVAL '365 days', if_not_exists => TRUE);

@@ -29,9 +29,13 @@ import java.time.OffsetDateTime
 @Table(
     name = "financial_product",
     indexes = [
-        Index(columnList = "financialCompanyId"),
-        Index(columnList = "financialProductCode"),
-        Index(columnList = "financialProductName"),
+        Index(name = "ix_financial_product__financial_company_id", columnList = "financial_company_id"),
+        Index(name = "ix_financial_product__financial_product_code", columnList = "financial_product_code"),
+        Index(name = "ix_financial_product__financial_product_name", columnList = "financial_product_name"),
+        Index(
+            name = "ix_financial_product__financial_product_type_status_last_seen_at",
+            columnList = "financial_product_type,status,last_seen_at",
+        ),
     ],
 )
 class FinancialProductEntity(
@@ -62,86 +66,88 @@ class FinancialProductEntity(
     var financialProductId: Long = financialProductId
         protected set
 
-    @Column(length = 100)
+    @Column(name = "financial_product_code", length = 100)
     var financialProductCode: String = financialProductCode
         protected set
 
+    @Column(name = "financial_product_name")
     var financialProductName: String = financialProductName
         protected set
 
-    @Column(columnDefinition = "text")
+    @Column(name = "join_way", columnDefinition = "text")
     var joinWay: String? = joinWay
         protected set
 
-    @Column(columnDefinition = "text")
+    @Column(name = "post_maturity_interest_rate", columnDefinition = "text")
     var postMaturityInterestRate: String? = postMaturityInterestRate
         protected set
 
-    @Column(columnDefinition = "text")
+    @Column(name = "special_condition", columnDefinition = "text")
     var specialCondition: String? = specialCondition
         protected set
 
     @Enumerated(EnumType.STRING)
-    @Column(length = 50)
+    @Column(name = "join_restriction", length = 50)
     var joinRestriction: JoinRestriction = joinRestriction
         protected set
 
     @Enumerated(EnumType.STRING)
-    @Column(length = 50)
+    @Column(name = "financial_product_type", length = 50)
     var financialProductType: FinancialProductType = financialProductType
         protected set
 
-    @Column(columnDefinition = "text")
+    @Column(name = "join_member", columnDefinition = "text")
     var joinMember: String = joinMember
         protected set
 
-    @Column(columnDefinition = "text")
+    @Column(name = "additional_notes", columnDefinition = "text")
     var additionalNotes: String = additionalNotes
         protected set
 
+    @Column(name = "max_limit")
     var maxLimit: Long? = maxLimit
         protected set
 
-    @Column(length = 6)
+    @Column(name = "dcls_month", length = 6)
     var dclsMonth: String = dclsMonth
         protected set
 
-    @Column(columnDefinition = "date")
+    @Column(name = "dcls_start_day", columnDefinition = "date")
     var dclsStartDay: LocalDate = dclsStartDay
         protected set
 
-    @Column(columnDefinition = "date")
+    @Column(name = "dcls_end_day", columnDefinition = "date")
     var dclsEndDay: LocalDate? = dclsEndDay
         protected set
 
-    @Column(columnDefinition = "timestamptz")
+    @Column(name = "financial_submit_day", columnDefinition = "timestamptz")
     var financialSubmitDay: OffsetDateTime = financialSubmitDay
         protected set
 
     @Enumerated(EnumType.STRING)
-    @Column(length = 20)
+    @Column(name = "status", length = 20)
     var status: ProductStatus = status
         protected set
 
-    @Column(columnDefinition = "timestamptz")
+    @Column(name = "last_seen_at", columnDefinition = "timestamptz")
     var lastSeenAt: OffsetDateTime? = lastSeenAt
         protected set
 
-    @Column(length = 64)
+    @Column(name = "product_content_hash", length = 64)
     var productContentHash: String? = productContentHash
         protected set
 
     @JdbcTypeCode(SqlTypes.VECTOR)
-    @Column(columnDefinition = "vector(768)")
+    @Column(name = "embedding_vector", columnDefinition = "vector(768)")
     var embeddingVector: FloatArray? = embeddingVector
         protected set
 
-    @Column(columnDefinition = "text")
+    @Column(name = "source_payload", columnDefinition = "text")
     var sourcePayload: String? = null
         protected set
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "financialCompanyId", foreignKey = ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    @JoinColumn(name = "financial_company_id", foreignKey = ForeignKey(ConstraintMode.NO_CONSTRAINT))
     var financialCompanyEntity: FinancialCompanyEntity = financialCompanyEntity
         protected set
 
