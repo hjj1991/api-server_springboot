@@ -48,8 +48,11 @@ class FinancialHistoryAnalyticsPersistenceAdapter(
                 FROM financial_product_history
                 WHERE financial_product_id = :financialProductId
                   AND (
-                      :cursorObservedAt IS NULL
-                      OR (observed_at, financial_product_id) < (:cursorObservedAt, :cursorProductId)
+                      CAST(:cursorObservedAt AS timestamptz) IS NULL
+                      OR (observed_at, financial_product_id) < (
+                          CAST(:cursorObservedAt AS timestamptz),
+                          CAST(:cursorProductId AS bigint)
+                      )
                   )
                 ORDER BY observed_at DESC, financial_product_id DESC
                 LIMIT :fetchLimit
@@ -97,8 +100,8 @@ class FinancialHistoryAnalyticsPersistenceAdapter(
             FROM financial_product_rate_history
             WHERE financial_product_id = :financialProductId
               AND (
-                  :cursorObservedAt IS NULL
-                  OR observed_at < :cursorObservedAt
+                  CAST(:cursorObservedAt AS timestamptz) IS NULL
+                  OR observed_at < CAST(:cursorObservedAt AS timestamptz)
               )
             ORDER BY observed_at DESC
             LIMIT :limit
@@ -144,8 +147,11 @@ class FinancialHistoryAnalyticsPersistenceAdapter(
                        payload::text AS payload
                 FROM financial_product_history
                 WHERE (
-                    :cursorObservedAt IS NULL
-                    OR (observed_at, financial_product_id) < (:cursorObservedAt, :cursorProductId)
+                    CAST(:cursorObservedAt AS timestamptz) IS NULL
+                    OR (observed_at, financial_product_id) < (
+                        CAST(:cursorObservedAt AS timestamptz),
+                        CAST(:cursorProductId AS bigint)
+                    )
                 )
                 ORDER BY observed_at DESC, financial_product_id DESC
                 LIMIT :fetchLimit
@@ -190,7 +196,10 @@ class FinancialHistoryAnalyticsPersistenceAdapter(
             FROM financial_product_rate_history
             WHERE observed_at >= :from
               AND observed_at <= :to
-              AND (:financialProductId IS NULL OR financial_product_id = :financialProductId)
+              AND (
+                  CAST(:financialProductId AS bigint) IS NULL
+                  OR financial_product_id = CAST(:financialProductId AS bigint)
+              )
             GROUP BY bucket
             ORDER BY bucket DESC
             LIMIT :limit

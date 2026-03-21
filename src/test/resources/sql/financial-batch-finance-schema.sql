@@ -56,3 +56,34 @@ CREATE TABLE IF NOT EXISTS financial_product_option (
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     modified_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
+CREATE TABLE IF NOT EXISTS financial_product_history (
+    observed_at TIMESTAMPTZ NOT NULL,
+    financial_product_id BIGINT NOT NULL,
+    financial_company_id BIGINT NOT NULL,
+    financial_product_code VARCHAR(100) NOT NULL,
+    financial_product_type VARCHAR(50) NOT NULL,
+    status VARCHAR(20) NOT NULL,
+    product_content_hash VARCHAR(64),
+    payload JSONB NOT NULL,
+    PRIMARY KEY (observed_at, financial_product_id)
+);
+
+CREATE INDEX IF NOT EXISTS ix_fin_product_history__product_id_observed_at_desc
+    ON financial_product_history (financial_product_id, observed_at DESC);
+
+CREATE TABLE IF NOT EXISTS financial_product_rate_history (
+    observed_at TIMESTAMPTZ NOT NULL,
+    financial_product_id BIGINT NOT NULL,
+    financial_product_option_id BIGINT NOT NULL,
+    interest_rate_type VARCHAR(50) NOT NULL,
+    reserve_type VARCHAR(50),
+    deposit_period_months SMALLINT NOT NULL,
+    base_interest_rate NUMERIC(8,5),
+    maximum_interest_rate NUMERIC(8,5),
+    payload JSONB,
+    PRIMARY KEY (observed_at, financial_product_id, financial_product_option_id)
+);
+
+CREATE INDEX IF NOT EXISTS ix_fin_product_rate_history__product_id_observed_at_desc
+    ON financial_product_rate_history (financial_product_id, observed_at DESC);
