@@ -53,7 +53,7 @@ class FinancialProductEntity(
     dclsMonth: String,
     dclsStartDay: LocalDate,
     dclsEndDay: LocalDate? = null,
-    financialSubmitDay: OffsetDateTime,
+    financialSubmitDay: OffsetDateTime? = null,
     financialCompanyEntity: FinancialCompanyEntity,
     status: ProductStatus,
     lastSeenAt: OffsetDateTime? = null,
@@ -121,7 +121,7 @@ class FinancialProductEntity(
         protected set
 
     @Column(name = "financial_submit_day", columnDefinition = "timestamptz")
-    var financialSubmitDay: OffsetDateTime = financialSubmitDay
+    var financialSubmitDay: OffsetDateTime? = financialSubmitDay
         protected set
 
     @Enumerated(EnumType.STRING)

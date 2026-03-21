@@ -73,6 +73,7 @@ class FinancialProductSearchIntegrationTest {
             get("/financial-products")
                 .header("API-Version", "1.0")
                 .param("depositPeriodMonths", "12")
+                .param("financialProductName", "테스트 상품 12")
                 .param("size", "10"),
         )
             .andExpect(status().isOk)
@@ -82,6 +83,35 @@ class FinancialProductSearchIntegrationTest {
             .andExpect(jsonPath("$.content[0].financialProductOptions[0].depositPeriodMonths").value("12"))
             .andExpect(jsonPath("$.content[0].financialProductOptions[0].baseInterestRate").value(3.12345))
             .andExpect(jsonPath("$.content[0].financialProductOptions[0].maximumInterestRate").value(3.56789))
+    }
+
+    @Test
+    fun `financial submit day 가 null 이어도 목록 조회가 실패하지 않는다`() {
+        mockMvc.perform(
+            get("/financial-products")
+                .header("API-Version", "1.0")
+                .param("financialProductName", "테스트 상품 null")
+                .param("size", "10"),
+        )
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.content.length()").value(1))
+            .andExpect(jsonPath("$.content[0].financialProductName").value("테스트 상품 null"))
+    }
+
+    @Test
+    fun `financial submit day 가 null 이어도 단건 조회가 실패하지 않는다`() {
+        val productId =
+            financialProductRepository.findAll()
+                .first { it.financialProductName == "테스트 상품 null" }
+                .financialProductId
+
+        mockMvc.perform(
+            get("/financial-products/{financialProductId}", productId)
+                .header("API-Version", "1.0"),
+        )
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.financialProductName").value("테스트 상품 null"))
+            .andExpect(jsonPath("$.financialCompany.companyName").value("테스트은행"))
     }
 
     private fun seedProducts() {
@@ -97,17 +127,20 @@ class FinancialProductSearchIntegrationTest {
 
         financialProductRepository.saveAndFlush(createProduct(company, "PRD-12", 12))
         financialProductRepository.saveAndFlush(createProduct(company, "PRD-24", 24))
+        financialProductRepository.saveAndFlush(createProduct(company, "PRD-NULL", 12, "테스트 상품 null", null))
     }
 
     private fun createProduct(
         company: FinancialCompanyEntity,
         code: String,
         depositPeriodMonths: Int,
+        financialProductName: String = "테스트 상품 $depositPeriodMonths",
+        financialSubmitDay: OffsetDateTime? = OffsetDateTime.parse("2026-03-01T00:00:00Z"),
     ): FinancialProductEntity {
         val product =
             FinancialProductEntity(
                 financialProductCode = code,
-                financialProductName = "테스트 상품 $depositPeriodMonths",
+                financialProductName = financialProductName,
                 joinWay = "영업점",
                 postMaturityInterestRate = "만기 후 1%",
                 specialCondition = "우대조건",
@@ -119,7 +152,7 @@ class FinancialProductSearchIntegrationTest {
                 dclsMonth = "202603",
                 dclsStartDay = LocalDate.parse("2026-03-01"),
                 dclsEndDay = LocalDate.parse("2026-03-31"),
-                financialSubmitDay = OffsetDateTime.parse("2026-03-01T00:00:00Z"),
+                financialSubmitDay = financialSubmitDay,
                 financialCompanyEntity = company,
                 status = ProductStatus.ACTIVE,
                 lastSeenAt = OffsetDateTime.parse("2026-03-21T00:00:00Z"),
