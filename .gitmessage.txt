@@ -1,0 +1,37 @@
+# 형식: <Type>(<scope>): <한 줄 요약>
+# 예시: Fix(api): 금융 상품 기간 필터 검증을 웹 경계에서 처리
+#
+# 타입 후보
+# - Feat
+# - Fix
+# - Refactor
+# - Test
+# - Docs
+# - Chore
+# - Build
+# - Ci
+# - Perf
+#
+# scope 예시
+# - api
+# - batch
+# - frontend
+# - infra
+# - docs
+
+<Type>(<scope>): <한 줄 요약>
+
+변경 내용
+- 무엇을 바꿨는지
+- 왜 바꿨는지
+- 영향 범위가 무엇인지
+
+검증
+- 실행한 테스트/빌드
+- 수동 확인 내용
+
+참고
+- 후속 작업이나 리스크가 있으면 기록
+
+BREAKING CHANGE: 호환성이 깨지는 변경이 있으면 기록
+Refs: 이슈나 작업 번호가 있으면 기록
