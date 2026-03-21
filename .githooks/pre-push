@@ -2,4 +2,5 @@
 
 set -eu
 
+./scripts/verify_branch_name.sh
 ./scripts/verify.sh

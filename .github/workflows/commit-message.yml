@@ -14,7 +14,22 @@ jobs:
                   fetch-depth: 0
 
             - name: Prepare validator
-              run: chmod +x .githooks/commit-msg scripts/verify_commit_message.sh
+              run: chmod +x .githooks/commit-msg scripts/verify_commit_message.sh scripts/verify_branch_name.sh scripts/verify_pr_title.sh
+
+            - name: Validate branch name
+              env:
+                  HEAD_REF: ${{ github.head_ref }}
+                  REF_NAME: ${{ github.ref_name }}
+              run: |
+                  set -euo pipefail
+                  branch_name="${HEAD_REF:-$REF_NAME}"
+                  ./scripts/verify_branch_name.sh "$branch_name"
+
+            - name: Validate PR title
+              if: github.event_name == 'pull_request'
+              env:
+                  PR_TITLE: ${{ github.event.pull_request.title }}
+              run: ./scripts/verify_pr_title.sh "$PR_TITLE"
 
             - name: Validate commit messages
               env:
