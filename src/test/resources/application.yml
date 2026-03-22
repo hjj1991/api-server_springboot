@@ -49,3 +49,17 @@ decorator:
 logging:
   level:
     root: info
+app:
+  auth:
+    signup-pending-ttl: 30m
+    email-send-queue-name: email_send_requests
+    token-version-cache-ttl: 12h
+    access-token-ttl: 10m
+    refresh-token-ttl: 14d
+    email-worker-enabled: false
+    email-worker-batch-size: 10
+    email-worker-visibility-timeout: 5m
+    email-worker-fixed-delay-millis: 15000
+    email-delivery-mode: log
+    email-from-address: no-reply@test.local
+    signup-verify-base-url: https://example.test/auth/signup/verify

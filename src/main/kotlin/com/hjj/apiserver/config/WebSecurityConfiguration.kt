@@ -13,12 +13,14 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.crypto.factory.PasswordEncoderFactories
 import org.springframework.security.crypto.password.PasswordEncoder
+import org.springframework.security.oauth2.jwt.JwtValidators
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository
 import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.security.oauth2.jwt.JwtDecoder
 import org.springframework.security.oauth2.jwt.JwtEncoder
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder
+import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter
 import org.springframework.security.web.SecurityFilterChain
@@ -36,6 +38,7 @@ class WebSecurityConfiguration(
     private val customAccessDeniedHandler: CustomAccessDeniedHandler,
 //    private val customOauth2UserService: CustomOauth2UserService,
     private val clientRegistrationRepository: ClientRegistrationRepository,
+    private val accessTokenStateValidator: AccessTokenStateValidator,
 ) {
     @Bean
     fun securityFilterChain(http: HttpSecurity, jwtDecoder: JwtDecoder): SecurityFilterChain {
@@ -83,9 +86,14 @@ class WebSecurityConfiguration(
                         "/h2-console/**",
                         "/livez",
                         "/readyz",
+                        "/auth/signup",
+                        "/auth/signup/**",
+                        "/auth/login",
+                        "/auth/refresh",
                         "/financial-products",
                         "/financial-products/**",
                     ).permitAll() // 가입 및 인증 주소는 누구나 접근가능
+                    .requestMatchers("/admin/**").hasRole("ADMIN")
                     .anyRequest().hasRole("USER")
             }
             .exceptionHandling { exceptionHandling -> exceptionHandling.accessDeniedHandler(customAccessDeniedHandler) }
@@ -111,5 +119,13 @@ class WebSecurityConfiguration(
     fun jwtDecoder(): JwtDecoder =
         NimbusJwtDecoder.withSecretKey(SecretKeySpec(jwtSecret.toByteArray(StandardCharsets.UTF_8), "HmacSHA256"))
             .build()
+            .also { decoder ->
+                decoder.setJwtValidator(
+                    DelegatingOAuth2TokenValidator(
+                        JwtValidators.createDefault(),
+                        accessTokenStateValidator,
+                    ),
+                )
+            }
 
 }

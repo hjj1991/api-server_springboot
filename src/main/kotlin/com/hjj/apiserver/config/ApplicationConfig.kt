@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.data.domain.AuditorAware
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing
+import org.springframework.scheduling.annotation.EnableScheduling
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.reactive.function.client.ClientRequest
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction
@@ -18,8 +19,9 @@ import java.time.Clock
 import java.util.Optional
 import java.util.function.Consumer
 
-@ConfigurationPropertiesScan
+@ConfigurationPropertiesScan(basePackages = ["com.hjj.apiserver"])
 @EnableJpaAuditing
+@EnableScheduling
 @Configuration
 class ApplicationConfig : AuditorAware<Long> {
     private val log = KotlinLogging.logger {}

@@ -1,6 +1,7 @@
 package com.hjj.apiserver.common
 
 import com.hjj.apiserver.common.exception.NotFoundException
+import com.hjj.apiserver.common.exception.BaseException
 import com.hjj.apiserver.common.exception.financial.FinancialProductNotFoundException
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.ConstraintViolationException
@@ -99,6 +100,14 @@ class ExceptionControllerAdvice(
         request: HttpServletRequest,
     ): ProblemDetail {
         return apiProblemFactory.create(errCode = exception.errorConst, request = request)
+    }
+
+    @ExceptionHandler(BaseException::class)
+    protected fun handleBaseException(
+        exception: BaseException,
+        request: HttpServletRequest,
+    ): ProblemDetail {
+        return apiProblemFactory.create(errCode = exception.errorCode, request = request, detail = exception.message ?: exception.errorCode.msg)
     }
 
     @ExceptionHandler(Exception::class)

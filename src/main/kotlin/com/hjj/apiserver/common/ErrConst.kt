@@ -22,6 +22,8 @@ enum class ErrConst(
     ERR_CODE0014(HttpStatus.NOT_FOUND, "존재하지 않는 상품입니다."),
     ERR_CODE0015(HttpStatus.FORBIDDEN, "존재하지 않는 유저 권한입니다."),
     ERR_CODE0016(HttpStatus.BAD_REQUEST, "잘못된 요청 값입니다."),
+    ERR_CODE0017(HttpStatus.BAD_REQUEST, "가입 인증이 유효하지 않거나 만료되었습니다."),
+    ERR_CODE0018(HttpStatus.UNAUTHORIZED, "인증 세션이 유효하지 않습니다. 다시 로그인해주세요."),
     ERR_CODE9999(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러입니다."),
     ;
 }
