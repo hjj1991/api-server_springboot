@@ -13,7 +13,9 @@ import com.hjj.apiserver.adapter.input.web.auth.response.AuthenticatedUserRespon
 import com.hjj.apiserver.adapter.input.web.auth.response.SignupAcceptedResponse
 import com.hjj.apiserver.adapter.input.web.auth.response.SignupVerifiedResponse
 import com.hjj.apiserver.adapter.input.web.auth.response.SocialIdentityLinkResponse
+import com.hjj.apiserver.adapter.input.web.auth.response.SocialAuthProviderResponse
 import com.hjj.apiserver.adapter.input.web.auth.response.SocialLoginResolutionResponse
+import com.hjj.apiserver.application.port.input.auth.GetSocialAuthProvidersUseCase
 import com.hjj.apiserver.application.port.input.auth.GetCurrentUserQuery
 import com.hjj.apiserver.application.port.input.auth.LogoutAllSessionsCommand
 import com.hjj.apiserver.application.port.input.auth.LogoutSessionCommand
@@ -38,6 +40,7 @@ class AuthController(
     private val registerLocalSignupUseCase: RegisterLocalSignupUseCase,
     private val manageAuthSessionUseCase: ManageAuthSessionUseCase,
     private val manageSocialAuthUseCase: ManageSocialAuthUseCase,
+    private val getSocialAuthProvidersUseCase: GetSocialAuthProvidersUseCase,
 ) {
     @PostMapping("/login", headers = [ApiVersionConstants.HEADER_V1])
     @ResponseStatus(HttpStatus.OK)
@@ -62,6 +65,11 @@ class AuthController(
     fun verifySignup(
         @Valid @RequestBody request: SignupVerifyRequest,
     ): SignupVerifiedResponse = SignupVerifiedResponse.from(registerLocalSignupUseCase.verifySignup(request.toCommand()))
+
+    @GetMapping("/social/providers", headers = [ApiVersionConstants.HEADER_V1])
+    @ResponseStatus(HttpStatus.OK)
+    fun getSocialProviders(): List<SocialAuthProviderResponse> =
+        getSocialAuthProvidersUseCase.getAvailableProviders().map(SocialAuthProviderResponse::from)
 
     @PostMapping("/social/resolve", headers = [ApiVersionConstants.HEADER_V1])
     @ResponseStatus(HttpStatus.OK)

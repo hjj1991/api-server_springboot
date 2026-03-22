@@ -2,6 +2,7 @@ package com.hjj.apiserver.adapter.input.web.auth
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.hjj.apiserver.application.port.input.auth.AuthSessionResult
+import com.hjj.apiserver.application.port.input.auth.GetSocialAuthProvidersUseCase
 import com.hjj.apiserver.application.port.input.auth.LocalLoginCommand
 import com.hjj.apiserver.application.port.input.auth.ManageAuthSessionUseCase
 import com.hjj.apiserver.application.port.input.auth.LocalSignupCommand
@@ -11,6 +12,7 @@ import com.hjj.apiserver.application.port.input.auth.ResolveSocialLoginCommand
 import com.hjj.apiserver.application.port.input.auth.RegisterLocalSignupUseCase
 import com.hjj.apiserver.application.port.input.auth.SignupAcceptedResult
 import com.hjj.apiserver.application.port.input.auth.SignupVerifiedResult
+import com.hjj.apiserver.application.port.input.auth.SocialAuthProviderResult
 import com.hjj.apiserver.application.port.input.auth.SocialAccountResolutionType
 import com.hjj.apiserver.application.port.input.auth.SocialLoginResolutionResult
 import com.hjj.apiserver.application.port.input.auth.VerifySignupCommand
@@ -37,12 +39,14 @@ class AuthControllerTest {
     private lateinit var registerLocalSignupUseCase: RegisterLocalSignupUseCase
     private lateinit var manageAuthSessionUseCase: ManageAuthSessionUseCase
     private lateinit var manageSocialAuthUseCase: ManageSocialAuthUseCase
+    private lateinit var getSocialAuthProvidersUseCase: GetSocialAuthProvidersUseCase
 
     @BeforeEach
     fun setUp() {
         registerLocalSignupUseCase = Mockito.mock(RegisterLocalSignupUseCase::class.java)
         manageAuthSessionUseCase = Mockito.mock(ManageAuthSessionUseCase::class.java)
         manageSocialAuthUseCase = Mockito.mock(ManageSocialAuthUseCase::class.java)
+        getSocialAuthProvidersUseCase = Mockito.mock(GetSocialAuthProvidersUseCase::class.java)
         objectMapper = ObjectMapper().findAndRegisterModules()
 
         val errorResponseProperties = ErrorResponseProperties().apply {
@@ -55,6 +59,7 @@ class AuthControllerTest {
                     registerLocalSignupUseCase = registerLocalSignupUseCase,
                     manageAuthSessionUseCase = manageAuthSessionUseCase,
                     manageSocialAuthUseCase = manageSocialAuthUseCase,
+                    getSocialAuthProvidersUseCase = getSocialAuthProvidersUseCase,
                 ),
             )
                 .setValidator(
@@ -221,6 +226,29 @@ class AuthControllerTest {
             .andExpect(status().isCreated)
             .andExpect(jsonPath("$.email").value("hello@example.com"))
             .andExpect(jsonPath("$.verifiedAt").value("2026-03-22T02:00:00Z"))
+    }
+
+    @Test
+    fun `소셜 공급자 목록을 반환한다`() {
+        Mockito.doReturn(
+            listOf(
+                SocialAuthProviderResult(
+                    providerType = AuthProviderType.KAKAO,
+                    displayName = "Kakao",
+                    enabled = true,
+                    authorizationPath = "/oauth2/authorization/kakao",
+                ),
+            ),
+        ).`when`(getSocialAuthProvidersUseCase).getAvailableProviders()
+
+        mockMvc.perform(
+            org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get("/auth/social/providers")
+                .header("API-Version", "1.0"),
+        )
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$[0].providerType").value("KAKAO"))
+            .andExpect(jsonPath("$[0].enabled").value(true))
+            .andExpect(jsonPath("$[0].authorizationPath").value("/oauth2/authorization/kakao"))
     }
 
     @Test
