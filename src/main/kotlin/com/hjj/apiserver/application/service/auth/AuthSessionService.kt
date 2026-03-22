@@ -12,6 +12,7 @@ import com.hjj.apiserver.application.port.input.auth.RefreshSessionCommand
 import com.hjj.apiserver.application.port.out.auth.AccessTokenDenylistPort
 import com.hjj.apiserver.application.port.out.auth.IssueAccessTokenPort
 import com.hjj.apiserver.application.port.out.auth.LoadAuthenticatedUserPort
+import com.hjj.apiserver.application.port.out.auth.LoadLinkedAuthIdentitiesPort
 import com.hjj.apiserver.application.port.out.auth.LoadLocalLoginAccountPort
 import com.hjj.apiserver.application.port.out.auth.RecordLocalLoginSuccessPort
 import com.hjj.apiserver.application.port.out.auth.RefreshTokenSessionPort
@@ -36,6 +37,7 @@ class AuthSessionService(
     private val loadLocalLoginAccountPort: LoadLocalLoginAccountPort,
     private val recordLocalLoginSuccessPort: RecordLocalLoginSuccessPort,
     private val loadAuthenticatedUserPort: LoadAuthenticatedUserPort,
+    private val loadLinkedAuthIdentitiesPort: LoadLinkedAuthIdentitiesPort,
     private val passwordEncoder: PasswordEncoder,
     private val issueAccessTokenPort: IssueAccessTokenPort,
     private val refreshTokenSessionPort: RefreshTokenSessionPort,
@@ -135,6 +137,7 @@ class AuthSessionService(
             displayName = user.user.displayName,
             email = user.user.emailCiphertext?.let(authCryptoService::decryptEmail),
             roles = requireRoleNames(user.roleNames),
+            linkedIdentities = loadLinkedAuthIdentitiesPort.loadByUserId(user.user.userId),
         )
     }
 

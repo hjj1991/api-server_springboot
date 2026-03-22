@@ -1,5 +1,6 @@
 package com.hjj.apiserver.application.port.input.auth
 
+import com.hjj.apiserver.domain.auth.LinkedAuthIdentity
 import java.time.OffsetDateTime
 
 interface ManageAuthSessionUseCase {
@@ -52,4 +53,5 @@ data class AuthenticatedUserResult(
     val displayName: String,
     val email: String?,
     val roles: List<String>,
+    val linkedIdentities: List<LinkedAuthIdentity>,
 )

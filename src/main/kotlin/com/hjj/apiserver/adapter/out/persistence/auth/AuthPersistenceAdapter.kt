@@ -18,6 +18,7 @@ import com.hjj.apiserver.application.port.out.auth.IncreaseStoredUserTokenVersio
 import com.hjj.apiserver.application.port.out.auth.LinkSocialIdentityPort
 import com.hjj.apiserver.application.port.out.auth.LoadAuthenticatedUserByEmailLookupHashPort
 import com.hjj.apiserver.application.port.out.auth.LoadAuthenticatedUserPort
+import com.hjj.apiserver.application.port.out.auth.LoadLinkedAuthIdentitiesPort
 import com.hjj.apiserver.application.port.out.auth.LoadLocalLoginAccountPort
 import com.hjj.apiserver.application.port.out.auth.LoadSocialAuthenticatedUserPort
 import com.hjj.apiserver.application.port.out.auth.LoadStoredUserTokenVersionPort
@@ -30,6 +31,7 @@ import com.hjj.apiserver.common.exception.NotFoundException
 import com.hjj.apiserver.domain.auth.AuthenticatedUserAccount
 import com.hjj.apiserver.domain.auth.AuthProviderType
 import com.hjj.apiserver.domain.auth.AuthUser
+import com.hjj.apiserver.domain.auth.LinkedAuthIdentity
 import com.hjj.apiserver.domain.auth.LocalLoginAccount
 import com.hjj.apiserver.domain.auth.RoleName
 import org.springframework.stereotype.Component
@@ -53,7 +55,8 @@ class AuthPersistenceAdapter(
     IncreaseStoredUserTokenVersionPort,
     LoadSocialAuthenticatedUserPort,
     LoadAuthenticatedUserByEmailLookupHashPort,
-    LinkSocialIdentityPort {
+    LinkSocialIdentityPort,
+    LoadLinkedAuthIdentitiesPort {
     override fun loadByLoginId(loginId: String): LocalLoginAccount? {
         val localIdentity = authIdentityRepository.findByProviderTypeAndLoginId(AuthProviderType.LOCAL, loginId) ?: return null
         val userEntity = localIdentity.userEntity
@@ -226,6 +229,16 @@ class AuthPersistenceAdapter(
 
         return userEntity.increaseTokenVersion()
     }
+
+    override fun loadByUserId(userId: Long): List<LinkedAuthIdentity> =
+        authIdentityRepository.findAllByUserEntityIdOrderByLinkedAtAsc(userId).map { identity ->
+            LinkedAuthIdentity(
+                providerType = identity.providerType,
+                loginId = identity.loginId,
+                linkedAt = identity.linkedAt,
+                lastLoginAt = identity.lastLoginAt,
+            )
+        }
 
     private fun loadRoleNames(userId: Long): List<RoleName> = userRoleRepository.findRoleNamesByUserId(userId).distinct().sorted()
 

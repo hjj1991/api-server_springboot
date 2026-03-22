@@ -89,6 +89,7 @@ class WebSecurityConfiguration(
                         "/auth/signup",
                         "/auth/signup/**",
                         "/auth/login",
+                        "/auth/social/resolve",
                         "/auth/refresh",
                         "/financial-products",
                         "/financial-products/**",

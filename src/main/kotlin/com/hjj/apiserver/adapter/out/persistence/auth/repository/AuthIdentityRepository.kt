@@ -24,4 +24,6 @@ interface AuthIdentityRepository : JpaRepository<AuthIdentityEntity, Long> {
         providerType: AuthProviderType,
         providerSubjectHash: String,
     ): AuthIdentityEntity?
+
+    fun findAllByUserEntityIdOrderByLinkedAtAsc(userId: Long): List<AuthIdentityEntity>
 }

@@ -6,14 +6,19 @@ import com.hjj.apiserver.adapter.input.web.auth.request.LocalSignupRequest
 import com.hjj.apiserver.adapter.input.web.auth.request.LogoutRequest
 import com.hjj.apiserver.adapter.input.web.auth.request.RefreshSessionRequest
 import com.hjj.apiserver.adapter.input.web.auth.request.SignupVerifyRequest
+import com.hjj.apiserver.adapter.input.web.auth.request.SocialLinkIdentityRequest
+import com.hjj.apiserver.adapter.input.web.auth.request.SocialResolveLoginRequest
 import com.hjj.apiserver.adapter.input.web.auth.response.AuthSessionResponse
 import com.hjj.apiserver.adapter.input.web.auth.response.AuthenticatedUserResponse
 import com.hjj.apiserver.adapter.input.web.auth.response.SignupAcceptedResponse
 import com.hjj.apiserver.adapter.input.web.auth.response.SignupVerifiedResponse
+import com.hjj.apiserver.adapter.input.web.auth.response.SocialIdentityLinkResponse
+import com.hjj.apiserver.adapter.input.web.auth.response.SocialLoginResolutionResponse
 import com.hjj.apiserver.application.port.input.auth.GetCurrentUserQuery
 import com.hjj.apiserver.application.port.input.auth.LogoutAllSessionsCommand
 import com.hjj.apiserver.application.port.input.auth.LogoutSessionCommand
 import com.hjj.apiserver.application.port.input.auth.ManageAuthSessionUseCase
+import com.hjj.apiserver.application.port.input.auth.ManageSocialAuthUseCase
 import com.hjj.apiserver.application.port.input.auth.RegisterLocalSignupUseCase
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
@@ -32,6 +37,7 @@ import java.time.ZoneOffset
 class AuthController(
     private val registerLocalSignupUseCase: RegisterLocalSignupUseCase,
     private val manageAuthSessionUseCase: ManageAuthSessionUseCase,
+    private val manageSocialAuthUseCase: ManageSocialAuthUseCase,
 ) {
     @PostMapping("/login", headers = [ApiVersionConstants.HEADER_V1])
     @ResponseStatus(HttpStatus.OK)
@@ -56,6 +62,25 @@ class AuthController(
     fun verifySignup(
         @Valid @RequestBody request: SignupVerifyRequest,
     ): SignupVerifiedResponse = SignupVerifiedResponse.from(registerLocalSignupUseCase.verifySignup(request.toCommand()))
+
+    @PostMapping("/social/resolve", headers = [ApiVersionConstants.HEADER_V1])
+    @ResponseStatus(HttpStatus.OK)
+    fun resolveSocialLogin(
+        @Valid @RequestBody request: SocialResolveLoginRequest,
+    ): SocialLoginResolutionResponse =
+        SocialLoginResolutionResponse.from(
+            manageSocialAuthUseCase.resolveLogin(request.toCommand()),
+        )
+
+    @PostMapping("/social/link", headers = [ApiVersionConstants.HEADER_V1])
+    @ResponseStatus(HttpStatus.OK)
+    fun linkSocialIdentity(
+        @AuthenticationPrincipal jwt: Jwt,
+        @Valid @RequestBody request: SocialLinkIdentityRequest,
+    ): SocialIdentityLinkResponse =
+        SocialIdentityLinkResponse.from(
+            manageSocialAuthUseCase.linkIdentity(request.toCommand(jwt.subject.toLong())),
+        )
 
     @PostMapping("/logout", headers = [ApiVersionConstants.HEADER_V1])
     @ResponseStatus(HttpStatus.NO_CONTENT)

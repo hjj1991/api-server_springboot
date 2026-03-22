@@ -8,6 +8,7 @@ import com.hjj.apiserver.application.port.input.auth.ManageUserTokenVersionUseCa
 import com.hjj.apiserver.application.port.input.auth.RefreshSessionCommand
 import com.hjj.apiserver.application.port.out.auth.IssueAccessTokenPort
 import com.hjj.apiserver.application.port.out.auth.LoadAuthenticatedUserPort
+import com.hjj.apiserver.application.port.out.auth.LoadLinkedAuthIdentitiesPort
 import com.hjj.apiserver.application.port.out.auth.LoadLocalLoginAccountPort
 import com.hjj.apiserver.application.port.out.auth.RecordLocalLoginSuccessPort
 import com.hjj.apiserver.application.port.out.auth.RefreshTokenSessionPort
@@ -19,8 +20,10 @@ import com.hjj.apiserver.application.port.out.auth.model.RefreshTokenRotationRes
 import com.hjj.apiserver.domain.auth.AuthIdentityStatus
 import com.hjj.apiserver.domain.auth.AuthUser
 import com.hjj.apiserver.domain.auth.AuthenticatedUserAccount
+import com.hjj.apiserver.domain.auth.LinkedAuthIdentity
 import com.hjj.apiserver.domain.auth.LocalLoginAccount
 import com.hjj.apiserver.domain.auth.RoleName
+import com.hjj.apiserver.domain.auth.AuthProviderType
 import com.hjj.apiserver.domain.auth.UserStatus
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
@@ -37,6 +40,7 @@ class AuthSessionServiceTest {
     private lateinit var loadLocalLoginAccountPort: LoadLocalLoginAccountPort
     private lateinit var recordLocalLoginSuccessPort: RecordLocalLoginSuccessPort
     private lateinit var loadAuthenticatedUserPort: LoadAuthenticatedUserPort
+    private lateinit var loadLinkedAuthIdentitiesPort: LoadLinkedAuthIdentitiesPort
     private lateinit var refreshTokenSessionPort: RecordingRefreshTokenSessionPort
     private lateinit var accessTokenDenylistPort: RecordingAccessTokenDenylistPort
     private lateinit var manageUserTokenVersionUseCase: ManageUserTokenVersionUseCase
@@ -58,6 +62,7 @@ class AuthSessionServiceTest {
         loadLocalLoginAccountPort = Mockito.mock(LoadLocalLoginAccountPort::class.java)
         recordLocalLoginSuccessPort = Mockito.mock(RecordLocalLoginSuccessPort::class.java)
         loadAuthenticatedUserPort = Mockito.mock(LoadAuthenticatedUserPort::class.java)
+        loadLinkedAuthIdentitiesPort = Mockito.mock(LoadLinkedAuthIdentitiesPort::class.java)
         refreshTokenSessionPort = RecordingRefreshTokenSessionPort()
         accessTokenDenylistPort = RecordingAccessTokenDenylistPort()
         manageUserTokenVersionUseCase = Mockito.mock(ManageUserTokenVersionUseCase::class.java)
@@ -68,6 +73,7 @@ class AuthSessionServiceTest {
                 loadLocalLoginAccountPort = loadLocalLoginAccountPort,
                 recordLocalLoginSuccessPort = recordLocalLoginSuccessPort,
                 loadAuthenticatedUserPort = loadAuthenticatedUserPort,
+                loadLinkedAuthIdentitiesPort = loadLinkedAuthIdentitiesPort,
                 passwordEncoder = passwordEncoder,
                 issueAccessTokenPort = issueAccessTokenPort,
                 refreshTokenSessionPort = refreshTokenSessionPort,
@@ -203,12 +209,25 @@ class AuthSessionServiceTest {
                 roleNames = listOf(RoleName.USER),
             ),
         )
+        Mockito.`when`(loadLinkedAuthIdentitiesPort.loadByUserId(user.userId)).thenReturn(
+            listOf(
+                LinkedAuthIdentity(
+                    providerType = AuthProviderType.LOCAL,
+                    loginId = "hello-user",
+                    linkedAt = OffsetDateTime.parse("2026-03-22T01:00:00Z"),
+                    lastLoginAt = OffsetDateTime.parse("2026-03-22T03:00:00Z"),
+                ),
+            ),
+        )
 
         val result = authSessionService.getCurrentUser(GetCurrentUserQuery(user.userId))
 
         assertThat(result.displayName).isEqualTo("홍길동")
         assertThat(result.email).isEqualTo("hello@example.com")
         assertThat(result.roles).containsExactly("USER")
+        assertThat(result.linkedIdentities).hasSize(1)
+        assertThat(result.linkedIdentities.first().providerType).isEqualTo(AuthProviderType.LOCAL)
+        assertThat(result.linkedIdentities.first().loginId).isEqualTo("hello-user")
     }
 
     private fun activeUser(tokenVersion: Long = 2L): AuthUser =
